@@ -14,7 +14,7 @@ Working draft. Built page by page as decisions get locked. Placeholders are mark
 - B. We build the tools that stop you doing the same thing twice.
 - C. Less busywork. More clarity. Custom-built for you.
 
-*A leads with the core value prop plainly. B is more specific to the repetitive-task pain point. C ties directly to "clarity" as a positioning word. A is my recommendation, it's the clearest and most direct.*
+_A leads with the core value prop plainly. B is more specific to the repetitive-task pain point. C ties directly to "clarity" as a positioning word. A is my recommendation, it's the clearest and most direct._
 
 **Subheadline:**
 WildHands Studio designs and builds custom websites, apps, and internal tools for teams done doing repetitive work by hand.
@@ -47,10 +47,10 @@ WildHands Studio designs and builds custom websites, apps, and internal tools fo
 
 **Heading:** What we build
 
-| Pillar | Tagline |
-|---|---|
-| Websites | Custom-built, not templated. |
-| Apps | Software built around how you actually work. |
+| Pillar          | Tagline                                                     |
+| --------------- | ----------------------------------------------------------- |
+| Websites        | Custom-built, not templated.                                |
+| Apps            | Software built around how you actually work.                |
 | Tools & Systems | Dashboards and internal tools that replace the spreadsheet. |
 
 **Closing CTAs:** See Services · Talk to Us
@@ -105,14 +105,17 @@ Dropped for launch. Revisit once you have a metric that isn't client count.
 **Pillar breakdown (proposed, refine as you like):**
 
 **Websites** — Custom-built, not templated.
+
 - Marketing/brochure sites (a handful of pages, built to convert)
 - Full custom builds (larger sites, more complexity, more moving parts)
 
 **Apps** — Software built around how you actually work.
+
 - Custom web apps
 - Internal-facing tools built for a specific workflow
 
 **Tools & Systems** — Dashboards and internal tools that replace the spreadsheet.
+
 - Dashboards (data visibility, live tracking)
 - Workflow automation (connecting tools, removing manual steps)
 
@@ -131,11 +134,11 @@ CTA bands between each pillar block and at page end: reused "Talk to Us" band.
 - Cost summary: "We quote every site after a short discovery call, once we know exactly what you need. The price follows the scope, not the other way around."
 - Comparison table (draft example, for your review):
 
-| Choose Websites when... | Look at Apps/Tools & Systems when... |
-|---|---|
+| Choose Websites when...           | Look at Apps/Tools & Systems when...           |
+| --------------------------------- | ---------------------------------------------- |
 | You need a strong public presence | You need something your team logs into to work |
-| The goal is to convert visitors | The goal is to remove manual work internally |
-| Content updates are occasional | You need live, ongoing data or workflows |
+| The goal is to convert visitors   | The goal is to remove manual work internally   |
+| Content updates are occasional    | You need live, ongoing data or workflows       |
 
 - CTA links: Talk to Us · See Web Work
 
