@@ -1,11 +1,101 @@
 ---
-// TODO: placeholder scaffold. Built out in a later step per docs/PROGRESS.md.
+/** Stack hub — four category cards with recommended picks and a total count. */
+import { getCollection } from 'astro:content'
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import CTASection from '@/components/sections/CTASection.astro'
+import Tag from '@/components/ui/Tag.astro'
+import { breadcrumbSchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
+import { STACK_CATEGORIES, STACK_CATEGORY_LABELS, type StackCategory } from '@/content.config'
+
+const stack = await getCollection('stack', ({ data }) => !data.draft)
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+
+/** The question each category exists to answer. */
+const CATEGORY_QUESTIONS: Record<StackCategory, string> = {
+  cms: 'Where does content live, and can the team actually run it?',
+  framework: 'What renders the pages, and how much JavaScript reaches the visitor?',
+  hosting: 'Where does it run, and what does that cost at your traffic?',
+  integrations: 'What else does the site need to talk to?',
+}
+
+const groups = STACK_CATEGORIES.map((category) => {
+  const entries = stack
+    .filter((entry) => entry.data.category === category)
+    .sort((a, b) => a.data.order - b.data.order)
+  return {
+    category,
+    label: STACK_CATEGORY_LABELS[category],
+    question: CATEGORY_QUESTIONS[category],
+    entries,
+    recommended: entries.filter((entry) => entry.data.recommended),
+  }
+})
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${siteUrl}/` },
+    { name: 'Stack', url: `${siteUrl}/stack` },
+  ]),
+]
 ---
 
-<BaseLayout title="Stack — WildHands Studios" description="Placeholder stack hub.">
-  <main>
-    <h1>Stack</h1>
-    <p>Placeholder page — structure pending.</p>
-  </main>
+<BaseLayout
+  title="Stack"
+  description="The platforms and frameworks WildHands Studios builds on, and an honest note on when each one is the wrong choice."
+  jsonLd={jsonLd}
+  darkHero
+>
+  <Hero
+    eyebrow="Stack"
+    title="What we build on, and when we would not."
+    subtitle="Every technology here has a section on when to look elsewhere. That section is the useful one."
+  />
+
+  <div class="wh-container wh-section">
+    <div class="grid gap-4 md:grid-cols-2">
+      {
+        groups.map((group) => (
+          <section class="relative rounded-xl border border-border bg-card p-6 transition-[transform,box-shadow] duration-200 ease-out focus-within:-translate-y-0.5 focus-within:shadow-md hover:-translate-y-0.5 hover:shadow-md md:p-8">
+            <div class="flex items-start justify-between gap-4">
+              <h2 class="text-2xl font-medium tracking-tight">
+                <a
+                  href={`/stack/${group.category}`}
+                  class="wh-sweep inline-flex after:absolute after:inset-0 after:content-['']"
+                >
+                  <span class="wh-sweep__label">{group.label}</span>
+                </a>
+              </h2>
+              <Tag>{group.entries.length} total</Tag>
+            </div>
+
+            <p class="mt-3 max-w-prose text-sm text-muted-foreground">{group.question}</p>
+
+            {group.recommended.length > 0 && (
+              <>
+                <h3 class="mt-6 text-xs font-medium tracking-widest text-muted-foreground uppercase">
+                  We usually reach for
+                </h3>
+                <ul class="mt-3 flex flex-wrap gap-2">
+                  {group.recommended.map((entry) => (
+                    <li>
+                      <a
+                        href={`/stack/${group.category}/${entry.id.split('/').pop()}`}
+                        class="wh-tap inline-flex items-center rounded-full border border-border px-4 text-sm transition-colors hover:bg-muted"
+                      >
+                        {entry.data.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </section>
+        ))
+      }
+    </div>
+  </div>
+
+  <CTASection />
 </BaseLayout>

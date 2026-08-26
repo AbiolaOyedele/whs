@@ -1,23 +1,136 @@
 ---
-// TODO: placeholder scaffold. getStaticPaths returns [] until the matching
-// content collection is seeded. Built out in a later step per docs/PROGRESS.md.
+/**
+ * Stack leaf page. Renders either the single-technology layout or, when the
+ * entry carries a `headToHead` table, the comparison layout.
+ */
 import type { GetStaticPaths } from 'astro'
+import { getCollection, render } from 'astro:content'
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import SectionHeading from '@/components/sections/SectionHeading.astro'
+import ComparisonTable from '@/components/sections/ComparisonTable.astro'
+import FAQAccordion from '@/components/sections/FAQAccordion.astro'
+import AtAGlanceTable from '@/components/sections/AtAGlanceTable.astro'
+import CTASection from '@/components/sections/CTASection.astro'
+import Prose from '@/components/ui/Prose.astro'
+import { breadcrumbSchema, faqPageSchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
+import { STACK_CATEGORY_LABELS } from '@/content.config'
 
-interface RouteParams {
-  category: string
-  slug: string
-}
+export const getStaticPaths = (async () => {
+  const stack = await getCollection('stack', ({ data }) => !data.draft)
+  return stack.map((entry) => ({
+    params: { category: entry.data.category, slug: entry.id.split('/').pop() ?? entry.id },
+    props: { entry },
+  }))
+}) satisfies GetStaticPaths
 
-/** No paths until the backing content collection is seeded. */
-export const getStaticPaths = (() => []) satisfies GetStaticPaths
+const { entry } = Astro.props
+const { data } = entry
+const { Content } = await render(entry)
 
-const { category, slug } = Astro.params as unknown as RouteParams
+const slug = entry.id.split('/').pop() ?? entry.id
+const label = STACK_CATEGORY_LABELS[data.category]
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+const url = `${siteUrl}/stack/${data.category}/${slug}`
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${siteUrl}/` },
+    { name: 'Stack', url: `${siteUrl}/stack` },
+    { name: label, url: `${siteUrl}/stack/${data.category}` },
+    { name: data.name, url },
+  ]),
+  ...(data.faqs.length > 0 ? [faqPageSchema(data.faqs)] : []),
+]
+
+const isComparison = Boolean(data.headToHead)
 ---
 
-<BaseLayout title="Technology — WildHands Studios" description="Placeholder technology template.">
-  <main>
-    <h1>Technology</h1>
-    <p>Placeholder template for {category + ' / ' + slug}.</p>
-  </main>
+<BaseLayout title={data.title} description={data.description} jsonLd={jsonLd} darkHero>
+  <Hero eyebrow={label} title={data.name} subtitle={data.positioning} />
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}
+      >{isComparison ? 'The short answer' : `What ${data.name} is`}</SectionHeading
+    >
+    <p class="mt-5 max-w-[65ch] text-lg text-muted-foreground">{data.definition}</p>
+  </section>
+
+  {
+    data.headToHead && (
+      <section class="wh-container wh-section">
+        <SectionHeading level={2}>Head to head</SectionHeading>
+        <ComparisonTable headToHead={data.headToHead} class="mt-10" />
+      </section>
+    )
+  }
+
+  {
+    (data.chooseWhen.length > 0 || data.lookElsewhereWhen.length > 0) && (
+      <section class="wh-container wh-section">
+        <SectionHeading level={2}>Where it earns the shortlist</SectionHeading>
+        <ComparisonTable
+          chooseWhen={data.chooseWhen}
+          lookElsewhereWhen={data.lookElsewhereWhen}
+          chooseLabel={
+            isComparison ? `Choose ${data.headToHead?.optionA} when` : `Choose ${data.name} when`
+          }
+          elsewhereLabel={
+            isComparison ? `Choose ${data.headToHead?.optionB} when` : 'Look elsewhere when'
+          }
+          class="mt-10"
+        />
+      </section>
+    )
+  }
+
+  <section class="wh-container wh-section">
+    <Prose>
+      <Content />
+    </Prose>
+  </section>
+
+  {
+    data.pricingNote && (
+      <section class="wh-container wh-section">
+        <SectionHeading level={2}>Pricing</SectionHeading>
+        <p class="mt-5 max-w-[65ch] text-muted-foreground">{data.pricingNote}</p>
+      </section>
+    )
+  }
+
+  {
+    data.houseView && (
+      <section class="wh-container wh-section">
+        <div class="rounded-xl border border-border bg-muted/50 p-6 md:p-10">
+          <h2 class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+            Our take
+          </h2>
+          <p class="mt-4 max-w-[55ch] text-xl font-medium tracking-tight text-balance md:text-2xl">
+            {data.houseView}
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  <FAQAccordion faqs={data.faqs} />
+  <AtAGlanceTable rows={data.atAGlance} />
+
+  <div class="wh-container pb-8">
+    <div class="flex flex-wrap gap-6 border-t border-border pt-8 text-sm">
+      <a href={`/stack/${data.category}`} class="wh-sweep wh-tap inline-flex items-center">
+        <span class="wh-sweep__label">&larr; All {label.toLowerCase()}</span>
+      </a>
+      <a href="/services" class="wh-sweep wh-tap inline-flex items-center">
+        <span class="wh-sweep__label">Our services</span>
+      </a>
+      <a href="/get-in-touch" class="wh-sweep wh-tap inline-flex items-center">
+        <span class="wh-sweep__label">Talk to us</span>
+      </a>
+    </div>
+  </div>
+
+  <CTASection />
 </BaseLayout>

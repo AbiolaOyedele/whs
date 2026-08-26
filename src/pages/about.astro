@@ -1,11 +1,112 @@
 ---
-// TODO: placeholder scaffold. Built out in a later step per docs/PROGRESS.md.
+/** About page. TODO: all copy provisional; team members are placeholders. */
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import SectionHeading from '@/components/sections/SectionHeading.astro'
+import CTASection from '@/components/sections/CTASection.astro'
+import { breadcrumbSchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
+
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${siteUrl}/` },
+    { name: 'About', url: `${siteUrl}/about` },
+  ]),
+]
+
+/** TODO: placeholder team. Replace with real people and photographs. */
+const TEAM = [
+  { name: 'A. Placeholder', role: 'Engineering Lead' },
+  { name: 'B. Placeholder', role: 'Design Lead' },
+  { name: 'C. Placeholder', role: 'Delivery Lead' },
+  { name: 'D. Placeholder', role: 'Managing Director' },
+]
+
+const VALUES = [
+  {
+    title: 'Transparency',
+    body: 'You see the estimate, the assumptions behind it, and what changed when it moved.',
+  },
+  {
+    title: 'Openness of mind',
+    body: 'We arrive with a default stack and change it when the constraints say to.',
+  },
+  {
+    title: 'Commitment',
+    body: 'We stay past launch. Most of what determines whether a site stays good happens after it.',
+  },
+  {
+    title: 'Empathy',
+    body: 'The people who use the CMS every day have more to tell us than the brief does.',
+  },
+]
 ---
 
-<BaseLayout title="About — WildHands Studios" description="Placeholder about page.">
-  <main>
-    <h1>About</h1>
-    <p>Placeholder page — structure pending.</p>
-  </main>
+<BaseLayout
+  title="About"
+  description="WildHands Studios is a web studio that audits, designs, migrates and runs marketing websites."
+  jsonLd={jsonLd}
+  darkHero
+>
+  <Hero
+    eyebrow="About"
+    title="We stay after launch."
+    subtitle="Most of what determines whether a website stays good happens in the eighteen months nobody budgeted for."
+  />
+
+  <section class="wh-container wh-section">
+    <div class="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
+      <SectionHeading eyebrow="Why we exist">Websites decay quietly.</SectionHeading>
+      <div class="space-y-5 text-muted-foreground">
+        <p>
+          Placeholder copy. WildHands Studios exists because most marketing sites are built once,
+          handed over, and then slowly stop working — not dramatically, but a skipped dependency
+          update at a time.
+        </p>
+        <p>
+          We take on the whole arc: work out what is actually wrong, design something the team can
+          extend, move it across without losing search traffic, and then keep it healthy.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>Who you would work with</SectionHeading>
+    <ul class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        TEAM.map((person) => (
+          <li class="border-t border-border pt-5">
+            <div
+              aria-hidden="true"
+              class="mb-4 aspect-[4/5] w-full rounded-lg bg-muted"
+              title="Placeholder — no team photography yet"
+            />
+            <h3 class="text-lg font-medium">{person.name}</h3>
+            <p class="text-sm text-muted-foreground">{person.role}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-6 text-xs text-muted-foreground">
+      Placeholder team. Names, roles and photography all pending.
+    </p>
+  </section>
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>How we work</SectionHeading>
+    <ul class="mt-10 grid gap-8 sm:grid-cols-2">
+      {
+        VALUES.map((value) => (
+          <li class="border-t border-border pt-5">
+            <h3 class="text-xl font-medium">{value.title}</h3>
+            <p class="mt-2 max-w-prose text-muted-foreground">{value.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <CTASection />
 </BaseLayout>

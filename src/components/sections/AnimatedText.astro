@@ -1,0 +1,52 @@
+---
+/**
+ * Scroll/load reveal wrapper.
+ *
+ * The content renders fully visible in the static HTML. The script marks the
+ * element ready (which is what applies the hidden start state) and then reveals
+ * it — so a crawler or a no-JS visitor always sees the text, and nothing
+ * important is gated behind client-side rendering.
+ */
+interface Props {
+  /** Reveal immediately rather than waiting for scroll. Use above the fold. */
+  immediate?: boolean
+  class?: string
+}
+
+const { immediate = false, class: className = '' } = Astro.props
+---
+
+<div data-animate-text data-immediate={immediate ? '' : undefined} class={className}>
+  <div class="wh-line" style="--line-index: 0">
+    <slot />
+  </div>
+</div>
+
+<script>
+  const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+  const reveal = (el: Element) => el.setAttribute('data-animate-in', '')
+
+  const targets = document.querySelectorAll<HTMLElement>('[data-animate-text]')
+
+  if (!REDUCED.matches) {
+    // `immediate` content is above the fold and is usually the LCP element, so
+    // it is never hidden — fading the hero headline in would delay LCP for a
+    // decorative effect. Only below-the-fold text gets the reveal.
+    const deferred = [...targets].filter((el) => !el.hasAttribute('data-immediate'))
+    deferred.forEach((el) => el.setAttribute('data-animate-ready', ''))
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return
+          reveal(entry.target)
+          observer.unobserve(entry.target)
+        })
+      },
+      { rootMargin: '0px 0px -10% 0px', threshold: 0.1 }
+    )
+
+    deferred.forEach((el) => observer.observe(el))
+  }
+</script>

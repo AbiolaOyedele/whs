@@ -1,0 +1,19 @@
+---
+/**
+ * Analytics entry point.
+ *
+ * Nothing loads until the visitor accepts analytics cookies, and nothing loads
+ * at all when the PostHog env vars are unset — so a misconfigured deploy is
+ * silent rather than broken.
+ */
+import ConsentBanner from './ConsentBanner.astro'
+import PostHogLoader from './PostHogLoader.astro'
+import { publicEnv } from '@/config/env'
+
+const posthogKey = publicEnv.PUBLIC_POSTHOG_KEY
+const host = publicEnv.PUBLIC_POSTHOG_HOST
+---
+
+{posthogKey && host && <PostHogLoader posthogKey={posthogKey} host={host} />}
+
+<ConsentBanner />

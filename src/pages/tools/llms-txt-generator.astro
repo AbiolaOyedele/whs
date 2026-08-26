@@ -1,14 +1,75 @@
 ---
-// TODO: placeholder scaffold. Built out in a later step per docs/PROGRESS.md.
+/** llms.txt generator tool. */
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import SectionHeading from '@/components/sections/SectionHeading.astro'
+import NumberedList from '@/components/sections/NumberedList.astro'
+import CTASection from '@/components/sections/CTASection.astro'
+import LlmsTxtGenerator from '@/components/forms/LlmsTxtGenerator.tsx'
+import { breadcrumbSchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
+
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${siteUrl}/` },
+    { name: 'llms.txt Generator', url: `${siteUrl}/tools/llms-txt-generator` },
+  ]),
+]
+
+const STEPS = [
+  {
+    title: 'Find',
+    body: 'We read your robots.txt, discover your sitemaps, and follow any nested or gzipped ones.',
+  },
+  {
+    title: 'Choose',
+    body: 'We rank the URLs by path depth and take up to thirty of the shallowest, then read each page title and description.',
+  },
+  { title: 'Publish', body: 'Copy the Markdown below and serve it at /llms.txt on your domain.' },
+]
 ---
 
 <BaseLayout
-  title="llms.txt Generator — WildHands Studios"
-  description="Placeholder llms.txt generator tool."
+  title="llms.txt Generator"
+  description="Generate an llms.txt index for any public website from its sitemap. Free, and nothing is stored."
+  jsonLd={jsonLd}
+  darkHero
 >
-  <main>
-    <h1>llms.txt Generator</h1>
-    <p>Placeholder page — structure pending.</p>
-  </main>
+  <Hero
+    eyebrow="Free tool"
+    title="llms.txt Generator"
+    subtitle="Point it at a site and it will build a Markdown index of the pages an AI assistant should read first."
+  />
+
+  <section class="wh-container wh-section">
+    <div class="max-w-2xl">
+      <LlmsTxtGenerator client:load />
+    </div>
+  </section>
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>How it works</SectionHeading>
+    <NumberedList items={STEPS} columns={3} class="mt-10" />
+  </section>
+
+  <section class="wh-container wh-section">
+    <div class="max-w-[65ch]">
+      <h2 class="text-xl font-medium">What is llms.txt?</h2>
+      <p class="mt-4 text-muted-foreground">
+        llms.txt is a plain Markdown file at the root of a website listing its most important pages
+        with one-line descriptions. It exists so AI assistants can find and cite the right content
+        instead of guessing from a crawl. It is not a search ranking signal, and it does not replace
+        a sitemap — it sits alongside one.
+      </p>
+      <p class="mt-4 text-muted-foreground">
+        More on this in <a
+          href="/insights/operations/what-llms-txt-is-for"
+          class="underline underline-offset-4">what llms.txt is for</a
+        >.
+      </p>
+    </div>
+  </section>
+
+  <CTASection />
 </BaseLayout>

@@ -1,0 +1,48 @@
+---
+/**
+ * Consent-gated PostHog loader.
+ *
+ * Rendered only when both PostHog env vars are set. The script itself makes no
+ * network request until consent has been granted — either from a stored choice
+ * or from the `wh:consent-granted` event the banner dispatches.
+ */
+interface Props {
+  posthogKey: string
+  host: string
+}
+
+const { posthogKey, host } = Astro.props
+---
+
+<script is:inline define:vars={{ posthogKey, host }}>
+  ;(function () {
+    let loaded = false
+
+    function load() {
+      if (loaded) return
+      loaded = true
+      const script = document.createElement('script')
+      script.src = host.replace(/\/$/, '') + '/static/array.js'
+      script.defer = true
+      script.onload = function () {
+        if (window.posthog && typeof window.posthog.init === 'function') {
+          window.posthog.init(posthogKey, {
+            api_host: host,
+            persistence: 'localStorage',
+            autocapture: false,
+            capture_pageview: true,
+          })
+        }
+      }
+      document.head.appendChild(script)
+    }
+
+    try {
+      if (localStorage.getItem('wh-consent') === 'granted') load()
+    } catch {
+      // Storage blocked — stay off, which is the privacy-preserving default.
+    }
+
+    window.addEventListener('wh:consent-granted', load)
+  })()
+</script>

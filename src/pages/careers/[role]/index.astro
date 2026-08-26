@@ -1,22 +1,77 @@
 ---
-// TODO: placeholder scaffold. getStaticPaths returns [] until the matching
-// content collection is seeded. Built out in a later step per docs/PROGRESS.md.
+/** Job detail page. */
 import type { GetStaticPaths } from 'astro'
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import SectionHeading from '@/components/sections/SectionHeading.astro'
+import Button from '@/components/ui/Button.astro'
+import Tag from '@/components/ui/Tag.astro'
+import { ROLES } from '@/config/roles'
+import { breadcrumbSchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
 
-interface RouteParams {
-  role: string
-}
+export const getStaticPaths = (() =>
+  ROLES.map((role) => ({ params: { role: role.slug }, props: { role } }))) satisfies GetStaticPaths
 
-/** No paths until the backing content collection is seeded. */
-export const getStaticPaths = (() => []) satisfies GetStaticPaths
+const { role } = Astro.props
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
 
-const { role } = Astro.params as unknown as RouteParams
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${siteUrl}/` },
+    { name: 'Careers', url: `${siteUrl}/careers` },
+    { name: role.title, url: `${siteUrl}/careers/${role.slug}` },
+  ]),
+]
 ---
 
-<BaseLayout title="Role — WildHands Studios" description="Placeholder role template.">
-  <main>
-    <h1>Role</h1>
-    <p>Placeholder template for {role}.</p>
-  </main>
+<BaseLayout title={role.title} description={role.summary} jsonLd={jsonLd} darkHero>
+  <Hero eyebrow="Careers" title={role.title} subtitle={role.summary}>
+    <ul class="mt-6 flex flex-wrap gap-2">
+      <li><Tag onDark>{role.level}</Tag></li>
+      <li><Tag onDark>{role.location}</Tag></li>
+    </ul>
+    <div class="mt-8">
+      <Button href={`/careers/${role.slug}/apply`} variant="accent" size="lg">Apply now</Button>
+    </div>
+  </Hero>
+
+  <section class="wh-container wh-section">
+    <div class="grid gap-12 lg:grid-cols-2 lg:gap-16">
+      <div>
+        <SectionHeading level={2}>What we need</SectionHeading>
+        <ul class="mt-6 space-y-3">
+          {
+            role.requirements.map((item) => (
+              <li class="flex gap-3 text-muted-foreground">
+                <span
+                  aria-hidden="true"
+                  class="mt-2.5 size-1.5 shrink-0 rounded-full bg-foreground"
+                />
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div>
+        <SectionHeading level={2}>Nice to have</SectionHeading>
+        <ul class="mt-6 flex flex-wrap gap-2">
+          {
+            role.niceToHave.map((item) => (
+              <li>
+                <Tag>{item}</Tag>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-14 border-t border-border pt-10">
+      <Button href={`/careers/${role.slug}/apply`} variant="primary" size="lg"
+        >Apply for this role</Button
+      >
+    </div>
+  </section>
 </BaseLayout>

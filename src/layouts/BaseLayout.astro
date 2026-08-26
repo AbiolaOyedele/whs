@@ -1,19 +1,41 @@
 ---
 /**
- * Placeholder base layout. Replaced in Step 8 with the real SiteHeader /
- * Footer chrome and in Step 19 with the full SEO + JSON-LD head layer.
+ * The single page shell. Every route renders through here so the header,
+ * footer, SEO head and skip link stay consistent.
  */
 import '@/styles/global.css'
+import SiteHeader from '@/components/layout/SiteHeader.astro'
+import Footer from '@/components/layout/Footer.astro'
+import Seo from '@/components/layout/Seo.astro'
+import Analytics from '@/components/layout/Analytics.astro'
+import { organizationSchema, webSiteSchema, type JsonLd } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
 
 interface Props {
-  /** Page title, rendered into <title>. */
   title: string
-  /** Meta description for search and AI crawlers. */
   description: string
+  /** Set on pages that open with the dark Hero band. */
+  darkHero?: boolean
+  noindex?: boolean
+  ogType?: 'website' | 'article'
+  publishedTime?: string | undefined
+  jsonLd?: readonly JsonLd[]
 }
 
-const { title, description } = Astro.props
-const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin)
+const {
+  title,
+  description,
+  darkHero = false,
+  noindex = false,
+  ogType = 'website',
+  publishedTime,
+  jsonLd = [],
+} = Astro.props
+
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', siteUrl).href
+
+const schemas: JsonLd[] = [organizationSchema(siteUrl), webSiteSchema(siteUrl), ...jsonLd]
 ---
 
 <!doctype html>
@@ -21,11 +43,41 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin)
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonical.href} />
+    <meta name="theme-color" content="#f3f3f4" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap"
+    />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <Seo
+      title={title}
+      description={description}
+      canonical={canonical}
+      noindex={noindex}
+      ogType={ogType}
+      publishedTime={publishedTime}
+      jsonLd={schemas}
+    />
+    <Analytics />
   </head>
   <body>
-    <slot />
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-100 focus:rounded-md focus:bg-primary focus:px-4 focus:py-3 focus:text-primary-foreground"
+    >
+      Skip to content
+    </a>
+
+    <SiteHeader overDarkHero={darkHero} />
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <Footer />
   </body>
 </html>

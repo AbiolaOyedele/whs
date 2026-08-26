@@ -1,11 +1,186 @@
 ---
-// TODO: placeholder scaffold. Built out in a later step per docs/PROGRESS.md.
+/** Freelance hub — benefits, process, roles, application form, newsletter. */
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import SectionHeading from '@/components/sections/SectionHeading.astro'
+import NumberedList from '@/components/sections/NumberedList.astro'
+import StatCallout from '@/components/sections/StatCallout.astro'
+import FAQAccordion from '@/components/sections/FAQAccordion.astro'
+import FreelanceApplicationForm from '@/components/forms/FreelanceApplicationForm.tsx'
+import NewsletterForm from '@/components/forms/NewsletterForm.tsx'
+import { SITE } from '@/config/site'
+import { breadcrumbSchema, faqPageSchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
+
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+
+/** TODO: placeholder figures. Do not publish rate data until it is real. */
+const EARNINGS = [
+  { value: 'TODO', label: 'Average hourly rate' },
+  { value: 'TODO', label: 'Average engagement length' },
+  { value: '30 days', label: 'Payment terms' },
+]
+
+const BENEFITS = [
+  {
+    title: 'Paid on time',
+    body: 'Thirty-day terms, and we chase our clients so you do not have to chase us.',
+  },
+  {
+    title: 'Scoped work',
+    body: 'You get a written brief with an agreed definition of done, not a standing Slack channel.',
+  },
+  {
+    title: 'No unpaid pitching',
+    body: 'We do not ask freelancers to produce speculative work to win a project.',
+  },
+  {
+    title: 'Direct client contact',
+    body: 'You talk to the client. We do not put a account manager between you and the decision.',
+  },
+  {
+    title: 'Repeat engagements',
+    body: 'Most of our freelancers work with us across several projects rather than one.',
+  },
+  {
+    title: 'Your own tools',
+    body: 'We care that it is maintainable, not which editor produced it.',
+  },
+]
+
+const PROCESS = [
+  { title: 'Apply', body: 'Send the form below with a portfolio we can actually look at.' },
+  { title: 'Short call', body: 'Thirty minutes on what you like working on and what you avoid.' },
+  { title: 'Paid trial task', body: 'A small, real, scoped piece of work. Paid at your rate.' },
+  { title: 'Into the pool', body: 'We match you against briefs as they come in.' },
+  {
+    title: 'First engagement',
+    body: 'A written scope, an agreed rate, and a named point of contact.',
+  },
+]
+
+const faqs = [
+  {
+    question: 'Do I need to be a registered business to work with you?',
+    answer:
+      'Yes. We contract business to business, so you need to be able to invoice as a registered company or sole trader in your country.',
+  },
+  {
+    question: 'How are freelance rates set?',
+    answer:
+      'You tell us your rate. We do not run reverse auctions and we do not ask people to undercut each other for a brief.',
+  },
+  {
+    question: 'Is the trial task paid?',
+    answer:
+      'Yes, at your normal rate. It is a small piece of real work, not a speculative exercise.',
+  },
+  {
+    question: 'How much work can I expect?',
+    answer:
+      'It varies with the project pipeline and we will not pretend otherwise. Most people in the pool work with us in blocks rather than continuously.',
+  },
+  {
+    question: 'Can I work with you part-time alongside other clients?',
+    answer:
+      'Yes. Most of our freelancers do. We agree an hours-per-month baseline up front so both sides can plan.',
+  },
+  {
+    question: 'What time zones do you work across?',
+    answer:
+      'We are async-first, so the overlap requirement is usually a couple of hours rather than a full working day.',
+  },
+  {
+    question: 'How long does the application take to review?',
+    answer: 'We aim to reply within a week either way.',
+  },
+]
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${siteUrl}/` },
+    { name: 'Freelance Hub', url: `${siteUrl}/freelance-hub` },
+  ]),
+  faqPageSchema(faqs),
+]
 ---
 
-<BaseLayout title="Freelance Hub — WildHands Studios" description="Placeholder freelance hub.">
-  <main>
-    <h1>Freelance Hub</h1>
-    <p>Placeholder page — structure pending.</p>
-  </main>
+<BaseLayout
+  title="Freelance Hub"
+  description="Freelance with WildHands Studios. Scoped briefs, paid trials, direct client contact, thirty-day payment terms."
+  jsonLd={jsonLd}
+  darkHero
+>
+  <Hero
+    eyebrow="Freelance Hub"
+    title="Work with us, not for us."
+    subtitle="Scoped briefs, a paid trial task, and no unpaid pitching. Here is exactly how it runs."
+  />
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>What to expect</SectionHeading>
+    <dl class="mt-10 grid gap-8 sm:grid-cols-3">
+      {
+        EARNINGS.map((item) => (
+          <div class="border-t border-border pt-5">
+            <dt class="sr-only">{item.label}</dt>
+            <dd>
+              <StatCallout value={item.value} label={item.label} />
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+    <p class="mt-6 text-xs text-muted-foreground">
+      Rate figures deliberately unfilled pending real data. See docs/PROGRESS.md.
+    </p>
+  </section>
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>Why people stay in the pool</SectionHeading>
+    <NumberedList items={BENEFITS} columns={3} class="mt-10" />
+  </section>
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>How it works</SectionHeading>
+    <NumberedList items={PROCESS} columns={2} class="mt-10" />
+  </section>
+
+  <section id="apply" class="wh-container wh-section">
+    <div class="max-w-2xl">
+      <SectionHeading level={2}>Apply</SectionHeading>
+      <p class="mt-4 text-muted-foreground">One form. We read every one and reply either way.</p>
+      <div class="mt-10">
+        <FreelanceApplicationForm client:visible />
+      </div>
+    </div>
+  </section>
+
+  <FAQAccordion faqs={faqs} heading="Freelance questions" />
+
+  <section class="wh-container wh-section">
+    <div class="grid gap-10 rounded-xl border border-border bg-card p-6 md:grid-cols-2 md:p-10">
+      <div>
+        <h2 class="text-xl font-medium">Prefer to just email?</h2>
+        <p class="mt-3 text-sm text-muted-foreground">
+          Send a portfolio link and a line about what you do.
+        </p>
+        <a
+          href={`mailto:${SITE.hrEmail}`}
+          class="wh-sweep wh-tap mt-4 inline-flex items-center text-sm"
+        >
+          <span class="wh-sweep__label">{SITE.hrEmail}</span>
+        </a>
+      </div>
+      <div>
+        <h2 class="text-xl font-medium">Not ready to apply?</h2>
+        <p class="mt-3 text-sm text-muted-foreground">
+          We email when new briefs open up. No more than monthly.
+        </p>
+        <div class="mt-4">
+          <NewsletterForm client:visible />
+        </div>
+      </div>
+    </div>
+  </section>
 </BaseLayout>

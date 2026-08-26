@@ -1,0 +1,41 @@
+---
+/** Progress indicator for the route-based application wizard. */
+interface Props {
+  current: 1 | 2 | 3
+  class?: string
+}
+const { current, class: className = '' } = Astro.props
+const steps = ['Your details', 'Short video', 'Done']
+---
+
+<nav aria-label="Application progress" class={className}>
+  <ol class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+    {
+      steps.map((step, index) => {
+        const number = index + 1
+        const done = number < current
+        const active = number === current
+        return (
+          <li
+            aria-current={active ? 'step' : undefined}
+            class:list={[
+              'flex items-center gap-2',
+              active ? 'font-medium' : 'text-muted-foreground',
+            ]}
+          >
+            <span
+              aria-hidden="true"
+              class:list={[
+                'inline-flex size-6 items-center justify-center rounded-full border text-xs tabular-nums',
+                active ? 'border-transparent bg-primary text-primary-foreground' : 'border-border',
+              ]}
+            >
+              {done ? '✓' : number}
+            </span>
+            {step}
+          </li>
+        )
+      })
+    }
+  </ol>
+</nav>

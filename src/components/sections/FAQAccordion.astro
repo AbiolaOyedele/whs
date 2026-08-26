@@ -1,0 +1,120 @@
+---
+/**
+ * FAQ accordion.
+ *
+ * Built on <details>/<summary> so every answer is present in the static HTML
+ * and readable by assistive tech, search crawlers, and AI crawlers that do not
+ * execute JS. The script only adds the height animation on top.
+ */
+import SectionHeading from './SectionHeading.astro'
+
+interface Faq {
+  question: string
+  answer: string
+}
+
+interface Props {
+  faqs: readonly Faq[]
+  heading?: string
+  eyebrow?: string
+  class?: string
+}
+
+const { faqs, heading = 'Frequently asked questions', eyebrow, class: className = '' } = Astro.props
+---
+
+{
+  faqs.length > 0 && (
+    <section class={`wh-container wh-section ${className}`}>
+      <SectionHeading eyebrow={eyebrow} level={2}>
+        {heading}
+      </SectionHeading>
+
+      <div class="mt-8 divide-y divide-border border-y border-border">
+        {faqs.map((faq) => (
+          <details class="wh-faq group">
+            <summary class="wh-tap flex w-full cursor-pointer list-none items-center justify-between gap-4 py-5 text-left text-base font-medium md:text-lg [&::-webkit-details-marker]:hidden">
+              <span>{faq.question}</span>
+              <span
+                aria-hidden="true"
+                class="relative size-5 shrink-0 transition-transform duration-300 ease-standard group-open:rotate-45"
+              >
+                <span class="absolute top-1/2 left-0 h-px w-5 -translate-y-1/2 bg-current" />
+                <span class="absolute top-0 left-1/2 h-5 w-px -translate-x-1/2 bg-current" />
+              </span>
+            </summary>
+            <div class="wh-faq__panel">
+              <p class="max-w-[65ch] pb-5 text-muted-foreground">{faq.answer}</p>
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  /* Without JS the panel simply appears — no clipping, nothing hidden. */
+  .wh-faq__panel {
+    overflow: hidden;
+  }
+  .wh-faq[data-animating] .wh-faq__panel {
+    animation-fill-mode: forwards;
+  }
+  .wh-faq[data-animating='open'] .wh-faq__panel {
+    animation: var(--animate-accordion-down);
+  }
+  .wh-faq[data-animating='close'] .wh-faq__panel {
+    animation: var(--animate-accordion-up);
+  }
+</style>
+
+<script>
+  // Height-animates <details> open/close using the documented accordion curves.
+  // Progressive enhancement only: with JS off, details toggles instantly.
+  const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+  document.querySelectorAll<HTMLDetailsElement>('.wh-faq').forEach((details) => {
+    const panel = details.querySelector<HTMLElement>('.wh-faq__panel')
+    if (!panel) return
+    const summary = details.querySelector('summary')
+    if (!summary) return
+
+    let animating = false
+
+    const setHeight = () => {
+      details.style.setProperty('--accordion-content-height', `${panel.scrollHeight}px`)
+    }
+
+    const finish = () => {
+      details.removeAttribute('data-animating')
+      animating = false
+    }
+
+    summary.addEventListener('click', (event) => {
+      if (REDUCED.matches) return
+      event.preventDefault()
+      if (animating) return
+
+      animating = true
+      setHeight()
+
+      if (details.open) {
+        details.setAttribute('data-animating', 'close')
+        panel.addEventListener(
+          'animationend',
+          () => {
+            details.open = false
+            finish()
+          },
+          { once: true }
+        )
+      } else {
+        details.open = true
+        setHeight()
+        details.setAttribute('data-animating', 'open')
+        panel.addEventListener('animationend', finish, { once: true })
+      }
+    })
+  })
+</script>

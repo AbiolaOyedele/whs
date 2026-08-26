@@ -1,0 +1,65 @@
+---
+/** Share links plus a copy-link button. Links work without JS; copy needs it. */
+interface Props {
+  title: string
+  url: string
+  class?: string
+}
+
+const { title, url, class: className = '' } = Astro.props
+
+const links = [
+  {
+    label: 'Share on X',
+    href: `https://x.com/intent/post?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
+  },
+  {
+    label: 'Share on LinkedIn',
+    href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+  },
+]
+---
+
+<div class={`flex flex-wrap items-center gap-2 border-t border-border pt-6 ${className}`}>
+  <span class="mr-2 text-xs font-medium tracking-widest text-muted-foreground uppercase">Share</span
+  >
+  {
+    links.map((link) => (
+      <a
+        href={link.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="wh-tap inline-flex items-center rounded-full border border-border px-4 text-sm transition-colors hover:bg-muted"
+      >
+        {link.label}
+      </a>
+    ))
+  }
+  <button
+    type="button"
+    data-copy-link
+    data-url={url}
+    class="wh-tap inline-flex items-center rounded-full border border-border px-4 text-sm transition-colors hover:bg-muted"
+  >
+    <span data-copy-label>Copy link</span>
+  </button>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy-link]').forEach((button) => {
+    const label = button.querySelector<HTMLElement>('[data-copy-label]')
+    button.addEventListener('click', async () => {
+      const url = button.dataset['url']
+      if (!url || !label) return
+      try {
+        await navigator.clipboard.writeText(url)
+        label.textContent = 'Copied'
+      } catch {
+        label.textContent = 'Press Ctrl+C to copy'
+      }
+      window.setTimeout(() => {
+        label.textContent = 'Copy link'
+      }, 2000)
+    })
+  })
+</script>

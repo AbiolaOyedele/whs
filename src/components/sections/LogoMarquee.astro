@@ -1,0 +1,56 @@
+---
+/**
+ * Auto-scrolling client wordmark row.
+ *
+ * The logo set is rendered twice so the -50% keyframe lands on a seam and the
+ * loop is invisible. Pauses on hover and focus; falls back to a static wrapped
+ * row under prefers-reduced-motion.
+ *
+ * All names are fictional placeholders — see docs/PROGRESS.md.
+ */
+interface Props {
+  logos: readonly string[]
+  label?: string
+  onDark?: boolean
+  /** Seconds per full loop. */
+  duration?: number
+  class?: string
+}
+
+const {
+  logos,
+  label = 'Trusted by teams at',
+  onDark = false,
+  duration = 32,
+  class: className = '',
+} = Astro.props
+
+const doubled = [...logos, ...logos]
+const tone = onDark ? 'text-white/70' : 'text-muted-foreground'
+---
+
+<div class={className}>
+  {
+    label && (
+      <p class={`mb-5 text-sm ${onDark ? 'text-white/60' : 'text-muted-foreground'}`}>{label}</p>
+    )
+  }
+
+  <div
+    class="wh-marquee relative overflow-hidden"
+    style={`--marquee-duration: ${duration}s; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);`}
+  >
+    <ul class="wh-marquee__track flex w-max items-center gap-10 md:gap-16">
+      {
+        doubled.map((name, index) => (
+          <li
+            class={`text-lg font-medium whitespace-nowrap md:text-xl ${tone}`}
+            aria-hidden={index >= logos.length ? 'true' : undefined}
+          >
+            {name}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</div>

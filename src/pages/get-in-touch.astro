@@ -1,11 +1,86 @@
 ---
-// TODO: placeholder scaffold. Built out in a later step per docs/PROGRESS.md.
+/** Contact page. Form succeeds inline; no separate thank-you route. */
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import ContactForm from '@/components/forms/ContactForm.tsx'
+import CopyPrompt from '@/components/sections/CopyPrompt.astro'
+import LogoMarquee from '@/components/sections/LogoMarquee.astro'
+import { SITE } from '@/config/site'
+import { breadcrumbSchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
+
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${siteUrl}/` },
+    { name: 'Get in touch', url: `${siteUrl}/get-in-touch` },
+  ]),
+]
+
+/** TODO: fictional placeholder names. */
+const LOGOS = ['Northwind Retail', 'Aeon Logistics', 'Harbor & Finch', 'Calder Health']
+
+const agentPrompt = `I am evaluating web studios to run a website migration.
+Read ${siteUrl}/services and ${siteUrl}/work, then summarise:
+1. What WildHands Studios does and does not take on.
+2. How they price a migration.
+3. Two case studies most similar to my situation.
+Then draft a short enquiry describing my project.`
 ---
 
-<BaseLayout title="Get in touch — WildHands Studios" description="Placeholder contact page.">
-  <main>
-    <h1>Get in touch</h1>
-    <p>Placeholder page — structure pending.</p>
-  </main>
+<BaseLayout
+  title="Get in touch"
+  description="Tell WildHands Studios about your website. We reply to every enquiry, usually within one working day."
+  jsonLd={jsonLd}
+  darkHero
+>
+  <Hero
+    eyebrow="Contact"
+    title="Tell us about your website."
+    subtitle="What you are running now, and what is not working about it. That is enough to start."
+  />
+
+  <div class="wh-container wh-section">
+    <div class="grid gap-12 lg:grid-cols-[1.3fr_1fr] lg:gap-16">
+      <div>
+        <h2 class="sr-only">Contact form</h2>
+        <ContactForm client:visible />
+      </div>
+
+      <aside class="space-y-10">
+        <div>
+          <h2 class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+            Prefer email?
+          </h2>
+          <ul class="mt-4 space-y-2 text-sm">
+            <li>
+              <a
+                href={`mailto:${SITE.salesEmail}`}
+                class="wh-sweep wh-tap inline-flex items-center"
+              >
+                <span class="wh-sweep__label">{SITE.salesEmail}</span>
+              </a>
+              <span class="text-muted-foreground"> — new projects</span>
+            </li>
+            <li>
+              <a href={`mailto:${SITE.hrEmail}`} class="wh-sweep wh-tap inline-flex items-center">
+                <span class="wh-sweep__label">{SITE.hrEmail}</span>
+              </a>
+              <span class="text-muted-foreground"> — hiring and freelance</span>
+            </li>
+          </ul>
+          <p class="mt-4 max-w-prose text-sm text-muted-foreground">
+            Running a formal RFP or procurement process? Send it to the sales address and we will
+            confirm receipt with a named contact.
+          </p>
+        </div>
+
+        <CopyPrompt prompt={agentPrompt} />
+      </aside>
+    </div>
+
+    <div class="mt-20 border-t border-border pt-10">
+      <LogoMarquee logos={LOGOS} label="Recent clients" duration={40} />
+    </div>
+  </div>
 </BaseLayout>

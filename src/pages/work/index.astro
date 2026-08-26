@@ -1,11 +1,165 @@
 ---
-// TODO: placeholder scaffold. Built out in a later step per docs/PROGRESS.md.
+/**
+ * Work index with three filter facets.
+ *
+ * Every card is rendered server-side and stays in the DOM — filtering only
+ * toggles a hidden attribute. That keeps the full case-study list readable by
+ * crawlers and by anyone without JS, which is the point of building this on
+ * Astro at all.
+ */
+import { getCollection } from 'astro:content'
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import WorkCard from '@/components/sections/WorkCard.astro'
+import CTASection from '@/components/sections/CTASection.astro'
+import { breadcrumbSchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
+
+const work = (await getCollection('work', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order
+)
+
+/** Unique, sorted facet values across every published case study. */
+const facetValues = (pick: (entry: (typeof work)[number]) => readonly string[]) =>
+  [...new Set(work.flatMap(pick))].sort((a, b) => a.localeCompare(b))
+
+const facets = [
+  { key: 'service', label: 'Service', values: facetValues((e) => e.data.services) },
+  { key: 'tech', label: 'Technology', values: facetValues((e) => e.data.techStack) },
+  { key: 'industry', label: 'Industry', values: facetValues((e) => [e.data.industry]) },
+] as const
+
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${siteUrl}/` },
+    { name: 'Work', url: `${siteUrl}/work` },
+  ]),
+]
 ---
 
-<BaseLayout title="Work — WildHands Studios" description="Placeholder work index.">
-  <main>
-    <h1>Work</h1>
-    <p>Placeholder page — structure pending.</p>
-  </main>
+<BaseLayout
+  title="Work"
+  description="Selected projects from WildHands Studios — migrations, headless CMS implementations, and long-running care engagements."
+  jsonLd={jsonLd}
+  darkHero
+>
+  <Hero
+    eyebrow="Work"
+    title="Selected projects."
+    subtitle="Placeholder case studies. Every client name and figure here is fictional."
+  />
+
+  <div class="wh-container wh-section" data-work-index>
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <h2 class="text-sm font-medium tracking-widest text-muted-foreground uppercase">Filter</h2>
+      <button
+        type="button"
+        data-filter-reset
+        hidden
+        class="wh-tap inline-flex items-center rounded-full border border-border px-4 text-sm transition-colors hover:bg-muted"
+      >
+        Clear filters
+      </button>
+    </div>
+
+    <div class="mt-4 grid gap-4 sm:grid-cols-3">
+      {
+        facets.map((facet) => (
+          <div>
+            <label
+              for={`filter-${facet.key}`}
+              class="block text-xs font-medium tracking-widest text-muted-foreground uppercase"
+            >
+              {facet.label}
+            </label>
+            <select
+              id={`filter-${facet.key}`}
+              data-filter={facet.key}
+              class="wh-tap mt-2 w-full rounded-lg border border-[color:var(--input)] bg-card px-3 text-sm"
+            >
+              <option value="">All {facet.label.toLowerCase()}s</option>
+              {facet.values.map((value) => (
+                <option value={value}>{value}</option>
+              ))}
+            </select>
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="mt-6 text-sm text-muted-foreground" data-filter-count aria-live="polite">
+      Showing {work.length}
+      {work.length === 1 ? 'project' : 'projects'}
+    </p>
+
+    <div class="mt-10 grid gap-1 gap-y-10 md:grid-cols-12" data-work-grid>
+      {
+        work.map((entry) => (
+          <div
+            class="md:col-span-6 lg:col-span-4"
+            data-work-item
+            data-service={entry.data.services.join('|')}
+            data-tech={entry.data.techStack.join('|')}
+            data-industry={entry.data.industry}
+          >
+            <WorkCard
+              href={`/work/${entry.id}`}
+              client={entry.data.client}
+              summary={entry.data.summary}
+              techStack={entry.data.techStack}
+              stats={entry.data.stats}
+              class="h-full"
+            />
+          </div>
+        ))
+      }
+    </div>
+
+    <p data-filter-empty hidden class="mt-10 text-center text-muted-foreground">
+      No projects match those filters. Try clearing one.
+    </p>
+  </div>
+
+  <CTASection />
 </BaseLayout>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-work-index]')
+  if (root) {
+    const selects = [...root.querySelectorAll<HTMLSelectElement>('[data-filter]')]
+    const items = [...root.querySelectorAll<HTMLElement>('[data-work-item]')]
+    const count = root.querySelector<HTMLElement>('[data-filter-count]')
+    const empty = root.querySelector<HTMLElement>('[data-filter-empty]')
+    const reset = root.querySelector<HTMLButtonElement>('[data-filter-reset]')
+
+    const apply = () => {
+      const active = selects
+        .map((select) => ({ key: select.dataset['filter'] ?? '', value: select.value }))
+        .filter((filter) => filter.value !== '')
+
+      let visible = 0
+      items.forEach((item) => {
+        const matches = active.every(({ key, value }) =>
+          (item.dataset[key] ?? '').split('|').includes(value)
+        )
+        item.hidden = !matches
+        if (matches) visible += 1
+      })
+
+      if (count) {
+        count.textContent = `Showing ${visible} ${visible === 1 ? 'project' : 'projects'}`
+      }
+      if (empty) empty.hidden = visible !== 0
+      if (reset) reset.hidden = active.length === 0
+    }
+
+    selects.forEach((select) => select.addEventListener('change', apply))
+    reset?.addEventListener('click', () => {
+      selects.forEach((select) => {
+        select.value = ''
+      })
+      apply()
+    })
+  }
+</script>

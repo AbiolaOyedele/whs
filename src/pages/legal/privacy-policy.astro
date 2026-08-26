@@ -1,11 +1,95 @@
 ---
-// TODO: placeholder scaffold. Built out in a later step per docs/PROGRESS.md.
+/**
+ * Privacy policy.
+ *
+ * TODO (BLOCKER — see docs/PROGRESS.md § B-6): this is a structural placeholder,
+ * NOT legal advice and NOT launch-ready. It must be reviewed and completed by
+ * someone qualified before the site goes live, particularly the controller
+ * identity, retention periods, legal bases, and the supervisory authority.
+ */
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Prose from '@/components/ui/Prose.astro'
+import { SITE } from '@/config/site'
+
+const updated = '26 August 2026'
 ---
 
-<BaseLayout title="Privacy Policy — WildHands Studios" description="Placeholder privacy policy.">
-  <main>
-    <h1>Privacy Policy</h1>
-    <p>Placeholder page — structure pending.</p>
-  </main>
+<BaseLayout
+  title="Privacy Policy"
+  description="How WildHands Studios collects, uses and stores personal data."
+>
+  <div class="wh-container pt-28 pb-16 md:pt-36 md:pb-24">
+    <div class="max-w-[65ch]">
+      <h1 class="text-3xl font-medium tracking-tight md:text-5xl">Privacy Policy</h1>
+      <p class="mt-4 text-sm text-muted-foreground">Last updated {updated}</p>
+
+      <div
+        class="mt-8 rounded-xl border border-[color:var(--destructive)]/40 bg-[color:var(--destructive)]/5 p-5"
+      >
+        <p class="text-sm">
+          <strong>Placeholder document.</strong> This policy is a structural draft only. It has not been
+          reviewed by a qualified adviser and must be completed before launch.
+        </p>
+      </div>
+
+      <Prose class="mt-10">
+        <h2>Who we are</h2>
+        <p>
+          {SITE.legalName} operates this website. TODO: add the registered company name, company number,
+          registered address, and the identity of the data controller.
+        </p>
+
+        <h2>What we collect</h2>
+        <p>We collect personal data in three situations:</p>
+        <ul>
+          <li>
+            <strong>When you contact us.</strong> Your name, email address, optional phone number, and
+            whatever you write in the message.
+          </li>
+          <li>
+            <strong>When you apply to work with us.</strong> Your name, contact details, professional
+            profile links, your CV, and your answers to the application questions.
+          </li>
+          <li>
+            <strong>When you accept analytics cookies.</strong> Anonymised usage data about which pages
+            you visited. Analytics do not load unless you accept them.
+          </li>
+        </ul>
+
+        <h2>Why we collect it</h2>
+        <p>
+          To reply to your enquiry, to assess your application, and to understand which parts of the
+          site are useful. TODO: state the lawful basis for each purpose.
+        </p>
+
+        <h2>How long we keep it</h2>
+        <p>TODO: specify retention periods for enquiries, applications, and analytics data.</p>
+
+        <h2>Who we share it with</h2>
+        <p>
+          Form submissions are delivered by email through Resend, our email provider. Analytics,
+          when you accept them, are processed by PostHog. TODO: confirm the full processor list,
+          their locations, and the transfer mechanism for any processing outside the UK and EEA.
+        </p>
+
+        <h2>Cookies</h2>
+        <p>
+          The site sets no cookies until you make a choice in the consent banner. If you accept
+          analytics, PostHog stores an identifier in your browser so repeat visits are not counted
+          as new people. Declining leaves analytics switched off entirely.
+        </p>
+
+        <h2>Your rights</h2>
+        <p>
+          You can ask us for a copy of your data, ask us to correct or delete it, or object to how
+          we use it. TODO: name the supervisory authority and add the complaints route.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+          For anything about this policy, email <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+        </p>
+      </Prose>
+    </div>
+  </div>
 </BaseLayout>

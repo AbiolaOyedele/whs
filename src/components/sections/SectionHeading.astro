@@ -1,0 +1,36 @@
+---
+/**
+ * Section heading with an optional eyebrow, wired to the scroll reveal.
+ * Type scale matched to the reference: 30px rising to 32px, weight 500,
+ * 1.18 line-height, -0.02em tracking, measure capped at 34rem.
+ */
+import AnimatedText from './AnimatedText.astro'
+
+interface Props {
+  eyebrow?: string | undefined
+  /** Heading level. Never skip a level — the page owns its hierarchy. */
+  level?: 2 | 3
+  class?: string
+  onDark?: boolean
+}
+
+const { eyebrow, level = 2, class: className = '', onDark = false } = Astro.props
+const Tag = `h${level}` as 'h2' | 'h3'
+---
+
+<div class={className}>
+  {
+    eyebrow && (
+      <p
+        class={`mb-4 text-sm font-medium tracking-widest uppercase ${onDark ? 'text-white/50' : 'text-muted-foreground'}`}
+      >
+        {eyebrow}
+      </p>
+    )
+  }
+  <AnimatedText>
+    <Tag class={`${level === 2 ? 'wh-h2' : 'wh-h3'} max-w-[34rem] text-balance`}>
+      <slot />
+    </Tag>
+  </AnimatedText>
+</div>

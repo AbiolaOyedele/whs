@@ -1,0 +1,43 @@
+---
+/** Horizontal category bar for the insights hub and category indexes. */
+import { INSIGHT_CATEGORIES, INSIGHT_CATEGORY_LABELS, type InsightCategory } from '@/content.config'
+
+interface Props {
+  /** null on the "All posts" hub. */
+  current: InsightCategory | null
+}
+
+const { current } = Astro.props
+
+const tabs = [
+  { href: '/insights', label: 'All posts', active: current === null },
+  ...INSIGHT_CATEGORIES.map((category) => ({
+    href: `/insights/${category}`,
+    label: INSIGHT_CATEGORY_LABELS[category],
+    active: current === category,
+  })),
+]
+---
+
+<nav aria-label="Article categories" class="-mx-1 overflow-x-auto">
+  <ul class="flex w-max gap-1 px-1">
+    {
+      tabs.map((tab) => (
+        <li>
+          <a
+            href={tab.href}
+            aria-current={tab.active ? 'page' : undefined}
+            class:list={[
+              'wh-tap inline-flex items-center rounded-full border px-4 text-sm whitespace-nowrap transition-colors',
+              tab.active
+                ? 'border-transparent bg-primary text-primary-foreground'
+                : 'border-border hover:bg-muted',
+            ]}
+          >
+            {tab.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>

@@ -1,11 +1,136 @@
 ---
-// TODO: placeholder scaffold. Built out in a later step per docs/PROGRESS.md.
+/** Careers index. */
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import SectionHeading from '@/components/sections/SectionHeading.astro'
+import StatCallout from '@/components/sections/StatCallout.astro'
+import CTASection from '@/components/sections/CTASection.astro'
+import Tag from '@/components/ui/Tag.astro'
+import Button from '@/components/ui/Button.astro'
+import { ROLES } from '@/config/roles'
+import { breadcrumbSchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
+
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${siteUrl}/` },
+    { name: 'Careers', url: `${siteUrl}/careers` },
+  ]),
+]
+
+/** TODO: placeholder figures. Do not publish until these are real. */
+const STATS = [
+  { value: 'TODO', label: 'Employee net promoter score' },
+  { value: 'TODO', label: 'Retention over 2 years' },
+  { value: 'TODO', label: 'Work-life balance rating' },
+  { value: 'TODO', label: 'Learning budget rating' },
+]
+
+const WORK_RULES = [
+  { title: 'Remote only', body: 'No office, no hybrid expectation, no core-hours theatre.' },
+  {
+    title: 'Flexible hours',
+    body: 'Overlap for the meetings that need it. The rest is yours to arrange.',
+  },
+  { title: 'Async by default', body: 'Written first. A meeting has to earn itself.' },
+  {
+    title: 'Contractor baseline',
+    body: 'A monthly hours baseline agreed up front rather than negotiated each month.',
+  },
+]
 ---
 
-<BaseLayout title="Careers — WildHands Studios" description="Placeholder careers index.">
-  <main>
-    <h1>Careers</h1>
-    <p>Placeholder page — structure pending.</p>
-  </main>
+<BaseLayout
+  title="Careers"
+  description="Open roles at WildHands Studios. Remote-only, async-first, and honest about what the work actually is."
+  jsonLd={jsonLd}
+  darkHero
+>
+  <Hero
+    eyebrow="Careers"
+    title="Small team, unglamorous problems, real ownership."
+    subtitle="We are remote-only and async-first, and we would rather tell you what the work is than sell you on it."
+  />
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>How we score ourselves</SectionHeading>
+    <dl class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        STATS.map((stat) => (
+          <div class="border-t border-border pt-5">
+            <dt class="sr-only">{stat.label}</dt>
+            <dd>
+              <StatCallout value={stat.value} label={stat.label} />
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+    <p class="mt-6 text-xs text-muted-foreground">
+      Figures deliberately unfilled pending a real internal survey. See docs/PROGRESS.md.
+    </p>
+  </section>
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>How we work</SectionHeading>
+    <ul class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        WORK_RULES.map((rule) => (
+          <li class="border-t border-border pt-5">
+            <h3 class="text-lg font-medium">{rule.title}</h3>
+            <p class="mt-2 text-sm text-muted-foreground">{rule.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>Open positions</SectionHeading>
+    {
+      ROLES.length === 0 ? (
+        <p class="mt-6 text-muted-foreground">
+          Nothing open right now. We still read speculative applications.
+        </p>
+      ) : (
+        <ul class="mt-10 space-y-4">
+          {ROLES.map((role) => (
+            <li class="relative rounded-xl border border-border bg-card p-6 transition-[transform,box-shadow] duration-200 ease-out focus-within:-translate-y-0.5 focus-within:shadow-md hover:-translate-y-0.5 hover:shadow-md md:p-8">
+              <div class="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <h3 class="text-xl font-medium">
+                    <a
+                      href={`/careers/${role.slug}`}
+                      class="wh-sweep inline-flex after:absolute after:inset-0 after:content-['']"
+                    >
+                      <span class="wh-sweep__label">{role.title}</span>
+                    </a>
+                  </h3>
+                  <p class="mt-2 max-w-prose text-sm text-muted-foreground">{role.summary}</p>
+                  <ul class="mt-4 flex flex-wrap gap-2">
+                    <li>
+                      <Tag>{role.level}</Tag>
+                    </li>
+                    <li>
+                      <Tag>{role.location}</Tag>
+                    </li>
+                  </ul>
+                </div>
+                <Button href={`/careers/${role.slug}`} variant="outline">
+                  View role
+                </Button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+
+  <CTASection
+    heading="Not a fit today?"
+    subheading="Tell us what you do and we will keep it on file."
+    ctaLabel="Get in touch"
+  />
 </BaseLayout>

@@ -1,0 +1,30 @@
+---
+/** Numbered title/body list used for pain points, includes, reasons, process. */
+interface Item {
+  title: string
+  body: string
+}
+
+interface Props {
+  items: readonly Item[]
+  onDark?: boolean
+  columns?: 1 | 2 | 3
+  class?: string
+}
+
+const { items, onDark = false, columns = 1, class: className = '' } = Astro.props
+const grid = { 1: '', 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3' }[columns]
+const muted = onDark ? 'text-white/60' : 'text-muted-foreground'
+---
+
+<ol class={`grid gap-8 ${grid} ${className}`}>
+  {
+    items.map((item, index) => (
+      <li class="border-t border-border pt-5">
+        <span class={`text-xs tabular-nums ${muted}`}>{String(index + 1).padStart(2, '0')}</span>
+        <h3 class="mt-2 text-lg font-medium md:text-xl">{item.title}</h3>
+        <p class={`mt-2 max-w-prose text-sm ${muted} md:text-base`}>{item.body}</p>
+      </li>
+    ))
+  }
+</ol>

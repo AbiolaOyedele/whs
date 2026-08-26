@@ -1,25 +1,58 @@
 ---
-// TODO: placeholder scaffold. getStaticPaths returns [] until the matching
-// content collection is seeded. Built out in a later step per docs/PROGRESS.md.
+/** Insights category index. */
 import type { GetStaticPaths } from 'astro'
+import { getCollection } from 'astro:content'
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import CTASection from '@/components/sections/CTASection.astro'
+import ArticleList from '@/components/sections/ArticleList.astro'
+import CategoryTabs from '@/components/sections/CategoryTabs.astro'
+import { breadcrumbSchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
+import { INSIGHT_CATEGORIES, INSIGHT_CATEGORY_LABELS } from '@/content.config'
 
-interface RouteParams {
-  category: string
-}
+export const getStaticPaths = (async () => {
+  const posts = await getCollection('insights', ({ data }) => !data.draft)
+  return INSIGHT_CATEGORIES.map((category) => ({
+    params: { category },
+    props: {
+      category,
+      posts: posts
+        .filter((post) => post.data.category === category)
+        .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()),
+    },
+  }))
+}) satisfies GetStaticPaths
 
-/** No paths until the backing content collection is seeded. */
-export const getStaticPaths = (() => []) satisfies GetStaticPaths
+const { category, posts } = Astro.props
+const label = INSIGHT_CATEGORY_LABELS[category]
 
-const { category } = Astro.params as unknown as RouteParams
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${siteUrl}/` },
+    { name: 'Insights', url: `${siteUrl}/insights` },
+    { name: label, url: `${siteUrl}/insights/${category}` },
+  ]),
+]
 ---
 
 <BaseLayout
-  title="Insights category — WildHands Studios"
-  description="Placeholder insights category template."
+  title={label}
+  description={`WildHands Studios writing on ${label.toLowerCase()}.`}
+  jsonLd={jsonLd}
+  darkHero
 >
-  <main>
-    <h1>Insights category</h1>
-    <p>Placeholder template for {category}.</p>
-  </main>
+  <Hero
+    eyebrow="Insights"
+    title={label}
+    subtitle={`${posts.length} ${posts.length === 1 ? 'article' : 'articles'}.`}
+  />
+
+  <div class="wh-container wh-section">
+    <CategoryTabs current={category} />
+    <ArticleList posts={posts} class="mt-10" />
+  </div>
+
+  <CTASection />
 </BaseLayout>

@@ -1,0 +1,11 @@
+---
+/** Small uppercase label above a heading. */
+interface Props {
+  class?: string
+}
+const { class: className = '' } = Astro.props
+---
+
+<p class={`text-xs font-medium tracking-widest uppercase text-muted-foreground ${className}`}>
+  <slot />
+</p>

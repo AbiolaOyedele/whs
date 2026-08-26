@@ -4,10 +4,11 @@ Marketing and lead-generation site for WildHands Studios. Static-first Astro
 build, optimised for Core Web Vitals and for AI answer engines (ChatGPT,
 Perplexity, Claude, Google AI Overviews) as well as human visitors.
 
-> **Status: scaffold only.** Steps 1–4 of the build order are complete. Page
-> templates, components, content and forms are placeholders. See
-> [`docs/PROGRESS.md`](docs/PROGRESS.md) for what is done, what is blocked, and
-> what still needs confirmation.
+> **Status: structurally complete, content pending.** All 20 build steps are
+> done — 56 pages, every template, all four forms, the llms.txt tool, and the
+> full SEO layer. **Every word of copy is placeholder** and every client name is
+> fictional. See [`docs/PROGRESS.md`](docs/PROGRESS.md) for what still needs a
+> real answer before launch.
 
 ## Stack
 
@@ -70,9 +71,32 @@ npm run format:check
 
 ## Tests
 
-`tests/unit`, `tests/integration` and `tests/e2e` are scaffolded but empty — no
-runner is wired yet. It gets added alongside the first real feature code (Step 17,
-form validation) rather than against placeholder pages.
+```bash
+npm test
+```
+
+68 Vitest tests covering the security-critical logic — the SSRF address guard,
+same-origin enforcement, the honeypot, CV upload validation, the rate limiter,
+and error-response leakage. `tests/integration` and `tests/e2e` are scaffolded
+but empty; they are worth filling once real content and a staging URL exist.
+
+## Design
+
+Layout, spacing, type scale, colour and motion are matched to a reference site
+by measurement — computed styles were read from the live site and compared
+value by value, not approximated by eye. `docs/PROGRESS.md` § F-13 lists exactly
+what was matched.
+
+The typeface is the one exception. The reference self-hosts **Neue Montreal**, a
+commercial licence we do not hold, so it cannot be shipped. The stack is
+`'NeueMontreal', 'Inter Tight', …` and Inter Tight renders today. Buy the
+licence, drop the woff2 into `public/fonts/`, add one `@font-face` — nothing
+else changes.
+
+**Copy is original.** All body text, headlines, testimonials and client names are
+placeholder content with fictional companies. Reproducing the reference's copy
+would infringe its copyright, and using its client names would misrepresent who
+WildHands has worked with.
 
 ## Deployment
 

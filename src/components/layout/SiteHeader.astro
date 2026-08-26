@@ -1,0 +1,457 @@
+---
+/**
+ * Site header.
+ *
+ * Structure verified live 2026-08-26 (docs/PROGRESS.md § D-1, D-2):
+ *  - Work, Services and Stack open mega menus. About and Insights are links.
+ *  - The header sits absolutely at the top of the page rather than fixed.
+ *  - A masked backdrop-filter layer fades the blur out below the top edge.
+ *
+ * Accessibility note: the live reference renders its mega-menu triggers as
+ * <a> elements with no href, which is neither keyboard- nor crawler-friendly.
+ * We use real <button aria-expanded> triggers instead, and put the index link
+ * ("All services", "All work"…) inside each panel.
+ */
+import { getCollection } from 'astro:content'
+import Button from '../ui/Button.astro'
+import MegaMenu from './MegaMenu.astro'
+import { PLAIN_NAV_LINKS, PROCESS_STEPS, SITE } from '@/config/site'
+import { STACK_CATEGORIES, STACK_CATEGORY_LABELS } from '@/content.config'
+
+interface Props {
+  /** Renders white-on-transparent for pages that open with a dark hero band. */
+  overDarkHero?: boolean
+}
+
+const { overDarkHero = false } = Astro.props
+
+const [services, work, stack] = await Promise.all([
+  getCollection('services', ({ data }) => !data.draft),
+  getCollection('work', ({ data }) => !data.draft),
+  getCollection('stack', ({ data }) => !data.draft),
+])
+
+const servicesByPillar = services.sort((a, b) => a.data.order - b.data.order)
+const featuredWork = work.filter((entry) => entry.data.featured).slice(0, 3)
+const stackByCategory = STACK_CATEGORIES.map((category) => ({
+  category,
+  label: STACK_CATEGORY_LABELS[category],
+  picks: stack
+    .filter((entry) => entry.data.category === category && entry.data.recommended)
+    .slice(0, 3),
+}))
+
+const panelLink =
+  'block rounded-md px-3 py-2 text-sm text-white/75 transition-colors hover:bg-white/10 hover:text-white'
+const panelHeading = 'px-3 text-xs font-medium tracking-widest uppercase text-white/45'
+---
+
+<header
+  data-site-header
+  data-over-hero={overDarkHero ? 'true' : undefined}
+  class="site-header absolute inset-x-0 top-0 z-50"
+>
+  <div aria-hidden="true" class="wh-header-blur pointer-events-none absolute inset-0 -z-10"></div>
+
+  <div class="wh-container flex h-20 items-center justify-between gap-4 lg:h-28">
+    <a
+      href="/"
+      class="wh-tap inline-flex items-center gap-2.5 text-xl tracking-tight"
+      aria-label={`${SITE.name} — home`}
+    >
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        width="22"
+        height="22"
+        fill="none"
+        class="shrink-0"
+      >
+        <circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="1.5"></circle>
+        <circle cx="12" cy="12" r="4.25" fill="currentColor"></circle>
+      </svg>
+      <span class="font-medium">WildHands</span>
+    </a>
+
+    <nav aria-label="Primary" class="hidden lg:block">
+      <ul class="flex items-center gap-1">
+        <li class="relative" data-menu-item>
+          <button
+            type="button"
+            data-menu-trigger
+            aria-expanded="false"
+            aria-controls="mega-work"
+            class="wh-nav-trigger"
+          >
+            Work
+          </button>
+          <MegaMenu id="mega-work">
+            <p class={panelHeading}>Selected projects</p>
+            <ul class="mt-3 grid gap-1 md:grid-cols-2">
+              {
+                featuredWork.map((entry) => (
+                  <li>
+                    <a href={`/work/${entry.id}`} class={panelLink}>
+                      <span class="block text-white">{entry.data.client}</span>
+                      <span class="block text-xs text-white/50">{entry.data.summary}</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+            <div class="mt-4 border-t border-white/10 pt-3">
+              <a href="/work" class={panelLink}>All work &rarr;</a>
+            </div>
+          </MegaMenu>
+        </li>
+
+        <li class="relative" data-menu-item>
+          <button
+            type="button"
+            data-menu-trigger
+            aria-expanded="false"
+            aria-controls="mega-services"
+            class="wh-nav-trigger"
+          >
+            Services
+          </button>
+          <MegaMenu id="mega-services">
+            <div class="grid gap-6 md:grid-cols-[12rem_1fr]">
+              <div>
+                <p class={panelHeading}>How we work</p>
+                <ol class="mt-3 space-y-1 px-3 text-sm text-white/60">
+                  {
+                    PROCESS_STEPS.map((step, index) => (
+                      <li>
+                        <span class="text-white/35 tabular-nums">
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+                        <span class="ml-2 text-white/80">{step}</span>
+                      </li>
+                    ))
+                  }
+                </ol>
+              </div>
+              <div>
+                <p class={panelHeading}>Services</p>
+                <ul class="mt-3 grid gap-1 md:grid-cols-2">
+                  {
+                    servicesByPillar.map((entry) => (
+                      <li>
+                        <a href={`/services/${entry.id}`} class={panelLink}>
+                          {entry.data.title}
+                        </a>
+                      </li>
+                    ))
+                  }
+                </ul>
+                <div class="mt-4 border-t border-white/10 pt-3">
+                  <a href="/services" class={panelLink}>All services &rarr;</a>
+                </div>
+              </div>
+            </div>
+          </MegaMenu>
+        </li>
+
+        <li class="relative" data-menu-item>
+          <button
+            type="button"
+            data-menu-trigger
+            aria-expanded="false"
+            aria-controls="mega-stack"
+            class="wh-nav-trigger"
+          >
+            Stack
+          </button>
+          <MegaMenu id="mega-stack">
+            <div class="grid gap-6 md:grid-cols-4">
+              {
+                stackByCategory.map((group) => (
+                  <div>
+                    <p class={panelHeading}>{group.label}</p>
+                    <ul class="mt-3 space-y-1">
+                      {group.picks.map((entry) => (
+                        <li>
+                          <a
+                            href={`/stack/${group.category}/${entry.id.split('/').pop()}`}
+                            class={panelLink}
+                          >
+                            {entry.data.name}
+                          </a>
+                        </li>
+                      ))}
+                      <li>
+                        <a href={`/stack/${group.category}`} class={`${panelLink} text-white/50`}>
+                          All {group.label} &rarr;
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                ))
+              }
+            </div>
+          </MegaMenu>
+        </li>
+
+        {
+          PLAIN_NAV_LINKS.map((link) => (
+            <li>
+              <a href={link.href} class="wh-nav-trigger">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <Button href="/get-in-touch" variant="accent" size="md" class="hidden sm:inline-flex">
+        Talk to us
+      </Button>
+
+      <button
+        type="button"
+        data-mobile-toggle
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        class="wh-tap -mr-2 inline-flex flex-col items-center justify-center gap-1.5 rounded-md px-2 lg:hidden"
+      >
+        <span class="sr-only">Menu</span>
+        <span aria-hidden="true" class="wh-burger block h-px w-6 bg-current"></span>
+        <span aria-hidden="true" class="wh-burger block h-px w-6 bg-current"></span>
+        <span aria-hidden="true" class="wh-burger block h-px w-6 bg-current"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile panel -->
+  <div id="mobile-menu" data-mobile-panel class="wh-mobile-panel lg:hidden">
+    <nav aria-label="Mobile" class="wh-container max-h-[calc(100dvh-4rem)] overflow-y-auto pb-8">
+      <ul class="divide-y divide-white/10 border-t border-white/10">
+        {
+          [
+            { label: 'Work', href: '/work' },
+            { label: 'Services', href: '/services' },
+            { label: 'Stack', href: '/stack' },
+            ...PLAIN_NAV_LINKS,
+          ].map((link) => (
+            <li>
+              <a href={link.href} class="wh-tap flex items-center py-4 text-lg text-white">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="mt-6 flex flex-col gap-3">
+        <Button href="/get-in-touch" variant="accent" size="lg">Talk to us</Button>
+        <Button href="/freelance-hub" variant="outline" size="lg" onDark>Freelance Hub</Button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .wh-nav-trigger {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 9999px;
+    font-size: 1.125rem;
+    font-weight: 400;
+    transition: background-color 0.15s var(--ease-standard);
+  }
+  .wh-nav-trigger:hover {
+    background-color: color-mix(in oklab, currentColor 10%, transparent);
+  }
+
+  /* Over a dark hero the chrome is white; once scrolled past it flips to the
+     page foreground colour. Attribute-driven so there is no scroll jank. */
+  .site-header {
+    color: var(--foreground);
+  }
+  .site-header[data-over-hero]:not([data-scrolled]) {
+    color: #fff;
+  }
+
+  .wh-mobile-panel {
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    background-color: color-mix(in oklab, var(--primary) 92%, transparent);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-2px);
+    transition:
+      opacity 0.3s,
+      transform 0.3s,
+      visibility linear 0.3s;
+  }
+
+  .site-header[data-menu-open='true'] .wh-mobile-panel {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    /* No visibility delay on open, so it is interactive immediately. */
+    transition:
+      opacity 0.3s,
+      transform 0.3s;
+  }
+
+  /* Hamburger morphs into an X — timings verified live. */
+  .wh-burger {
+    transition:
+      opacity 0.3s,
+      transform 0.3s;
+  }
+  .site-header[data-menu-open='true'] .wh-burger:nth-child(2) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .site-header[data-menu-open='true'] .wh-burger:nth-child(3) {
+    opacity: 0;
+  }
+  .site-header[data-menu-open='true'] .wh-burger:nth-child(4) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+  .site-header[data-menu-open='true'] {
+    color: #fff;
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-site-header]')
+  if (header) {
+    /* ---------------- Desktop mega menus ---------------- */
+    const items = [...header.querySelectorAll<HTMLElement>('[data-menu-item]')]
+    let openItem: HTMLElement | null = null
+    let closeTimer: number | undefined
+
+    const panelOf = (item: HTMLElement) => item.querySelector<HTMLElement>('[data-menu-panel]')
+    const triggerOf = (item: HTMLElement) =>
+      item.querySelector<HTMLButtonElement>('[data-menu-trigger]')
+
+    const closeMenu = (item: HTMLElement) => {
+      const panel = panelOf(item)
+      const trigger = triggerOf(item)
+      if (!panel || !trigger) return
+      panel.removeAttribute('data-open')
+      trigger.setAttribute('aria-expanded', 'false')
+      // Wait for the fade before removing from the a11y tree.
+      window.setTimeout(() => {
+        if (!panel.hasAttribute('data-open')) panel.hidden = true
+      }, 350)
+      if (openItem === item) openItem = null
+    }
+
+    const openMenu = (item: HTMLElement) => {
+      const panel = panelOf(item)
+      const trigger = triggerOf(item)
+      if (!panel || !trigger) return
+      if (openItem && openItem !== item) closeMenu(openItem)
+
+      panel.hidden = false
+      // Suppress the transition for one frame so the panel never flashes.
+      panel.setAttribute('data-first-paint', '')
+      requestAnimationFrame(() => {
+        panel.removeAttribute('data-first-paint')
+        panel.setAttribute('data-open', '')
+      })
+      trigger.setAttribute('aria-expanded', 'true')
+      openItem = item
+    }
+
+    items.forEach((item) => {
+      const trigger = triggerOf(item)
+      if (!trigger) return
+
+      trigger.addEventListener('click', () => {
+        if (openItem === item) closeMenu(item)
+        else openMenu(item)
+      })
+
+      item.addEventListener('pointerenter', () => {
+        window.clearTimeout(closeTimer)
+        if (window.matchMedia('(hover: hover)').matches) openMenu(item)
+      })
+
+      item.addEventListener('pointerleave', () => {
+        if (!window.matchMedia('(hover: hover)').matches) return
+        closeTimer = window.setTimeout(() => closeMenu(item), 120)
+      })
+
+      item.addEventListener('focusout', (event) => {
+        const next = event.relatedTarget
+        if (next instanceof Node && item.contains(next)) return
+        closeMenu(item)
+      })
+    })
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return
+      if (openItem) {
+        const trigger = triggerOf(openItem)
+        closeMenu(openItem)
+        trigger?.focus()
+      }
+      if (header.dataset['menuOpen'] === 'true') toggleMobile(false)
+    })
+
+    document.addEventListener('pointerdown', (event) => {
+      if (!openItem) return
+      if (event.target instanceof Node && openItem.contains(event.target)) return
+      closeMenu(openItem)
+    })
+
+    /* ---------------- Mobile panel ---------------- */
+    const mobileToggle = header.querySelector<HTMLButtonElement>('[data-mobile-toggle]')
+
+    function toggleMobile(open: boolean) {
+      if (!header) return
+      header.dataset['menuOpen'] = String(open)
+      mobileToggle?.setAttribute('aria-expanded', String(open))
+      document.body.style.overflow = open ? 'hidden' : ''
+    }
+
+    mobileToggle?.addEventListener('click', () => {
+      toggleMobile(header.dataset['menuOpen'] !== 'true')
+    })
+
+    // Close the panel if the viewport grows past the mobile breakpoint.
+    window.matchMedia('(min-width: 64rem)').addEventListener('change', (event) => {
+      if (event.matches) toggleMobile(false)
+    })
+
+    /* ---------------- Scroll: progressive blur + colour flip ---------------- */
+    const root = document.documentElement
+    let ticking = false
+
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(() => {
+        const y = window.scrollY
+        // Blur ramps in over the first 120px, capped at 12px.
+        const blur = Math.min(12, (y / 120) * 12)
+        root.style.setProperty('--progressive-header-blur', `${blur.toFixed(2)}px`)
+
+        // Flip to the solid foreground colour once the dark hero is behind us.
+        const hero = document.querySelector<HTMLElement>('[data-dark-hero]')
+        const threshold = hero ? hero.offsetHeight - header.offsetHeight : 0
+        if (y > threshold) header.setAttribute('data-scrolled', '')
+        else header.removeAttribute('data-scrolled')
+
+        ticking = false
+      })
+    }
+
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+  }
+</script>

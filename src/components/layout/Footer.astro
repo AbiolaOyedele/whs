@@ -1,0 +1,63 @@
+---
+/**
+ * Site footer.
+ *
+ * Link hover is the underline sweep verified live: a 1px gradient line grows
+ * from 0% to 100% width. The animated layer is a child span so the sweep
+ * tracks the text box rather than the padded 44px tap target.
+ */
+import { FOOTER_COLUMNS, SITE } from '@/config/site'
+
+const year = new Date().getFullYear()
+---
+
+<footer class="mt-8 border-t border-border">
+  <div class="wh-container py-14 md:py-20">
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+      <div class="lg:col-span-2">
+        <p class="text-lg font-semibold tracking-tight">{SITE.name}</p>
+        <p class="mt-3 max-w-xs text-sm text-muted-foreground">{SITE.tagline}</p>
+        <a
+          href={`mailto:${SITE.email}`}
+          class="wh-sweep wh-tap mt-5 inline-flex items-center text-sm"
+        >
+          <span class="wh-sweep__label">{SITE.email}</span>
+        </a>
+      </div>
+
+      {
+        FOOTER_COLUMNS.map((column) => (
+          <nav aria-label={column.heading}>
+            <h2 class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+              {column.heading}
+            </h2>
+            <ul class="mt-4 space-y-1">
+              {column.links.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="wh-sweep wh-tap inline-flex items-center text-sm"
+                    {...(link.href.startsWith('http')
+                      ? { target: '_blank', rel: 'noopener noreferrer' }
+                      : {})}
+                  >
+                    <span class="wh-sweep__label">{link.label}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))
+      }
+    </div>
+
+    <div
+      class="mt-12 flex flex-col gap-4 border-t border-border pt-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p>&copy; {year} {SITE.legalName}. All rights reserved.</p>
+      <a href="/legal/privacy-policy" class="wh-sweep wh-tap inline-flex items-center">
+        <span class="wh-sweep__label">Privacy Policy</span>
+      </a>
+    </div>
+  </div>
+</footer>

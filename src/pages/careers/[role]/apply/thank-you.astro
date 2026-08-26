@@ -1,22 +1,33 @@
 ---
-// TODO: placeholder scaffold. getStaticPaths returns [] until the matching
-// content collection is seeded. Built out in a later step per docs/PROGRESS.md.
+/** Apply wizard, per-role confirmation. */
 import type { GetStaticPaths } from 'astro'
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import WizardSteps from '@/components/sections/WizardSteps.astro'
+import Button from '@/components/ui/Button.astro'
+import { ROLES } from '@/config/roles'
 
-interface RouteParams {
-  role: string
-}
+export const getStaticPaths = (() =>
+  ROLES.map((role) => ({ params: { role: role.slug }, props: { role } }))) satisfies GetStaticPaths
 
-/** No paths until the backing content collection is seeded. */
-export const getStaticPaths = (() => []) satisfies GetStaticPaths
-
-const { role } = Astro.params as unknown as RouteParams
+const { role } = Astro.props
 ---
 
-<BaseLayout title="Thank you — WildHands Studios" description="Placeholder thank you template.">
-  <main>
-    <h1>Thank you</h1>
-    <p>Placeholder template for {role}.</p>
-  </main>
+<BaseLayout title="Application received" description="Your application has been received." noindex>
+  <div class="wh-container pt-28 pb-16 md:pt-36 md:pb-24">
+    <div class="max-w-2xl">
+      <p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+        {role.title}
+      </p>
+      <h1 class="mt-3 text-3xl font-medium tracking-tight md:text-4xl">Application received.</h1>
+      <WizardSteps current={3} class="mt-8" />
+      <p class="mt-8 text-lg text-muted-foreground">
+        Thanks for taking the time. We read every application ourselves and reply either way,
+        usually within a week.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <Button href="/careers" variant="outline">Other open roles</Button>
+        <Button href="/insights" variant="ghost">Read our writing</Button>
+      </div>
+    </div>
+  </div>
 </BaseLayout>

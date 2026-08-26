@@ -1,0 +1,54 @@
+---
+/**
+ * Desktop mega-menu panel.
+ *
+ * Styling verified live 2026-08-26: 1.25rem radius, blur(24px), and a
+ * semi-opaque primary background via color-mix — a dark frosted panel that
+ * reads the same over the dark hero and over the light page body.
+ */
+interface Props {
+  id: string
+}
+const { id } = Astro.props
+---
+
+<div
+  id={id}
+  data-menu-panel
+  hidden
+  class="wh-mega absolute top-full left-1/2 z-50 w-[min(56rem,calc(100vw-4rem))] -translate-x-1/2 p-6 text-white md:p-8"
+>
+  <slot />
+</div>
+
+<style>
+  .wh-mega {
+    margin-top: 0.5rem;
+    border-radius: var(--radius-mega);
+    background-color: color-mix(in oklab, var(--primary) 48%, transparent);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    opacity: 0;
+    scale: 0.96;
+    transition:
+      opacity 0.35s var(--ease-mega),
+      scale 0.35s var(--ease-mega);
+  }
+
+  .wh-mega[data-open] {
+    opacity: 1;
+    scale: 1;
+  }
+
+  /* No transition on the very first paint, so the panel never flashes in. */
+  .wh-mega[data-first-paint] {
+    transition: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wh-mega {
+      transition: none;
+      scale: 1;
+    }
+  }
+</style>

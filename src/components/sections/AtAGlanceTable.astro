@@ -1,0 +1,37 @@
+---
+/**
+ * Key/value summary card at the foot of service, stack and industry pages.
+ * Deliberately a definition list: it is the block AI answer engines most often
+ * lift, so the label/value relationship must be explicit in the markup.
+ */
+interface Row {
+  label: string
+  value: string
+}
+
+interface Props {
+  rows: readonly Row[]
+  heading?: string
+  class?: string
+}
+
+const { rows, heading = 'At a glance', class: className = '' } = Astro.props
+---
+
+{
+  rows.length > 0 && (
+    <section class={`wh-container wh-section ${className}`}>
+      <div class="rounded-xl border border-border bg-card p-6 md:p-8">
+        <h2 class="text-xl font-medium">{heading}</h2>
+        <dl class="mt-6 divide-y divide-border">
+          {rows.map((row) => (
+            <div class="grid gap-1 py-4 md:grid-cols-[14rem_1fr] md:gap-6">
+              <dt class="text-sm font-medium text-muted-foreground">{row.label}</dt>
+              <dd class="text-sm">{row.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+  )
+}

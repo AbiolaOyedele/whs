@@ -1,0 +1,56 @@
+---
+/**
+ * Full-width closing CTA band. Reused across almost every page.
+ * TODO: all copy here is provisional placeholder text.
+ */
+import Button from '../ui/Button.astro'
+import AnimatedText from './AnimatedText.astro'
+
+interface Props {
+  heading?: string
+  subheading?: string
+  ctaLabel?: string
+  ctaHref?: string
+  secondaryLabel?: string
+  secondaryHref?: string
+  note?: string
+  class?: string
+}
+
+const {
+  heading = 'Your website should not be a mystery to your own team.',
+  subheading = 'Tell us where it hurts and we will tell you what we would do about it.',
+  ctaLabel = 'Talk to us',
+  ctaHref = '/get-in-touch',
+  secondaryLabel,
+  secondaryHref,
+  note,
+  class: className = '',
+} = Astro.props
+---
+
+<section class={`wh-container wh-section ${className}`}>
+  <div class="rounded-xl bg-surface-dark px-6 py-14 text-surface-dark-foreground md:px-12 md:py-20">
+    <div class="max-w-3xl">
+      <AnimatedText>
+        <h2 class="text-3xl font-medium tracking-tight text-balance md:text-4xl lg:text-5xl">
+          {heading}
+        </h2>
+      </AnimatedText>
+      <p class="mt-4 text-lg text-white/70">{subheading}</p>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <Button href={ctaHref} variant="accent" size="lg">{ctaLabel}</Button>
+        {
+          secondaryLabel && secondaryHref && (
+            <Button href={secondaryHref} variant="outline" size="lg" onDark>
+              {secondaryLabel}
+            </Button>
+          )
+        }
+      </div>
+
+      {note && <p class="mt-6 text-sm text-white/50">{note}</p>}
+    </div>
+  </div>
+</section>

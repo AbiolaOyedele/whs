@@ -1,14 +1,23 @@
 ---
-// TODO: placeholder scaffold. Built out in a later step per docs/PROGRESS.md.
+/** Apply wizard, generic confirmation for the video step. */
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import WizardSteps from '@/components/sections/WizardSteps.astro'
+import Button from '@/components/ui/Button.astro'
 ---
 
-<BaseLayout
-  title="Thank you — WildHands Studios"
-  description="Placeholder video application confirmation."
->
-  <main>
-    <h1>Thank you</h1>
-    <p>Placeholder page — structure pending.</p>
-  </main>
+<BaseLayout title="Application complete" description="Your application is complete." noindex>
+  <div class="wh-container pt-28 pb-16 md:pt-36 md:pb-24">
+    <div class="max-w-2xl">
+      <p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">Application</p>
+      <h1 class="mt-3 text-3xl font-medium tracking-tight md:text-4xl">That is everything.</h1>
+      <WizardSteps current={3} class="mt-8" />
+      <p class="mt-8 text-lg text-muted-foreground">
+        Thanks. We read every application ourselves and reply either way, usually within a week.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <Button href="/careers" variant="outline">Other open roles</Button>
+        <Button href="/" variant="ghost">Back to the site</Button>
+      </div>
+    </div>
+  </div>
 </BaseLayout>

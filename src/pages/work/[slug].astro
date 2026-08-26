@@ -1,22 +1,126 @@
 ---
-// TODO: placeholder scaffold. getStaticPaths returns [] until the matching
-// content collection is seeded. Built out in a later step per docs/PROGRESS.md.
+/** Case study detail. Meta sidebar plus narrative column, stacking on mobile. */
 import type { GetStaticPaths } from 'astro'
+import { getCollection, render } from 'astro:content'
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import NumberedList from '@/components/sections/NumberedList.astro'
+import StatCallout from '@/components/sections/StatCallout.astro'
+import Testimonial from '@/components/sections/Testimonial.astro'
+import CTASection from '@/components/sections/CTASection.astro'
+import Prose from '@/components/ui/Prose.astro'
+import Tag from '@/components/ui/Tag.astro'
+import { breadcrumbSchema, caseStudySchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
 
-interface RouteParams {
-  slug: string
-}
+export const getStaticPaths = (async () => {
+  const work = await getCollection('work', ({ data }) => !data.draft)
+  return work.map((entry) => ({ params: { slug: entry.id }, props: { entry } }))
+}) satisfies GetStaticPaths
 
-/** No paths until the backing content collection is seeded. */
-export const getStaticPaths = (() => []) satisfies GetStaticPaths
+const { entry } = Astro.props
+const { data } = entry
+const { Content } = await render(entry)
 
-const { slug } = Astro.params as unknown as RouteParams
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+const url = `${siteUrl}/work/${entry.id}`
+
+const jsonLd = [
+  caseStudySchema({ name: data.title, description: data.description, url, siteUrl }),
+  breadcrumbSchema([
+    { name: 'Home', url: `${siteUrl}/` },
+    { name: 'Work', url: `${siteUrl}/work` },
+    { name: data.client, url },
+  ]),
+]
+
+const meta: Array<{ label: string; value: string }> = [
+  { label: 'Client', value: data.client },
+  { label: 'Industry', value: data.industry },
+  ...(data.services.length > 0 ? [{ label: 'Services', value: data.services.join(', ') }] : []),
+  ...(data.techStack.length > 0 ? [{ label: 'Tech stack', value: data.techStack.join(', ') }] : []),
+  ...(data.timeline ? [{ label: 'Timeline', value: data.timeline }] : []),
+]
 ---
 
-<BaseLayout title="Case study — WildHands Studios" description="Placeholder case study template.">
-  <main>
-    <h1>Case study</h1>
-    <p>Placeholder template for {slug}.</p>
-  </main>
+<BaseLayout title={data.title} description={data.description} jsonLd={jsonLd} darkHero>
+  <Hero eyebrow={data.client} title={data.title} subtitle={data.summary} />
+
+  <div class="wh-container wh-section">
+    <div class="grid gap-12 lg:grid-cols-[18rem_1fr] lg:gap-16">
+      <aside class="lg:sticky lg:top-28 lg:self-start">
+        <h2 class="sr-only">Project details</h2>
+        <dl class="divide-y divide-border border-y border-border">
+          {
+            meta.map((row) => (
+              <div class="py-4">
+                <dt class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+                  {row.label}
+                </dt>
+                <dd class="mt-1 text-sm">{row.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+
+        {
+          data.techStack.length > 0 && (
+            <ul class="mt-6 flex flex-wrap gap-2">
+              {data.techStack.map((tech) => (
+                <li>
+                  <Tag>{tech}</Tag>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </aside>
+
+      <div>
+        {data.sections.length > 0 && <NumberedList items={data.sections} />}
+
+        {
+          data.stats.length > 0 && (
+            <dl class="mt-14 grid gap-8 border-t border-border pt-10 sm:grid-cols-2">
+              {data.stats.map((stat) => (
+                <div>
+                  <dt class="sr-only">{stat.label}</dt>
+                  <dd>
+                    <StatCallout value={stat.value} label={stat.label} size="lg" />
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )
+        }
+
+        {
+          data.testimonial && (
+            <div class="mt-14 border-t border-border pt-10">
+              <Testimonial {...data.testimonial} />
+            </div>
+          )
+        }
+
+        {
+          data.outcome && (
+            <div class="mt-14 border-t border-border pt-10">
+              <h2 class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+                Outcome
+              </h2>
+              <p class="mt-4 max-w-[55ch] text-xl font-medium tracking-tight md:text-2xl">
+                {data.outcome}
+              </p>
+            </div>
+          )
+        }
+
+        <Prose class="mt-14 border-t border-border pt-10">
+          <Content />
+        </Prose>
+      </div>
+    </div>
+  </div>
+
+  <CTASection heading="Want the same conversation about your estate?" ctaLabel="Start a project" />
 </BaseLayout>

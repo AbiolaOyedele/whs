@@ -1,0 +1,15 @@
+---
+/** Small pill used for tech-stack chips and category labels. */
+interface Props {
+  class?: string
+  onDark?: boolean
+}
+const { class: className = '', onDark = false } = Astro.props
+const tone = onDark ? 'border-white/20 text-white/80' : 'border-border text-muted-foreground'
+---
+
+<span
+  class={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs leading-none ${tone} ${className}`}
+>
+  <slot />
+</span>

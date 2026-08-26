@@ -1,0 +1,106 @@
+---
+/**
+ * Two variants:
+ *  - `columns` renders the "Choose X when / Look elsewhere when" pros-cons pair.
+ *  - `headToHead` renders the Aspect | Option A | Option B feature table.
+ *
+ * The head-to-head table scrolls inside its own container so the page body
+ * never scrolls sideways on a narrow screen.
+ */
+interface HeadToHeadRow {
+  aspect: string
+  a: string
+  b: string
+}
+
+interface Props {
+  chooseWhen?: readonly string[]
+  lookElsewhereWhen?: readonly string[]
+  chooseLabel?: string
+  elsewhereLabel?: string
+  headToHead?:
+    | {
+        optionA: string
+        optionB: string
+        rows: readonly HeadToHeadRow[]
+      }
+    | undefined
+  class?: string
+}
+
+const {
+  chooseWhen = [],
+  lookElsewhereWhen = [],
+  chooseLabel = 'Choose it when',
+  elsewhereLabel = 'Look elsewhere when',
+  headToHead,
+  class: className = '',
+} = Astro.props
+
+const hasColumns = chooseWhen.length > 0 || lookElsewhereWhen.length > 0
+---
+
+{
+  headToHead && headToHead.rows.length > 0 && (
+    <div class={`overflow-x-auto rounded-xl border border-border ${className}`}>
+      <table class="w-full min-w-[36rem] border-collapse text-left text-sm">
+        <thead>
+          <tr class="border-b border-border bg-muted/50">
+            <th scope="col" class="p-4 font-medium">
+              Aspect
+            </th>
+            <th scope="col" class="p-4 font-medium">
+              {headToHead.optionA}
+            </th>
+            <th scope="col" class="p-4 font-medium">
+              {headToHead.optionB}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {headToHead.rows.map((row) => (
+            <tr class="border-b border-border last:border-0">
+              <th scope="row" class="p-4 align-top font-medium">
+                {row.aspect}
+              </th>
+              <td class="p-4 align-top text-muted-foreground">{row.a}</td>
+              <td class="p-4 align-top text-muted-foreground">{row.b}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+{
+  hasColumns && (
+    <div class={`grid gap-4 md:grid-cols-2 ${className}`}>
+      <div class="rounded-xl border border-border bg-card p-6">
+        <h3 class="text-base font-medium">{chooseLabel}</h3>
+        <ul class="mt-4 space-y-3">
+          {chooseWhen.map((item) => (
+            <li class="flex gap-3 text-sm text-muted-foreground">
+              <span aria-hidden="true" class="mt-2 size-1.5 shrink-0 rounded-full bg-foreground" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="rounded-xl border border-border bg-muted/40 p-6">
+        <h3 class="text-base font-medium">{elsewhereLabel}</h3>
+        <ul class="mt-4 space-y-3">
+          {lookElsewhereWhen.map((item) => (
+            <li class="flex gap-3 text-sm text-muted-foreground">
+              <span
+                aria-hidden="true"
+                class="mt-2 size-1.5 shrink-0 rounded-full bg-muted-foreground"
+              />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}

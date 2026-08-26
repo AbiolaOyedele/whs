@@ -1,11 +1,171 @@
 ---
-// TODO: placeholder scaffold. Built out in a later step per docs/PROGRESS.md.
+/** Enterprise / trust page. TODO: certifications and SLAs are placeholders. */
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import SectionHeading from '@/components/sections/SectionHeading.astro'
+import NumberedList from '@/components/sections/NumberedList.astro'
+import FAQAccordion from '@/components/sections/FAQAccordion.astro'
+import CTASection from '@/components/sections/CTASection.astro'
+import LogoMarquee from '@/components/sections/LogoMarquee.astro'
+import { breadcrumbSchema, faqPageSchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
+
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+
+const LOGOS = [
+  'Northwind Retail',
+  'Aeon Logistics',
+  'Harbor & Finch',
+  'Calder Health',
+  'Brightmoor Energy',
+]
+
+const procurement = [
+  {
+    title: 'Named delivery contacts',
+    body: 'The people in the pitch are the people on the project, named in the statement of work.',
+  },
+  {
+    title: 'Documented handover',
+    body: 'Architecture notes, runbooks and access inventory delivered as part of the engagement, not on request.',
+  },
+  {
+    title: 'Accessibility commitment',
+    body: 'WCAG 2.1 AA as a build gate, verified in CI rather than audited annually.',
+  },
+  {
+    title: 'Security review support',
+    body: 'We complete your vendor questionnaires and will sit the technical review call.',
+  },
+]
+
+const governance = [
+  {
+    title: 'Change control',
+    body: 'Scope changes are written, priced and signed before work starts on them.',
+  },
+  {
+    title: 'Code ownership',
+    body: 'You own the repository from day one. No escrow arrangement is needed because nothing is held back.',
+  },
+  {
+    title: 'Dependency policy',
+    body: 'New third-party dependencies are flagged and justified, not added silently.',
+  },
+]
+
+const SLA_TIERS = [
+  {
+    priority: 'P1',
+    definition: 'Site down, or a critical path unavailable to all visitors.',
+    response: 'TODO — not yet agreed',
+  },
+  {
+    priority: 'P2',
+    definition: 'Major function degraded, with a workaround available.',
+    response: 'TODO — not yet agreed',
+  },
+  {
+    priority: 'P3',
+    definition: 'Minor defect or cosmetic issue with no functional impact.',
+    response: 'TODO — not yet agreed',
+  },
+]
+
+const faqs = [
+  {
+    question: 'Do you sign a mutual NDA before commercial discussions?',
+    answer:
+      'Yes. We will sign yours, or provide a standard mutual NDA if you prefer to start from ours.',
+  },
+  {
+    question: 'Who owns the code you write?',
+    answer:
+      'You do, from the first commit. Work is delivered into a repository you control, so there is nothing to escrow and nothing to hand over at the end.',
+  },
+  {
+    question: 'Can you work inside our cloud account?',
+    answer:
+      'Yes. We default to Vercel because preview deployments make review faster, but we deploy into a client-owned AWS, Azure or Google Cloud account where policy requires it.',
+  },
+  {
+    question: 'What accessibility standard do you build to?',
+    answer:
+      'WCAG 2.1 AA, checked automatically in the build pipeline and reviewed manually before launch.',
+  },
+]
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${siteUrl}/` },
+    { name: 'Enterprise', url: `${siteUrl}/enterprise` },
+  ]),
+  faqPageSchema(faqs),
+]
 ---
 
-<BaseLayout title="Enterprise — WildHands Studios" description="Placeholder enterprise page.">
-  <main>
-    <h1>Enterprise</h1>
-    <p>Placeholder page — structure pending.</p>
-  </main>
+<BaseLayout
+  title="Enterprise"
+  description="How WildHands Studios works with procurement, security review and governance requirements on larger engagements."
+  jsonLd={jsonLd}
+  darkHero
+>
+  <Hero
+    eyebrow="Enterprise"
+    title="Built to pass your procurement process."
+    subtitle="Named contacts, documented handover, and a security questionnaire we will actually fill in."
+  />
+
+  <div class="wh-container wh-section">
+    <LogoMarquee logos={LOGOS} label="Teams we have worked with" />
+  </div>
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>Why procurement signs off</SectionHeading>
+    <NumberedList items={procurement} columns={2} class="mt-10" />
+  </section>
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>Governance and quality</SectionHeading>
+    <NumberedList items={governance} columns={3} class="mt-10" />
+  </section>
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>Support priorities</SectionHeading>
+    <p class="mt-4 max-w-prose text-muted-foreground">
+      Response times are agreed per engagement and written into the contract. We do not publish a
+      single figure because it depends on what you need covered.
+    </p>
+    <div class="mt-8 overflow-x-auto rounded-xl border border-border">
+      <table class="w-full min-w-[36rem] border-collapse text-left text-sm">
+        <thead>
+          <tr class="border-b border-border bg-muted/50">
+            <th scope="col" class="p-4 font-medium">Priority</th>
+            <th scope="col" class="p-4 font-medium">Definition</th>
+            <th scope="col" class="p-4 font-medium">Response target</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            SLA_TIERS.map((tier) => (
+              <tr class="border-b border-border last:border-0">
+                <th scope="row" class="p-4 align-top font-medium">
+                  {tier.priority}
+                </th>
+                <td class="p-4 align-top text-muted-foreground">{tier.definition}</td>
+                <td class="p-4 align-top text-muted-foreground">{tier.response}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-4 text-xs text-muted-foreground">
+      Response targets are deliberately unfilled — see docs/PROGRESS.md. Do not publish invented SLA
+      figures.
+    </p>
+  </section>
+
+  <FAQAccordion faqs={faqs} heading="Procurement questions" />
+  <CTASection heading="Need us in your vendor process?" ctaLabel="Start the conversation" />
 </BaseLayout>

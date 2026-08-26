@@ -1,22 +1,163 @@
 ---
-// TODO: placeholder scaffold. getStaticPaths returns [] until the matching
-// content collection is seeded. Built out in a later step per docs/PROGRESS.md.
+/**
+ * Service detail template. The richest reused template on the site — section
+ * order follows docs/reference-analysis.md § 4.4.
+ */
 import type { GetStaticPaths } from 'astro'
+import { getCollection, getEntries, render } from 'astro:content'
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import SectionHeading from '@/components/sections/SectionHeading.astro'
+import NumberedList from '@/components/sections/NumberedList.astro'
+import FAQAccordion from '@/components/sections/FAQAccordion.astro'
+import AtAGlanceTable from '@/components/sections/AtAGlanceTable.astro'
+import Testimonial from '@/components/sections/Testimonial.astro'
+import WorkCard from '@/components/sections/WorkCard.astro'
+import CTASection from '@/components/sections/CTASection.astro'
+import Prose from '@/components/ui/Prose.astro'
+import Button from '@/components/ui/Button.astro'
+import { breadcrumbSchema, faqPageSchema, serviceSchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
+import { PROCESS_STEPS } from '@/config/site'
 
-interface RouteParams {
-  slug: string
-}
+export const getStaticPaths = (async () => {
+  const services = await getCollection('services', ({ data }) => !data.draft)
+  return services.map((entry) => ({ params: { slug: entry.id }, props: { entry } }))
+}) satisfies GetStaticPaths
 
-/** No paths until the backing content collection is seeded. */
-export const getStaticPaths = (() => []) satisfies GetStaticPaths
+const { entry } = Astro.props
+const { data } = entry
+const { Content } = await render(entry)
 
-const { slug } = Astro.params as unknown as RouteParams
+const relatedWork = data.relatedWork.length > 0 ? await getEntries(data.relatedWork) : []
+
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+const url = `${siteUrl}/services/${entry.id}`
+
+const jsonLd = [
+  serviceSchema({ name: data.title, description: data.description, url, siteUrl }),
+  breadcrumbSchema([
+    { name: 'Home', url: `${siteUrl}/` },
+    { name: 'Services', url: `${siteUrl}/services` },
+    { name: data.title, url },
+  ]),
+  ...(data.faqs.length > 0 ? [faqPageSchema(data.faqs)] : []),
+]
 ---
 
-<BaseLayout title="Service — WildHands Studios" description="Placeholder service template.">
-  <main>
-    <h1>Service</h1>
-    <p>Placeholder template for {slug}.</p>
-  </main>
+<BaseLayout title={data.title} description={data.description} jsonLd={jsonLd} darkHero>
+  <Hero eyebrow={data.eyebrow} title={data.title} subtitle={data.summary}>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <Button href="/get-in-touch" variant="accent" size="lg">Talk to us</Button>
+    </div>
+  </Hero>
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>What {data.title.toLowerCase()} means</SectionHeading>
+    <p class="mt-5 max-w-[65ch] text-lg text-muted-foreground">{data.definition}</p>
+  </section>
+
+  {
+    data.includes.length > 0 && (
+      <section class="wh-container wh-section">
+        <SectionHeading level={2}>What it includes</SectionHeading>
+        <NumberedList items={data.includes} columns={2} class="mt-10" />
+      </section>
+    )
+  }
+
+  {
+    data.platforms.length > 0 && (
+      <section class="wh-container wh-section">
+        <SectionHeading level={2}>What we work with</SectionHeading>
+        <NumberedList items={data.platforms} columns={3} class="mt-10" />
+      </section>
+    )
+  }
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2} eyebrow="Process">How an engagement runs.</SectionHeading>
+    <ol class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        PROCESS_STEPS.map((step, index) => (
+          <li class="border-t border-border pt-5">
+            <span class="text-xs text-muted-foreground tabular-nums">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <h3 class="mt-2 text-lg font-medium">{step}</h3>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  {
+    data.testimonial && (
+      <section class="wh-container wh-section">
+        <Testimonial {...data.testimonial} class="max-w-4xl" />
+      </section>
+    )
+  }
+
+  <section class="wh-container wh-section">
+    <Prose>
+      <Content />
+    </Prose>
+  </section>
+
+  {
+    data.pricingNote && (
+      <section class="wh-container wh-section">
+        <SectionHeading level={2}>What it costs</SectionHeading>
+        <p class="mt-5 max-w-[65ch] text-muted-foreground">{data.pricingNote}</p>
+      </section>
+    )
+  }
+
+  {
+    data.choosingAPartner.length > 0 && (
+      <section class="wh-container wh-section">
+        <SectionHeading level={2}>How to choose a partner</SectionHeading>
+        <NumberedList items={data.choosingAPartner} columns={2} class="mt-10" />
+      </section>
+    )
+  }
+
+  {
+    data.houseView && (
+      <section class="wh-container wh-section">
+        <div class="rounded-xl border border-border bg-muted/50 p-6 md:p-10">
+          <h2 class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+            Our take
+          </h2>
+          <p class="mt-4 max-w-[55ch] text-xl font-medium tracking-tight text-balance md:text-2xl">
+            {data.houseView}
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    relatedWork.length > 0 && (
+      <section class="wh-container wh-section">
+        <SectionHeading level={2}>Related work</SectionHeading>
+        <div class="mt-10 grid gap-4 sm:grid-cols-2">
+          {relatedWork.map((item) => (
+            <WorkCard
+              href={`/work/${item.id}`}
+              client={item.data.client}
+              summary={item.data.summary}
+              techStack={item.data.techStack}
+              stats={item.data.stats}
+            />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <FAQAccordion faqs={data.faqs} />
+  <AtAGlanceTable rows={data.atAGlance} />
+  <CTASection />
 </BaseLayout>

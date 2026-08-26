@@ -1,0 +1,64 @@
+---
+/**
+ * Case-study card. Reused on the home featured grid, the /work index, and the
+ * "related work" strips on service and industry pages.
+ */
+import Tag from '../ui/Tag.astro'
+
+interface Stat {
+  value: string
+  label: string
+}
+
+interface Props {
+  href: string
+  client: string
+  summary: string
+  techStack?: readonly string[]
+  stats?: readonly Stat[]
+  class?: string
+}
+
+const { href, client, summary, techStack = [], stats = [], class: className = '' } = Astro.props
+---
+
+<article
+  class={`group relative flex flex-col rounded-xl border border-border bg-card p-6 transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md focus-within:-translate-y-0.5 focus-within:shadow-md ${className}`}
+>
+  <h3 class="text-lg font-medium">
+    <a href={href} class="after:absolute after:inset-0 after:content-['']">
+      {client}
+    </a>
+  </h3>
+  <p class="mt-2 text-sm text-muted-foreground">{summary}</p>
+
+  {
+    stats.length > 0 && (
+      <dl class="mt-6 flex flex-wrap gap-x-8 gap-y-4">
+        {stats.slice(0, 2).map((stat) => (
+          <div>
+            <dt class="sr-only">{stat.label}</dt>
+            <dd>
+              <span class="block text-2xl font-medium tracking-tighter tabular-nums md:text-3xl">
+                {stat.value}
+              </span>
+              <span class="mt-0.5 block text-xs text-muted-foreground">{stat.label}</span>
+            </dd>
+          </div>
+        ))}
+      </dl>
+    )
+  }
+
+  {
+    techStack.length > 0 && (
+      <ul class="mt-6 flex flex-wrap gap-2 border-t border-border pt-4">
+        {techStack.map((tech) => (
+          <li>
+            <Tag>{tech}</Tag>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</article>

@@ -1,0 +1,82 @@
+---
+/**
+ * Long-form content wrapper. Styles rendered Markdown without a plugin —
+ * scoped selectors only, so it cannot leak into component markup.
+ */
+interface Props {
+  class?: string
+}
+const { class: className = '' } = Astro.props
+---
+
+<div class={`wh-prose max-w-[65ch] ${className}`}>
+  <slot />
+</div>
+
+<style is:global>
+  .wh-prose > * + * {
+    margin-top: 1.25rem;
+  }
+  .wh-prose h2 {
+    margin-top: 2.5rem;
+    font-size: 1.5rem;
+    line-height: 1.333;
+    font-weight: 600;
+  }
+  .wh-prose h3 {
+    margin-top: 2rem;
+    font-size: 1.25rem;
+    line-height: 1.4;
+    font-weight: 600;
+  }
+  .wh-prose p,
+  .wh-prose li {
+    color: var(--muted-foreground);
+    line-height: 1.7;
+  }
+  .wh-prose strong {
+    color: var(--foreground);
+    font-weight: 600;
+  }
+  .wh-prose ul,
+  .wh-prose ol {
+    padding-left: 1.25rem;
+  }
+  .wh-prose ul {
+    list-style: disc;
+  }
+  .wh-prose ol {
+    list-style: decimal;
+  }
+  .wh-prose li + li {
+    margin-top: 0.5rem;
+  }
+  .wh-prose a {
+    color: var(--foreground);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .wh-prose code {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    background: var(--muted);
+    padding: 0.125rem 0.375rem;
+    border-radius: var(--radius-sm);
+  }
+  .wh-prose pre {
+    overflow-x: auto;
+    background: var(--surface-dark);
+    color: var(--surface-dark-foreground);
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+  }
+  .wh-prose pre code {
+    background: none;
+    padding: 0;
+  }
+  .wh-prose blockquote {
+    border-left: 2px solid var(--border);
+    padding-left: 1rem;
+    font-style: italic;
+  }
+</style>

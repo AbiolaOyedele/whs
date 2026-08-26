@@ -1,5 +1,0 @@
-# TODO (Step 19): generated/finalised alongside the SEO layer.
-User-agent: *
-Allow: /
-
-Sitemap: http://localhost:4321/sitemap-index.xml

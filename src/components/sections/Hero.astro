@@ -1,0 +1,100 @@
+---
+/**
+ * Dark hero band.
+ *
+ * Structure matched to the reference (verified live 2026-08-26): a full-bleed
+ * background layer, a top-to-bottom gradient scrim over it for text contrast,
+ * then the content absolutely positioned above both. Bottom corners are
+ * rounded 2rem so the light page beneath shows through.
+ *
+ * `data-dark-hero` is what SiteHeader measures to decide when to flip its text
+ * colour, so any page opening with this component gets that behaviour free.
+ */
+import AnimatedText from './AnimatedText.astro'
+
+interface Props {
+  eyebrow?: string | undefined
+  title: string
+  subtitle?: string | undefined
+  /** `full` fills the viewport (home page). `compact` is for inner pages. */
+  size?: 'full' | 'compact'
+  /**
+   * Optional looping background video, matching the reference treatment.
+   * Falls back to the gradient wash when absent. TODO: no asset exists yet.
+   */
+  videoSrc?: string | undefined
+  posterSrc?: string | undefined
+  class?: string
+}
+
+const {
+  eyebrow,
+  title,
+  subtitle,
+  size = 'compact',
+  videoSrc,
+  posterSrc,
+  class: className = '',
+} = Astro.props
+
+const isFull = size === 'full'
+---
+
+<section
+  data-dark-hero
+  class={`relative isolate overflow-hidden rounded-b-[2rem] bg-surface-dark text-white ${isFull ? 'min-h-svh' : ''} ${className}`}
+>
+  {
+    videoSrc ? (
+      <video
+        class="absolute inset-0 -z-20 size-full object-cover"
+        src={videoSrc}
+        poster={posterSrc}
+        autoplay
+        loop
+        muted
+        playsinline
+        aria-hidden="true"
+      />
+    ) : (
+      /* TODO: the reference plays a looped light-beam video here. No WildHands
+         asset exists yet, so this reproduces the same diagonal beam in CSS.
+         Pass `videoSrc` once a real asset is supplied. */
+      <div
+        aria-hidden="true"
+        class="absolute inset-0 -z-20"
+        style="background:
+          radial-gradient(120% 80% at 78% -20%, rgba(255,255,255,0.22), transparent 55%),
+          linear-gradient(112deg, transparent 28%, rgba(255,255,255,0.16) 42%, rgba(255,255,255,0.04) 52%, transparent 66%),
+          radial-gradient(90rem 50rem at 85% 10%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 60%);"
+      />
+    )
+  }
+
+  <!-- Scrim: keeps the headline legible whatever the art behind it does. -->
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 -z-10"
+    style="background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 38%, rgba(0,0,0,0.75) 100%);"
+  >
+  </div>
+
+  <div
+    class={`wh-container relative flex flex-col ${isFull ? 'min-h-svh pt-36 pb-8' : 'pt-36 pb-16 md:pt-44 md:pb-20'}`}
+  >
+    <div class={isFull ? 'mt-auto' : ''}>
+      {
+        eyebrow && (
+          <p class="mb-4 text-sm font-medium tracking-widest text-white/50 uppercase">{eyebrow}</p>
+        )
+      }
+      <AnimatedText immediate>
+        <h1 class="wh-h1 max-w-[16ch] text-balance">{title}</h1>
+      </AnimatedText>
+      {subtitle && <p class="wh-lede mt-6 text-white/70">{subtitle}</p>}
+      <slot />
+    </div>
+
+    <slot name="footer" />
+  </div>
+</section>

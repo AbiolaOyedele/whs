@@ -1,11 +1,181 @@
 ---
-// TODO: placeholder scaffold. Built out in a later step per docs/PROGRESS.md.
+/**
+ * Home page.
+ *
+ * Section order follows the live reference structure (docs/PROGRESS.md § D-9):
+ * hero → logo band → intro → pain points → services → featured work →
+ * testimonial → results → closing CTA.
+ *
+ * TODO: all copy on this page is provisional placeholder text.
+ */
+import { getCollection } from 'astro:content'
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import SectionHeading from '@/components/sections/SectionHeading.astro'
+import NumberedList from '@/components/sections/NumberedList.astro'
+import WorkCard from '@/components/sections/WorkCard.astro'
+import StatCallout from '@/components/sections/StatCallout.astro'
+import Testimonial from '@/components/sections/Testimonial.astro'
+import CTASection from '@/components/sections/CTASection.astro'
+import LogoMarquee from '@/components/sections/LogoMarquee.astro'
+import Button from '@/components/ui/Button.astro'
+import { PROCESS_STEPS, SITE } from '@/config/site'
+import { SERVICE_PILLAR_LABELS } from '@/content.config'
+
+const [work, services] = await Promise.all([
+  getCollection('work', ({ data }) => !data.draft),
+  getCollection('services', ({ data }) => !data.draft),
+])
+
+const featured = work.filter((e) => e.data.featured).sort((a, b) => a.data.order - b.data.order)
+const pillars = services.sort((a, b) => a.data.order - b.data.order)
+
+/** TODO: fictional placeholder names. Replace with real clients before launch. */
+const LOGOS = [
+  'Northwind Retail',
+  'Aeon Logistics',
+  'Harbor & Finch',
+  'Calder Health',
+  'Brightmoor Energy',
+  'Tessellate Labs',
+]
+
+const painPoints = [
+  {
+    title: 'Every change waits on a developer',
+    body: 'A one-line copy change becomes a ticket, a sprint, and a deploy. The marketing team stops asking.',
+  },
+  {
+    title: 'Every brand sits on a different platform',
+    body: 'Three acquisitions later there are four CMS licences, and nobody can answer what the estate costs.',
+  },
+  {
+    title: 'Every year it costs more to run',
+    body: 'The licence renews, the plugins drift, and the maintenance budget grows faster than the traffic.',
+  },
+]
+
+const results = [
+  { value: '+41%', label: 'Faster page loads across migrated estates' },
+  { value: '-63%', label: 'Reduction in time to publish' },
+]
+
+const headline = featured[0]
 ---
 
-<BaseLayout title="WildHands Studios" description="Placeholder home page.">
-  <main>
-    <h1>Home</h1>
-    <p>Placeholder page — structure pending.</p>
-  </main>
+<BaseLayout title={SITE.name} description={SITE.description} darkHero>
+  <Hero
+    size="full"
+    title="Websites your team can actually run."
+    subtitle="We audit, design, migrate and run marketing sites for companies whose platform stopped keeping up."
+  >
+    <div class="mt-8 flex flex-wrap gap-3">
+      <Button href="/get-in-touch" variant="accent" size="lg">Talk to us</Button>
+      <Button href="/services" variant="outline" size="lg" onDark>See how we work</Button>
+    </div>
+
+    <div slot="footer" class="mt-16 border-t border-white/10 pt-8">
+      <LogoMarquee logos={LOGOS} onDark duration={38} />
+    </div>
+  </Hero>
+
+  <section class="wh-container wh-section">
+    <div class="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
+      <div>
+        <SectionHeading eyebrow="Why teams come to us">
+          The site got big. The platform did not keep up.
+        </SectionHeading>
+        <p class="mt-5 max-w-prose text-muted-foreground">
+          Most of the estates we take on were fine when they were built. They stopped being fine
+          when the team grew, the markets multiplied, and nobody owned the platform any more.
+        </p>
+        <Button href="/services" variant="link" class="mt-4"
+          >Here is what we would do about it &rarr;</Button
+        >
+      </div>
+      <NumberedList items={painPoints} />
+    </div>
+  </section>
+
+  <section class="wh-container wh-section">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <SectionHeading eyebrow="Services">Four things, in this order.</SectionHeading>
+      <div class="flex flex-wrap gap-3">
+        <Button href="/get-in-touch" variant="primary">Talk to us</Button>
+        <Button href="/services" variant="outline">Services overview</Button>
+      </div>
+    </div>
+
+    <ol class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        PROCESS_STEPS.map((step, index) => {
+          const match = pillars.find((s) => SERVICE_PILLAR_LABELS[s.data.pillar] === step)
+          return (
+            <li class="border-t border-border pt-5">
+              <span class="text-xs text-muted-foreground tabular-nums">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <h3 class="mt-2 text-xl font-medium">{step}</h3>
+              <p class="mt-2 text-sm text-muted-foreground">
+                {match?.data.summary ?? 'Placeholder — no service entry maps to this pillar yet.'}
+              </p>
+            </li>
+          )
+        })
+      }
+    </ol>
+  </section>
+
+  <section class="wh-container wh-section">
+    <SectionHeading eyebrow="Featured projects">Recent work.</SectionHeading>
+    <div class="mt-16 grid gap-1 gap-y-10 md:grid-cols-12">
+      {
+        featured.map((entry) => (
+          <WorkCard
+            href={`/work/${entry.id}`}
+            client={entry.data.client}
+            summary={entry.data.summary}
+            techStack={entry.data.techStack}
+            stats={entry.data.stats}
+            class="md:col-span-6 lg:col-span-4"
+          />
+        ))
+      }
+    </div>
+    <div class="mt-8">
+      <Button href="/work" variant="outline">All work</Button>
+    </div>
+  </section>
+
+  {
+    headline?.data.testimonial && (
+      <section class="wh-container wh-section">
+        <Testimonial {...headline.data.testimonial} class="max-w-4xl" />
+      </section>
+    )
+  }
+
+  <section class="wh-container wh-section">
+    <dl class="grid gap-10 border-t border-border pt-10 sm:grid-cols-2">
+      {
+        results.map((result) => (
+          <div>
+            <dt class="sr-only">{result.label}</dt>
+            <dd>
+              <StatCallout value={result.value} label={result.label} size="lg" />
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+    <p class="mt-6 text-xs text-muted-foreground">
+      Figures are placeholders pending real reporting data.
+    </p>
+  </section>
+
+  <CTASection
+    secondaryLabel="See our services"
+    secondaryHref="/services"
+    note="Typical first step is a paid audit. It is fixed price and it can conclude that you should do nothing."
+  />
 </BaseLayout>

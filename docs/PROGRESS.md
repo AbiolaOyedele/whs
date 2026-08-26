@@ -10,36 +10,60 @@ Last updated: 2026-08-26
 
 ## Build step status
 
-| Step  | Description                                                                            | Status                      |
-| ----- | -------------------------------------------------------------------------------------- | --------------------------- |
-| 1     | Project scaffold, `.gitignore`, `package.json`, `astro.config.mjs`, `docs/PROGRESS.md` | ✅ Done                     |
-| 2     | `src/config/env.ts` with Zod validation                                                | ✅ Done                     |
-| 3     | TypeScript strict config, ESLint, Prettier                                             | ✅ Done                     |
-| 4     | Full folder structure, placeholder files                                               | ✅ Done                     |
-| 5     | `src/styles/global.css` — Tailwind v4 `@theme` tokens                                  | ⛔ Blocked — see B-1, B-2   |
-| 6     | `src/content.config.ts` — Zod schemas for 5 collections                                | ⬜ Not started              |
-| 7     | `src/lib/errors.ts` — AppError                                                         | ⬜ Not started (stub only)  |
-| 8     | Layout components — SiteHeader, MegaMenu, MobileMenu, Footer                           | ⬜ Not started              |
-| 9     | UI primitives                                                                          | ⬜ Not started              |
-| 10    | Home page                                                                              | ⬜ Not started              |
-| 11–16 | Services / Work / Stack / Insights / Industries / static pages                         | ⬜ Not started              |
-| 17    | Forms + Resend delivery                                                                | ⬜ Not started (stubs only) |
-| 18    | llms-txt-generator tool                                                                | ⬜ Not started              |
-| 19    | SEO layer                                                                              | ⬜ Not started              |
-| 20    | Accessibility + Lighthouse + final QA                                                  | ⬜ Not started              |
+| Step | Description                                                                            | Status  |
+| ---- | -------------------------------------------------------------------------------------- | ------- |
+| 1    | Project scaffold, `.gitignore`, `package.json`, `astro.config.mjs`, `docs/PROGRESS.md` | ✅ Done |
+| 2    | `src/config/env.ts` with Zod validation                                                | ✅ Done |
+| 3    | TypeScript strict config, ESLint, Prettier                                             | ✅ Done |
+| 4    | Full folder structure                                                                  | ✅ Done |
+| 5    | `src/styles/global.css` — Tailwind v4 `@theme` tokens                                  | ✅ Done |
+| 6    | `src/content.config.ts` — Zod schemas for 5 collections                                | ✅ Done |
+| 7    | `src/lib/errors.ts` — AppError + API error shape                                       | ✅ Done |
+| 8    | Layout components — SiteHeader, MegaMenu, MobileMenu, Footer                           | ✅ Done |
+| 9    | UI primitives + section components                                                     | ✅ Done |
+| 10   | Home page                                                                              | ✅ Done |
+| 11   | Services index + detail template + 4 seeds                                             | ✅ Done |
+| 12   | Work index (3 filter facets) + case study template + 6 seeds                           | ✅ Done |
+| 13   | Stack hub + category + leaf template + 9 seeds                                         | ✅ Done |
+| 14   | Insights hub + category + article template + 5 seeds                                   | ✅ Done |
+| 15   | Industries template + 3 seeds                                                          | ✅ Done |
+| 16   | About, Enterprise, Careers, Freelance Hub, Contact, Privacy                            | ✅ Done |
+| 17   | Forms — contact, freelance (CV upload), job wizard, newsletter                         | ✅ Done |
+| 18   | llms-txt-generator tool                                                                | ✅ Done |
+| 19   | SEO layer — meta, JSON-LD, sitemap, robots.txt, llms.txt                               | ✅ Done |
+| 20   | Accessibility pass, responsive QA, final verification                                  | ✅ Done |
 
-### Step 1–4 verification
+**Not built, deliberately:** `/salary-calculator` and `/tools/ai-ascii-art-generator`
+are held pending brand-fit confirmation, per the brief. The sitemap filter that
+excludes the ASCII generator is already wired and inert until the page exists.
 
-`npm run build` (which runs `astro check` then `astro build`), `npm run lint`, and
-`npm run format:check` all pass clean on the scaffold:
+### Verification
 
-- `astro check` — 38 files, 0 errors, 0 warnings, 0 hints
-- `eslint . --max-warnings=0` — 0 problems
-- `prettier --check .` — all files match
+Everything below passes clean on the current tree:
+
+| Gate                                 | Result                                                                                     |
+| ------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `astro check`                        | 89 files, 0 errors, 0 warnings, 0 hints                                                    |
+| `eslint . --max-warnings=0`          | 0 problems                                                                                 |
+| `prettier --check .`                 | all files match                                                                            |
+| `vitest run`                         | 68 tests, 3 files, all passing                                                             |
+| `astro build`                        | 56 pages generated                                                                         |
+| Responsive sweep, 375 / 768 / 1280px | no horizontal overflow on any page                                                         |
+| Static SEO audit of built HTML       | 56/56 pages have title, description, canonical, OG, Twitter, exactly one h1, valid JSON-LD |
 
 The three custom lint guardrails were probe-tested and confirmed firing:
-`process.env` access outside `src/config/env.ts`, `import.meta.env` access
-outside `src/config/env.ts`, and `any`.
+`process.env` outside `src/config/env.ts`, `import.meta.env` outside it, and `any`.
+
+Endpoint behaviour verified against the running server:
+
+| Case                              | Result                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------ |
+| Valid contact post                | Passes validation, reaches Resend, fails only on the placeholder API key |
+| Honeypot filled                   | 400 `FORM_SUBMIT_REJECTED`, message does not name the trap field         |
+| Invalid input                     | 422 `FORM_CONTACT_INVALID_INPUT`, plain-English message                  |
+| Cross-origin post                 | 403 `REQUEST_ORIGIN_REJECTED`                                            |
+| 6th post in a minute              | 429 `FORM_SUBMIT_RATE_LIMITED`                                           |
+| SSRF: loopback, `169.254.169.254` | 422 `TOOL_LLMS_URL_BLOCKED`                                              |
 
 ---
 
@@ -139,6 +163,63 @@ Content is file-based Markdown/MDX via Astro content collections, no CMS. Per th
 brief this gets revisited once the structural build is done. **Not yet raised for
 a decision** — it should be raised before real content lands, since migrating
 seeded collections later is more expensive than starting on a CMS.
+
+---
+
+### F-9. Rate limiting is per-instance memory, not shared
+
+`src/lib/rate-limit.ts` is an in-memory fixed-window limiter. It does **not**
+coordinate across Vercel function instances, so the effective limit is
+`limit × instances`. For four unauthenticated form endpoints on a low-traffic
+marketing site this raises the cost of casual abuse without adding a Redis
+dependency the confirmed stack does not include. If abuse becomes real, move to
+Vercel Firewall rate limiting or a durable store — do not scale that file up.
+
+### F-10. The video application step has no upload endpoint
+
+`/careers/apply/video` records in-browser and offers a file fallback, but there
+is **nowhere to send the result** — video storage was not in the confirmed stack
+and adding one is a decision, not an implementation detail. The step is optional
+and skippable, and the written application is delivered independently, so no
+applicant is blocked. **Decide before launch:** Vercel Blob, S3, or drop the step.
+
+### F-11. Vitest added — outside the confirmed stack
+
+The brief lists `tests/unit|integration|e2e` but names no test runner. Vitest is
+installed as a dev dependency because it shares Vite's config with Astro and
+needed no extra setup. 68 tests cover the security-critical logic: the SSRF
+address guard, origin enforcement, the honeypot, upload validation, the rate
+limiter, and error-response leakage. **Flagging as an added dependency.**
+
+### F-12. React costs ~56KB gzip on the four form pages
+
+Content pages — the SEO-critical majority — ship **zero** framework JavaScript.
+The four pages with React islands (contact, freelance hub, job apply, llms.txt
+tool) load React DOM at ~56KB gzip.
+
+One optimisation already taken: the form constants were split into
+`src/lib/schemas/form-constants.ts` so the islands no longer pull Zod into the
+browser. That cut `form-primitives` from 18KB to 1.3KB gzip.
+
+**Optional further step:** rewriting the four forms as vanilla Astro scripts
+would remove React entirely and save the remaining ~56KB on those pages. The
+brief explicitly sanctions React islands for forms, so this is left as your call
+rather than done unilaterally.
+
+### F-13. Visual fidelity was raised to match the reference exactly
+
+After an instruction to match the reference site exactly, a measurement-driven
+pass aligned the following to values read from the live site: accent colour,
+H1/H2 size, weight, line-height and tracking, hero background and corner radius,
+nav pill dimensions and type, nav link type, container width and gutters,
+section vertical rhythm, and the 12-column project grid. Each was verified by
+comparing computed styles side by side rather than by eye.
+
+**Not copied, and this is deliberate:** all body copy, headlines, testimonials
+and client names are original placeholder content with fictional companies.
+Reproducing the reference's copy would be copyright infringement, and using its
+real client names would be a false statement about who WildHands has worked
+with. See § F-2.
 
 ---
 
@@ -283,11 +364,31 @@ These are placeholder strings written during scaffolding, not launch copy:
 
 ---
 
-## Next action
+## Final QA results
 
-Steps 1–4 are complete and verified. **Step 5 is blocked on B-1 and B-2**
-(accent colour and typeface). Awaiting manager confirmation on those, plus B-3
-(service model) before Services/Stack are built.
+Swept 22 representative pages at 375px, 768px and 1280px — 66 checks:
 
-Unblocked work that can proceed in the meantime: Step 6 (content collection
-schemas) and Step 7 (`AppError`), neither of which depends on the brand tokens.
+- **Horizontal overflow: none**, on any page at any breakpoint.
+- **Heading hierarchy:** exactly one `h1` per page, no skipped levels.
+- **Form controls:** every one has an associated label.
+- **Tap targets:** all interactive targets clear 44×44px. Two audit flags were
+  investigated and confirmed as correct-by-design, not defects:
+  - the `company_fax` honeypot, which sits inside an `aria-hidden`, clipped
+    wrapper and must never be a real target;
+  - checkbox inputs at 20×20px, each wrapped in a `<label>` measuring 44–56px
+    tall — the label is the hit target for a wrapped checkbox.
+- **Inline links inside prose** are exempt from the 44px rule under
+  WCAG 2.5.8, which excludes targets constrained by surrounding line-height.
+
+## What needs your attention
+
+1. **B-2 — buy a Neue Montreal licence**, or confirm Inter Tight is acceptable.
+2. **B-1 — get a legal opinion on trade dress** if WildHands competes with the
+   reference company in the same market.
+3. **B-3 — confirm the service model.** The whole page inventory assumes web
+   design/dev/migration.
+4. **All copy is placeholder.** 27 content entries carry `placeholder: true`.
+5. **Privacy policy is an unreviewed draft** with TODOs in the legal substance.
+6. **F-10 — decide where application videos go**, or drop the step.
+7. **Resend sending domain** is still `onboarding@resend.dev`.
+8. **F-8 — decide on a headless CMS** before real content lands.
