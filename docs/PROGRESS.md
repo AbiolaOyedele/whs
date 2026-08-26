@@ -440,6 +440,50 @@ as the cards, so the page keeps the reference's rhythm without inventing a
 screenshot. Re-verified at 375 / 768 / 1280: no horizontal overflow, no clipped
 text, no heading skips, and no invisible H1s.
 
+### F-21. Contact page rebuilt to the supplied spec, plus the agent protocol
+
+Built from `bejamasgetintouchspec.md`. The form is the spec's treatment: no
+boxed inputs, a single hairline under each label/input pair that darkens on
+`focus-within`, 20px input text, "(optional)" in muted grey and **no asterisks**
+on required fields — required is carried by the control's own attribute, which
+assistive tech announces. Cards are flat white at `1.5rem` radius with no
+shadow; separation comes from the grey page behind them. The submit is the lime
+pill at `h-14 md:h-20`, full width below `sm`.
+
+The underline treatment is a `variant` on the shared `Field`, so the two
+application forms keep the bordered controls they already had. A colour change
+on a parent is a weak focus indicator on its own, so the control also takes a
+real focus ring — both fire together.
+
+**The agent protocol.** `/agent/prompt.md` serves instructions for an AI agent
+sending an enquiry on someone's behalf; the card copies one line pointing at
+that URL rather than a wall of prompt text, so the clipboard payload stays short
+and the instructions can be revised without anyone re-copying anything. The
+agent drafts a brief, the visitor approves it, pastes the resulting block
+anywhere on the contact page, and the form fills itself in.
+
+**Deliberate departure from the spec:** the reference gives agents a public POST
+endpoint. Ours does not, and will not — `/api/v1/contact` enforces same-origin,
+which the original brief requires ("CORS: same-origin only, no wildcard").
+Opening a public write endpoint to save the visitor a paste would trade a stated
+security requirement for convenience. The published instructions say so plainly,
+so agents do not go looking for an API or a key. The paste flow is the whole
+protocol.
+
+`src/lib/agent-inquiry.ts` owns both halves of the contract — the marker and the
+parser — so the document we publish and the code that reads it cannot drift.
+Parsed values are only ever assigned as field values, never inserted as markup,
+lengths are clamped to `contactSchema`'s limits, and the server revalidates
+everything on submit: the parser is a convenience, not a trust boundary. Fields
+the form has no home for (company, website) are appended to the brief rather
+than dropped. Seven unit tests cover it, including that an ordinary paste falls
+through untouched.
+
+Not implemented from the spec: Cloudflare Turnstile (outside the confirmed
+stack — flag it before adding), and the PostHog attribution/`clientReference`
+hidden fields, which need the analytics decision settled first. The honeypot and
+server-side rate limiting were already in place.
+
 ## 🔍 Live verification log — bejamas.com
 
 Fetched and inspected live on **2026-08-26** (computed styles + DOM + stylesheet

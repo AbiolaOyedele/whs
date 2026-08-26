@@ -20,12 +20,8 @@ const jsonLd = [
 /** Products WildHands designed and built, not client logos. */
 const LOGOS = ['Dumpty', 'Auto Flow', 'Lazy Meet', 'The Ruff Agency']
 
-const agentPrompt = `I am looking for a team to build a custom website, app or internal tool.
-Read ${siteUrl}/services and ${siteUrl}/work, then summarise:
-1. What WildHands does and does not take on.
-2. How they scope and price a project.
-3. Two projects most similar to what I need.
-Then draft a short enquiry describing my project.`
+/** Served by src/pages/agent/prompt.md.ts. */
+const agentPromptUrl = `${siteUrl}/agent/prompt.md`
 ---
 
 <BaseLayout
@@ -90,10 +86,10 @@ Then draft a short enquiry describing my project.`
         </div>
       </div>
 
-      <div class="min-w-0 space-y-6">
-        <CopyPrompt prompt={agentPrompt} />
+      <div class="flex min-w-0 flex-col gap-4">
+        <CopyPrompt promptUrl={agentPromptUrl} />
 
-        <div class="rounded-3xl bg-card p-6 shadow-sm md:p-8">
+        <div class="rounded-3xl bg-card p-5 sm:p-8 lg:p-10">
           <h2 class="sr-only">Contact form</h2>
           <ContactForm client:visible />
         </div>

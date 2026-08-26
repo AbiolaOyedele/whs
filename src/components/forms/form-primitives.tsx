@@ -88,27 +88,59 @@ interface FieldProps {
   error?: string | undefined
   hint?: string | undefined
   required?: boolean
+  /**
+   * `boxed` (default) is the bordered control used by the application forms.
+   * `underline` is the contact page's treatment: no box, a single hairline
+   * under the label/input pair that darkens on focus.
+   */
+  variant?: 'boxed' | 'underline'
 }
 
-export function Field({ label, name, children, error, hint, required = false }: FieldProps) {
+export function Field({
+  label,
+  name,
+  children,
+  error,
+  hint,
+  required = false,
+  variant = 'boxed',
+}: FieldProps) {
+  const underline = variant === 'underline'
   return (
-    <div>
-      <label htmlFor={name} className="block text-sm font-medium">
+    <div
+      className={
+        underline
+          ? 'border-b border-border pb-1 transition-colors focus-within:border-foreground'
+          : undefined
+      }
+    >
+      <label
+        htmlFor={name}
+        className={underline ? 'block pt-4 text-xl font-medium' : 'block text-sm font-medium'}
+      >
         {label}
-        {required && <span className="text-muted-foreground"> *</span>}
+        {/* The underline treatment marks only optional fields, matching the
+            reference. Required is still carried by the control's own
+            `required` attribute, which assistive tech announces. */}
+        {required && !underline && <span className="text-muted-foreground"> *</span>}
         {!required && <span className="text-muted-foreground"> (optional)</span>}
       </label>
       {hint && (
-        <p id={`${name}-hint`} className="mt-1 text-xs text-muted-foreground">
+        <p
+          id={`${name}-hint`}
+          className={
+            underline ? 'mt-2 text-sm text-muted-foreground' : 'mt-1 text-xs text-muted-foreground'
+          }
+        >
           {hint}
         </p>
       )}
-      <div className="mt-2">{children}</div>
+      <div className={underline ? 'mt-3' : 'mt-2'}>{children}</div>
       {error && (
         <p
           id={`${name}-error`}
           role="alert"
-          className="mt-1.5 text-sm text-[color:var(--destructive)]"
+          className="mt-1.5 pb-2 text-sm text-[color:var(--destructive)]"
         >
           {error}
         </p>
@@ -124,13 +156,46 @@ export const inputClass =
 
 export const textareaClass = inputClass + ' min-h-32 py-3'
 
+/*
+ * Underline controls. The wrapper draws the hairline and reacts to
+ * `focus-within`, so the control itself is borderless — but a colour change on
+ * a parent is a weak focus indicator on its own, so the control also takes a
+ * real focus ring. Both fire together.
+ */
+export const underlineInputClass =
+  'wh-tap w-full border-0 bg-transparent px-0 pb-4 text-xl placeholder:text-muted-foreground ' +
+  'rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 ' +
+  'focus-visible:outline-[color:var(--ring)]'
+
+export const underlineTextareaClass = underlineInputClass + ' min-h-40 resize-y'
+
 /** Submit button with a busy state. */
-export function SubmitButton({ busy, children }: { busy: boolean; children: ReactNode }) {
+export function SubmitButton({
+  busy,
+  children,
+  tone = 'primary',
+  size = 'md',
+}: {
+  busy: boolean
+  children: ReactNode
+  /** `accent` is the lime pill used on the contact page. */
+  tone?: 'primary' | 'accent'
+  /** `lg` is the contact page's full-bleed-on-mobile button. */
+  size?: 'md' | 'lg'
+}) {
+  const toneClass =
+    tone === 'accent'
+      ? 'bg-[color:var(--accent)] text-[color:var(--accent-foreground)]'
+      : 'bg-primary text-primary-foreground'
+  const sizeClass =
+    size === 'lg'
+      ? 'h-14 w-full px-6 text-xl sm:w-auto sm:min-w-64 md:h-20 md:px-12'
+      : 'px-6 text-base'
   return (
     <button
       type="submit"
       disabled={busy}
-      className="wh-tap inline-flex items-center justify-center rounded-full bg-primary px-6 text-base font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-50"
+      className={`wh-tap inline-flex items-center justify-center rounded-full font-medium transition-[opacity,transform] hover:opacity-90 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 ${toneClass} ${sizeClass}`}
     >
       {busy ? 'Sending…' : children}
     </button>
