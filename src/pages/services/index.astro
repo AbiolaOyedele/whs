@@ -141,8 +141,13 @@ const blocks = SERVICE_PILLARS.map((pillar: ServicePillar) => ({
         </div>
 
         {/* CTA band between pillar blocks, per docs/site-copy.md. */}
-        <div class="mt-12 flex flex-wrap items-center gap-4 rounded-2xl bg-muted/60 p-6 md:p-8">
-          <p class="flex-1 text-lg">
+        <!-- Stacks below sm: `flex-1` gives the paragraph a 0% basis, so on a
+             narrow viewport it shrinks to a few words per line beside the button
+             instead of wrapping the button underneath it. -->
+        <div
+          class="mt-12 flex flex-col items-start gap-4 rounded-2xl bg-muted/60 p-6 sm:flex-row sm:flex-wrap sm:items-center md:p-8"
+        >
+          <p class="text-lg sm:flex-1">
             Not sure if {label.toLowerCase()} is what you need?
             <span class="text-muted-foreground"> Tell us what is eating your hours.</span>
           </p>

@@ -27,9 +27,9 @@ const pillars = services.sort((a, b) => a.data.order - b.data.order)
 
 /**
  * TODO: the trust row should be products and apps WildHands has built, not
- * client logos. Placeholder names until the product list is supplied.
+ * client logos — these are products WildHands designed and built.
  */
-const BUILT_BY_WILDHANDS = ['Northwind', 'Aeon', 'Harbor & Finch']
+const BUILT_BY_WILDHANDS = ['Dumpty', 'Auto Flow', 'Lazy Meet', 'The Ruff Agency']
 
 const problems = [
   {
@@ -54,7 +54,7 @@ const problems = [
     standfirst="WildHands Studio designs and builds custom websites, apps, and internal tools for teams done doing repetitive work by hand."
   >
     <Fragment slot="logos">
-      <p class="text-sm text-white/45">Built by WildHands</p>
+      <p class="text-base text-white/50 mix-blend-difference">Built by WildHands</p>
       <ul class="mt-3 flex flex-wrap items-center gap-x-7 gap-y-2">
         {
           BUILT_BY_WILDHANDS.map((name) => (
@@ -75,7 +75,15 @@ const problems = [
   </Hero>
 
   <!-- The problem -->
-  <section class="relative overflow-clip rounded-[2rem] bg-background text-foreground">
+  <section
+    class="relative overflow-clip rounded-[2rem] bg-background text-foreground"
+    aria-labelledby="homepage-problem-title"
+  >
+    <p
+      class="px-5 pt-8 text-base text-muted-foreground md:px-8 lg:absolute lg:top-8 lg:left-8 lg:p-0"
+    >
+      The Problem
+    </p>
     <div class="lg:pt-[16.5rem]">
       <div
         class="lg:grid lg:min-h-[57.1875rem] lg:grid-cols-[42.7%_57.3%] lg:border-t lg:border-border"
@@ -84,22 +92,19 @@ const problems = [
           <div
             class="flex flex-col justify-between gap-32 lg:sticky lg:top-24 lg:h-[min(calc(100dvh-6rem),100%)] lg:py-10"
           >
-            <div>
-              <p class="text-sm font-medium tracking-widest text-muted-foreground uppercase">
-                The Problem
-              </p>
-              <AnimatedText>
-                <h2 class="wh-h2 mt-5 max-w-[20ch]">
-                  Your team is spending hours on work a system could do in seconds.
-                </h2>
-              </AnimatedText>
-              <p class="mt-6 max-w-prose text-muted-foreground">
+            <AnimatedText>
+              <h2 id="homepage-problem-title" class="wh-h2 max-w-[34rem]">
+                Your team is spending hours on work a system could do in seconds.
+              </h2>
+            </AnimatedText>
+            <div class="max-w-[28rem] lg:pb-6">
+              <p class="mb-9 text-base text-muted-foreground">
                 Manual data entry. Reports rebuilt from scratch every week. No single place to see
                 what is actually happening. That is hours gone that should have gone into the work
                 only you can do.
               </p>
+              <Button href="/services" variant="link">See how we fix this &rarr;</Button>
             </div>
-            <Button href="/services" variant="link">See how we fix this &rarr;</Button>
           </div>
         </div>
 
@@ -110,8 +115,12 @@ const problems = [
                 <span class="text-sm text-muted-foreground tabular-nums">
                   {String(index + 1).padStart(2, '0')}
                 </span>
-                <h3 class="mt-4 text-2xl font-medium tracking-tight md:text-3xl">{item.title}</h3>
-                <p class="mt-4 max-w-prose text-muted-foreground">{item.body}</p>
+                <h3 class="mt-4 max-w-[42.25rem] text-4xl leading-[1.18] font-medium tracking-[-0.025em] text-balance md:text-5xl lg:text-[3.5rem]">
+                  {item.title}
+                </h3>
+                <p class="mt-10 max-w-[42.25rem] text-xl leading-[1.2] font-medium md:mt-12 md:text-2xl">
+                  {item.body}
+                </p>
               </article>
             ))
           }
@@ -128,24 +137,31 @@ const problems = [
       </h2>
 
       <div class="mx-auto w-full max-w-3xl lg:max-w-2xl lg:px-8">
-        <ol class="wh-services-list">
+        <ol class="wh-services-list [&>li:last-child>a]:border-b-0">
           {
             SERVICE_PILLARS.map((pillar, index) => {
               const match = pillars.find((s) => s.data.pillar === pillar)
               const href = match ? `/services/${match.id}` : '/services'
               return (
-                <li class="wh-service-row border-b border-border last:border-b-0">
-                  <a href={href} class="group flex items-baseline gap-5 py-6 md:py-8">
-                    <span class="text-sm text-muted-foreground tabular-nums">
-                      {String(index + 1).padStart(2, '0')}
+                <li class="wh-service-row">
+                  <a href={href} class="wh-sweep group relative flex border-b border-border py-5">
+                    <span
+                      aria-hidden="true"
+                      class="mt-0.5 mr-5 flex size-10 flex-none items-center justify-center overflow-hidden rounded-full bg-foreground text-base text-background tabular-nums"
+                    >
+                      {index + 1}
                     </span>
-                    <span class="flex-1 text-2xl leading-snug md:text-[2rem]">
-                      <span class="font-medium">{SERVICE_PILLAR_LABELS[pillar]}.</span>{' '}
-                      <span class="text-muted-foreground">{SERVICE_PILLAR_TAGLINES[pillar]}</span>
+                    <span class="mr-4 flex-1 text-left">
+                      <span class="block pt-[5px] text-lg md:text-2xl">
+                        <span class="wh-sweep__label">{SERVICE_PILLAR_LABELS[pillar]}</span>
+                      </span>
+                      <span class="mt-1 block text-sm text-muted-foreground md:text-base">
+                        {SERVICE_PILLAR_TAGLINES[pillar]}
+                      </span>
                     </span>
                     <span
                       aria-hidden="true"
-                      class="shrink-0 translate-x-0 text-xl transition-transform duration-300 group-hover:translate-x-1"
+                      class="mt-0.5 shrink-0 self-start text-xl transition-transform duration-300 group-hover:translate-x-1"
                     >
                       &rarr;
                     </span>
@@ -182,9 +198,6 @@ const problems = [
               />
             ))}
           </div>
-          <p class="mt-2 text-sm text-muted-foreground">
-            Placeholder projects — awaiting real product content.
-          </p>
         </Fragment>
       ) : (
         <p class="mt-10 text-muted-foreground">Project content coming soon.</p>

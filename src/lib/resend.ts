@@ -39,7 +39,7 @@ export async function sendNotification(options: SendNotificationOptions): Promis
   try {
     const { error } = await getClient().emails.send({
       // TODO(B-5): replace with a verified WildHands sending domain before launch.
-      from: 'WildHands Studios <onboarding@resend.dev>',
+      from: 'WildHands Studio <onboarding@resend.dev>',
       to: [CONTACT_NOTIFICATION_EMAIL],
       subject: options.subject,
       text: options.text,

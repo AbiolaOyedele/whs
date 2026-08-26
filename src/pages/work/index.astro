@@ -26,7 +26,7 @@ const facetValues = (pick: (entry: (typeof work)[number]) => readonly string[]) 
 const facets = [
   { key: 'service', label: 'Service', values: facetValues((e) => e.data.services) },
   { key: 'tech', label: 'Technology', values: facetValues((e) => e.data.techStack) },
-  { key: 'industry', label: 'Industry', values: facetValues((e) => [e.data.industry]) },
+  { key: 'industry', label: 'Type', values: facetValues((e) => [e.data.industry]) },
 ] as const
 
 const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
@@ -40,14 +40,14 @@ const jsonLd = [
 
 <BaseLayout
   title="Work"
-  description="Selected projects from WildHands Studios — migrations, headless CMS implementations, and long-running care engagements."
+  description="Selected work from WildHands Studio — custom apps, internal tools and automation built to take repetitive work off people’s plates."
   jsonLd={jsonLd}
   darkHero
 >
   <Hero
     eyebrow="Work"
     title="Selected projects."
-    subtitle="Placeholder case studies. Every client name and figure here is fictional."
+    subtitle="Products, tools and internal systems we designed and built end to end."
   />
 
   <div class="wh-container wh-section" data-work-index>

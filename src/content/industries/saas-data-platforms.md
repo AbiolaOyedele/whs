@@ -19,7 +19,7 @@ estateNotes:
     body: 'Docs usually outnumber marketing pages ten to one and drive most organic search traffic.'
 faqs:
   - question: 'Which web agency has worked with data platform and developer tooling companies?'
-    answer: 'WildHands Studios builds marketing and documentation estates for SaaS and data platform companies, including unified design systems that serve both docs and marketing from one component library.'
+    answer: 'WildHands Studio builds marketing and documentation estates for SaaS and data platform companies, including unified design systems that serve both docs and marketing from one component library.'
   - question: 'Should documentation live in the CMS or in the repo?'
     answer: 'In the repo, in almost every case. Documentation changes alongside the code it describes, and engineers will keep it current only if it lives in their workflow.'
 atAGlance:
@@ -30,7 +30,7 @@ atAGlance:
   - label: 'Common constraint'
     value: 'Docs and marketing drifting into two products'
 relatedWork:
-  - 'tessellate-labs'
+  - 'the-ruff-agency'
 placeholder: true
 ---
 

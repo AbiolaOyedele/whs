@@ -353,6 +353,51 @@ with. See § F-2.
 
 ---
 
+### F-19. Real case studies landed; mobile pass against the reference
+
+Six fictional case studies were deleted and replaced with four real projects,
+written from the briefs supplied on 2026-08-26: **Dumpty**, **Auto Flow**,
+**Lazy Meet** and **The Ruff Agency**. Every figure, stack entry and timeline in
+them traces back to a brief. Nothing was invented to fill a field — in
+particular, **no testimonials were written**, because no quotes were supplied,
+so `testimonial` is absent on all four rather than filled with plausible copy.
+
+Knock-on changes:
+
+- `work.liveUrl` added to the schema. Only The Ruff Agency has one; the other
+  three are genuinely not public, and the field renders nothing when absent.
+- The `industry` facet is now labelled **Type** on `/work` and on the case-study
+  meta list, and `client` is labelled **Project**. These are our own products,
+  not client engagements, and the old labels asserted otherwise.
+- The three logo strips (home hero, get-in-touch, enterprise) listed fictional
+  client names. They now list the four products, matching what `docs/site-copy.md`
+  actually asked for: _"Logo strip of products/apps you've built (not client
+  logos)"_. The get-in-touch strip was also mislabelled "Recent clients".
+- The AI-agent prompt block on `/get-in-touch` still described a migration
+  engagement. Rewritten for the build model.
+- Brand name normalised to **WildHands Studio** site-wide. Seventeen files said
+  "WildHands Studios" while `SITE.name`, the hero and every page title said
+  "Studio". See the flag below — the wordmark still spells "studios".
+
+Mobile pass, re-derived from the saved archive rather than from memory:
+
+| Fix               | Was                                                                  | Now                                                                 |
+| ----------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Hero standfirst   | `text-lg text-white/75 md:text-xl`                                   | `text-xl sm:text-2xl`, full white — matches reference               |
+| Problem section   | body copy above the `gap-32`, leaving a lone link after a 128px hole | body + link below the gap, heading above it — reference structure   |
+| Problem items     | `text-2xl md:text-3xl` heading, 16px muted body                      | `text-4xl md:text-5xl lg:text-[3.5rem]`, `text-xl md:text-2xl` body |
+| Services rows     | title + tagline on one 24px line, wrapping badly                     | numbered circle, title, tagline stacked — reference pattern         |
+| Card caption      | 16px muted, flush to card edge                                       | 18px/24px at the card's inner gutter                                |
+| Card stats        | `gap-y-1`, so two stats read as one clump when wrapped               | `gap-y-4`                                                           |
+| Card tech list    | `-top-8`, ran under the media when it wrapped to two lines           | anchored `bottom-full`, capped at three entries                     |
+| Projects grid     | 4rem row gap                                                         | 7.5rem, matching the reference's 2.5rem gap + 5rem card margin      |
+| About watermark   | overlapped the founder quote's first three lines                     | scaled down and cleared below md                                    |
+| Services CTA band | `flex-1` crushed the text to ~110px beside the button                | stacks below sm                                                     |
+
+Verified at 375 / 768 / 1280px across 19 routes: **no horizontal overflow, no
+clipped text, no sub-12px type, no heading-level skips.** The three remaining
+audit flags are known false positives, documented under Final QA.
+
 ## 🔍 Live verification log — bejamas.com
 
 Fetched and inspected live on **2026-08-26** (computed styles + DOM + stylesheet
@@ -519,10 +564,18 @@ Swept 22 representative pages at 375px, 768px and 1280px — 66 checks:
    reference company in the same market.
 3. **B-3 — confirm the service model.** The whole page inventory assumes web
    design/dev/migration.
-4. **Copy: home and services are now real** (from `docs/site-copy.md`). Still
-   placeholder: work case studies, stack, insights, industries, about,
-   enterprise, careers, freelance hub, contact. `grep -rl "placeholder: true" src/content/`
-5. **Privacy policy is an unreviewed draft** with TODOs in the legal substance.
-6. **F-10 — decide where application videos go**, or drop the step.
-7. **Resend sending domain** is still `onboarding@resend.dev`.
-8. **F-8 — decide on a headless CMS** before real content lands.
+4. **Copy: home, services and all four case studies are now real.** Still
+   placeholder: stack, insights, industries, enterprise, careers, freelance hub.
+   `grep -rl "placeholder: true" src/content/`
+5. **"Studio" or "Studios"?** All prose now reads _WildHands Studio_, matching
+   `SITE.name` and the copy doc you supplied. The logo artwork still spells
+   _studios_. One of the two has to move — the copy is a one-line change, the
+   wordmark is not. Tell me which.
+6. **Those reference-inherited sections are still there.** Stack (14 pages),
+   Insights (11), Careers (9), Industries (3), Enterprise (1), Freelance Hub (1)
+   — 39 of 55 pages, all still carrying migration-era copy and the word
+   "estate". This is the question from earlier that never got an answer.
+7. **Privacy policy is an unreviewed draft** with TODOs in the legal substance.
+8. **F-10 — decide where application videos go**, or drop the step.
+9. **Resend sending domain** is still `onboarding@resend.dev`.
+10. **F-8 — decide on a headless CMS** before real content lands.

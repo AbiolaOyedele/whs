@@ -35,8 +35,8 @@ const jsonLd = [
 ]
 
 const meta: Array<{ label: string; value: string }> = [
-  { label: 'Client', value: data.client },
-  { label: 'Industry', value: data.industry },
+  { label: 'Project', value: data.client },
+  { label: 'Type', value: data.industry },
   ...(data.services.length > 0 ? [{ label: 'Services', value: data.services.join(', ') }] : []),
   ...(data.techStack.length > 0 ? [{ label: 'Tech stack', value: data.techStack.join(', ') }] : []),
   ...(data.timeline ? [{ label: 'Timeline', value: data.timeline }] : []),
@@ -62,6 +62,20 @@ const meta: Array<{ label: string; value: string }> = [
             ))
           }
         </dl>
+
+        {
+          data.liveUrl && (
+            <a
+              href={data.liveUrl}
+              rel="noopener noreferrer"
+              target="_blank"
+              class="wh-tap mt-6 inline-flex items-center gap-2 text-sm underline underline-offset-4 transition-colors hover:text-muted-foreground"
+            >
+              Visit the live site
+              <span aria-hidden="true">&#8599;</span>
+            </a>
+          )
+        }
 
         {
           data.techStack.length > 0 && (
@@ -122,5 +136,5 @@ const meta: Array<{ label: string; value: string }> = [
     </div>
   </div>
 
-  <CTASection heading="Want the same conversation about your estate?" ctaLabel="Start a project" />
+  <CTASection heading="Got something eating your hours?" ctaLabel="Talk to Us" />
 </BaseLayout>

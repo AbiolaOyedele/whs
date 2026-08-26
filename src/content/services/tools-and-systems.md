@@ -42,7 +42,13 @@ lookElsewhereWhen:
   - 'You mainly need a public presence'
   - 'The process is not yet stable enough to automate'
   - 'A single existing tool already covers it'
-relatedWork: []
+relatedWork:
+  - 'auto-flow'
+  - 'the-ruff-agency'
 ---
 
-Placeholder body. The structure is built out; replace with real detail on dashboard and automation projects when the project content lands.
+The tools we build are judged one way: how many hours they give back. Auto Flow turned a supervised afternoon of clicking into an unattended half-hour. The Ruff Agency replaced a stack of disconnected products with one workspace a whole team can see.
+
+## How the work runs
+
+A discovery call first, to find out what is actually costing you time. Then a scoped proposal written around that brief. Then a quote for the work in front of us. No packages, no tiers, no pricing page.

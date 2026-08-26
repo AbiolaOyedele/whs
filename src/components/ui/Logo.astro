@@ -1,6 +1,6 @@
 ---
 /**
- * WildHands Studios logo.
+ * WildHands Studio logo.
  *
  *   `mark` — horizontal "whs." mark (2.6:1). Nav pill, and the collapsed state.
  *   `full` — stacked "wild / hands / studios" lockup (1.46:1). Footer.
@@ -18,7 +18,7 @@ interface Props {
   label?: string
 }
 
-const { variant = 'mark', class: className = '', label = 'WildHands Studios' } = Astro.props
+const { variant = 'mark', class: className = '', label = 'WildHands Studio' } = Astro.props
 
 const isMark = variant === 'mark'
 const paths = isMark ? MARK_PATHS : FULL_PATHS

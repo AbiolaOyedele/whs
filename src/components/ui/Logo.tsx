@@ -11,7 +11,7 @@ interface LogoProps {
   label?: string
 }
 
-export function Logo({ variant = 'mark', className = '', label = 'WildHands Studios' }: LogoProps) {
+export function Logo({ variant = 'mark', className = '', label = 'WildHands Studio' }: LogoProps) {
   const isMark = variant === 'mark'
   const paths = isMark ? MARK_PATHS : FULL_PATHS
 

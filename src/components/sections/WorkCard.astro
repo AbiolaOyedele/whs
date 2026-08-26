@@ -35,8 +35,11 @@ const { href, client, summary, techStack = [], stats = [], class: className = ''
 <a href={href} class={`group relative flex h-full flex-col rounded-3xl ${className}`}>
   {
     techStack.length > 0 && (
-      <span class="absolute -top-8 ml-5 text-sm text-muted-foreground">
-        ({techStack.join(', ')})
+      /* Anchored to the card's top edge rather than offset from it, so a stack
+         list long enough to wrap grows upward instead of running under the
+         media. Capped at three entries — the full stack is on the detail page. */
+      <span class="absolute right-0 bottom-full left-5 mb-3 pr-5 text-sm text-muted-foreground">
+        ({techStack.slice(0, 3).join(', ')})
       </span>
     )
   }
@@ -65,7 +68,7 @@ const { href, client, summary, techStack = [], stats = [], class: className = ''
     >
     </div>
 
-    <div class="absolute right-5 bottom-5 left-5 z-10 flex flex-wrap items-end gap-x-8 gap-y-1">
+    <div class="absolute right-5 bottom-5 left-5 z-10 flex flex-wrap gap-x-8 gap-y-4">
       {
         stats.slice(0, 2).map((stat) => (
           <span class="text-white">
@@ -79,7 +82,19 @@ const { href, client, summary, techStack = [], stats = [], class: className = ''
     </div>
   </div>
 
-  <!-- Clamped to two lines with a reserved height, so a longer summary on one
-       card cannot push its media shorter than its neighbour's in the same row. -->
-  <p class="mt-4 line-clamp-2 min-h-[3.5rem] max-w-prose text-muted-foreground">{summary}</p>
+  <!--
+    Caption row, matched to the reference: indented to the card's inner gutter
+    rather than sitting flush with its edge, and set at reading size rather
+    than as muted supporting text.
+
+    Clamped to two lines with a reserved height, so a longer summary on one
+    card cannot push its media shorter than its neighbour's in the same row.
+  -->
+  <span class="flex w-full items-start justify-between gap-4 px-5">
+    <span
+      class="line-clamp-2 min-h-[3.375rem] pt-5 text-lg text-balance md:min-h-[4.5rem] md:max-w-2/3 md:text-2xl"
+    >
+      {summary}
+    </span>
+  </span>
 </a>

@@ -63,7 +63,7 @@
 }
 
 /* ==========================================================================
-   WildHands Studios — design tokens
+   WildHands Studio — design tokens
    Tailwind v4, CSS-first config. No tailwind.config.js.
 
    Structural tokens (spacing, radius, type scale, breakpoints) are Tailwind v4
@@ -417,18 +417,20 @@
    * as editorial rather than as a uniform card wall.
    *
    * Gaps are set here rather than per-template so both the home grid and the
-   * work index share one rhythm. The row gap is deliberately larger than the
-   * column gap: each card carries a caption underneath, so rows need clear
+   * work index share one rhythm. The row gap is deliberately much larger than
+   * the column gap: each card carries a caption underneath, so rows need clear
    * separation to stop a caption reading as a heading for the row below.
+   * 7.5rem matches the reference, which reaches the same figure as a 2.5rem
+   * row gap plus a 5rem bottom margin on every card. One property here, rather
+   * than two, so there is a single number to change.
    */
   .wh-projects-grid {
     column-gap: 1rem;
-    row-gap: 4rem;
+    row-gap: 7.5rem;
   }
   @media (width >= 64rem) {
     .wh-projects-grid {
       column-gap: 1.5rem;
-      row-gap: 5rem;
     }
   }
   @media (width >= 48rem) {

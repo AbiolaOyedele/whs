@@ -42,7 +42,13 @@ lookElsewhereWhen:
   - 'You mainly need a public presence'
   - 'An existing tool genuinely does the job'
   - 'The need is visibility rather than a workflow'
-relatedWork: []
+relatedWork:
+  - 'dumpty'
+  - 'lazy-meet'
 ---
 
-Placeholder body. The structure is built out; replace with real detail on app projects when the project content lands.
+Every app here started as a workflow someone was doing by hand. Dumpty replaced the note that never got tidied up. Lazy Meet replaced the five clicks before every call. The shape of the build always follows the shape of the problem, which is why none of them look like each other.
+
+## How the work runs
+
+A discovery call first, to find out what is actually costing you time. Then a scoped proposal written around that brief. Then a quote for the work in front of us. No packages, no tiers, no pricing page.

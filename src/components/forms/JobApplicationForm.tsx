@@ -117,7 +117,7 @@ export default function JobApplicationForm({ role, roleSlug }: JobApplicationFor
           className="mt-0.5 size-5 shrink-0"
         />
         <span>
-          I agree to WildHands Studios processing my data for this application.{' '}
+          I agree to WildHands Studio processing my data for this application.{' '}
           <span className="text-muted-foreground">*</span>
         </span>
       </label>

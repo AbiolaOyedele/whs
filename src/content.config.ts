@@ -154,7 +154,7 @@ const work = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/work' }),
   schema: z.object({
     ...baseFields,
-    /** Fictional client name. Never a real name from the reference site. */
+    /** Product or client name. Overlays the case-study card. */
     client: z.string().min(1),
     /** One-line outcome shown on the card. */
     summary: z.string().min(1),
@@ -163,6 +163,8 @@ const work = defineCollection({
     services: z.array(z.string().min(1)).default([]),
     techStack: z.array(z.string().min(1)).default([]),
     timeline: z.string().optional(),
+    /** Public URL, when the project has one. Omitted for tools that are not public. */
+    liveUrl: z.url().optional(),
     /** Up to two stat callouts render on the card; the rest show on the detail page. */
     stats: z.array(statSchema).default([]),
     sections: z.array(numberedItemSchema).default([]),

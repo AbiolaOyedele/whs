@@ -77,11 +77,17 @@ const VALUES = ['Clarity', 'Craft', 'Commitment', 'Candour']
   </section>
 
   <!-- Founder quote over the logo watermark -->
-  <section class="relative isolate overflow-hidden py-16 md:py-28">
+  <!--
+    On mobile the mark is proportionally far larger than the quote set over it,
+    so the glyph strokes land across the first lines and cost real legibility.
+    Below md it is scaled down and the section is padded enough for the quote to
+    start clear of it; from md up the quote sits over the mark as designed.
+  -->
+  <section class="relative isolate overflow-hidden pt-40 pb-16 md:py-28">
     <Logo
       variant="mark"
       label=""
-      class="pointer-events-none absolute -top-8 left-1/2 -z-10 w-[min(78rem,150%)] -translate-x-1/2 text-foreground/[0.06]"
+      class="pointer-events-none absolute -top-10 left-1/2 -z-10 w-[min(78rem,125%)] -translate-x-1/2 text-foreground/[0.06] md:-top-8 md:w-[min(78rem,150%)]"
     />
 
     <div class="wh-container">
@@ -94,8 +100,7 @@ const VALUES = ['Clarity', 'Craft', 'Commitment', 'Candour']
           </p>
         </blockquote>
         <figcaption class="mt-6 text-sm text-muted-foreground">
-          <span class="text-foreground">A. Placeholder</span> — Founder
-          <span class="ml-2 text-xs">(TODO: real name and title)</span>
+          <span class="text-foreground">Abiola Oyedele</span> — Founder
         </figcaption>
       </div>
     </div>
