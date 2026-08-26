@@ -1,24 +1,41 @@
 ---
-/** Case study detail. Meta sidebar plus narrative column, stacking on mobile. */
+/**
+ * Case study detail, laid out to the reference's project pages.
+ *
+ * The reference runs a single narrow column — index number and year on one
+ * row, then a Services/Stack meta pair, a full-bleed media panel, and the
+ * narrative in a `max-w-2xl` measure with small muted section labels rather
+ * than large headings. The dark banner above it is ours, kept deliberately.
+ *
+ * Every case study ends on the next project in the running order, so the page
+ * hands the reader somewhere to go rather than dead-ending on a CTA.
+ */
 import type { GetStaticPaths } from 'astro'
 import { getCollection, render } from 'astro:content'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import Hero from '@/components/sections/Hero.astro'
-import NumberedList from '@/components/sections/NumberedList.astro'
 import StatCallout from '@/components/sections/StatCallout.astro'
 import Testimonial from '@/components/sections/Testimonial.astro'
 import CTASection from '@/components/sections/CTASection.astro'
 import Prose from '@/components/ui/Prose.astro'
-import Tag from '@/components/ui/Tag.astro'
 import { breadcrumbSchema, caseStudySchema } from '@/lib/seo'
 import { publicEnv } from '@/config/env'
 
 export const getStaticPaths = (async () => {
-  const work = await getCollection('work', ({ data }) => !data.draft)
-  return work.map((entry) => ({ params: { slug: entry.id }, props: { entry } }))
+  const work = (await getCollection('work', ({ data }) => !data.draft)).sort(
+    (a, b) => a.data.order - b.data.order
+  )
+  return work.map((entry, index) => {
+    /** Wraps, so the last case study points back at the first. */
+    const nextIndex = (index + 1) % work.length
+    return {
+      params: { slug: entry.id },
+      props: { entry, index, nextIndex, next: work[nextIndex]! },
+    }
+  })
 }) satisfies GetStaticPaths
 
-const { entry } = Astro.props
+const { entry, index, nextIndex, next } = Astro.props
 const { data } = entry
 const { Content } = await render(entry)
 
@@ -34,68 +51,104 @@ const jsonLd = [
   ]),
 ]
 
-const meta: Array<{ label: string; value: string }> = [
-  { label: 'Project', value: data.client },
-  { label: 'Type', value: data.industry },
-  ...(data.services.length > 0 ? [{ label: 'Services', value: data.services.join(', ') }] : []),
-  ...(data.techStack.length > 0 ? [{ label: 'Tech stack', value: data.techStack.join(', ') }] : []),
-  ...(data.timeline ? [{ label: 'Timeline', value: data.timeline }] : []),
-]
+/** Two-digit running number, matching the reference's `(34)` treatment. */
+const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
 ---
 
 <BaseLayout title={data.title} description={data.description} jsonLd={jsonLd} darkHero>
   <Hero eyebrow={data.client} title={data.title} subtitle={data.summary} />
 
-  <div class="wh-container wh-section">
-    <div class="grid gap-12 lg:grid-cols-[18rem_1fr] lg:gap-16">
-      <aside class="lg:sticky lg:top-28 lg:self-start">
-        <h2 class="sr-only">Project details</h2>
-        <dl class="divide-y divide-border border-y border-border">
-          {
-            meta.map((row) => (
-              <div class="py-4">
-                <dt class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
-                  {row.label}
-                </dt>
-                <dd class="mt-1 text-sm">{row.value}</dd>
-              </div>
-            ))
-          }
-        </dl>
-
+  <div class="wh-container">
+    <div class="max-w-2xl pt-14 lg:ml-[10.35%] lg:pt-24">
+      <!-- The reference sets both sides at display scale because its right-hand
+           value is a bare year range. Ours are descriptive ("Started June 2026,
+           in active development"), which at 48px wraps to three lines and
+           swamps the number, so the date keeps a reading size. -->
+      <div class="flex items-baseline justify-between gap-6">
+        <p class="text-3xl tabular-nums md:text-5xl">{ordinal(index)}</p>
         {
-          data.liveUrl && (
-            <a
-              href={data.liveUrl}
-              rel="noopener noreferrer"
-              target="_blank"
-              class="wh-tap mt-6 inline-flex items-center gap-2 text-sm underline underline-offset-4 transition-colors hover:text-muted-foreground"
-            >
-              Visit the live site
-              <span aria-hidden="true">&#8599;</span>
-            </a>
+          data.timeline && (
+            <p class="max-w-[16rem] text-right text-base text-balance text-muted-foreground md:text-xl">
+              {data.timeline}
+            </p>
           )
         }
+      </div>
 
+      <p class="mt-10 text-2xl md:text-3xl">{data.client}</p>
+
+      <div class="mt-10 gap-10 md:mt-20 md:flex md:justify-between">
+        {
+          data.services.length > 0 && (
+            <div>
+              <p class="text-muted-foreground">Services</p>
+              <p class="mt-6 text-2xl text-balance md:text-3xl">{data.services.join(' · ')}</p>
+            </div>
+          )
+        }
         {
           data.techStack.length > 0 && (
-            <ul class="mt-6 flex flex-wrap gap-2">
-              {data.techStack.map((tech) => (
-                <li>
-                  <Tag>{tech}</Tag>
-                </li>
-              ))}
-            </ul>
+            <div class="mt-10 md:mt-0 md:shrink-0">
+              <p class="text-muted-foreground">Stack</p>
+              <p class="mt-6 flex flex-wrap gap-x-5 gap-y-2 font-medium">
+                {data.techStack.map((tech) => (
+                  <span>{tech}</span>
+                ))}
+              </p>
+            </div>
           )
         }
-      </aside>
+      </div>
 
-      <div>
-        {data.sections.length > 0 && <NumberedList items={data.sections} />}
+      {
+        data.liveUrl && (
+          <a
+            href={data.liveUrl}
+            rel="noopener noreferrer"
+            target="_blank"
+            class="wh-tap mt-10 inline-flex items-center gap-2 underline underline-offset-4 transition-colors hover:text-muted-foreground"
+          >
+            Visit the live site
+            <span aria-hidden="true">&#8599;</span>
+          </a>
+        )
+      }
+    </div>
+  </div>
 
-        {
-          data.stats.length > 0 && (
-            <dl class="mt-14 grid gap-8 border-t border-border pt-10 sm:grid-cols-2">
+  <!--
+    TODO: no case-study imagery exists yet. The reference runs a full-bleed
+    screenshot here. This is the same placeholder treatment the cards use, so
+    the page keeps the reference's rhythm without inventing a fake screenshot.
+  -->
+  <div class="wh-container mt-16 lg:mt-20">
+    <div
+      aria-hidden="true"
+      class="h-[16rem] rounded-3xl md:h-[28rem] lg:h-[36rem]"
+      style="background:
+        linear-gradient(140deg, #1c1c1f 0%, #2b2b30 46%, #191919 100%),
+        radial-gradient(60% 50% at 70% 20%, color-mix(in oklab, var(--accent) 30%, transparent), transparent 70%);
+        background-blend-mode: screen;"
+    >
+    </div>
+  </div>
+
+  <div class="wh-container">
+    <div class="max-w-2xl lg:ml-[10.35%]">
+      {
+        data.sections.map((section) => (
+          <section class="mt-16 lg:mt-20">
+            <h2 class="mb-6 leading-relaxed text-muted-foreground">{section.title}</h2>
+            <p class="text-lg leading-relaxed md:text-xl">{section.body}</p>
+          </section>
+        ))
+      }
+
+      {
+        data.stats.length > 0 && (
+          <section class="mt-16 lg:mt-20">
+            <h2 class="mb-6 leading-relaxed text-muted-foreground">By the numbers</h2>
+            <dl class="grid gap-8 sm:grid-cols-2">
               {data.stats.map((stat) => (
                 <div>
                   <dt class="sr-only">{stat.label}</dt>
@@ -105,35 +158,58 @@ const meta: Array<{ label: string; value: string }> = [
                 </div>
               ))}
             </dl>
-          )
-        }
+          </section>
+        )
+      }
 
-        {
-          data.testimonial && (
-            <div class="mt-14 border-t border-border pt-10">
-              <Testimonial {...data.testimonial} />
-            </div>
-          )
-        }
+      {
+        data.testimonial && (
+          <section class="mt-16 lg:mt-20">
+            <h2 class="mb-6 leading-relaxed text-muted-foreground">Testimonial</h2>
+            <Testimonial {...data.testimonial} />
+          </section>
+        )
+      }
 
-        {
-          data.outcome && (
-            <div class="mt-14 border-t border-border pt-10">
-              <h2 class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
-                Outcome
-              </h2>
-              <p class="mt-4 max-w-[55ch] text-xl font-medium tracking-tight md:text-2xl">
-                {data.outcome}
-              </p>
-            </div>
-          )
-        }
+      {
+        data.outcome && (
+          <section class="mt-16 lg:mt-20">
+            <h2 class="mb-6 leading-relaxed text-muted-foreground">Outcome</h2>
+            <p class="text-2xl leading-tight text-pretty md:text-3xl">{data.outcome}</p>
+          </section>
+        )
+      }
 
-        <Prose class="mt-14 border-t border-border pt-10">
-          <Content />
-        </Prose>
-      </div>
+      <Prose class="mt-16 lg:mt-20">
+        <Content />
+      </Prose>
     </div>
+  </div>
+
+  <!-- Next project. Mirrors the reference: label, running number, name, and
+       an accent chevron that slides on hover. -->
+  <div class="wh-container mt-24 lg:mt-36">
+    <a
+      href={`/work/${next.id}`}
+      class="group block rounded-3xl bg-muted/60 p-6 transition-colors hover:bg-muted lg:p-10"
+    >
+      <p class="mb-10 text-xl lg:mb-20 lg:text-2xl">Next project</p>
+      <div class="flex flex-wrap items-center gap-x-5 gap-y-4 text-3xl lg:text-5xl">
+        <span class="text-muted-foreground tabular-nums">{ordinal(nextIndex)}</span>
+        <span>{next.data.client}</span>
+        <span
+          aria-hidden="true"
+          class="inline-flex h-10 items-center rounded-3xl bg-accent px-6 text-base text-accent-foreground transition-transform duration-300 ease-out group-hover:translate-x-4"
+        >
+          &rarr;
+        </span>
+      </div>
+      {
+        next.data.timeline && (
+          <p class="mt-8 text-muted-foreground lg:text-right">{next.data.timeline}</p>
+        )
+      }
+    </a>
   </div>
 
   <CTASection heading="Got something eating your hours?" ctaLabel="Talk to Us" />

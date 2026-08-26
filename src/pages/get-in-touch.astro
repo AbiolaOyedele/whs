@@ -40,15 +40,25 @@ Then draft a short enquiry describing my project.`
     subtitle="What you are running now, and what is not working about it. That is enough to start."
   />
 
+  <!--
+    Laid out to the reference's contact page: the pitch and the trust row on the
+    left, the agent card stacked above the form on the right. The dark banner
+    above stays — it carries the page title, so this column leads with the body
+    copy rather than repeating the headline.
+  -->
   <div class="wh-container wh-section">
-    <div class="grid gap-12 lg:grid-cols-[1.3fr_1fr] lg:gap-16">
-      <div>
-        <h2 class="sr-only">Contact form</h2>
-        <ContactForm client:visible />
-      </div>
+    <div class="grid gap-12 lg:grid-cols-2 lg:gap-16">
+      <div class="min-w-0">
+        <p class="max-w-[34rem] text-lg leading-relaxed md:text-xl">
+          Tell us what is eating your hours — the report someone rebuilds every week, the
+          spreadsheet three people maintain, the thing you keep meaning to automate. We read every
+          enquiry and reply with a concrete next step, usually within one working day. If you are
+          still working out what you need, <a href="/services" class="underline underline-offset-4"
+            >what we build</a
+          > is the place to start.
+        </p>
 
-      <aside class="space-y-10">
-        <div>
+        <div class="mt-10">
           <h2 class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
             Prefer email?
           </h2>
@@ -75,12 +85,19 @@ Then draft a short enquiry describing my project.`
           </p>
         </div>
 
-        <CopyPrompt prompt={agentPrompt} />
-      </aside>
-    </div>
+        <div class="mt-12 border-t border-border pt-10">
+          <LogoMarquee logos={LOGOS} label="Built by WildHands" duration={40} />
+        </div>
+      </div>
 
-    <div class="mt-20 border-t border-border pt-10">
-      <LogoMarquee logos={LOGOS} label="Built by WildHands" duration={40} />
+      <div class="min-w-0 space-y-6">
+        <CopyPrompt prompt={agentPrompt} />
+
+        <div class="rounded-3xl bg-card p-6 shadow-sm md:p-8">
+          <h2 class="sr-only">Contact form</h2>
+          <ContactForm client:visible />
+        </div>
+      </div>
     </div>
   </div>
 </BaseLayout>

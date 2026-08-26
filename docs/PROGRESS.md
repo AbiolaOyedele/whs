@@ -398,6 +398,48 @@ Verified at 375 / 768 / 1280px across 19 routes: **no horizontal overflow, no
 clipped text, no sub-12px type, no heading-level skips.** The three remaining
 audit flags are known false positives, documented under Final QA.
 
+### F-20. Brand is now WildHands; project and contact pages rebuilt
+
+"Studio"/"Studios" is gone from the brand. Prose across 23 files, the manifest,
+the package name and the README now read **WildHands**. Sanity's own product is
+also called Studio, so `src/content/stack/cms/sanity.md` keeps the word.
+
+The full lockup carried a third line reading "studios" in the brand lime. Those
+seven glyph paths are dropped from `FULL_PATHS` and `FULL_VIEW_BOX` is
+re-measured to the two remaining lines (`85.3 78.5 899.2 508.3`, 1.77:1), so the
+footer mark reads "wild / hands" with no dead space under the descender. The
+paths are recoverable from `Whs logo full.svg` if the name ever changes back.
+
+**The inner-page hero was rendering 0px tall.** Every block inside the section is
+absolutely positioned, and only the `home` variant carried a height class. On all
+sixteen inner pages the band collapsed, `overflow-hidden` clipped the H1 out of
+sight, and content sat flush under the floating header — the "clumped up" look.
+This had been true since the archive rebuild (`ed9c92b`), not a recent
+regression. The `page` variant now lays out in normal flow with the reference's
+header clearance (`pt-40 lg:pt-48`), empty logo/CTA slot wrappers are
+`empty:hidden` so they stop contributing stray margin, and inner-page H1s get
+their own scale (`.wh-h1-page`, `text-4xl` / `lg:text-7xl`) — the home clamp's
+3rem floor ran a case-study title to eight lines on a phone.
+
+Case-study pages follow the reference's project layout: running number and date
+on one row, a Services/Stack meta pair, a full-bleed media panel, then the
+narrative in a `max-w-2xl` measure with small muted section labels rather than
+large headings, and a **next project** card that wraps back to the first. Two
+deliberate departures, both because we keep the dark banner the reference does
+not have: the column aligns to the banner's 10.35% gutter instead of centring,
+and the date sits at reading size instead of display size — ours are descriptive
+("Started June 2026, in active development") rather than bare year ranges.
+
+The contact page follows the reference's split — pitch and trust row left, agent
+card stacked above the form right — with the banner kept, as asked. Both grid
+columns needed `min-w-0`: grid items default to `min-width: auto`, so the agent
+prompt's intrinsic width dragged the single-column layout to 1029px at 375px.
+
+Still no case-study imagery. The media panel uses the same gradient placeholder
+as the cards, so the page keeps the reference's rhythm without inventing a
+screenshot. Re-verified at 375 / 768 / 1280: no horizontal overflow, no clipped
+text, no heading skips, and no invisible H1s.
+
 ## 🔍 Live verification log — bejamas.com
 
 Fetched and inspected live on **2026-08-26** (computed styles + DOM + stylesheet
