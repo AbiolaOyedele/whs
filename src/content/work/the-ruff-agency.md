@@ -25,7 +25,7 @@ sections:
   - title: 'The problem'
     body: 'Agencies run on scattered infrastructure. Clients live in a spreadsheet, invoices in a separate system, payment tracking in someone head, and project handoffs in email. Growing the business means buying another tool, and teams work in silos because there is nowhere central to see who is doing what.'
   - title: 'What we built'
-    body: 'A workspace where contacts, contracts, invoices and tasks all sit together, and every member sees the same data gated by their role. Clients get their own portal on a workspace subdomain with independent credentials — the same records, a different view, read-only or collaborative depending on what they are given.'
+    body: 'A workspace where contacts, contracts, invoices and tasks all sit together, and every member sees the same data gated by their role. Clients get their own portal on a workspace subdomain with independent credentials: the same records, a different view, read-only or collaborative depending on what they are given.'
   - title: 'The hard part: two access patterns, one database'
     body: 'Team access had to be added to a schema whose policies assumed a single owner, across more than twenty tables, without a single existing read path breaking. The answer was two SECURITY DEFINER functions that resolve workspace membership once, referenced from permissive policies everywhere else. Postgres ORs permissive policies together, so the original owner-only check and the new member check coexist: adding a teammate can only ever grant access, never revoke it.'
   - title: 'Getting paid'
@@ -42,4 +42,4 @@ An admin-only playground generates marketing assets through DALL-E 3 and Gemini,
 
 ## Not built yet
 
-The image pipeline is still beta and admin-gated — the backend and types are done, the model picker for everyone else is not. There is no CRM automation, no SAML or SSO for team members, and no native mobile app. Onboarding is invite-only, by hand.
+The image pipeline is still beta and admin-gated. The backend and types are done, the model picker for everyone else is not. There is no CRM automation, no SAML or SSO for team members, and no native mobile app. Onboarding is invite-only, by hand.

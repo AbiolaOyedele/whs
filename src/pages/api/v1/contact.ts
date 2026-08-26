@@ -18,7 +18,7 @@ export const POST: APIRoute = async ({ request }) => {
     assertSameOrigin(request, publicEnv.PUBLIC_SITE_URL)
     enforceRateLimit(`contact:${clientIp(request)}`)
     await submitContact(await readBody(request))
-    return toSuccessResponse('Thanks — your message is with us. We will reply shortly.')
+    return toSuccessResponse('Thanks, your message is with us. We will reply shortly.')
   } catch (error) {
     return toErrorResponse(error)
   }

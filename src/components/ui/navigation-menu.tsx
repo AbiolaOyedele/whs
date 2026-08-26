@@ -199,7 +199,7 @@ export function AnimatedNav({ menus, plainLinks, ctaLabel, ctaHref, siteName }: 
           <m.a
             href="/"
             {...withVariants(logoVariants)}
-            aria-label={`${siteName} — home`}
+            aria-label={`${siteName} home`}
             onClick={(event) => event.stopPropagation()}
             className="flex min-h-12 shrink-0 items-center gap-2 pr-3 pl-5 text-white"
           >

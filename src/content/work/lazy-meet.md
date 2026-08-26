@@ -3,7 +3,7 @@ client: 'Lazy Meet'
 featured: true
 order: 30
 title: 'Lazy Meet: joining the call so you do not have to'
-description: 'A desktop app that joins your Google Meet calls at start time — muted, camera off — across up to three Google accounts.'
+description: 'A desktop app that joins your Google Meet calls at start time, muted and camera off, across up to three Google accounts.'
 summary: 'Joins your calls at start time, muted and camera off, across three accounts.'
 industry: 'Productivity'
 services:
@@ -36,7 +36,7 @@ The core idea is small: a calendar already knows when your meetings are and wher
 
 ## Beyond the calendar
 
-Not every meeting arrives as a calendar invite, so links can be pasted in directly and either scheduled once or repeated weekly. Out-of-office days are respected, the join lead time is configurable — a minute early or exactly on the hour — and optional reminders fire beforehand for the calls you do want to prepare for.
+Not every meeting arrives as a calendar invite, so links can be pasted in directly and either scheduled once or repeated weekly. Out-of-office days are respected, the join lead time is configurable (a minute early or exactly on the hour), and optional reminders fire beforehand for the calls you do want to prepare for.
 
 ## Read-only, by design
 

@@ -22,7 +22,7 @@ faqs:
   - question: 'How do you measure whether a system was worth it?'
     answer: 'By hours returned. We establish what the current process costs in time during discovery, and that number is what the finished build is measured against.'
   - question: 'Can you build a dashboard from data we already have?'
-    answer: 'Usually yes. Most teams already produce the data and lose it across several tools — the work is pulling it into one live view rather than generating anything new.'
+    answer: 'Usually yes. Most teams already produce the data and lose it across several tools. The work is pulling it into one live view rather than generating anything new.'
 atAGlance:
   - label: 'What it is'
     value: 'Dashboards and workflow automation'

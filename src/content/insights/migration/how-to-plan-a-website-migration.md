@@ -16,7 +16,7 @@ faqs:
 placeholder: true
 ---
 
-Placeholder article body. The structure exercises the article template — headings, cross-links and an author box — and should be replaced with real editorial content before launch.
+Placeholder article body. The structure exercises the article template (headings, cross-links and an author box) and should be replaced with real editorial content before launch.
 
 ## The short version
 

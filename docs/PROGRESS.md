@@ -520,6 +520,42 @@ Grammar fixes surfaced along the way: `All ${label.toLowerCase()}` was rendering
 "All technologys", "All cms" and "All framework". Those labels are written out
 now, in `STACK_CATEGORY_ALL_LABELS` and on each work facet.
 
+### F-23. Copy pass from `wildhands-site-full-optimized.md`
+
+**The "How it works" section was rendering `[object Object]`.** `PROCESS_STEPS`
+changed from `string[]` to `{ title, body }[]` during the service-model pivot,
+but both renderers still interpolated `{step}`, so every service page and every
+industry page printed the literal string three times. Now renders `step.title`
+as the heading and `step.body` beneath it, and the grid is three columns rather
+than four for three steps. This shipped broken for several commits; the audit
+harness never caught it because `[object Object]` is valid, visible text.
+
+**Em dashes are gone from the site.** Verified by counting across the built
+output: **0 across all 53 pages.** Each one was rewritten by hand rather than
+swapped for a single replacement character, so the punctuation fits the
+sentence: colons where a list or definition follows, parentheses for asides,
+commas for light joins, and a full stop where the clause was really two
+sentences. The only em dashes left in the repo are in source comments that never
+reach the browser; the three that did ship inside inlined HTML/JS comments were
+cleaned too.
+
+**Page titles** now use `Page | WildHands` rather than an em dash separator.
+
+**About** drops the founder credit, per the instruction that the page stay
+brand-only. The name is out of the codebase entirely.
+
+Deliberately unchanged, all per the doc: every TODO stays a TODO (Enterprise SLA
+response targets, the Careers and Freelance Hub scorecards, Privacy Policy
+specifics), Insights bylines stay marked placeholder rather than invented, and
+the `/get-in-touch` agent instruction is untouched.
+
+One judgement call the doc left open: the two email labels on the contact page
+("sales@… — new projects") now use a middot rather than a colon, matching the
+separator already used for service lists elsewhere on the site.
+
+Re-audited at 375 / 768 / 1280 across 22 route loads: no overflow, no clipped
+text, no heading skips, no invisible H1s, and no `[object Object]`.
+
 ## 🔍 Live verification log — bejamas.com
 
 Fetched and inspected live on **2026-08-26** (computed styles + DOM + stylesheet

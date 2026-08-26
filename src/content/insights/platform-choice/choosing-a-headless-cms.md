@@ -10,11 +10,11 @@ title: 'Choosing a headless CMS: the three questions that decide it'
 description: 'Most headless CMS evaluations compare feature lists. Three operational questions predict satisfaction far better.'
 faqs:
   - question: 'Which headless CMS is best?'
-    answer: 'There is no single best option. The choice follows from whether your binding constraint is modelling flexibility, editorial governance, or visual editing — those three lead to different platforms.'
+    answer: 'There is no single best option. The choice follows from whether your binding constraint is modelling flexibility, editorial governance, or visual editing. Those three lead to different platforms.'
 placeholder: true
 ---
 
-Placeholder article body. The structure exercises the article template — headings, cross-links and an author box — and should be replaced with real editorial content before launch.
+Placeholder article body. The structure exercises the article template (headings, cross-links and an author box) and should be replaced with real editorial content before launch.
 
 ## The short version
 

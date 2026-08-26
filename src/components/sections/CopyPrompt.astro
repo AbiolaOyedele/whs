@@ -67,7 +67,7 @@ const copyLine = `Fetch ${promptUrl} and follow its instructions to send WildHan
         await navigator.clipboard.writeText(text)
         label.textContent = 'Copied. Paste it into your agent.'
       } catch {
-        label.textContent = 'Copy failed — select the link instead'
+        label.textContent = 'Copy failed. Select the link instead'
       }
       window.clearTimeout(reset)
       reset = window.setTimeout(() => {

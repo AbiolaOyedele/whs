@@ -101,7 +101,7 @@ const groups = STACK_CATEGORIES.map((category) => {
   <Hero
     eyebrow="Introduction"
     title="The stack we build on, and the reasoning behind it."
-    standfirst="A curated, opinionated reference: CMS, framework, hosting, and the integrations that tie it into your business. Not a directory of everything that exists, and vendor-agnostic by design — the set we actually evaluate, recommend and ship, grouped by the decision each layer answers."
+    standfirst="A curated, opinionated reference: CMS, framework, hosting, and the integrations that tie it into your business. Not a directory of everything that exists, and vendor-agnostic by design. This is the set we actually evaluate, recommend and ship, grouped by the decision each layer answers."
   />
 
   <!-- If we started today -->
@@ -189,7 +189,7 @@ const groups = STACK_CATEGORIES.map((category) => {
               {group.entries.slice(0, 4).map((entry) => (
                 <li class="rounded-full border border-border px-3 py-1.5 text-xs">
                   <span class="font-medium">{entry.data.name}</span>
-                  <span class="text-muted-foreground"> — {entry.data.positioning}</span>
+                  <span class="text-muted-foreground">: {entry.data.positioning}</span>
                 </li>
               ))}
               {group.entries.length > 4 && (
@@ -217,7 +217,7 @@ const groups = STACK_CATEGORIES.map((category) => {
       </AnimatedText>
       <p class="mt-5 text-muted-foreground">
         On a discovery call we map what you already run, work out what it is costing you in time,
-        and put the recommendation in writing — so you can defend the choice internally.
+        and put the recommendation in writing, so you can defend the choice internally.
       </p>
       <div class="mt-8">
         <Button href="/get-in-touch" variant="accent">Talk to Us</Button>

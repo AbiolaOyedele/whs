@@ -46,7 +46,7 @@ export async function postForm(
     if (response.ok) {
       return {
         status: 'success',
-        message: payload.message ?? 'Thanks — that came through.',
+        message: payload.message ?? 'Thanks, that came through.',
         fieldErrors: {},
       }
     }

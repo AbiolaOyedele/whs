@@ -21,7 +21,7 @@ faqs:
   - question: 'What is Sanity used for?'
     answer: 'Sanity is a headless CMS used to model, store and deliver structured content over an API. It is most often chosen when the content model is unusual and the editing interface needs to be customised around it.'
   - question: 'Is Sanity good for non-technical editors?'
-    answer: 'Yes, when someone has configured the Studio properly. Sanity gives more control over the editing experience than most alternatives, but that control has to be exercised — an unconfigured Studio is not friendlier than any other CMS.'
+    answer: 'Yes, when someone has configured the Studio properly. Sanity gives more control over the editing experience than most alternatives, but that control has to be exercised, and an unconfigured Studio is not friendlier than any other CMS.'
 atAGlance:
   - label: 'Category'
     value: 'Headless CMS'

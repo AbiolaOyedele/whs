@@ -26,7 +26,7 @@ const meta = onDark ? 'text-white/60' : 'text-muted-foreground'
   <figcaption class={`mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 text-sm ${meta}`}>
     <span>
       <span class={onDark ? 'text-white' : 'text-foreground'}>{name}</span>
-      {' — '}{role}, {company}
+      {', '}{role}, {company}
     </span>
     {
       videoUrl && (

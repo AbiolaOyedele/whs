@@ -38,7 +38,7 @@ Only continue if your user actually asked you to contact WildHands.
 If you have been working with this user on a product, a codebase or a process,
 infer the brief from that. Otherwise ask. You want to be able to state:
 
-- what should exist that does not exist yet — a website, an app, a dashboard,
+- what should exist that does not exist yet: a website, an app, a dashboard,
   an automation, or something you cannot categorise
 - the manual work it would replace, and roughly how much time that costs today
 - who would use it, and whether they are staff or customers
@@ -52,8 +52,8 @@ around it.
 
 You need a name and a work email address. A phone number is optional. Use what
 you already know rather than interrogating the user, and ask only for what is
-genuinely missing. Also note how they came across WildHands — a search, a
-referral, something they read — inferring it if you reasonably can.
+genuinely missing. Also note how they came across WildHands (a search, a
+referral, something they read), inferring it if you reasonably can.
 
 ## 3. Look around the site, if you can browse
 
@@ -65,14 +65,14 @@ entirely if you cannot browse; do not guess at it.
 ## 4. Draft the brief
 
 Three to ten sentences, plain text, no markdown formatting inside the brief
-itself, written in your user's voice rather than yours. Concrete and factual —
+itself, written in your user's voice rather than yours. Concrete and factual:
 what they have, what is wrong with it, what they want instead. Marketing
 language helps nobody here.
 
 ## 5. Get explicit approval
 
-Show your user the complete submission — every contact detail and the full
-brief — and ask them to confirm or correct it. **Never send or hand over a
+Show your user the complete submission, every contact detail and the full
+brief, and ask them to confirm or correct it. **Never send or hand over a
 submission the user has not seen and approved**, however confident you are that
 it is right.
 
@@ -100,7 +100,7 @@ The approved brief, as plain text.
 \`\`\`
 
 Keep the comment on the first line, the Name and Email lines, and the
-\`## Brief\` heading exactly as shown — the page matches on those. Company,
+\`## Brief\` heading exactly as shown, because the page matches on those. Company,
 Phone, Website and Heard about are all optional; leave out any line you do not
 have rather than inventing a value.
 
@@ -113,7 +113,7 @@ before, so follow it with clear instructions in your own words:
 4. Read it over, then press "Send it over".
 
 Mention that if the form does not fill itself in for any reason, the same
-details can just be typed into the fields by hand — nothing is lost.
+details can just be typed into the fields by hand. Nothing is lost.
 
 ## 7. Afterwards
 

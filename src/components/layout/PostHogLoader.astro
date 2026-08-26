@@ -40,7 +40,7 @@ const { posthogKey, host } = Astro.props
     try {
       if (localStorage.getItem('wh-consent') === 'granted') load()
     } catch {
-      // Storage blocked — stay off, which is the privacy-preserving default.
+      // Storage blocked: stay off, which is the privacy-preserving default.
     }
 
     window.addEventListener('wh:consent-granted', load)

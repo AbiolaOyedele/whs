@@ -20,7 +20,7 @@ faqs:
   - question: 'What is Supabase used for?'
     answer: 'Supabase provides a hosted Postgres database with built-in authentication, file storage and row-level security, used when a site needs to store and control access to real data.'
   - question: 'Does a marketing site need a database?'
-    answer: 'Usually not. A marketing site delivering content from a CMS is stateless. A database becomes necessary only when the site stores something — accounts, gated resources, submitted data it must retain.'
+    answer: 'Usually not. A marketing site delivering content from a CMS is stateless. A database becomes necessary only when the site stores something: accounts, gated resources, submitted data it must retain.'
 atAGlance:
   - label: 'Category'
     value: 'Backend platform'

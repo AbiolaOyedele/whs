@@ -40,7 +40,7 @@ pricingNote: 'Both are open source. The cost difference is hosting: static deliv
 houseView: 'The question is almost never which framework is better. It is whether your site is a document collection or an application. Answer that and the framework picks itself.'
 faqs:
   - question: 'Is Astro faster than Next.js?'
-    answer: 'For content-heavy static pages, usually yes, because Astro ships no JavaScript unless a component asks for it. For an application with pervasive client-side state the comparison stops being meaningful — they are solving different problems.'
+    answer: 'For content-heavy static pages, usually yes, because Astro ships no JavaScript unless a component asks for it. For an application with pervasive client-side state the comparison stops being meaningful. They are solving different problems.'
   - question: 'Can you migrate from Next.js to Astro?'
     answer: 'Yes, and React components often move across unchanged since Astro can render them. The work is in the routing and data-fetching layer, not usually in the components.'
 atAGlance:

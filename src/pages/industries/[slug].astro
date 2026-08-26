@@ -87,7 +87,8 @@ const jsonLd = [
             <span class="text-xs text-muted-foreground tabular-nums">
               {String(index + 1).padStart(2, '0')}
             </span>
-            <h3 class="mt-2 text-lg font-medium">{step}</h3>
+            <h3 class="mt-2 text-lg font-medium">{step.title}</h3>
+            <p class="mt-2 text-muted-foreground">{step.body}</p>
           </li>
         ))
       }

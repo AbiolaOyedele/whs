@@ -6,7 +6,7 @@ eyebrow: 'Websites'
 summary: 'Custom-built, not templated.'
 pillar: 'websites'
 order: 10
-definition: 'We build websites from scratch around your business, rather than fitting you into a theme. That means the structure, the content model and the page templates are designed for what you actually publish — not adapted from something built for someone else.'
+definition: 'We build websites from scratch around your business, rather than fitting you into a theme. That means the structure, the content model and the page templates are designed for what you actually publish, not adapted from something built for someone else.'
 includes:
   - title: 'Marketing site'
     body: 'A focused site built to represent you and convert visitors. Right fit if you need a strong, simple presence and a clear path to contact.'
@@ -24,7 +24,7 @@ faqs:
   - question: 'Why not just use a template?'
     answer: 'A template is faster to launch and then constrains every decision afterwards. If your site only needs to represent you, a template can be enough. If it needs to do anything specific to your business, custom is cheaper over time.'
   - question: 'Can we update the site ourselves after launch?'
-    answer: 'Yes. Editing is part of the build, not an add-on — we set up the content model so routine changes never need a developer.'
+    answer: 'Yes. Editing is part of the build, not an add-on. We set up the content model so routine changes never need a developer.'
 atAGlance:
   - label: 'What it is'
     value: 'Custom-built websites, from marketing sites to full builds'
@@ -33,7 +33,7 @@ atAGlance:
   - label: 'Typical work'
     value: 'Marketing site, or full custom build'
   - label: 'Pricing'
-    value: 'Quoted after a discovery call — scope first, price second'
+    value: 'Quoted after a discovery call, scope first, price second'
   - label: 'Our view'
     value: 'Templates are cheap now and expensive later'
 chooseWhen:

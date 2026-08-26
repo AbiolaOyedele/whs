@@ -18,7 +18,7 @@ pricingNote: 'Open source. Cost is hosting only.'
 houseView: 'Most marketing sites built on an application framework are paying a runtime tax for interactivity they use on two components. Astro inverts the default.'
 faqs:
   - question: 'What is Astro best used for?'
-    answer: 'Astro is best for content-heavy sites — marketing sites, documentation, blogs — where most pages are static and only a few components need interactivity. It renders to HTML by default and ships JavaScript only for components you explicitly hydrate.'
+    answer: 'Astro is best for content-heavy sites (marketing sites, documentation, blogs) where most pages are static and only a few components need interactivity. It renders to HTML by default and ships JavaScript only for components you explicitly hydrate.'
   - question: 'Can you use React with Astro?'
     answer: 'Yes. Astro supports React, Svelte, Vue and others as islands. The component runs on the server by default and only ships its framework runtime if you mark it for hydration.'
 atAGlance:

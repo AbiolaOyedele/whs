@@ -54,7 +54,7 @@ export default function VideoResponse() {
       setPhase('ready')
     } catch {
       setError(
-        'We could not access your camera. You can upload a video file instead — the option is below.'
+        'We could not access your camera. You can upload a video file instead, using the option below.'
       )
       setPhase('unsupported')
     }

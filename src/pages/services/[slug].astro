@@ -77,14 +77,15 @@ const jsonLd = [
 
   <section class="wh-container wh-section">
     <SectionHeading level={2} eyebrow="Process">How it works.</SectionHeading>
-    <ol class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+    <ol class="mt-10 grid gap-8 sm:grid-cols-3">
       {
         PROCESS_STEPS.map((step, index) => (
           <li class="border-t border-border pt-5">
             <span class="text-xs text-muted-foreground tabular-nums">
               {String(index + 1).padStart(2, '0')}
             </span>
-            <h3 class="mt-2 text-lg font-medium">{step}</h3>
+            <h3 class="mt-2 text-lg font-medium">{step.title}</h3>
+            <p class="mt-2 text-muted-foreground">{step.body}</p>
           </li>
         ))
       }

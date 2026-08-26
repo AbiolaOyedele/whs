@@ -28,7 +28,7 @@ const {
 } = Astro.props
 
 /** Titles already ending in the site name are not suffixed twice. */
-const fullTitle = title.includes(SITE.name) ? title : `${title} — ${SITE.name}`
+const fullTitle = title.includes(SITE.name) ? title : `${title} | ${SITE.name}`
 ---
 
 <title>{fullTitle}</title>
