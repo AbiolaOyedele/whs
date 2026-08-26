@@ -71,9 +71,9 @@ const containerVariants: Variants = {
     },
   },
   collapsed: {
-    // Wide enough for the "whs." mark plus even padding — the mark is 2.6:1,
-    // so a 3rem circle would crop it.
-    width: '6.25rem',
+    // Wide enough for the "whs." mark plus even padding. The mark is 2.6:1, so
+    // a circle would crop it — the pill collapses to a short capsule instead.
+    width: '7.5rem',
     transition: {
       type: 'spring',
       damping: 20,
@@ -190,7 +190,7 @@ export function AnimatedNav({ menus, plainLinks, ctaLabel, ctaHref, siteName }: 
           onClick={onPillClick}
           onMouseLeave={closeWithDelay}
           className={cn(
-            'relative flex h-12 items-center rounded-full border border-white/15 bg-[color-mix(in_oklab,var(--primary)_70%,transparent)] shadow-lg backdrop-blur-md',
+            'relative flex h-16 items-center rounded-full border border-white/15 bg-[color-mix(in_oklab,var(--primary)_70%,transparent)] shadow-lg backdrop-blur-md',
             isExpanded ? 'overflow-visible' : 'cursor-pointer justify-center overflow-hidden'
           )}
         >
@@ -199,9 +199,9 @@ export function AnimatedNav({ menus, plainLinks, ctaLabel, ctaHref, siteName }: 
             {...withVariants(logoVariants)}
             aria-label={`${siteName} — home`}
             onClick={(event) => event.stopPropagation()}
-            className="flex min-h-11 shrink-0 items-center gap-2 pr-2 pl-4 text-white"
+            className="flex min-h-12 shrink-0 items-center gap-2 pr-3 pl-5 text-white"
           >
-            <Logo variant="mark" className="h-5 w-auto" label="" />
+            <Logo variant="full" className="h-11 w-auto" label="" />
           </m.a>
 
           <m.div
@@ -229,7 +229,7 @@ export function AnimatedNav({ menus, plainLinks, ctaLabel, ctaHref, siteName }: 
                     setOpenMenu(openMenu === menu.id ? null : menu.id)
                   }}
                   className={cn(
-                    'inline-flex min-h-11 items-center rounded-full px-4 text-base whitespace-nowrap',
+                    'inline-flex min-h-12 items-center rounded-full px-4 text-base whitespace-nowrap',
                     'text-white transition-colors',
                     openMenu === menu.id ? 'bg-white/15' : 'hover:bg-white/10'
                   )}
@@ -247,7 +247,7 @@ export function AnimatedNav({ menus, plainLinks, ctaLabel, ctaHref, siteName }: 
                 href={link.href}
                 {...withVariants(itemVariants)}
                 onClick={(event) => event.stopPropagation()}
-                className="inline-flex min-h-11 items-center rounded-full px-4 text-base whitespace-nowrap text-white transition-colors hover:bg-white/10"
+                className="inline-flex min-h-12 items-center rounded-full px-4 text-base whitespace-nowrap text-white transition-colors hover:bg-white/10"
               >
                 {link.label}
               </m.a>
@@ -257,7 +257,7 @@ export function AnimatedNav({ menus, plainLinks, ctaLabel, ctaHref, siteName }: 
               href={ctaHref}
               {...withVariants(itemVariants)}
               onClick={(event) => event.stopPropagation()}
-              className="ml-1 inline-flex h-11 items-center rounded-full bg-accent px-5 text-base font-medium whitespace-nowrap text-accent-foreground transition-transform hover:scale-[1.02]"
+              className="ml-1 inline-flex h-12 items-center rounded-full bg-accent px-5 text-base font-medium whitespace-nowrap text-accent-foreground transition-transform hover:scale-[1.02]"
             >
               {ctaLabel}
             </m.a>
@@ -280,7 +280,7 @@ export function AnimatedNav({ menus, plainLinks, ctaLabel, ctaHref, siteName }: 
                   : { type: 'spring', damping: 15, stiffness: 300, delay: 0.15 }
               }
             >
-              <Logo variant="mark" className="h-5 w-auto text-white" label="" />
+              <Logo variant="mark" className="h-6 w-auto text-white" label="" />
             </m.div>
           </div>
         </m.nav>
