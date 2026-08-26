@@ -19,11 +19,26 @@
  */
 import { z } from 'zod'
 
-/** Merged env source. `process.env` covers Node/build-time, `import.meta.env` covers Vite/Astro. */
-const source: Record<string, unknown> = {
+/**
+ * Merged env source. `process.env` covers Node/build-time, `import.meta.env`
+ * covers Vite/Astro.
+ *
+ * Blank values are stripped, so a variable set to an empty string behaves
+ * exactly like one that was never set. Hosting dashboards make it very easy to
+ * create a variable and leave it empty, and without this an optional field like
+ * PUBLIC_POSTHOG_KEY fails validation on `""` while passing on `undefined` —
+ * which is a confusing way to break a deploy.
+ */
+const rawSource: Record<string, unknown> = {
   ...(typeof process !== 'undefined' && process.env ? process.env : {}),
   ...(import.meta.env as Record<string, unknown>),
 }
+
+const source: Record<string, unknown> = Object.fromEntries(
+  Object.entries(rawSource).filter(
+    ([, value]) => !(typeof value === 'string' && value.trim() === '')
+  )
+)
 
 /**
  * Resolves the canonical origin.

@@ -54,8 +54,11 @@ export default tseslint.config(
     },
   },
   {
-    // The single permitted env-reading module, plus build tooling.
-    files: ['src/config/env.ts', 'astro.config.mjs', 'eslint.config.js'],
+    // The single permitted env-reading module, plus build tooling — and tests,
+    // which have to manipulate the environment in order to verify how env.ts
+    // handles it. The rule exists to keep feature code away from process.env,
+    // not to stop the tests that guard that behaviour.
+    files: ['src/config/env.ts', 'astro.config.mjs', 'eslint.config.js', 'tests/**'],
     rules: {
       'no-restricted-properties': 'off',
       'no-restricted-syntax': 'off',

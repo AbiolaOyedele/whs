@@ -2,7 +2,7 @@
  * Request-level security controls: origin enforcement, the honeypot trap,
  * upload validation, and the rate limiter.
  */
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { AppError, isAppError, toErrorResponse, toSuccessResponse } from '@/lib/errors'
 import { assertSameOrigin, readBody, submitContact } from '@/lib/forms'
 import { clientIp, enforceRateLimit } from '@/lib/rate-limit'
@@ -246,5 +246,24 @@ describe('env resolution', () => {
   it('resolves a canonical site URL', async () => {
     const { publicEnv } = await import('@/config/env')
     expect(() => new URL(publicEnv.PUBLIC_SITE_URL)).not.toThrow()
+  })
+
+  it('treats a blank optional variable as unset', async () => {
+    // A hosting dashboard makes it trivial to create a variable and leave it
+    // empty. This broke a real deploy: PUBLIC_POSTHOG_KEY="" failed `.min(1)`
+    // while an absent value passed, so the build died on an *optional* field.
+    const previousKey = process.env['PUBLIC_POSTHOG_KEY']
+    const previousHost = process.env['PUBLIC_POSTHOG_HOST']
+    process.env['PUBLIC_POSTHOG_KEY'] = ''
+    process.env['PUBLIC_POSTHOG_HOST'] = ''
+
+    vi.resetModules()
+    await expect(import('@/config/env')).resolves.toBeDefined()
+
+    if (previousKey === undefined) delete process.env['PUBLIC_POSTHOG_KEY']
+    else process.env['PUBLIC_POSTHOG_KEY'] = previousKey
+    if (previousHost === undefined) delete process.env['PUBLIC_POSTHOG_HOST']
+    else process.env['PUBLIC_POSTHOG_HOST'] = previousHost
+    vi.resetModules()
   })
 })
