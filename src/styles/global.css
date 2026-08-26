@@ -31,18 +31,33 @@
 /*
  * Diagramm — display face for headings.
  *
- * Ships in a single weight (400). `font-synthesis-weight: none` is set on body,
- * so a heading that asks for 500 renders at 400 rather than getting a smeared
- * faux bold. Adding a Medium file later would activate those declarations with
- * no other change.
+ * Three weights: Regular 400, Medium 500, SemiBold 600. Which one headings use
+ * is set once via `--font-weight-display` below, so the whole display scale can
+ * be shifted between them by changing a single value.
  *
- * ⚠️ The file states no licence (designer: Akbar Rohmanto). Confirm commercial
+ * ⚠️ The files state no licence (designer: Akbar Rohmanto). Confirm commercial
  * use before launch — see docs/PROGRESS.md.
  */
 @font-face {
   font-family: 'Diagramm';
   src: url('/fonts/Diagramm-Regular.woff2') format('woff2');
   font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Diagramm';
+  src: url('/fonts/Diagramm-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Diagramm';
+  src: url('/fonts/Diagramm-SemiBold.woff2') format('woff2');
+  font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
@@ -109,6 +124,12 @@
   --font-sans:
     'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Diagramm', 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  /*
+   * Weight for every display heading. 500 (Medium) is the default: Diagramm has
+   * wide letterforms, and at 64-72px SemiBold starts to close up the counters.
+   * Change to 600 here to move the entire display scale to SemiBold.
+   */
+  --font-weight-display: 500;
   --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 
   /* --- easing (verified live) --- */
@@ -153,6 +174,7 @@
 
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
+  --font-weight-display: var(--font-weight-display);
   --font-mono: var(--font-mono);
 
   --radius-xs: var(--radius-xs);
@@ -239,6 +261,7 @@
   h3,
   h4 {
     font-family: var(--font-display);
+    font-weight: var(--font-weight-display);
     text-wrap: balance;
   }
 
@@ -448,7 +471,7 @@
     font-size: clamp(3rem, 12vw, 4.5rem);
     line-height: 1.05;
     letter-spacing: -0.035em;
-    font-weight: 400;
+    font-weight: var(--font-weight-display);
   }
   @media (width >= 64rem) {
     .wh-h1 {
@@ -462,7 +485,7 @@
     font-size: 1.875rem;
     line-height: 1.18;
     letter-spacing: -0.02em;
-    font-weight: 400;
+    font-weight: var(--font-weight-display);
   }
   @media (width >= 48rem) {
     .wh-h2 {
@@ -475,7 +498,7 @@
     font-size: 1.25rem;
     line-height: 1.3;
     letter-spacing: -0.015em;
-    font-weight: 400;
+    font-weight: var(--font-weight-display);
   }
   /* Hero standfirst: 24px / 1.2 / 500, capped at 35rem. Verified live. */
   .wh-lede {

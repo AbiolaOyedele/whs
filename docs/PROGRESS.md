@@ -241,11 +241,17 @@ Diagramm (display) and IBM Plex Sans (body). NatomPro was removed entirely once
 Diagramm replaced it — the browser confirmed it was never being fetched, so it
 was 64KB of dead weight in the deploy. Fonts now total 94KB, down from 157KB.
 
+Diagramm now ships three real weights — Regular 400, Medium 500, SemiBold 600 —
+subset from the full family. Every display heading uses **Medium (500)**, set
+once via `--font-weight-display` in `global.css`. Changing that single value
+moves the entire display scale, including headings inside rendered Markdown.
+
+Medium rather than SemiBold because Diagramm has wide letterforms: at 64–72px
+SemiBold begins closing up the counters, and the reference design this was
+matched to used 400–500 for display. Switching is one value if you disagree.
+
 ⚠️ **Diagramm states no licence in its metadata** (designer: Akbar Rohmanto).
-Confirm commercial use is permitted before launch. It also ships a single
-weight (400); `font-synthesis-weight: none` means a heading asking for 500
-renders at 400 rather than a faux bold. Adding a Medium file later would
-activate those declarations with no other change.
+Confirm commercial use is permitted before launch.
 
 ### F-18. Work grid spacing fixed
 

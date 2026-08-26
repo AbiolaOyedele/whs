@@ -17,17 +17,19 @@ const { class: className = '' } = Astro.props
   .wh-prose > * + * {
     margin-top: 1.25rem;
   }
+  /* Headings inside rendered Markdown follow the same display weight as the
+     rest of the site, so prose does not drift bolder than the page around it. */
   .wh-prose h2 {
     margin-top: 2.5rem;
     font-size: 1.5rem;
     line-height: 1.333;
-    font-weight: 600;
+    font-weight: var(--font-weight-display);
   }
   .wh-prose h3 {
     margin-top: 2rem;
     font-size: 1.25rem;
     line-height: 1.4;
-    font-weight: 600;
+    font-weight: var(--font-weight-display);
   }
   .wh-prose p,
   .wh-prose li {
