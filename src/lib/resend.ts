@@ -39,17 +39,22 @@ export async function sendNotification(options: SendNotificationOptions): Promis
   try {
     const { error } = await getClient().emails.send({
       /*
-       * TODO(B-5): switch to `WildHands <hello@whstd.com>` once whstd.com
-       * verifies in Resend. It is added and its DKIM record is verified, but
-       * verification is blocked on an MX record Resend wants at `send`, which
-       * Namecheap only exposes under Mail Settings. Setting it there would
-       * replace Email Forwarding and silently break inbound mail to hello@,
-       * sales@ and hr@, so it is deliberately not done.
+       * Sent from theruff.agency, which is already verified on the same Resend
+       * account. resend.dev only delivers to the account owner, which forced
+       * notifications to an inbox that is not the one actually read.
        *
-       * Until then: resend.dev only delivers to the Resend account owner, so
-       * CONTACT_NOTIFICATION_EMAIL must stay that address.
+       * This address is NEVER client-visible: `to` below is hardcoded to
+       * CONTACT_NOTIFICATION_EMAIL, so this function can only ever email us.
+       * An enquirer's address is used as replyTo and nothing else.
+       *
+       * If the site ever needs to email a client directly (a confirmation, an
+       * auto-reply), this From has to change first — a client must not see
+       * another brand's domain. That needs whstd.com verified in Resend, which
+       * needs an MX record at `send` that Namecheap cannot host alongside its
+       * email forwarding. The route is moving DNS to Cloudflare. See
+       * docs/PROGRESS.md § F-24.
        */
-      from: 'WildHands <onboarding@resend.dev>',
+      from: 'WildHands <notifications@theruff.agency>',
       to: [CONTACT_NOTIFICATION_EMAIL],
       subject: options.subject,
       text: options.text,

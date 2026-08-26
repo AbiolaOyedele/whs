@@ -556,6 +556,37 @@ separator already used for service lists elsewhere on the site.
 Re-audited at 375 / 768 / 1280 across 22 route loads: no overflow, no clipped
 text, no heading skips, no invisible H1s, and no `[object Object]`.
 
+### F-24. Email sending: what works, and the one thing that does not
+
+**Namecheap cannot do both.** Selecting Custom MX disables its email forwarding
+service outright — the Redirect Email panel switches to "Your domain is using
+other email service" — even with all five `eforward` MX records present and
+correct. Forwarding is tied to the Mail Settings mode, not to the records. This
+was tested live and rolled back; the forwarders were hidden rather than deleted
+and came back intact. So `whstd.com` cannot be verified in Resend while
+Namecheap handles the forwarding, because Resend requires an MX at `send`.
+
+**Current arrangement.** Notifications send from `notifications@theruff.agency`,
+which is already verified on the same Resend account, to
+CONTACT_NOTIFICATION_EMAIL. `onboarding@resend.dev` was the previous sender but
+it only delivers to the Resend account owner, which forced notifications into an
+inbox that is not the one actually read.
+
+**This is safe only because nothing the site sends is client-facing.**
+`sendNotification` hardcodes `to: [CONTACT_NOTIFICATION_EMAIL]`, so it can only
+ever email us; an enquirer's address is used as `replyTo` and nowhere else. All
+four forms go through that one function.
+
+**The moment that stops being true** — a confirmation email, an auto-reply,
+anything addressed to an enquirer — the From must change first. A client must
+not receive mail from another brand's domain. That requires `whstd.com` verified
+in Resend, which requires the `send` MX, which requires DNS somewhere that can
+host a subdomain MX alongside forwarding. Cloudflare is the route: free, and its
+Email Routing replaces the Namecheap forwarding.
+
+Left in place for that day: `whstd.com` is already added to Resend and its DKIM
+record verifies. Only the `send` MX is missing.
+
 ## 🔍 Live verification log — bejamas.com
 
 Fetched and inspected live on **2026-08-26** (computed styles + DOM + stylesheet
