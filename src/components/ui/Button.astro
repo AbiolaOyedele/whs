@@ -22,6 +22,9 @@ interface Props {
   class?: string
   /** Inverts the outline treatment for use on dark surfaces. */
   onDark?: boolean
+  /** Sliding arrows on hover. Turn off for wide buttons, where the arrows
+   *  travel a long way from the label and read as unrelated. */
+  arrows?: boolean
   [key: string]: unknown
 }
 
@@ -33,6 +36,7 @@ const {
   disabled = false,
   class: className = '',
   onDark = false,
+  arrows = true,
   ...rest
 } = Astro.props
 
@@ -100,44 +104,68 @@ const tagProps = href ? { href } : { type, disabled }
     isFlow ? (
       <Fragment>
         {/* Arrow sliding in from the left. */}
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="absolute left-[-25%] z-[9] h-4 w-4 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:left-4"
-        >
-          <path d="M5 12h14" />
-          <path d="m12 5 7 7-7 7" />
-        </svg>
+        {arrows && (
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="absolute left-[-25%] z-[9] h-4 w-4 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:left-4"
+          >
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        )}
 
-        <span class="relative z-[1] -translate-x-3 transition-all duration-[800ms] ease-out group-hover:translate-x-3">
+        {/*
+          With arrows, the label slides across to make room for them. Without,
+          it stays centred — a sideways shift with nothing to make room for
+          reads as misalignment — and picks up a small scale instead, so the
+          button still responds to the pointer and matches the flow timing.
+        */}
+        <span
+          class={`relative z-[1] transition-all duration-[800ms] ease-out ${
+            arrows
+              ? '-translate-x-3 group-hover:translate-x-3'
+              : 'group-hover:scale-[1.045] group-hover:tracking-[0.01em]'
+          }`}
+        >
           <slot />
         </span>
 
-        {/* Circle expanding from the centre to flood the button. */}
+        {/*
+          Circle expanding from the centre to flood the button.
+
+          Sized as a percentage of the button's own width with `aspect-square`,
+          not a fixed pixel diameter — a fixed 260px could not reach the ends of
+          a 298px-wide button, which left the resting colour showing in two
+          slivers either side. Animated with `scale` rather than width/height so
+          it composites on the GPU instead of triggering layout each frame.
+        */}
         <span
           aria-hidden="true"
-          class={`absolute top-1/2 left-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 transition-all duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:h-[260px] group-hover:w-[260px] group-hover:opacity-100 ${flowTones[variant].circle}`}
+          class={`absolute top-1/2 left-1/2 aspect-square w-[135%] -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full opacity-0 transition-[transform,opacity] duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-100 group-hover:opacity-100 ${flowTones[variant].circle}`}
         />
 
         {/* Arrow sliding out to the right. */}
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="absolute right-4 z-[9] h-4 w-4 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:right-[-25%]"
-        >
-          <path d="M5 12h14" />
-          <path d="m12 5 7 7-7 7" />
-        </svg>
+        {arrows && (
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="absolute right-4 z-[9] h-4 w-4 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:right-[-25%]"
+          >
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        )}
       </Fragment>
     ) : (
       <slot />

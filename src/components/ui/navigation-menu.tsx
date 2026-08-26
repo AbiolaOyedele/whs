@@ -201,7 +201,7 @@ export function AnimatedNav({ menus, plainLinks, ctaLabel, ctaHref, siteName }: 
             onClick={(event) => event.stopPropagation()}
             className="flex min-h-12 shrink-0 items-center gap-2 pr-3 pl-5 text-white"
           >
-            <Logo variant="full" className="h-11 w-auto" label="" />
+            <Logo variant="mark" className="h-7 w-auto" label="" />
           </m.a>
 
           <m.div
@@ -280,7 +280,7 @@ export function AnimatedNav({ menus, plainLinks, ctaLabel, ctaHref, siteName }: 
                   : { type: 'spring', damping: 15, stiffness: 300, delay: 0.15 }
               }
             >
-              <Logo variant="mark" className="h-6 w-auto text-white" label="" />
+              <Logo variant="mark" className="h-7 w-auto text-white" label="" />
             </m.div>
           </div>
         </m.nav>

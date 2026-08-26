@@ -7,8 +7,8 @@ description: 'A logistics platform rebuild that moved routine publishing out of 
 summary: 'Cut the marketing site loose from the product release cycle it had been trapped in.'
 industry: 'Manufacturing'
 services:
-  - 'Website migration'
-  - 'Ongoing website care'
+  - 'Websites'
+  - 'Tools & Systems'
 techStack:
   - 'Next.js'
   - 'Contentful'

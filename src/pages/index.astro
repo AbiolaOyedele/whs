@@ -2,25 +2,20 @@
 /**
  * Home page.
  *
- * Section layout follows the reference's compiled markup:
- *  1. Full-bleed dark hero, absolute-positioned content blocks.
- *  2. "Why teams come to us" — a 42.7% / 57.3% split with a sticky left column
- *     and bordered article rows on the right.
- *  3. Services — heading pinned left, content in a narrow centred measure.
- *  4. Featured projects — asymmetric 12-column grid (7/5/5/7/7/5).
- *  5. Closing CTA — full-height rounded panel.
- *
- * TODO: all copy on this page is provisional placeholder text.
+ * Copy from docs/site-copy.md (supplied 2026-08-26). Two sections are still
+ * waiting on content and are marked in place:
+ *   - Proof grid: needs real project content.
+ *   - Testimonial: needs the actual quote text and attribution.
+ * The stat strip was dropped for launch, per that document.
  */
 import { getCollection } from 'astro:content'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import Hero from '@/components/sections/Hero.astro'
 import WorkCard from '@/components/sections/WorkCard.astro'
-import Testimonial from '@/components/sections/Testimonial.astro'
 import AnimatedText from '@/components/sections/AnimatedText.astro'
 import Button from '@/components/ui/Button.astro'
-import { PROCESS_STEPS, SITE } from '@/config/site'
-import { SERVICE_PILLAR_LABELS } from '@/content.config'
+import { SITE } from '@/config/site'
+import { SERVICE_PILLARS, SERVICE_PILLAR_LABELS, SERVICE_PILLAR_TAGLINES } from '@/content.config'
 
 const [work, services] = await Promise.all([
   getCollection('work', ({ data }) => !data.draft),
@@ -30,28 +25,24 @@ const [work, services] = await Promise.all([
 const featured = work.filter((e) => e.data.featured).sort((a, b) => a.data.order - b.data.order)
 const pillars = services.sort((a, b) => a.data.order - b.data.order)
 
-/** TODO: fictional placeholder names. Replace with real clients before launch. */
-const LOGOS = [
-  'Northwind Retail',
-  'Aeon Logistics',
-  'Harbor & Finch',
-  'Calder Health',
-  'Brightmoor Energy',
-  'Tessellate Labs',
-]
+/**
+ * TODO: the trust row should be products and apps WildHands has built, not
+ * client logos. Placeholder names until the product list is supplied.
+ */
+const BUILT_BY_WILDHANDS = ['Northwind', 'Aeon', 'Harbor & Finch']
 
-const painPoints = [
+const problems = [
   {
-    title: 'Every change waits on a developer',
-    body: 'A one-line copy change becomes a ticket, a sprint, and a deploy. Eventually the marketing team stops asking, and the site stops reflecting what the business actually does.',
+    title: 'Automate the repeats.',
+    body: 'We build tools that take repetitive work off your plate for good.',
   },
   {
-    title: 'Every brand sits on a different platform',
-    body: 'Three acquisitions later there are four CMS licences, four sets of credentials, and nobody who can answer what the estate costs to run each year.',
+    title: 'Get hours back.',
+    body: 'Every system we build is judged the same way: how much time it saves you.',
   },
   {
-    title: 'Every year it costs more to run',
-    body: 'The licence renews, the plugins drift, the theme forks. Maintenance grows faster than the traffic it supports, and no single change is ever big enough to justify fixing it.',
+    title: 'See what is happening, in real time.',
+    body: 'Custom dashboards that show you the numbers that matter, without digging for them.',
   },
 ]
 ---
@@ -59,30 +50,31 @@ const painPoints = [
 <BaseLayout title={SITE.name} description={SITE.description} darkHero>
   <Hero
     variant="home"
-    title="Websites your team can actually run."
-    standfirst="WildHands Studios is a senior web team. We audit your legacy estate, migrate it onto one modern platform, and stay on to run it with you, so marketing publishes without waiting on developers."
+    title="Custom systems that give you your time back."
+    standfirst="WildHands Studio designs and builds custom websites, apps, and internal tools for teams done doing repetitive work by hand."
   >
     <Fragment slot="logos">
-      <p class="text-sm text-white/45">Trusted by teams at</p>
+      <p class="text-sm text-white/45">Built by WildHands</p>
       <ul class="mt-3 flex flex-wrap items-center gap-x-7 gap-y-2">
         {
-          LOGOS.slice(0, 3).map((name) => (
+          BUILT_BY_WILDHANDS.map((name) => (
             <li class="text-base font-medium tracking-tight text-white/85">{name}</li>
           ))
         }
       </ul>
     </Fragment>
 
-    {/* Full-width CTA pair, 80px tall — the reference's `grid gap-1 md:h-20`. */}
     <Fragment slot="cta">
-      <Button href="/get-in-touch" variant="accent" class="h-16 w-full md:h-20">Talk to us</Button>
-      <Button href="/services" variant="outline" onDark class="h-16 w-full md:h-20">
-        See how we work
+      <Button href="/get-in-touch" variant="accent" arrows={false} class="h-16 w-full md:h-20">
+        Talk to Us
+      </Button>
+      <Button href="/work" variant="outline" onDark arrows={false} class="h-16 w-full md:h-20">
+        See Our Work
       </Button>
     </Fragment>
   </Hero>
 
-  <!-- Why teams come to us -->
+  <!-- The problem -->
   <section class="relative overflow-clip rounded-[2rem] bg-background text-foreground">
     <div class="lg:pt-[16.5rem]">
       <div
@@ -94,32 +86,32 @@ const painPoints = [
           >
             <div>
               <p class="text-sm font-medium tracking-widest text-muted-foreground uppercase">
-                Why teams come to us
+                The Problem
               </p>
               <AnimatedText>
                 <h2 class="wh-h2 mt-5 max-w-[20ch]">
-                  The site got big. The platform did not keep up.
+                  Your team is spending hours on work a system could do in seconds.
                 </h2>
               </AnimatedText>
               <p class="mt-6 max-w-prose text-muted-foreground">
-                Most of the estates we take on were fine when they were built. They stopped being
-                fine when the team grew, the markets multiplied, and nobody owned the platform.
+                Manual data entry. Reports rebuilt from scratch every week. No single place to see
+                what is actually happening. That is hours gone that should have gone into the work
+                only you can do.
               </p>
             </div>
-            <Button href="/services" variant="link">Here is what we would do about it &rarr;</Button
-            >
+            <Button href="/services" variant="link">See how we fix this &rarr;</Button>
           </div>
         </div>
 
         <div class="grid">
           {
-            painPoints.map((point, index) => (
+            problems.map((item, index) => (
               <article class="min-h-[24rem] border-b border-border px-5 py-10 last:border-b-0 md:px-8 lg:pt-[2.875rem] lg:pr-8 lg:pl-[7.3vw]">
                 <span class="text-sm text-muted-foreground tabular-nums">
                   {String(index + 1).padStart(2, '0')}
                 </span>
-                <h3 class="mt-4 text-2xl font-medium tracking-tight md:text-3xl">{point.title}</h3>
-                <p class="mt-4 max-w-prose text-muted-foreground">{point.body}</p>
+                <h3 class="mt-4 text-2xl font-medium tracking-tight md:text-3xl">{item.title}</h3>
+                <p class="mt-4 max-w-prose text-muted-foreground">{item.body}</p>
               </article>
             ))
           }
@@ -128,16 +120,18 @@ const painPoints = [
     </div>
   </section>
 
-  <!-- Services -->
+  <!-- What we build -->
   <section class="wh-container my-10 lg:my-20">
     <div class="relative border-t border-border pt-10 lg:pt-20">
-      <h2 id="services-title" class="wh-h2 mt-5 mb-5 lg:absolute lg:left-0 lg:mb-10">Services</h2>
+      <h2 id="services-title" class="wh-h2 mt-5 mb-5 lg:absolute lg:left-0 lg:mb-10">
+        What we build
+      </h2>
 
       <div class="mx-auto w-full max-w-3xl lg:max-w-2xl lg:px-8">
         <ol class="wh-services-list">
           {
-            PROCESS_STEPS.map((step, index) => {
-              const match = pillars.find((s) => SERVICE_PILLAR_LABELS[s.data.pillar] === step)
+            SERVICE_PILLARS.map((pillar, index) => {
+              const match = pillars.find((s) => s.data.pillar === pillar)
               const href = match ? `/services/${match.id}` : '/services'
               return (
                 <li class="wh-service-row border-b border-border last:border-b-0">
@@ -146,10 +140,8 @@ const painPoints = [
                       {String(index + 1).padStart(2, '0')}
                     </span>
                     <span class="flex-1 text-2xl leading-snug md:text-[2rem]">
-                      <span class="font-medium">{step}.</span>{' '}
-                      <span class="text-muted-foreground">
-                        {match?.data.summary ?? 'Placeholder — no service maps to this pillar yet.'}
-                      </span>
+                      <span class="font-medium">{SERVICE_PILLAR_LABELS[pillar]}.</span>{' '}
+                      <span class="text-muted-foreground">{SERVICE_PILLAR_TAGLINES[pillar]}</span>
                     </span>
                     <span
                       aria-hidden="true"
@@ -165,40 +157,56 @@ const painPoints = [
         </ol>
 
         <div class="mt-10 flex flex-wrap gap-3">
-          <Button href="/get-in-touch" variant="primary">Talk to us</Button>
-          <Button href="/services" variant="outline">Services overview</Button>
+          <Button href="/services" variant="primary">See Services</Button>
+          <Button href="/get-in-touch" variant="outline">Talk to Us</Button>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Featured projects -->
+  <!-- Recent work -->
   <section class="wh-container">
-    <h2 id="featured-projects-title" class="wh-h2 mt-20 mb-5 inline-block">Featured projects</h2>
+    <h2 id="featured-projects-title" class="wh-h2 mt-20 mb-5 inline-block">Recent work</h2>
 
-    <div class="wh-projects-grid grid gap-1 gap-y-10 pt-16 md:grid-cols-12">
-      {
-        featured.map((entry) => (
-          <WorkCard
-            href={`/work/${entry.id}`}
-            client={entry.data.client}
-            summary={entry.data.summary}
-            techStack={entry.data.techStack}
-            stats={entry.data.stats}
-          />
-        ))
-      }
-    </div>
+    {
+      featured.length > 0 ? (
+        <Fragment>
+          <div class="wh-projects-grid grid gap-1 gap-y-10 pt-16 md:grid-cols-12">
+            {featured.map((entry) => (
+              <WorkCard
+                href={`/work/${entry.id}`}
+                client={entry.data.client}
+                summary={entry.data.summary}
+                techStack={entry.data.techStack}
+                stats={entry.data.stats}
+              />
+            ))}
+          </div>
+          <p class="mt-2 text-sm text-muted-foreground">
+            Placeholder projects — awaiting real product content.
+          </p>
+        </Fragment>
+      ) : (
+        <p class="mt-10 text-muted-foreground">Project content coming soon.</p>
+      )
+    }
 
     <div class="mt-12">
-      <Button href="/work" variant="outline">All work</Button>
+      <Button href="/work" variant="outline">See all work</Button>
     </div>
   </section>
+
+  <!--
+    TODO: testimonial section. Two client quotes exist but the text and
+    attribution have not been supplied — deliberately not invented. Drop a
+    <Testimonial /> here once the real quotes land.
+    The stat strip was dropped for launch, per docs/site-copy.md.
+  -->
 
   <!-- Closing CTA -->
   <div class="mx-auto mt-20 lg:max-w-[92rem] xl:max-w-[100rem]">
     <section
-      class="relative flex min-h-svh flex-col justify-around overflow-clip rounded-3xl bg-[#131314] px-5 py-10 text-white md:px-[10vh] lg:py-32"
+      class="relative flex min-h-svh flex-col justify-center overflow-clip rounded-3xl bg-[#131314] px-5 py-10 text-white md:px-[10vh] lg:py-32"
     >
       <div
         aria-hidden="true"
@@ -210,25 +218,17 @@ const painPoints = [
       <div class="relative z-10 max-w-3xl">
         <AnimatedText>
           <h2 class="text-[clamp(2.25rem,6vw,4rem)] leading-[1.1] font-normal tracking-[-0.03em]">
-            Your website should not be a mystery to your own team.
+            Ready to get some time back?
           </h2>
         </AnimatedText>
         <p class="mt-6 max-w-[35rem] text-xl text-white/70">
-          Tell us where it hurts and we will tell you what we would do about it.
+          Tell us what is eating your hours. We will show you what a system built for it looks like.
         </p>
-        <div class="mt-10 flex flex-wrap gap-3">
-          <Button href="/get-in-touch" variant="accent" size="lg">Talk to us</Button>
-          <Button href="/work" variant="outline" size="lg" onDark>See the work</Button>
+        <div class="mt-10">
+          <Button href="/get-in-touch" variant="accent" size="lg">Talk to Us</Button>
         </div>
+        <p class="mt-6 text-sm text-white/50">A real conversation, not a sales pitch.</p>
       </div>
-
-      {
-        featured[0]?.data.testimonial && (
-          <div class="relative z-10 mt-20 max-w-2xl border-l border-white/20 pl-6">
-            <Testimonial {...featured[0].data.testimonial} onDark />
-          </div>
-        )
-      }
     </section>
   </div>
 </BaseLayout>

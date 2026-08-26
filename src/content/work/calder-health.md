@@ -7,7 +7,7 @@ description: 'What an ongoing care retainer looks like in practice for a regulat
 summary: 'An estate that has not regressed once since launch, on about two days of attention a month.'
 industry: 'Healthcare'
 services:
-  - 'Ongoing website care'
+  - 'Tools & Systems'
 techStack:
   - 'Astro'
   - 'Sanity'

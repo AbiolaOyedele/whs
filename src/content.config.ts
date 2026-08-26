@@ -23,8 +23,8 @@ export const INSIGHT_CATEGORIES = [
   'platform-choice',
 ] as const
 
-/** The four service pillars the whole site is organised around. */
-export const SERVICE_PILLARS = ['audit', 'design', 'migrate', 'run'] as const
+/** The three things WildHands builds. The site is organised around these. */
+export const SERVICE_PILLARS = ['websites', 'apps', 'tools'] as const
 
 export type StackCategory = (typeof STACK_CATEGORIES)[number]
 export type InsightCategory = (typeof INSIGHT_CATEGORIES)[number]
@@ -49,10 +49,16 @@ export const INSIGHT_CATEGORY_LABELS: Record<InsightCategory, string> = {
 
 /** Human-readable labels for each service pillar. */
 export const SERVICE_PILLAR_LABELS: Record<ServicePillar, string> = {
-  audit: 'Audit',
-  design: 'Design',
-  migrate: 'Migrate',
-  run: 'Run',
+  websites: 'Websites',
+  apps: 'Apps',
+  tools: 'Tools & Systems',
+}
+
+/** One-line positioning for each pillar, used on the services index and nav. */
+export const SERVICE_PILLAR_TAGLINES: Record<ServicePillar, string> = {
+  websites: 'Custom-built, not templated.',
+  apps: 'Software built around how you actually work.',
+  tools: 'Dashboards and internal tools that replace the spreadsheet.',
 }
 
 /* -------------------------------------------------------------------------- */

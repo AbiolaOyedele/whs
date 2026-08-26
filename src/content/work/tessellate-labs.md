@@ -7,8 +7,8 @@ description: 'Unifying a developer documentation site and a marketing site witho
 summary: 'One platform, two very different editing workflows, no shared bottleneck.'
 industry: 'SaaS and data platforms'
 services:
-  - 'Custom web development'
-  - 'Headless CMS implementation'
+  - 'Apps'
+  - 'Tools & Systems'
 techStack:
   - 'Astro'
   - 'Sanity'

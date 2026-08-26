@@ -7,8 +7,8 @@ description: 'How Northwind Retail replatformed 400 pages across six markets wit
 summary: 'Replatformed six market sites onto one content model, cutting publish time from days to minutes.'
 industry: 'Consumer brands'
 services:
-  - 'Website migration'
-  - 'Headless CMS implementation'
+  - 'Websites'
+  - 'Tools & Systems'
 techStack:
   - 'Astro'
   - 'Sanity'

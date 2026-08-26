@@ -100,13 +100,25 @@ on this project to generate a real complaint.
 It is Apple's font and is **not** licensed for web distribution either; the same
 choice applies, and the safe fallback is the `ui-monospace` system stack.
 
-### B-3. Service model assumption (blocks Steps 11, 13)
+### B-3. ✅ RESOLVED — and it changed the service model
 
-The whole page inventory (Services / Work / Stack / Insights / Industries) assumes
-WildHands sells web design, development, and migration services, because that is
-what the reference site's structure is built around. **If WildHands' actual service
-model differs, the nav and page inventory must change before Services/Stack are built.**
-Not yet confirmed.
+`docs/site-copy.md` (supplied 2026-08-26) confirms the assumption flagged at the
+start of this build was **wrong**. WildHands Studio does not sell web migration.
+It builds **custom websites, apps, and internal tools** for teams doing
+repetitive work by hand.
+
+The Audit → Design → Migrate → Run model that the whole site was structured
+around has been replaced:
+
+| Was                                       | Now                                             |
+| ----------------------------------------- | ----------------------------------------------- |
+| Audit / Design / Migrate / Run            | Websites / Apps / Tools & Systems               |
+| 4 service entries about migration         | 3 entries matching the real pillars             |
+| "Process: Audit → Design → Migrate → Run" | Discovery call → Scoped proposal → Custom quote |
+
+Updated: `SERVICE_PILLARS` and labels, `PROCESS_STEPS`, all service seeds, the
+home page, the services index and detail template, the nav mega menus, and the
+service tags on the work seeds so the `/work` filters still resolve.
 
 ### B-4. Salary calculator + AI ASCII art generator — NOT BUILT
 
@@ -222,6 +234,54 @@ browser. That cut `form-primitives` from 18KB to 1.3KB gzip.
 would remove React entirely and save the remaining ~56KB on those pages. The
 brief explicitly sanctions React islands for forms, so this is left as your call
 rather than done unilaterally.
+
+### F-15. Real copy landed for home and services
+
+`docs/site-copy.md` supplied 2026-08-26. Applied in full for the home page and
+the services section. Three things in that document were deliberately **not**
+invented and are marked in place:
+
+- **Proof grid** — the doc says it needs real project content. The grid renders
+  the placeholder work seeds with a visible note; swap them when content lands.
+- **Testimonial** — two client quotes exist but the text and attribution were
+  not supplied. There is a comment where the section goes, and no invented quote.
+- **Stat strip** — explicitly dropped for launch, so it is removed rather than
+  filled with a placeholder number.
+- **Footer links** — still the provisional set; the doc lists this as open.
+
+The doc offered three headline options and recommended A. Used A verbatim:
+"Custom systems that give you your time back." B and C are in `docs/site-copy.md`
+if you want to swap.
+
+Not yet written by the copy doc, so still placeholder: About, Stack, Insights,
+Get in Touch.
+
+### F-16. WebGL gradient — what was changed and why
+
+The supplied `animated-gradient` component drove `requestAnimationFrame`
+unconditionally: it rendered while scrolled out of view, while the tab was in
+the background, and for visitors who have asked for reduced motion. On a footer
+that is six screens down, that is a shader running continuously for no one.
+
+Changes, all in `src/components/ui/animated-gradient.tsx`:
+
+| Change                                             | Why                                                                      |
+| -------------------------------------------------- | ------------------------------------------------------------------------ |
+| IntersectionObserver gates the loop                | Footer gradient does not animate until it is on screen                   |
+| `visibilitychange` gates the loop                  | Nothing renders in a background tab                                      |
+| `prefers-reduced-motion` draws one static frame    | Gradient still shows, it just does not move                              |
+| Colours parsed once, static uniforms uploaded once | Was re-parsing three hex strings 60×/second                              |
+| Device pixel ratio capped at 2                     | A 3× phone was rendering 2.25× the fragments for no visible gain         |
+| Shader compile + link status checked               | On failure the canvas unmounts and the CSS gradient behind shows through |
+| Config compared by value                           | A parent re-render was tearing down and rebuilding the GL context        |
+| `WEBGL_lose_context` on unmount                    | Browsers cap live contexts; islands mount per page                       |
+
+Cost: **3.1KB gzip**. The blue in the preset was swapped for the brand lime.
+
+Hydration note: `client:visible` does not work for this component. Astro observes
+the `<astro-island>` wrapper, which is `display:inline` and so has no layout box,
+so the observer never fires and the island never hydrates. It uses `client:idle`,
+with a CSS rule giving the wrapper a real box.
 
 ### F-14. Layout rebuilt from the saved site archive
 
@@ -433,7 +493,9 @@ Swept 22 representative pages at 375px, 768px and 1280px — 66 checks:
    reference company in the same market.
 3. **B-3 — confirm the service model.** The whole page inventory assumes web
    design/dev/migration.
-4. **All copy is placeholder.** 27 content entries carry `placeholder: true`.
+4. **Copy: home and services are now real** (from `docs/site-copy.md`). Still
+   placeholder: work case studies, stack, insights, industries, about,
+   enterprise, careers, freelance hub, contact. `grep -rl "placeholder: true" src/content/`
 5. **Privacy policy is an unreviewed draft** with TODOs in the legal substance.
 6. **F-10 — decide where application videos go**, or drop the step.
 7. **Resend sending domain** is still `onboarding@resend.dev`.

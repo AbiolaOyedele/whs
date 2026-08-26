@@ -7,7 +7,7 @@ description: 'An audit that concluded the site did not need replacing, and named
 summary: 'Found four fixes worth more than the rebuild the team had already budgeted for.'
 industry: 'Energy and climate'
 services:
-  - 'Performance and platform audit'
+  - 'Tools & Systems'
 techStack:
   - 'WordPress'
   - 'Cloudflare'

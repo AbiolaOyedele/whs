@@ -6,22 +6,36 @@
  */
 
 export const SITE = {
-  name: 'WildHands Studios',
+  name: 'WildHands Studio',
   /** Used in <title> suffixes and Organization JSON-LD. */
-  legalName: 'WildHands Studios',
-  /** TODO: provisional. One-line positioning. */
-  tagline: 'Websites your team can actually run.',
-  /** TODO: provisional. Default meta description fallback. */
+  legalName: 'WildHands Studio',
+  tagline: 'Custom systems that give you your time back.',
   description:
-    'WildHands Studios is a web studio that audits, designs, migrates, and runs marketing websites for growing companies.',
+    'WildHands Studio designs and builds custom websites, apps, and internal tools for teams done doing repetitive work by hand.',
   /** TODO: confirm real contact addresses before launch. */
   email: 'hello@wildhands.example.com',
   salesEmail: 'sales@wildhands.example.com',
   hrEmail: 'hr@wildhands.example.com',
 } as const
 
-/** The four pillars the whole service model is organised around. */
-export const PROCESS_STEPS = ['Audit', 'Design', 'Migrate', 'Run'] as const
+/**
+ * How an engagement runs. Replaces price tiers on the service pages — we quote
+ * after discovery rather than publishing packages.
+ */
+export const PROCESS_STEPS = [
+  {
+    title: 'Discovery call',
+    body: 'We learn what is broken and what it is costing you in time.',
+  },
+  {
+    title: 'Scoped proposal',
+    body: 'A plan built around your actual brief, not a template.',
+  },
+  {
+    title: 'Custom quote',
+    body: 'Priced for the work in front of us, not a generic package.',
+  },
+] as const
 
 /** Social/profile links rendered in the footer. TODO: real URLs. */
 export const SOCIAL_LINKS: ReadonlyArray<{ label: string; href: string }> = [

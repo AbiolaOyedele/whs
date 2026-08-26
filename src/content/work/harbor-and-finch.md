@@ -7,7 +7,7 @@ description: 'Replacing a page-builder with a structured content model, without 
 summary: 'Swapped a sprawling page-builder for a structured model editors preferred within a fortnight.'
 industry: 'Financial services'
 services:
-  - 'Headless CMS implementation'
+  - 'Tools & Systems'
 techStack:
   - 'Astro'
   - 'Storyblok'

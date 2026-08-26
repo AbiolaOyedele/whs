@@ -14,6 +14,7 @@
  * colour, so any page opening with this component gets that behaviour free.
  */
 import AnimatedText from './AnimatedText.astro'
+import AnimatedGradient from '@/components/ui/animated-gradient.tsx'
 
 interface Props {
   eyebrow?: string | undefined
@@ -59,13 +60,14 @@ const isHome = variant === 'home'
         aria-hidden="true"
       />
     ) : (
-      /* TODO: the reference plays a looped light-beam video from its CDN. Their
-         artwork is not ours to use, so this reproduces the same visual language
-         in CSS. Pass `videoSrc` once a real WildHands asset exists. */
+      /* WebGL gradient layered over a CSS beam. The CSS layer is the fallback,
+         not decoration: the canvas removes itself when WebGL is unavailable or
+         the shader fails to compile, and this shows through unchanged. */
       <div aria-hidden="true" class="absolute inset-0 overflow-hidden bg-[#0a0a0b]">
         <div class="wh-hero-beam" />
         <div class="wh-hero-beam wh-hero-beam--secondary" />
         <div class="wh-hero-glow" />
+        <AnimatedGradient client:idle preset="hero" />
       </div>
     )
   }

@@ -2,25 +2,38 @@
 /**
  * Site footer.
  *
- * Link hover is the underline sweep verified live: a 1px gradient line grows
- * from 0% to 100% width. The animated layer is a child span so the sweep
- * tracks the text box rather than the padded 44px tap target.
+ * Dark surface: the logo's "studios" line is the brand lime, which all but
+ * disappears against a light background. On black the wordmark renders white
+ * (via `currentColor`) and the lime line reads properly.
+ *
+ * Link hover is the underline sweep — a 1px gradient line growing from 0% to
+ * 100% width. The animated layer is a child span so the sweep tracks the text
+ * box rather than the padded 44px tap target.
  */
+import AnimatedGradient from '@/components/ui/animated-gradient.tsx'
 import Logo from '@/components/ui/Logo.astro'
 import { FOOTER_COLUMNS, SITE } from '@/config/site'
 
 const year = new Date().getFullYear()
 ---
 
-<footer class="mt-8 border-t border-border">
+<footer class="relative isolate mt-8 overflow-hidden rounded-t-[2rem] bg-[#131314] text-white">
+  <AnimatedGradient client:idle preset="footer" className="-z-10" />
+  <!-- Scrim keeps the link columns legible whatever the gradient is doing. -->
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0 -z-10"
+    style="background: linear-gradient(180deg, rgba(19,19,20,0.55) 0%, rgba(19,19,20,0.82) 60%, rgba(19,19,20,0.94) 100%);"
+  >
+  </div>
   <div class="wh-container py-14 md:py-20">
     <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
       <div class="lg:col-span-2">
-        <Logo variant="full" class="h-16 w-auto" />
-        <p class="mt-3 max-w-xs text-sm text-muted-foreground">{SITE.tagline}</p>
+        <Logo variant="full" class="h-16 w-auto text-white" />
+        <p class="mt-6 max-w-xs text-white/60">{SITE.tagline}</p>
         <a
           href={`mailto:${SITE.email}`}
-          class="wh-sweep wh-tap mt-5 inline-flex items-center text-sm"
+          class="wh-sweep wh-tap mt-4 inline-flex items-center text-sm"
         >
           <span class="wh-sweep__label">{SITE.email}</span>
         </a>
@@ -29,7 +42,7 @@ const year = new Date().getFullYear()
       {
         FOOTER_COLUMNS.map((column) => (
           <nav aria-label={column.heading}>
-            <h2 class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+            <h2 class="text-xs font-medium tracking-widest text-white/45 uppercase">
               {column.heading}
             </h2>
             <ul class="mt-4 space-y-1">
@@ -37,7 +50,7 @@ const year = new Date().getFullYear()
                 <li>
                   <a
                     href={link.href}
-                    class="wh-sweep wh-tap inline-flex items-center text-sm"
+                    class="wh-sweep wh-tap inline-flex items-center text-sm text-white/80 transition-colors hover:text-white"
                     {...(link.href.startsWith('http')
                       ? { target: '_blank', rel: 'noopener noreferrer' }
                       : {})}
@@ -53,10 +66,13 @@ const year = new Date().getFullYear()
     </div>
 
     <div
-      class="mt-12 flex flex-col gap-4 border-t border-border pt-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between"
+      class="mt-14 flex flex-col gap-4 border-t border-white/15 pt-6 text-sm text-white/50 sm:flex-row sm:items-center sm:justify-between"
     >
       <p>&copy; {year} {SITE.legalName}. All rights reserved.</p>
-      <a href="/legal/privacy-policy" class="wh-sweep wh-tap inline-flex items-center">
+      <a
+        href="/legal/privacy-policy"
+        class="wh-sweep wh-tap inline-flex items-center transition-colors hover:text-white"
+      >
         <span class="wh-sweep__label">Privacy Policy</span>
       </a>
     </div>
