@@ -2,13 +2,20 @@
 /**
  * Dark hero band.
  *
- * Two absolutely-positioned blocks on large screens, matching the reference:
+ * `home` — two absolutely-positioned blocks on large screens, matching the
+ * reference:
  *   Block A (upper left, 10.35% / 28.7%, 38.82% wide) — headline, then the
  *           client wordmark row directly beneath it.
  *   Block B (lower right half, bottom 5.55%) — the standfirst paragraph, then
  *           a two-column grid of full-width CTA buttons 80px tall.
+ * Below `lg` both fall back to a single flex column. The section carries an
+ * explicit height (`.wh-hero-home`) precisely because its content is absolute
+ * and contributes none.
  *
- * Below `lg` both fall back to a single flex column.
+ * `page` — the same blocks in normal flow, so the section is as tall as its
+ * content. This is deliberate rather than incidental: the absolute treatment
+ * without a height class collapses the band to 0px, which clips the H1 out of
+ * sight and drops inner-page content flush under the floating header.
  *
  * `data-dark-hero` is what SiteHeader measures to decide when to flip its text
  * colour, so any page opening with this component gets that behaviour free.
@@ -79,10 +86,18 @@ const isHome = variant === 'home'
   >
   </div>
 
-  <div class="absolute inset-0 z-10 flex flex-col px-5 pt-36 pb-5 sm:px-8 sm:pb-8 lg:block lg:p-0">
+  <div
+    class={isHome
+      ? 'absolute inset-0 z-10 flex flex-col px-5 pt-36 pb-5 sm:px-8 sm:pb-8 lg:block lg:p-0'
+      : /* Clears the fixed header, then leaves the reference's breathing room
+             below it before the headline starts. */
+        'relative z-10 flex flex-col px-5 pt-40 pb-16 sm:px-8 lg:pt-48 lg:pb-24'}
+  >
     <!-- Block A — headline and client wordmarks -->
     <div
-      class={`self-start md:ml-[calc(10.35%-2rem)] lg:absolute lg:left-[10.35%] lg:ml-0 lg:w-[38.82%] ${isHome ? 'lg:top-[28.7%]' : 'lg:top-[38%]'}`}
+      class={isHome
+        ? 'self-start md:ml-[calc(10.35%-2rem)] lg:absolute lg:top-[28.7%] lg:left-[10.35%] lg:ml-0 lg:w-[38.82%]'
+        : 'self-start md:ml-[calc(10.35%-2rem)] lg:ml-[10.35%] lg:max-w-[52rem]'}
     >
       {
         eyebrow && (
@@ -90,7 +105,7 @@ const isHome = variant === 'home'
         )
       }
       <AnimatedText immediate>
-        <h1 class="wh-h1 mix-blend-difference">{title}</h1>
+        <h1 class={isHome ? 'wh-h1 mix-blend-difference' : 'wh-h1-page text-balance'}>{title}</h1>
       </AnimatedText>
       {
         subtitle && (
@@ -99,14 +114,16 @@ const isHome = variant === 'home'
           </p>
         )
       }
-      <div class="mt-8 max-w-[35rem]">
+      <div class="mt-8 max-w-[35rem] empty:hidden">
         <slot name="logos" />
       </div>
     </div>
 
     <!-- Block B — standfirst and the CTA pair -->
     <div
-      class="mt-12 flex flex-col justify-end md:ml-[calc(10.35%-2rem)] md:w-[60%] lg:absolute lg:right-8 lg:bottom-[5.55%] lg:left-1/2 lg:mt-0 lg:ml-0 lg:w-auto"
+      class={isHome
+        ? 'mt-12 flex flex-col justify-end md:ml-[calc(10.35%-2rem)] md:w-[60%] lg:absolute lg:right-8 lg:bottom-[5.55%] lg:left-1/2 lg:mt-0 lg:ml-0 lg:w-auto'
+        : 'flex flex-col justify-end empty:hidden md:ml-[calc(10.35%-2rem)] md:w-[60%] lg:ml-[10.35%]'}
     >
       {
         standfirst && (
@@ -115,7 +132,7 @@ const isHome = variant === 'home'
           </p>
         )
       }
-      <div class="mt-10 grid gap-1 sm:grid-cols-2 lg:mt-[7.75rem]">
+      <div class="mt-10 grid gap-1 empty:hidden sm:grid-cols-2 lg:mt-[7.75rem]">
         <slot name="cta" />
       </div>
       <slot />

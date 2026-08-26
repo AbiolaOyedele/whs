@@ -1,6 +1,6 @@
-# WildHands Studios — marketing website
+# WildHands — marketing website
 
-Marketing and lead-generation site for WildHands Studios. Static-first Astro
+Marketing and lead-generation site for WildHands. Static-first Astro
 build, optimised for Core Web Vitals and for AI answer engines (ChatGPT,
 Perplexity, Claude, Google AI Overviews) as well as human visitors.
 

@@ -1,9 +1,9 @@
 {
-  "name": "wildhands-studios",
+  "name": "wildhands",
   "type": "module",
   "version": "0.1.0",
   "private": true,
-  "description": "Marketing website for WildHands Studios.",
+  "description": "Marketing website for WildHands.",
   "engines": {
     "node": ">=20.0.0 <25.0.0"
   },

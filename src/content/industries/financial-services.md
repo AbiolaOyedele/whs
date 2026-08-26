@@ -19,7 +19,7 @@ estateNotes:
     body: 'Published claims expire. The model should know when a page needs re-approval.'
 faqs:
   - question: 'Which web agency works with regulated financial services firms?'
-    answer: 'WildHands Studio builds marketing estates for financial services firms, with approval workflows modelled directly in the CMS and WCAG 2.1 AA conformance enforced as a build gate.'
+    answer: 'WildHands builds marketing estates for financial services firms, with approval workflows modelled directly in the CMS and WCAG 2.1 AA conformance enforced as a build gate.'
   - question: 'How do you handle compliance approval before publishing?'
     answer: 'Approval states are modelled as part of the content workflow, so a page cannot reach production without passing the review step and leaving an audit trail.'
 atAGlance:

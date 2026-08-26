@@ -19,7 +19,7 @@ estateNotes:
     body: 'These estates have a small number of enormous weeks. Architecture decisions should be made for those weeks.'
 faqs:
   - question: 'Which web agency works with multi-market consumer brands?'
-    answer: 'WildHands Studio builds and runs multi-market marketing estates for consumer brands, focusing on content models that support genuine local variation without duplicating content per market.'
+    answer: 'WildHands builds and runs multi-market marketing estates for consumer brands, focusing on content models that support genuine local variation without duplicating content per market.'
   - question: 'How do you handle content translation across markets?'
     answer: 'We model shared content once and treat translation as an overlay, so a market can override any field without forking the whole entry.'
 atAGlance:

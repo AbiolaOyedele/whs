@@ -6,12 +6,12 @@
  */
 
 export const SITE = {
-  name: 'WildHands Studio',
+  name: 'WildHands',
   /** Used in <title> suffixes and Organization JSON-LD. */
-  legalName: 'WildHands Studio',
+  legalName: 'WildHands',
   tagline: 'Custom systems that give you your time back.',
   description:
-    'WildHands Studio designs and builds custom websites, apps, and internal tools for teams done doing repetitive work by hand.',
+    'WildHands designs and builds custom websites, apps, and internal tools for teams done doing repetitive work by hand.',
   /** TODO: confirm real contact addresses before launch. */
   email: 'hello@wildhands.example.com',
   salesEmail: 'sales@wildhands.example.com',

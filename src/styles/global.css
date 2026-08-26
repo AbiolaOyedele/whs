@@ -63,7 +63,7 @@
 }
 
 /* ==========================================================================
-   WildHands Studio — design tokens
+   WildHands — design tokens
    Tailwind v4, CSS-first config. No tailwind.config.js.
 
    Structural tokens (spacing, radius, type scale, breakpoints) are Tailwind v4
@@ -480,6 +480,24 @@
       font-family: var(--font-display);
       font-size: 4.5rem;
       line-height: 1.2;
+    }
+  }
+  /*
+   * Inner-page H1. Smaller and tighter than the home H1: page titles are full
+   * sentences rather than three-word headlines, and the home clamp's 3rem floor
+   * runs a case-study title to eight lines on a phone. Values from the
+   * reference's inner pages (text-4xl / lg:text-7xl, tracking -0.04em).
+   */
+  .wh-h1-page {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-weight: var(--font-weight-display);
+  }
+  @media (width >= 64rem) {
+    .wh-h1-page {
+      font-size: 4.5rem;
     }
   }
   .wh-h2 {

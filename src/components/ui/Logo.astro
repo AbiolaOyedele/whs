@@ -1,9 +1,9 @@
 ---
 /**
- * WildHands Studio logo.
+ * WildHands logo.
  *
  *   `mark` — horizontal "whs." mark (2.6:1). Nav pill, and the collapsed state.
- *   `full` — stacked "wild / hands / studios" lockup (1.46:1). Footer.
+ *   `full` — stacked "wild / hands" lockup (1.77:1). Footer.
  *
  * Inlined rather than served as <img> so the wordmark inherits `currentColor`
  * and one file works on both light and dark surfaces. Only the accent dot is
@@ -18,7 +18,7 @@ interface Props {
   label?: string
 }
 
-const { variant = 'mark', class: className = '', label = 'WildHands Studio' } = Astro.props
+const { variant = 'mark', class: className = '', label = 'WildHands' } = Astro.props
 
 const isMark = variant === 'mark'
 const paths = isMark ? MARK_PATHS : FULL_PATHS

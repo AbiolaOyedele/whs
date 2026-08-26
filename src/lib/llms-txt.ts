@@ -19,7 +19,7 @@ const MAX_URLS = 30
 const MAX_BYTES = 5_000_000
 const MAX_PAGE_FETCHES = 30
 const FETCH_TIMEOUT_MS = 8_000
-const USER_AGENT = 'WildHandsStudios-llms-txt-generator/1.0 (+https://wildhands.example.com)'
+const USER_AGENT = 'WildHands-llms-txt-generator/1.0 (+https://wildhands.example.com)'
 
 /**
  * Blocks loopback, link-local, and RFC1918 space so this cannot reach internal hosts.
