@@ -235,6 +235,26 @@ would remove React entirely and save the remaining ~56KB on those pages. The
 brief explicitly sanctions React islands for forms, so this is left as your call
 rather than done unilaterally.
 
+### F-17. Typefaces settled: Diagramm + IBM Plex Sans
+
+Diagramm (display) and IBM Plex Sans (body). NatomPro was removed entirely once
+Diagramm replaced it — the browser confirmed it was never being fetched, so it
+was 64KB of dead weight in the deploy. Fonts now total 94KB, down from 157KB.
+
+⚠️ **Diagramm states no licence in its metadata** (designer: Akbar Rohmanto).
+Confirm commercial use is permitted before launch. It also ships a single
+weight (400); `font-synthesis-weight: none` means a heading asking for 500
+renders at 400 rather than a faux bold. Adding a Medium file later would
+activate those declarations with no other change.
+
+### F-18. Work grid spacing fixed
+
+Three different spacings were fighting: a 4px column gap, a 40px row gap, and an
+80px `margin-bottom` still on the card from the reference, where cards had no
+caption beneath them. Cards now carry no outer margin — all spacing lives on
+`.wh-projects-grid`, so there is one source of truth. Measured result: a uniform
+24px column gap and 80px row gap, with no variation between rows.
+
 ### F-15. Real copy landed for home and services
 
 `docs/site-copy.md` supplied 2026-08-26. Applied in full for the home page and

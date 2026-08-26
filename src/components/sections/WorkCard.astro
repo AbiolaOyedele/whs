@@ -9,6 +9,10 @@
  *
  * The whole card is one link, so the media is the tap target — no separate
  * stretched-link pseudo-element is needed.
+ *
+ * The card carries no outer margin. All spacing between cards lives on the grid
+ * (`.wh-projects-grid`), so there is one source of truth for the rhythm — a
+ * card margin plus a row gap previously produced two different vertical gaps.
  */
 interface Stat {
   value: string
@@ -28,7 +32,7 @@ interface Props {
 const { href, client, summary, techStack = [], stats = [], class: className = '' } = Astro.props
 ---
 
-<a href={href} class={`group relative mb-20 flex h-full flex-col rounded-3xl ${className}`}>
+<a href={href} class={`group relative flex h-full flex-col rounded-3xl ${className}`}>
   {
     techStack.length > 0 && (
       <span class="absolute -top-8 ml-5 text-sm text-muted-foreground">

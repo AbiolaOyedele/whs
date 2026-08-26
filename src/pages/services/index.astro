@@ -1,91 +1,176 @@
 ---
-/** Services index — the four pillars, each listing its services. */
+/**
+ * Services index.
+ *
+ * Layout follows the reference /services page: a centred hero on the light
+ * surface (not the dark hero band), a summary row of the pillars, then one
+ * two-column section per pillar — label and description on the left, an
+ * expandable list of what that pillar covers on the right — with CTA bands
+ * between the blocks and at the foot.
+ *
+ * Copy from docs/site-copy.md.
+ */
 import { getCollection } from 'astro:content'
 import BaseLayout from '@/layouts/BaseLayout.astro'
-import Hero from '@/components/sections/Hero.astro'
-import CTASection from '@/components/sections/CTASection.astro'
+import AnimatedText from '@/components/sections/AnimatedText.astro'
 import Button from '@/components/ui/Button.astro'
 import { breadcrumbSchema } from '@/lib/seo'
 import { publicEnv } from '@/config/env'
-import { SERVICE_PILLARS, SERVICE_PILLAR_LABELS, SERVICE_PILLAR_TAGLINES } from '@/content.config'
+import {
+  SERVICE_PILLARS,
+  SERVICE_PILLAR_LABELS,
+  SERVICE_PILLAR_TAGLINES,
+  type ServicePillar,
+} from '@/content.config'
 
 const services = (await getCollection('services', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order
 )
 
 const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
-
 const jsonLd = [
   breadcrumbSchema([
     { name: 'Home', url: `${siteUrl}/` },
     { name: 'Services', url: `${siteUrl}/services` },
   ]),
 ]
+
+/** Pairs each pillar with its service entry, preserving pillar order. */
+const blocks = SERVICE_PILLARS.map((pillar: ServicePillar) => ({
+  pillar,
+  label: SERVICE_PILLAR_LABELS[pillar],
+  tagline: SERVICE_PILLAR_TAGLINES[pillar],
+  entry: services.find((s) => s.data.pillar === pillar),
+}))
 ---
 
 <BaseLayout
   title="Services"
   description="WildHands Studio builds custom websites, apps, and internal tools. Three ways we help, all custom, none templated."
   jsonLd={jsonLd}
-  darkHero
 >
-  <Hero
-    eyebrow="Services"
-    title="What we build, and how we build it."
-    subtitle="Three ways we help, all custom, none templated."
-  />
+  <!-- Centred hero on the light surface -->
+  <section class="wh-container pt-36 pb-16 text-center md:pt-44 md:pb-24">
+    <AnimatedText immediate>
+      <h1 class="wh-h1 mx-auto max-w-[18ch]">What we build, and how we build it.</h1>
+    </AnimatedText>
+    <p class="mx-auto mt-6 max-w-[36rem] text-lg text-muted-foreground md:text-xl">
+      Three ways we help, all custom, none templated.
+    </p>
+    <div class="mt-10 flex flex-wrap justify-center gap-3">
+      <Button href="/get-in-touch" variant="accent">Talk to Us</Button>
+      <Button href="/work" variant="outline">See Our Work</Button>
+    </div>
+  </section>
 
-  <div class="wh-container wh-section">
-    <div class="space-y-16 md:space-y-24">
+  <!-- Pillar summary row -->
+  <section class="wh-container">
+    <ul
+      class="grid gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3"
+    >
       {
-        SERVICE_PILLARS.map((pillar, index) => {
-          const inPillar = services.filter((s) => s.data.pillar === pillar)
-          return (
-            <section class="grid gap-8 border-t border-border pt-8 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
-              <div>
-                <span class="text-xs text-muted-foreground tabular-nums">
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-                <h2 class="mt-2 text-3xl font-medium tracking-tight md:text-4xl">
-                  {SERVICE_PILLAR_LABELS[pillar]}
-                </h2>
-                <p class="mt-3 max-w-prose text-muted-foreground">
-                  {SERVICE_PILLAR_TAGLINES[pillar]}
-                </p>
-              </div>
-
-              {inPillar.length > 0 ? (
-                <ul class="grid gap-4 sm:grid-cols-2">
-                  {inPillar.map((service) => (
-                    <li class="relative rounded-xl border border-border bg-card p-5 transition-[transform,box-shadow] duration-200 ease-out focus-within:-translate-y-0.5 focus-within:shadow-md hover:-translate-y-0.5 hover:shadow-md">
-                      <h3 class="text-lg font-medium">
-                        <a
-                          href={`/services/${service.id}`}
-                          class="wh-sweep inline-flex after:absolute after:inset-0 after:content-['']"
-                        >
-                          <span class="wh-sweep__label">{service.data.title}</span>
-                        </a>
-                      </h3>
-                      <p class="mt-2 text-sm text-muted-foreground">{service.data.summary}</p>
-                    </li>
-                  ))}
-                </ul>
+        blocks.map(({ label, tagline, entry }) => (
+          <li class="relative bg-background p-6 transition-colors hover:bg-muted/40 md:p-8">
+            <h2 class="text-xl font-medium">
+              {entry ? (
+                <a
+                  href={`/services/${entry.id}`}
+                  class="wh-sweep inline-flex after:absolute after:inset-0 after:content-['']"
+                >
+                  <span class="wh-sweep__label">{label}</span>
+                </a>
               ) : (
-                <p class="self-center text-sm text-muted-foreground">
-                  No services published under this pillar yet.
-                </p>
+                label
               )}
-            </section>
-          )
-        })
+            </h2>
+            <p class="mt-3 text-sm text-muted-foreground">{tagline}</p>
+          </li>
+        ))
       }
-    </div>
+    </ul>
+  </section>
 
-    <div class="mt-16 flex flex-wrap gap-3">
-      <Button href="/get-in-touch" variant="primary" size="lg">Talk to Us</Button>
-      <Button href="/work" variant="outline" size="lg">See Our Work</Button>
-    </div>
-  </div>
+  <!-- One section per pillar -->
+  {
+    blocks.map(({ label, tagline, entry }, index) => (
+      <section class="wh-container my-10 lg:my-20">
+        <div class="grid gap-8 border-t border-border pt-10 lg:grid-cols-[1fr_2fr] lg:gap-16 lg:pt-16">
+          <div class="lg:sticky lg:top-32 lg:self-start">
+            <span class="text-sm text-muted-foreground tabular-nums">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <h2 class="wh-h2 mt-3">{label}</h2>
+            <p class="mt-4 max-w-prose text-muted-foreground">{tagline}</p>
+            {entry && (
+              <div class="mt-6">
+                <Button href={`/services/${entry.id}`} variant="outline" size="sm">
+                  About {label}
+                </Button>
+              </div>
+            )}
+          </div>
 
-  <CTASection />
+          {entry && entry.data.includes.length > 0 ? (
+            <ul class="divide-y divide-border border-y border-border">
+              {entry.data.includes.map((item, itemIndex) => (
+                <li>
+                  <details class="wh-faq group">
+                    <summary class="wh-tap flex w-full cursor-pointer list-none items-center gap-4 py-5 text-left [&::-webkit-details-marker]:hidden">
+                      <span class="inline-flex size-7 shrink-0 items-center justify-center rounded-full border border-border text-xs text-muted-foreground tabular-nums">
+                        {itemIndex + 1}
+                      </span>
+                      <span class="flex-1 text-lg font-medium md:text-xl">{item.title}</span>
+                      <span
+                        aria-hidden="true"
+                        class="relative size-5 shrink-0 transition-transform duration-300 ease-standard group-open:rotate-45"
+                      >
+                        <span class="absolute top-1/2 left-0 h-px w-5 -translate-y-1/2 bg-current" />
+                        <span class="absolute top-0 left-1/2 h-5 w-px -translate-x-1/2 bg-current" />
+                      </span>
+                    </summary>
+                    <div class="wh-faq__panel">
+                      <p class="max-w-[60ch] pb-5 pl-11 text-muted-foreground">{item.body}</p>
+                    </div>
+                  </details>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="text-muted-foreground">Details coming soon.</p>
+          )}
+        </div>
+
+        {/* CTA band between pillar blocks, per docs/site-copy.md. */}
+        <div class="mt-12 flex flex-wrap items-center gap-4 rounded-2xl bg-muted/60 p-6 md:p-8">
+          <p class="flex-1 text-lg">
+            Not sure if {label.toLowerCase()} is what you need?
+            <span class="text-muted-foreground"> Tell us what is eating your hours.</span>
+          </p>
+          <Button href="/get-in-touch" variant="primary">
+            Talk to Us
+          </Button>
+        </div>
+      </section>
+    ))
+  }
+
+  <!-- Closing CTA -->
+  <section class="wh-container my-10 text-center lg:my-20">
+    <div class="rounded-3xl bg-[#131314] px-6 py-16 text-white md:px-12 md:py-24">
+      <AnimatedText>
+        <h2
+          class="mx-auto max-w-[20ch] text-[clamp(2rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em]"
+        >
+          Ready to get some time back?
+        </h2>
+      </AnimatedText>
+      <p class="mx-auto mt-6 max-w-[34rem] text-lg text-white/70">
+        Tell us what is eating your hours. We will show you what a system built for it looks like.
+      </p>
+      <div class="mt-10 flex justify-center">
+        <Button href="/get-in-touch" variant="accent" size="lg">Talk to Us</Button>
+      </div>
+      <p class="mt-6 text-sm text-white/50">A real conversation, not a sales pitch.</p>
+    </div>
+  </section>
 </BaseLayout>

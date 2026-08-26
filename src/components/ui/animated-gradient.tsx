@@ -52,6 +52,10 @@ export interface GradientParams {
  * House presets. `hero` and `footer` are the Prism preset with its blue swapped
  * for the WildHands lime; `footer` is slower and softer so it sits back behind
  * the link columns instead of competing with them.
+ *
+ * `speed` maps to `(speed / 100) * 5` in the render loop, so 7 is a drift of
+ * about 0.35 units/second — slow enough to read as ambient rather than as an
+ * animation demanding attention.
  */
 export const GRADIENT_PRESETS = {
   hero: {
@@ -61,7 +65,7 @@ export const GRADIENT_PRESETS = {
     rotation: -50,
     proportion: 1,
     scale: 0.01,
-    speed: 22,
+    speed: 7,
     distortion: 0,
     swirl: 50,
     swirlIterations: 12,
@@ -77,7 +81,7 @@ export const GRADIENT_PRESETS = {
     rotation: -30,
     proportion: 28,
     scale: 0.03,
-    speed: 12,
+    speed: 4,
     distortion: 2,
     swirl: 40,
     swirlIterations: 8,

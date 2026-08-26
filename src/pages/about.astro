@@ -1,9 +1,19 @@
 ---
-/** About page. TODO: all copy provisional; team members are placeholders. */
+/**
+ * About page.
+ *
+ * Layout follows the reference /about page: a light hero with an eyebrow above
+ * a large mission statement, an origin block, a founder quote set over an
+ * oversized logo watermark, values as centred hairline rows rather than cards,
+ * and a centred closing CTA.
+ *
+ * TODO: docs/site-copy.md lists About as "next up", so the wording here is
+ * provisional. The structure is final; swap the strings when copy lands.
+ */
 import BaseLayout from '@/layouts/BaseLayout.astro'
-import Hero from '@/components/sections/Hero.astro'
-import SectionHeading from '@/components/sections/SectionHeading.astro'
-import CTASection from '@/components/sections/CTASection.astro'
+import AnimatedText from '@/components/sections/AnimatedText.astro'
+import Button from '@/components/ui/Button.astro'
+import Logo from '@/components/ui/Logo.astro'
 import { breadcrumbSchema } from '@/lib/seo'
 import { publicEnv } from '@/config/env'
 
@@ -15,98 +25,108 @@ const jsonLd = [
   ]),
 ]
 
-/** TODO: placeholder team. Replace with real people and photographs. */
-const TEAM = [
-  { name: 'A. Placeholder', role: 'Engineering Lead' },
-  { name: 'B. Placeholder', role: 'Design Lead' },
-  { name: 'C. Placeholder', role: 'Delivery Lead' },
-  { name: 'D. Placeholder', role: 'Managing Director' },
-]
-
-const VALUES = [
-  {
-    title: 'Transparency',
-    body: 'You see the estimate, the assumptions behind it, and what changed when it moved.',
-  },
-  {
-    title: 'Openness of mind',
-    body: 'We arrive with a default stack and change it when the constraints say to.',
-  },
-  {
-    title: 'Commitment',
-    body: 'We stay past launch. Most of what determines whether a site stays good happens after it.',
-  },
-  {
-    title: 'Empathy',
-    body: 'The people who use the CMS every day have more to tell us than the brief does.',
-  },
-]
+/** TODO: provisional. Values wording pending the copy doc. */
+const VALUES = ['Clarity', 'Craft', 'Commitment', 'Candour']
 ---
 
 <BaseLayout
   title="About"
-  description="WildHands Studios is a web studio that audits, designs, migrates and runs marketing websites."
+  description="WildHands Studio builds custom websites, apps, and internal tools for teams done doing repetitive work by hand."
   jsonLd={jsonLd}
-  darkHero
 >
-  <Hero
-    eyebrow="About"
-    title="We stay after launch."
-    subtitle="Most of what determines whether a website stays good happens in the eighteen months nobody budgeted for."
-  />
+  <!-- Mission -->
+  <section class="relative isolate overflow-hidden">
+    <!-- TODO: the reference sets a large abstract render behind this. No
+         WildHands asset exists, so this is a soft tonal wash in its place. -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-0 -z-10"
+      style="background:
+        radial-gradient(60rem 40rem at 82% -10%, color-mix(in oklab, var(--accent) 20%, transparent), transparent 60%),
+        radial-gradient(50rem 40rem at 5% 20%, rgba(0,0,0,0.05), transparent 62%);"
+    >
+    </div>
 
-  <section class="wh-container wh-section">
-    <div class="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
-      <SectionHeading eyebrow="Why we exist">Websites decay quietly.</SectionHeading>
-      <div class="space-y-5 text-muted-foreground">
-        <p>
-          Placeholder copy. WildHands Studios exists because most marketing sites are built once,
-          handed over, and then slowly stop working — not dramatically, but a skipped dependency
-          update at a time.
-        </p>
-        <p>
-          We take on the whole arc: work out what is actually wrong, design something the team can
-          extend, move it across without losing search traffic, and then keep it healthy.
-        </p>
+    <div class="wh-container pt-40 pb-20 md:pt-52 md:pb-32">
+      <div class="max-w-[46rem] md:ml-[10%]">
+        <p class="text-sm text-muted-foreground">Our mission is</p>
+        <AnimatedText immediate>
+          <h1 class="wh-h1 mt-5">To build systems that give people their time back.</h1>
+        </AnimatedText>
       </div>
     </div>
   </section>
 
-  <section class="wh-container wh-section">
-    <SectionHeading level={2}>Who you would work with</SectionHeading>
-    <ul class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-      {
-        TEAM.map((person) => (
-          <li class="border-t border-border pt-5">
-            <div
-              aria-hidden="true"
-              class="mb-4 aspect-[4/5] w-full rounded-lg bg-muted"
-              title="Placeholder — no team photography yet"
-            />
-            <h3 class="text-lg font-medium">{person.name}</h3>
-            <p class="text-sm text-muted-foreground">{person.role}</p>
-          </li>
-        ))
-      }
-    </ul>
-    <p class="mt-6 text-xs text-muted-foreground">
-      Placeholder team. Names, roles and photography all pending.
-    </p>
+  <!-- Origin -->
+  <section class="wh-container my-10 lg:my-20">
+    <div class="max-w-[46rem] md:ml-[10%]">
+      <p class="text-sm text-muted-foreground">Who is behind it</p>
+      <AnimatedText>
+        <h2 class="mt-5 text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.15] tracking-[-0.025em]">
+          We started small, solving one team's repetitive work. Today we build the systems that run
+          behind businesses, driven by the same idea.
+        </h2>
+      </AnimatedText>
+      <p class="mt-8 max-w-[38rem] text-muted-foreground">
+        Every system we build is judged the same way: how much time it gives back. You can see that
+        in <a href="/work" class="underline underline-offset-4">the work we ship</a> and in
+        <a href="/services" class="underline underline-offset-4">how we scope a project</a>, from
+        first call to launch.
+      </p>
+    </div>
   </section>
 
-  <section class="wh-container wh-section">
-    <SectionHeading level={2}>How we work</SectionHeading>
-    <ul class="mt-10 grid gap-8 sm:grid-cols-2">
+  <!-- Founder quote over the logo watermark -->
+  <section class="relative isolate overflow-hidden py-16 md:py-28">
+    <Logo
+      variant="mark"
+      label=""
+      class="pointer-events-none absolute -top-8 left-1/2 -z-10 w-[min(78rem,150%)] -translate-x-1/2 text-foreground/[0.06]"
+    />
+
+    <div class="wh-container">
+      <div class="max-w-[42rem] md:ml-[10%]">
+        <blockquote class="text-[clamp(1.25rem,2.6vw,1.75rem)] leading-[1.4] tracking-[-0.02em]">
+          <p>
+            WildHands exists because most teams lose hours every week to work a system could do in
+            seconds. We would rather build the system once than watch anyone rebuild the same report
+            again.
+          </p>
+        </blockquote>
+        <figcaption class="mt-6 text-sm text-muted-foreground">
+          <span class="text-foreground">A. Placeholder</span> — Founder
+          <span class="ml-2 text-xs">(TODO: real name and title)</span>
+        </figcaption>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="wh-container my-10 lg:my-20">
+    <h2 class="wh-h2 text-center">Values</h2>
+    <ul class="mx-auto mt-10 max-w-3xl border-t border-border">
       {
         VALUES.map((value) => (
-          <li class="border-t border-border pt-5">
-            <h3 class="text-xl font-medium">{value.title}</h3>
-            <p class="mt-2 max-w-prose text-muted-foreground">{value.body}</p>
+          <li class="border-b border-border py-6 text-center text-lg md:py-8 md:text-xl">
+            {value}
           </li>
         ))
       }
     </ul>
   </section>
 
-  <CTASection />
+  <!-- Closing CTA -->
+  <section class="wh-container my-16 text-center lg:my-24">
+    <p class="text-sm text-muted-foreground">Your hours should go into the work only you can do.</p>
+    <AnimatedText>
+      <h2
+        class="mx-auto mt-5 max-w-[18ch] text-[clamp(2rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em]"
+      >
+        Ready to get some time back?
+      </h2>
+    </AnimatedText>
+    <div class="mt-10 flex justify-center">
+      <Button href="/get-in-touch" variant="accent" size="lg">Talk to Us</Button>
+    </div>
+  </section>
 </BaseLayout>
