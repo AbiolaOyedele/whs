@@ -11,6 +11,7 @@ import { getCollection } from 'astro:content'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import Hero from '@/components/sections/Hero.astro'
 import WorkCard from '@/components/sections/WorkCard.astro'
+import FilterSelect from '@/components/ui/FilterSelect.astro'
 import CTASection from '@/components/sections/CTASection.astro'
 import { breadcrumbSchema } from '@/lib/seo'
 import { publicEnv } from '@/config/env'
@@ -23,10 +24,27 @@ const work = (await getCollection('work', ({ data }) => !data.draft)).sort(
 const facetValues = (pick: (entry: (typeof work)[number]) => readonly string[]) =>
   [...new Set(work.flatMap(pick))].sort((a, b) => a.localeCompare(b))
 
+/* `allLabel` is written out rather than derived: appending an "s" to the facet
+   name produced "All technologys". */
 const facets = [
-  { key: 'service', label: 'Service', values: facetValues((e) => e.data.services) },
-  { key: 'tech', label: 'Technology', values: facetValues((e) => e.data.techStack) },
-  { key: 'industry', label: 'Type', values: facetValues((e) => [e.data.industry]) },
+  {
+    key: 'service',
+    label: 'Service',
+    allLabel: 'All services',
+    values: facetValues((e) => e.data.services),
+  },
+  {
+    key: 'tech',
+    label: 'Technology',
+    allLabel: 'All technologies',
+    values: facetValues((e) => e.data.techStack),
+  },
+  {
+    key: 'industry',
+    label: 'Type',
+    allLabel: 'All types',
+    values: facetValues((e) => [e.data.industry]),
+  },
 ] as const
 
 const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
@@ -66,24 +84,13 @@ const jsonLd = [
     <div class="mt-4 grid gap-4 sm:grid-cols-3">
       {
         facets.map((facet) => (
-          <div>
-            <label
-              for={`filter-${facet.key}`}
-              class="block text-xs font-medium tracking-widest text-muted-foreground uppercase"
-            >
-              {facet.label}
-            </label>
-            <select
-              id={`filter-${facet.key}`}
-              data-filter={facet.key}
-              class="wh-tap mt-2 w-full rounded-lg border border-[color:var(--input)] bg-card px-3 text-sm"
-            >
-              <option value="">All {facet.label.toLowerCase()}s</option>
-              {facet.values.map((value) => (
-                <option value={value}>{value}</option>
-              ))}
-            </select>
-          </div>
+          <FilterSelect
+            id={`filter-${facet.key}`}
+            name={facet.key}
+            label={facet.label}
+            allLabel={facet.allLabel}
+            values={facet.values}
+          />
         ))
       }
     </div>
@@ -125,7 +132,7 @@ const jsonLd = [
 <script>
   const root = document.querySelector<HTMLElement>('[data-work-index]')
   if (root) {
-    const selects = [...root.querySelectorAll<HTMLSelectElement>('[data-filter]')]
+    const selects = [...root.querySelectorAll<HTMLElement>('[data-filter-select]')]
     const items = [...root.querySelectorAll<HTMLElement>('[data-work-item]')]
     const count = root.querySelector<HTMLElement>('[data-filter-count]')
     const empty = root.querySelector<HTMLElement>('[data-filter-empty]')
@@ -133,7 +140,10 @@ const jsonLd = [
 
     const apply = () => {
       const active = selects
-        .map((select) => ({ key: select.dataset['filter'] ?? '', value: select.value }))
+        .map((select) => ({
+          key: select.dataset['filter'] ?? '',
+          value: select.dataset['value'] ?? '',
+        }))
         .filter((filter) => filter.value !== '')
 
       let visible = 0
@@ -152,11 +162,9 @@ const jsonLd = [
       if (reset) reset.hidden = active.length === 0
     }
 
-    selects.forEach((select) => select.addEventListener('change', apply))
+    selects.forEach((select) => select.addEventListener('filterchange', apply))
     reset?.addEventListener('click', () => {
-      selects.forEach((select) => {
-        select.value = ''
-      })
+      selects.forEach((select) => select.dispatchEvent(new CustomEvent('filterreset')))
       apply()
     })
   }

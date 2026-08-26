@@ -22,6 +22,7 @@ import {
   postForm,
   type SubmitState,
 } from './form-primitives'
+import { SelectField } from './SelectField'
 
 /** TODO: replace with a full country list, or a country-select dependency. */
 const COUNTRIES = [
@@ -42,6 +43,12 @@ const COUNTRIES = [
   'Australia',
   'Other',
 ]
+
+/* The listbox trigger wears the same box as the text inputs beside it. */
+const LONG_TERM_OPTIONS = [
+  { value: 'yes', label: 'Yes' },
+  { value: 'no', label: 'No' },
+] as const
 
 const selectClass = inputClass
 
@@ -154,109 +161,70 @@ export default function FreelanceApplicationForm() {
 
       <div className="grid gap-6 sm:grid-cols-2">
         <Field label="Country of residence" name="countryOfResidence" required>
-          <select
+          <SelectField
             id="countryOfResidence"
             name="countryOfResidence"
+            options={COUNTRIES}
+            placeholder="Select a country"
             required
             className={selectClass}
-            defaultValue=""
-          >
-            <option value="" disabled>
-              Select a country
-            </option>
-            {COUNTRIES.map((country) => (
-              <option key={country} value={country}>
-                {country}
-              </option>
-            ))}
-          </select>
+          />
         </Field>
         <Field label="Country of tax residence" name="taxResidence" required>
-          <select
+          <SelectField
             id="taxResidence"
             name="taxResidence"
+            options={COUNTRIES}
+            placeholder="Select a country"
             required
             className={selectClass}
-            defaultValue=""
-          >
-            <option value="" disabled>
-              Select a country
-            </option>
-            {COUNTRIES.map((country) => (
-              <option key={country} value={country}>
-                {country}
-              </option>
-            ))}
-          </select>
+          />
         </Field>
       </div>
 
       <Field label="Position" name="position" required>
-        <select id="position" name="position" required className={selectClass} defaultValue="">
-          <option value="" disabled>
-            Select a position
-          </option>
-          {FREELANCE_POSITIONS.map((position) => (
-            <option key={position} value={position}>
-              {position}
-            </option>
-          ))}
-        </select>
+        <SelectField
+          id="position"
+          name="position"
+          options={FREELANCE_POSITIONS}
+          placeholder="Select a position"
+          required
+          className={selectClass}
+        />
       </Field>
 
       <div className="grid gap-6 sm:grid-cols-2">
         <Field label="Availability" name="availability" required>
-          <select
+          <SelectField
             id="availability"
             name="availability"
+            options={AVAILABILITY_OPTIONS}
+            placeholder="Select availability"
             required
             className={selectClass}
-            defaultValue=""
-          >
-            <option value="" disabled>
-              Select availability
-            </option>
-            {AVAILABILITY_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+          />
         </Field>
         <Field label="Hours per month" name="hoursPerMonth" required>
-          <select
+          <SelectField
             id="hoursPerMonth"
             name="hoursPerMonth"
+            options={HOURS_PER_MONTH_OPTIONS}
+            placeholder="Select hours"
             required
             className={selectClass}
-            defaultValue=""
-          >
-            <option value="" disabled>
-              Select hours
-            </option>
-            {HOURS_PER_MONTH_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+          />
         </Field>
       </div>
 
       <Field label="Interested in long-term work?" name="longTermInterest" required>
-        <select
+        <SelectField
           id="longTermInterest"
           name="longTermInterest"
+          options={LONG_TERM_OPTIONS}
+          placeholder="Select an answer"
           required
           className={selectClass}
-          defaultValue=""
-        >
-          <option value="" disabled>
-            Select an answer
-          </option>
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-        </select>
+        />
       </Field>
 
       <fieldset className="space-y-3">

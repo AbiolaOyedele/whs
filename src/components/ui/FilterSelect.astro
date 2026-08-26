@@ -1,0 +1,179 @@
+---
+/**
+ * Styled single-choice filter.
+ *
+ * A native `<select>` renders its options through the OS, so the popup ignores
+ * every token on this site and arrives as a grey system menu. This is a
+ * button-plus-listbox instead, which is ours to style — at the cost of owning
+ * the keyboard behaviour that the native control gives away free, so all of it
+ * is implemented below: arrows, Home/End, Enter/Space, Escape, and focus
+ * returning to the trigger on close.
+ *
+ * The selected value lives in `data-value` on the wrapper, and a `filterchange`
+ * event bubbles on every change.
+ */
+interface Props {
+  id: string
+  /** Facet name, e.g. "Service". Rendered above the control. */
+  label: string
+  /** Copy for the unfiltered option, e.g. "All services". */
+  allLabel: string
+  /** Facet key written to `data-filter`, matched against each card's dataset. */
+  name: string
+  values: readonly string[]
+}
+
+const { id, label, allLabel, name, values } = Astro.props
+---
+
+<div class="relative" data-filter-select data-filter={name} data-value="">
+  <span id={`${id}-label`} class="block text-xs font-medium tracking-widest text-muted-foreground uppercase">
+    {label}
+  </span>
+
+  <button
+    type="button"
+    id={id}
+    data-filter-trigger
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-labelledby={`${id}-label ${id}-value`}
+    class="wh-tap mt-2 flex w-full items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 text-left text-base transition-colors hover:bg-muted"
+  >
+    <span id={`${id}-value`} data-filter-value class="truncate">{allLabel}</span>
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      class="size-4 shrink-0 text-muted-foreground transition-transform duration-200"
+      data-filter-chevron
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="m6 9 6 6 6-6"></path>
+    </svg>
+  </button>
+
+  <ul
+    role="listbox"
+    aria-labelledby={`${id}-label`}
+    data-filter-list
+    hidden
+    class="absolute z-30 mt-2 max-h-72 w-full overflow-y-auto rounded-2xl border border-border bg-card p-1.5 shadow-lg"
+  >
+    <li
+      role="option"
+      aria-selected="true"
+      tabindex="-1"
+      data-option-value=""
+      class="wh-tap flex cursor-pointer items-center gap-2 rounded-xl px-3 text-base outline-none hover:bg-muted focus-visible:bg-muted aria-selected:font-medium"
+    >
+      <span class="size-1.5 shrink-0 rounded-full bg-accent opacity-0 aria-hidden:opacity-0" data-option-dot
+      ></span>
+      {allLabel}
+    </li>
+    {
+      values.map((value) => (
+        <li
+          role="option"
+          aria-selected="false"
+          tabindex="-1"
+          data-option-value={value}
+          class="wh-tap flex cursor-pointer items-center gap-2 rounded-xl px-3 text-base outline-none hover:bg-muted focus-visible:bg-muted aria-selected:font-medium"
+        >
+          <span class="size-1.5 shrink-0 rounded-full bg-accent opacity-0" data-option-dot />
+          {value}
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  /* The lime dot marks the active choice. Selection is also carried by
+     `aria-selected` and the weight change, so it never rests on colour alone. */
+  [role='option'][aria-selected='true'] [data-option-dot] {
+    opacity: 1;
+  }
+  [data-filter-select][data-open='true'] [data-filter-chevron] {
+    transform: rotate(180deg);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-filter-select]').forEach((root) => {
+    const trigger = root.querySelector<HTMLButtonElement>('[data-filter-trigger]')
+    const list = root.querySelector<HTMLUListElement>('[data-filter-list]')
+    const valueLabel = root.querySelector<HTMLElement>('[data-filter-value]')
+    const options = [...root.querySelectorAll<HTMLLIElement>('[role="option"]')]
+    if (!trigger || !list || !valueLabel || options.length === 0) return
+
+    const setOpen = (open: boolean) => {
+      list.hidden = !open
+      trigger.setAttribute('aria-expanded', String(open))
+      root.dataset['open'] = String(open)
+      if (open) (options.find((o) => o.getAttribute('aria-selected') === 'true') ?? options[0])?.focus()
+    }
+
+    const select = (option: HTMLLIElement) => {
+      options.forEach((o) => o.setAttribute('aria-selected', String(o === option)))
+      root.dataset['value'] = option.dataset['optionValue'] ?? ''
+      valueLabel.textContent = option.textContent?.trim() ?? ''
+      setOpen(false)
+      trigger.focus()
+      root.dispatchEvent(new CustomEvent('filterchange', { bubbles: true }))
+    }
+
+    /** Resets to the "all" option without firing an event — the caller batches. */
+    root.addEventListener('filterreset', () => {
+      const first = options[0]
+      if (!first) return
+      options.forEach((o) => o.setAttribute('aria-selected', String(o === first)))
+      root.dataset['value'] = ''
+      valueLabel.textContent = first.textContent?.trim() ?? ''
+    })
+
+    trigger.addEventListener('click', () => setOpen(list.hidden === true))
+
+    options.forEach((option) => {
+      option.addEventListener('click', () => select(option))
+    })
+
+    list.addEventListener('keydown', (event) => {
+      const current = document.activeElement as HTMLLIElement | null
+      const index = current ? options.indexOf(current) : -1
+      const move = (next: number) => {
+        event.preventDefault()
+        options[Math.max(0, Math.min(options.length - 1, next))]?.focus()
+      }
+      switch (event.key) {
+        case 'ArrowDown':
+          return move(index + 1)
+        case 'ArrowUp':
+          return move(index - 1)
+        case 'Home':
+          return move(0)
+        case 'End':
+          return move(options.length - 1)
+        case 'Enter':
+        case ' ':
+          event.preventDefault()
+          if (current) select(current)
+          return
+        case 'Escape':
+          event.preventDefault()
+          setOpen(false)
+          trigger.focus()
+          return
+        case 'Tab':
+          setOpen(false)
+      }
+    })
+
+    document.addEventListener('click', (event) => {
+      if (!list.hidden && !root.contains(event.target as Node)) setOpen(false)
+    })
+  })
+</script>

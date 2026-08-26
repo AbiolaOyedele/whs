@@ -38,6 +38,17 @@ export const STACK_CATEGORY_LABELS: Record<StackCategory, string> = {
   integrations: 'Integrations',
 }
 
+/**
+ * "All X" labels for the stack nav. Written out rather than lower-casing the
+ * display label, which produced "All cms" and "All framework".
+ */
+export const STACK_CATEGORY_ALL_LABELS: Record<StackCategory, string> = {
+  cms: 'All CMS options',
+  framework: 'All frameworks',
+  hosting: 'All hosting',
+  integrations: 'All integrations',
+}
+
 /** Human-readable labels for each insights category. */
 export const INSIGHT_CATEGORY_LABELS: Record<InsightCategory, string> = {
   'design-systems': 'Design Systems',

@@ -9,8 +9,10 @@
  *
  * Accessibility note: the live reference renders its mega-menu triggers as
  * <a> elements with no href, which is neither keyboard- nor crawler-friendly.
- * We use real <button aria-expanded> triggers instead, and put the index link
- * ("All services", "All work"…) inside each panel.
+ * Ours are real links to the section index, carrying `aria-expanded` for the
+ * panel they reveal on hover or focus — so clicking "Work" goes to /work
+ * instead of doing nothing, and the panel stays a shortcut rather than the only
+ * way in. Each panel also keeps its own index link ("All services", "All work").
  */
 import { getCollection } from 'astro:content'
 import Button from '../ui/Button.astro'
@@ -22,6 +24,7 @@ import {
   SERVICE_PILLARS,
   SERVICE_PILLAR_LABELS,
   STACK_CATEGORIES,
+  STACK_CATEGORY_ALL_LABELS,
   STACK_CATEGORY_LABELS,
 } from '@/content.config'
 
@@ -53,7 +56,7 @@ const stackColumns: NavMenuColumn[] = STACK_CATEGORIES.map((category) => ({
       href: `/stack/${category}/${entry.id.split('/').pop()}`,
     })),
   allLink: {
-    label: `All ${STACK_CATEGORY_LABELS[category].toLowerCase()}`,
+    label: STACK_CATEGORY_ALL_LABELS[category],
     href: `/stack/${category}`,
   },
 }))
@@ -80,6 +83,7 @@ const workColumns: NavMenuColumn[] = Array.from({ length: 4 }, (_, column) => ({
 const menus: NavMenu[] = [
   {
     id: 'mega-work',
+    href: '/work',
     label: 'Work',
     columns: workColumns,
     feature: {
@@ -91,6 +95,7 @@ const menus: NavMenu[] = [
   },
   {
     id: 'mega-services',
+    href: '/services',
     label: 'Services',
     columns: serviceColumns,
     feature: {
@@ -102,6 +107,7 @@ const menus: NavMenu[] = [
   },
   {
     id: 'mega-stack',
+    href: '/stack',
     label: 'Stack',
     columns: stackColumns,
     feature: {

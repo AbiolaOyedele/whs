@@ -42,6 +42,8 @@ export interface NavMenuFeature {
 export interface NavMenu {
   id: string
   label: string
+  /** Section index the trigger navigates to. The panel is the shortcut, not the only way in. */
+  href: string
   columns: readonly NavMenuColumn[]
   feature?: NavMenuFeature | undefined
 }
@@ -220,14 +222,19 @@ export function AnimatedNav({ menus, plainLinks, ctaLabel, ctaHref, siteName }: 
                   }
                 }}
               >
-                <button
-                  type="button"
+                {/*
+                  A link, not a button. These used to be `<button aria-expanded>`,
+                  which opened the panel but left "Work", "Services" and "Stack"
+                  with nowhere to go on click. They are section indexes first and
+                  disclosures second, so the element is an anchor: clicking
+                  navigates, hovering or focusing opens the panel beneath it.
+                  `aria-expanded` is valid on role=link.
+                */}
+                <a
+                  href={menu.href}
                   aria-expanded={openMenu === menu.id}
                   aria-controls={menu.id}
-                  onClick={(event) => {
-                    event.stopPropagation()
-                    setOpenMenu(openMenu === menu.id ? null : menu.id)
-                  }}
+                  onClick={(event) => event.stopPropagation()}
                   className={cn(
                     'inline-flex min-h-12 items-center rounded-full px-4 text-base whitespace-nowrap',
                     'text-white transition-colors',
@@ -235,7 +242,7 @@ export function AnimatedNav({ menus, plainLinks, ctaLabel, ctaHref, siteName }: 
                   )}
                 >
                   {menu.label}
-                </button>
+                </a>
 
                 <MegaPanel menu={menu} open={openMenu === menu.id} reducedMotion={reducedMotion} />
               </m.div>

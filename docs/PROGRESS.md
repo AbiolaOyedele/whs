@@ -484,6 +484,42 @@ stack — flag it before adding), and the PostHog attribution/`clientReference`
 hidden fields, which need the analytics decision settled first. The honeypot and
 server-side rate limiting were already in place.
 
+### F-22. Nav triggers navigate; every native select replaced
+
+**Work, Services and Stack did nothing when clicked.** They were
+`<button aria-expanded>` mega-menu triggers — chosen originally because the
+reference renders its triggers as `<a>` with no `href`, which is worse — but a
+disclosure that is also the section's index needs to go somewhere. They are now
+real links carrying `aria-expanded` (valid on `role=link`): clicking navigates,
+hovering or focusing still opens the panel. Verified by clicking "Work" in the
+live page and landing on `/work`.
+
+**Native selects are gone.** A `<select>` renders its options through the OS, so
+the popup ignores every token on this site and arrives as a grey system menu.
+Two replacements, because the two contexts need different things:
+
+- `FilterSelect.astro` — the work-page facets. Zero-JS-until-interaction, value
+  in `data-value`, `filterchange` event.
+- `SelectField.tsx` — the six selects in the freelance form. The value rides a
+  hidden input so `new FormData(form)` picks it up exactly as before.
+
+Both own the keyboard behaviour the native control gives away free: arrows,
+Home/End, Enter/Space, Escape, Tab, click-outside, and focus returning to the
+trigger on close. `SelectField` also has typeahead, which is not optional when
+one of the lists is every country — verified live: "n" jumps to Netherlands,
+"ni" to Nigeria. Selection is marked by `aria-selected`, a weight change **and**
+a lime dot, so it never rests on colour alone.
+
+Two ESLint a11y findings were fixed rather than silenced: `aria-required` moved
+off the trigger (unsupported on `role=button`) onto the listbox, which does
+support it. The one suppression left is `click-events-have-key-events` on the
+options, with a comment: keyboard handling belongs on the listbox in this
+pattern, and options are deliberately not individually focusable.
+
+Grammar fixes surfaced along the way: `All ${label.toLowerCase()}` was rendering
+"All technologys", "All cms" and "All framework". Those labels are written out
+now, in `STACK_CATEGORY_ALL_LABELS` and on each work facet.
+
 ## 🔍 Live verification log — bejamas.com
 
 Fetched and inspected live on **2026-08-26** (computed styles + DOM + stylesheet
