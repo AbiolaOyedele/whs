@@ -1,24 +1,32 @@
 @import 'tailwindcss';
 
 /*
- * PP Neue Montreal (Pangram Pangram) — variable weight.
+ * NatomPro — the WildHands typeface.
  *
- * ⚠️  LICENCE REQUIRED BEFORE LAUNCH. This is a commercial typeface. Buy a web
- * licence from pangrampangram.com and keep this file, or swap --font-sans to
- * the Inter Tight fallback already in the stack. See docs/PROGRESS.md § B-2.
+ * Subset to Latin + punctuation and converted to woff2, which brings three
+ * weights in at ~64KB total. Self-hosted, so no third-party font request and
+ * no external dependency in the critical path.
  */
 @font-face {
-  font-family: 'NeueMontreal';
-  src: url('/fonts/PPNeueMontreal-Variable-opt.woff2') format('woff2-variations');
-  font-weight: 100 900;
+  font-family: 'NatomPro';
+  src: url('/fonts/NatomPro-Regular.woff2') format('woff2');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'SFMono-Regular';
-  src: url('/fonts/SFMono-Regular.woff2') format('woff2');
-  font-weight: 400;
+  font-family: 'NatomPro';
+  src: url('/fonts/NatomPro-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NatomPro';
+  src: url('/fonts/NatomPro-Bold.woff2') format('woff2');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -78,16 +86,9 @@
   /* Mega-menu panel override, verified live */
   --radius-mega: 1.25rem;
 
-  /* The reference self-hosts Neue Montreal (Pangram Pangram), a commercial
-     licence we do not hold, so it cannot be shipped. "Inter Tight" is the
-     substitute the reference analysis itself names — a close geometric grotesk,
-     loaded from Google Fonts. Drop a licensed NeueMontreal woff2 into
-     public/fonts and it takes over automatically; nothing else needs to change.
-     See docs/PROGRESS.md § B-2. */
-  --font-sans:
-    'NeueMontreal', 'Inter Tight', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
-    sans-serif;
-  --font-mono: 'SFMono-Regular', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* WildHands' own typeface. Self-hosted, three weights, subset to Latin. */
+  --font-sans: 'NatomPro', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 
   /* --- easing (verified live) --- */
   --ease-sweep: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* footer underline */

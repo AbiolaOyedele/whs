@@ -2,10 +2,13 @@
 /**
  * Dark hero band.
  *
- * Layout taken from the reference's compiled markup. On large screens the two
- * content blocks are absolutely positioned rather than stacked in flow — the
- * headline sits at 10.35% / 28.7% at 38.82% width, and the client logo block
- * anchors to the bottom-right half. Below `lg` both fall back to a flex column.
+ * Two absolutely-positioned blocks on large screens, matching the reference:
+ *   Block A (upper left, 10.35% / 28.7%, 38.82% wide) — headline, then the
+ *           client wordmark row directly beneath it.
+ *   Block B (lower right half, bottom 5.55%) — the standfirst paragraph, then
+ *           a two-column grid of full-width CTA buttons 80px tall.
+ *
+ * Below `lg` both fall back to a single flex column.
  *
  * `data-dark-hero` is what SiteHeader measures to decide when to flip its text
  * colour, so any page opening with this component gets that behaviour free.
@@ -15,10 +18,11 @@ import AnimatedText from './AnimatedText.astro'
 interface Props {
   eyebrow?: string | undefined
   title: string
+  /** Standfirst, rendered bottom-right on the home hero. */
+  standfirst?: string | undefined
+  /** Short subtitle rendered under the headline on inner pages. */
   subtitle?: string | undefined
-  /** `home` uses the full height ramp; `page` is the shorter inner-page band. */
   variant?: 'home' | 'page'
-  /** Optional looping background video, matching the reference treatment. */
   videoSrc?: string | undefined
   posterSrc?: string | undefined
   class?: string
@@ -27,6 +31,7 @@ interface Props {
 const {
   eyebrow,
   title,
+  standfirst,
   subtitle,
   variant = 'page',
   videoSrc,
@@ -54,10 +59,9 @@ const isHome = variant === 'home'
         aria-hidden="true"
       />
     ) : (
-      /* TODO: the reference plays a looped light-beam video here on their CDN.
-         Their artwork is not ours to use, so this reproduces the same visual
-         language in CSS — a near-black field with a soft, wide diagonal light
-         beam. Pass `videoSrc` to swap in a real WildHands asset. */
+      /* TODO: the reference plays a looped light-beam video from its CDN. Their
+         artwork is not ours to use, so this reproduces the same visual language
+         in CSS. Pass `videoSrc` once a real WildHands asset exists. */
       <div aria-hidden="true" class="absolute inset-0 overflow-hidden bg-[#0a0a0b]">
         <div class="wh-hero-beam" />
         <div class="wh-hero-beam wh-hero-beam--secondary" />
@@ -66,7 +70,6 @@ const isHome = variant === 'home'
     )
   }
 
-  <!-- Scrim, matched to the reference gradient stops. -->
   <div
     aria-hidden="true"
     class="pointer-events-none absolute inset-0"
@@ -75,6 +78,7 @@ const isHome = variant === 'home'
   </div>
 
   <div class="absolute inset-0 z-10 flex flex-col px-5 pt-36 pb-5 sm:px-8 sm:pb-8 lg:block lg:p-0">
+    <!-- Block A — headline and client wordmarks -->
     <div
       class={`self-start md:ml-[calc(10.35%-2rem)] lg:absolute lg:left-[10.35%] lg:ml-0 lg:w-[38.82%] ${isHome ? 'lg:top-[28.7%]' : 'lg:top-[38%]'}`}
     >
@@ -88,18 +92,29 @@ const isHome = variant === 'home'
       </AnimatedText>
       {
         subtitle && (
-          <p class="mt-8 max-w-[35rem] text-xl leading-[1.25] font-medium text-white/70 md:text-2xl md:leading-[1.2]">
+          <p class="mt-8 max-w-[35rem] text-xl leading-[1.25] font-medium text-white/70">
             {subtitle}
           </p>
         )
       }
-      <slot />
+      <div class="mt-8 max-w-[35rem]">
+        <slot name="logos" />
+      </div>
     </div>
 
+    <!-- Block B — standfirst and the CTA pair -->
     <div
       class="mt-12 flex flex-col justify-end md:ml-[calc(10.35%-2rem)] md:w-[60%] lg:absolute lg:right-8 lg:bottom-[5.55%] lg:left-1/2 lg:mt-0 lg:ml-0 lg:w-auto"
     >
-      <slot name="footer" />
+      {
+        standfirst && (
+          <p class="max-w-[35rem] text-lg leading-[1.35] text-white/75 md:text-xl">{standfirst}</p>
+        )
+      }
+      <div class="mt-10 grid gap-1 sm:grid-cols-2 lg:mt-[7.75rem]">
+        <slot name="cta" />
+      </div>
+      <slot />
     </div>
   </div>
 </section>

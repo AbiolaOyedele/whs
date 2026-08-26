@@ -1,0 +1,37 @@
+---
+/**
+ * WildHands Studios logo.
+ *
+ *   `mark` — horizontal "whs." mark (2.6:1). Nav pill, and the collapsed state.
+ *   `full` — stacked "wild / hands / studios" lockup (1.46:1). Footer.
+ *
+ * Inlined rather than served as <img> so the wordmark inherits `currentColor`
+ * and one file works on both light and dark surfaces. Only the accent dot is
+ * pinned to the brand colour.
+ */
+import { FULL_PATHS, FULL_VIEW_BOX, MARK_PATHS, MARK_VIEW_BOX } from './logo-paths'
+
+interface Props {
+  variant?: 'mark' | 'full'
+  class?: string
+  /** Accessible name. Pass an empty string when a nearby label already names it. */
+  label?: string
+}
+
+const { variant = 'mark', class: className = '', label = 'WildHands Studios' } = Astro.props
+
+const isMark = variant === 'mark'
+const paths = isMark ? MARK_PATHS : FULL_PATHS
+const viewBox = isMark ? MARK_VIEW_BOX : FULL_VIEW_BOX
+---
+
+<svg
+  viewBox={viewBox}
+  class={className}
+  role={label ? 'img' : undefined}
+  aria-label={label || undefined}
+  aria-hidden={label ? undefined : 'true'}
+  xmlns="http://www.w3.org/2000/svg"
+>
+  {paths.map((path) => <path fill={path.accent ? 'var(--accent)' : 'currentColor'} d={path.d} />)}
+</svg>

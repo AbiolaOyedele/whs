@@ -14,9 +14,16 @@
  */
 import { getCollection } from 'astro:content'
 import Button from '../ui/Button.astro'
-import MegaMenu from './MegaMenu.astro'
-import { PLAIN_NAV_LINKS, PROCESS_STEPS, SITE } from '@/config/site'
-import { STACK_CATEGORIES, STACK_CATEGORY_LABELS } from '@/content.config'
+import Logo from '../ui/Logo.astro'
+import AnimatedNav from '@/components/ui/navigation-menu.tsx'
+import type { NavMenu, NavMenuColumn } from '@/components/ui/navigation-menu.tsx'
+import { PLAIN_NAV_LINKS, SITE } from '@/config/site'
+import {
+  SERVICE_PILLARS,
+  SERVICE_PILLAR_LABELS,
+  STACK_CATEGORIES,
+  STACK_CATEGORY_LABELS,
+} from '@/content.config'
 
 interface Props {
   /** Renders white-on-transparent for pages that open with a dark hero band. */
@@ -33,17 +40,78 @@ const [services, work, stack] = await Promise.all([
 
 const servicesByPillar = services.sort((a, b) => a.data.order - b.data.order)
 const featuredWork = work.filter((entry) => entry.data.featured).slice(0, 3)
-const stackByCategory = STACK_CATEGORIES.map((category) => ({
-  category,
+
+/** Groups the stack entries by category, keeping only the recommended picks. */
+const stackColumns: NavMenuColumn[] = STACK_CATEGORIES.map((category) => ({
   label: STACK_CATEGORY_LABELS[category],
-  picks: stack
-    .filter((entry) => entry.data.category === category && entry.data.recommended)
-    .slice(0, 3),
+  links: stack
+    .filter((entry) => entry.data.category === category)
+    .sort((a, b) => a.data.order - b.data.order)
+    .slice(0, 4)
+    .map((entry) => ({
+      label: entry.data.name,
+      href: `/stack/${category}/${entry.id.split('/').pop()}`,
+    })),
+  allLink: {
+    label: `All ${STACK_CATEGORY_LABELS[category].toLowerCase()}`,
+    href: `/stack/${category}`,
+  },
 }))
 
-const panelLink =
-  'block rounded-md px-3 py-2 text-sm text-white/75 transition-colors hover:bg-white/10 hover:text-white'
-const panelHeading = 'px-3 text-xs font-medium tracking-widest uppercase text-white/45'
+/** Services split across four columns, one per delivery pillar. */
+const serviceColumns: NavMenuColumn[] = SERVICE_PILLARS.map((pillar) => ({
+  label: SERVICE_PILLAR_LABELS[pillar],
+  links: servicesByPillar
+    .filter((entry) => entry.data.pillar === pillar)
+    .map((entry) => ({ label: entry.data.title, href: `/services/${entry.id}` })),
+  allLink: { label: 'All services', href: '/services' },
+}))
+
+/** Work, chunked into four columns so the grid stays even. */
+const workColumns: NavMenuColumn[] = Array.from({ length: 4 }, (_, column) => ({
+  label: column === 0 ? 'Featured' : 'More work',
+  links: featuredWork
+    .slice(column * 2, column * 2 + 2)
+    .map((entry) => ({ label: entry.data.client, href: `/work/${entry.id}` })),
+  allLink: column === 3 ? { label: 'All work', href: '/work' } : undefined,
+})).filter((column) => column.links.length > 0)
+
+// TODO: feature-card copy is provisional placeholder text.
+const menus: NavMenu[] = [
+  {
+    id: 'mega-work',
+    label: 'Work',
+    columns: workColumns,
+    feature: {
+      label: 'Selected projects',
+      body: 'Every case study here is a platform someone else now runs without us.',
+      href: '/work',
+      ctaLabel: 'Browse the work',
+    },
+  },
+  {
+    id: 'mega-services',
+    label: 'Services',
+    columns: serviceColumns,
+    feature: {
+      label: 'Start here',
+      body: 'Not sure what you need yet? The audit is fixed price and can conclude that you should do nothing.',
+      href: '/services/performance-audit',
+      ctaLabel: 'Read about the audit',
+    },
+  },
+  {
+    id: 'mega-stack',
+    label: 'Stack',
+    columns: stackColumns,
+    feature: {
+      label: 'Enterprise stack',
+      body: 'Already have a shortlist? We confirm the calls that hold up and challenge the ones that do not.',
+      href: '/enterprise',
+      ctaLabel: 'Read about',
+    },
+  },
+]
 ---
 
 <header
@@ -73,157 +141,25 @@ const panelHeading = 'px-3 text-xs font-medium tracking-widest uppercase text-wh
   <div class="wh-container relative flex h-20 items-center justify-between gap-4 lg:h-28">
     <a
       href="/"
-      class="wh-tap inline-flex items-center gap-2.5 text-xl tracking-tight"
+      class="wh-tap inline-flex items-center gap-2.5 text-xl tracking-tight lg:hidden"
       aria-label={`${SITE.name} — home`}
     >
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 24 24"
-        width="22"
-        height="22"
-        fill="none"
-        class="shrink-0"
-      >
-        <circle cx="12" cy="12" r="10.5" stroke="currentColor" stroke-width="1.5"></circle>
-        <circle cx="12" cy="12" r="4.25" fill="currentColor"></circle>
-      </svg>
-      <span class="font-medium">WildHands</span>
+      <Logo variant="mark" class="h-6 w-auto" label={`${SITE.name} — home`} />
     </a>
 
-    <nav aria-label="Primary" class="hidden lg:block">
-      <ul class="flex items-center gap-1">
-        <li class="relative" data-menu-item>
-          <button
-            type="button"
-            data-menu-trigger
-            aria-expanded="false"
-            aria-controls="mega-work"
-            class="wh-nav-trigger"
-          >
-            Work
-          </button>
-          <MegaMenu id="mega-work">
-            <p class={panelHeading}>Selected projects</p>
-            <ul class="mt-3 grid gap-1 md:grid-cols-2">
-              {
-                featuredWork.map((entry) => (
-                  <li>
-                    <a href={`/work/${entry.id}`} class={panelLink}>
-                      <span class="block text-white">{entry.data.client}</span>
-                      <span class="block text-xs text-white/50">{entry.data.summary}</span>
-                    </a>
-                  </li>
-                ))
-              }
-            </ul>
-            <div class="mt-4 border-t border-white/10 pt-3">
-              <a href="/work" class={panelLink}>All work &rarr;</a>
-            </div>
-          </MegaMenu>
-        </li>
+    <div class="hidden lg:block">
+      <AnimatedNav
+        client:load
+        menus={menus}
+        plainLinks={PLAIN_NAV_LINKS}
+        ctaLabel="Talk to us"
+        ctaHref="/get-in-touch"
+        siteName="WildHands"
+      />
+    </div>
 
-        <li class="relative" data-menu-item>
-          <button
-            type="button"
-            data-menu-trigger
-            aria-expanded="false"
-            aria-controls="mega-services"
-            class="wh-nav-trigger"
-          >
-            Services
-          </button>
-          <MegaMenu id="mega-services">
-            <div class="grid gap-6 md:grid-cols-[12rem_1fr]">
-              <div>
-                <p class={panelHeading}>How we work</p>
-                <ol class="mt-3 space-y-1 px-3 text-sm text-white/60">
-                  {
-                    PROCESS_STEPS.map((step, index) => (
-                      <li>
-                        <span class="text-white/35 tabular-nums">
-                          {String(index + 1).padStart(2, '0')}
-                        </span>
-                        <span class="ml-2 text-white/80">{step}</span>
-                      </li>
-                    ))
-                  }
-                </ol>
-              </div>
-              <div>
-                <p class={panelHeading}>Services</p>
-                <ul class="mt-3 grid gap-1 md:grid-cols-2">
-                  {
-                    servicesByPillar.map((entry) => (
-                      <li>
-                        <a href={`/services/${entry.id}`} class={panelLink}>
-                          {entry.data.title}
-                        </a>
-                      </li>
-                    ))
-                  }
-                </ul>
-                <div class="mt-4 border-t border-white/10 pt-3">
-                  <a href="/services" class={panelLink}>All services &rarr;</a>
-                </div>
-              </div>
-            </div>
-          </MegaMenu>
-        </li>
-
-        <li class="relative" data-menu-item>
-          <button
-            type="button"
-            data-menu-trigger
-            aria-expanded="false"
-            aria-controls="mega-stack"
-            class="wh-nav-trigger"
-          >
-            Stack
-          </button>
-          <MegaMenu id="mega-stack">
-            <div class="grid gap-6 md:grid-cols-4">
-              {
-                stackByCategory.map((group) => (
-                  <div>
-                    <p class={panelHeading}>{group.label}</p>
-                    <ul class="mt-3 space-y-1">
-                      {group.picks.map((entry) => (
-                        <li>
-                          <a
-                            href={`/stack/${group.category}/${entry.id.split('/').pop()}`}
-                            class={panelLink}
-                          >
-                            {entry.data.name}
-                          </a>
-                        </li>
-                      ))}
-                      <li>
-                        <a href={`/stack/${group.category}`} class={`${panelLink} text-white/50`}>
-                          All {group.label} &rarr;
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                ))
-              }
-            </div>
-          </MegaMenu>
-        </li>
-
-        {
-          PLAIN_NAV_LINKS.map((link) => (
-            <li>
-              <a href={link.href} class="wh-nav-trigger">
-                {link.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
-
-    <div class="flex items-center gap-2">
-      <Button href="/get-in-touch" variant="accent" size="md" class="hidden sm:inline-flex">
+    <div class="flex items-center gap-2 lg:hidden">
+      <Button href="/get-in-touch" variant="accent" size="sm" class="hidden sm:inline-flex">
         Talk to us
       </Button>
 
@@ -282,6 +218,11 @@ const panelHeading = 'px-3 text-xs font-medium tracking-widest uppercase text-wh
   }
   .wh-nav-trigger:hover {
     background-color: color-mix(in oklab, currentColor 10%, transparent);
+  }
+
+  /* The open trigger keeps a light pill behind it while its panel is showing. */
+  .wh-nav-trigger[aria-expanded='true'] {
+    background-color: color-mix(in oklab, currentColor 12%, transparent);
   }
 
   /* Over a dark hero the chrome is white; once scrolled past it flips to the

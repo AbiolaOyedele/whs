@@ -60,22 +60,25 @@ const painPoints = [
   <Hero
     variant="home"
     title="Websites your team can actually run."
-    subtitle="We audit, design, migrate and run marketing sites for companies whose platform stopped keeping up."
+    standfirst="WildHands Studios is a senior web team. We audit your legacy estate, migrate it onto one modern platform, and stay on to run it with you, so marketing publishes without waiting on developers."
   >
-    <div class="mt-8 flex flex-wrap gap-3">
-      <Button href="/get-in-touch" variant="accent" size="lg">Talk to us</Button>
-      <Button href="/services" variant="outline" size="lg" onDark>See how we work</Button>
-    </div>
-
-    <Fragment slot="footer">
-      <p class="text-sm font-medium text-white/50">Trusted by teams at</p>
-      <ul class="mt-10 grid gap-1 sm:grid-cols-2 md:h-20 lg:mt-[7.75rem]">
+    <Fragment slot="logos">
+      <p class="text-sm text-white/45">Trusted by teams at</p>
+      <ul class="mt-3 flex flex-wrap items-center gap-x-7 gap-y-2">
         {
-          LOGOS.map((name) => (
-            <li class="flex items-center text-lg font-medium text-white/85 md:text-xl">{name}</li>
+          LOGOS.slice(0, 3).map((name) => (
+            <li class="text-base font-medium tracking-tight text-white/85">{name}</li>
           ))
         }
       </ul>
+    </Fragment>
+
+    {/* Full-width CTA pair, 80px tall — the reference's `grid gap-1 md:h-20`. */}
+    <Fragment slot="cta">
+      <Button href="/get-in-touch" variant="accent" class="h-16 w-full md:h-20">Talk to us</Button>
+      <Button href="/services" variant="outline" onDark class="h-16 w-full md:h-20">
+        See how we work
+      </Button>
     </Fragment>
   </Hero>
 
