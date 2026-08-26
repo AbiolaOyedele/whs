@@ -106,7 +106,7 @@ export async function submitContact(body: Record<string, unknown>): Promise<void
   const data = parseOrThrow(contactSchema, body, 'FORM_CONTACT_INVALID_INPUT')
 
   await sendNotification({
-    subject: `New enquiry — ${data.name}`,
+    subject: `New enquiry: ${data.name}`,
     replyTo: data.email,
     text: asTextBody([
       ['Name', data.name],
@@ -124,7 +124,7 @@ export async function submitNewsletter(body: Record<string, unknown>): Promise<v
   const data = parseOrThrow(newsletterSchema, body, 'FORM_NEWSLETTER_INVALID_INPUT')
 
   await sendNotification({
-    subject: `Newsletter signup — ${data.email}`,
+    subject: `Newsletter signup: ${data.email}`,
     text: asTextBody([['Email', data.email]]),
   })
 }
@@ -148,7 +148,7 @@ export async function submitFreelanceApplication(form: FormData): Promise<void> 
   const attachments: OutgoingAttachment[] = [cv]
 
   await sendNotification({
-    subject: `Freelance application — ${data.firstName} ${data.lastName} (${data.position})`,
+    subject: `Freelance application: ${data.firstName} ${data.lastName} (${data.position})`,
     replyTo: data.email,
     attachments,
     text: asTextBody([
@@ -187,7 +187,7 @@ export async function submitJobApplication(form: FormData): Promise<void> {
   }
 
   await sendNotification({
-    subject: `Job application — ${data.role} — ${data.firstName} ${data.lastName}`,
+    subject: `Job application: ${data.role}, ${data.firstName} ${data.lastName}`,
     replyTo: data.email,
     ...(attachments.length > 0 ? { attachments } : {}),
     text: asTextBody([

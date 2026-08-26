@@ -39,11 +39,15 @@ export async function sendNotification(options: SendNotificationOptions): Promis
   try {
     const { error } = await getClient().emails.send({
       /*
-       * TODO(B-5): switch to `WildHands <hello@whstd.com>` once whstd.com is
-       * verified in Resend (DNS: SPF, DKIM). Deliberately NOT switched yet —
-       * sending from an unverified domain fails outright, which would take
-       * every form on the site down. resend.dev works today; the swap is a
-       * one-line change after the DNS records land.
+       * TODO(B-5): switch to `WildHands <hello@whstd.com>` once whstd.com
+       * verifies in Resend. It is added and its DKIM record is verified, but
+       * verification is blocked on an MX record Resend wants at `send`, which
+       * Namecheap only exposes under Mail Settings. Setting it there would
+       * replace Email Forwarding and silently break inbound mail to hello@,
+       * sales@ and hr@, so it is deliberately not done.
+       *
+       * Until then: resend.dev only delivers to the Resend account owner, so
+       * CONTACT_NOTIFICATION_EMAIL must stay that address.
        */
       from: 'WildHands <onboarding@resend.dev>',
       to: [CONTACT_NOTIFICATION_EMAIL],
