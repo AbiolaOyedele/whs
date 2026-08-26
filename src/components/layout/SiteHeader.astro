@@ -51,9 +51,26 @@ const panelHeading = 'px-3 text-xs font-medium tracking-widest uppercase text-wh
   data-over-hero={overDarkHero ? 'true' : undefined}
   class="site-header absolute inset-x-0 top-0 z-50"
 >
-  <div aria-hidden="true" class="wh-header-blur pointer-events-none absolute inset-0 -z-10"></div>
+  <!--
+    Progressive blur: five stacked layers inside a fixed 10rem band. Each layer
+    blurs a little more and is masked to a different slice, so the blur ramps
+    smoothly instead of ending on a hard edge. Matched to the reference.
+  -->
+  <div
+    aria-hidden="true"
+    class="pointer-events-none fixed inset-x-0 top-0 z-[21] h-40 overflow-hidden"
+  >
+    {
+      [1, 2, 3, 4, 5].map((step) => (
+        <div
+          class="wh-header-blur absolute inset-0"
+          style={`--layer-blur: ${step * 0.5}px; --layer-start: ${(step - 1) * 16}%; --layer-end: ${step * 20}%;`}
+        />
+      ))
+    }
+  </div>
 
-  <div class="wh-container flex h-20 items-center justify-between gap-4 lg:h-28">
+  <div class="wh-container relative flex h-20 items-center justify-between gap-4 lg:h-28">
     <a
       href="/"
       class="wh-tap inline-flex items-center gap-2.5 text-xl tracking-tight"
@@ -436,9 +453,9 @@ const panelHeading = 'px-3 text-xs font-medium tracking-widest uppercase text-wh
       ticking = true
       requestAnimationFrame(() => {
         const y = window.scrollY
-        // Blur ramps in over the first 120px, capped at 12px.
-        const blur = Math.min(12, (y / 120) * 12)
-        root.style.setProperty('--progressive-header-blur', `${blur.toFixed(2)}px`)
+        // Ramp the whole blur stack in over the first 120px of scroll.
+        const scale = Math.min(1, y / 120)
+        root.style.setProperty('--progressive-header-scale', scale.toFixed(3))
 
         // Flip to the solid foreground colour once the dark hero is behind us.
         const hero = document.querySelector<HTMLElement>('[data-dark-hero]')

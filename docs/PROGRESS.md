@@ -76,12 +76,29 @@ Confirmed live. **This is their brand mark and will not be reused.**
 `src/styles/global.css` currently ships neutral placeholder tokens with no accent
 defined at all. **Need: WildHands Studios' actual brand accent colour.**
 
-### B-2. Typeface (blocks Step 5)
+### B-2. ⚠️ PP Neue Montreal is now shipping — YOU MUST BUY A LICENCE
 
-Bejamas self-hosts **Neue Montreal** (Pangram Pangram) as `--default-font-family`.
-Confirmed live. A licensed commercial typeface and part of their visual identity —
-**will not be reused.** **Need: WildHands' actual typeface**, plus confirmation of
-whether a licence is held or whether we should pick an open alternative.
+`public/fonts/PPNeueMontreal-Variable-opt.woff2` was taken from the site archive
+you supplied and is now wired up in `src/styles/global.css` via `@font-face`. It
+is rendering on every page.
+
+**PP Neue Montreal is a commercial typeface from Pangram Pangram.** Having the
+file does not grant the right to serve it. Publishing this site as-is means
+distributing a commercial font without a licence, which is the most likely thing
+on this project to generate a real complaint.
+
+**Pick one before launch:**
+
+1. **Buy a web licence** at pangrampangram.com — priced by monthly pageviews.
+   Nothing in the code changes.
+2. **Drop back to Inter Tight.** Delete the `@font-face` block and the woff2, and
+   remove `'NeueMontreal',` from `--font-sans`. Inter Tight is already loaded from
+   Google Fonts and is the substitute the reference analysis itself names. Two
+   lines, no layout change — the metrics are close enough that nothing reflows.
+
+`SFMono-Regular.woff2` came from the same archive and is wired to `--font-mono`.
+It is Apple's font and is **not** licensed for web distribution either; the same
+choice applies, and the safe fallback is the `ui-monospace` system stack.
 
 ### B-3. Service model assumption (blocks Steps 11, 13)
 
@@ -205,6 +222,33 @@ browser. That cut `form-primitives` from 18KB to 1.3KB gzip.
 would remove React entirely and save the remaining ~56KB on those pages. The
 brief explicitly sanctions React islands for forms, so this is left as your call
 rather than done unilaterally.
+
+### F-14. Layout rebuilt from the saved site archive
+
+A site archive was supplied at
+`~/Downloads/bejamas.com-1787734766415/`, containing the compiled CSS, the real
+markup for 50 pages, and the font files. The homepage layout was rebuilt against
+it rather than against measurements taken through the DOM. What changed:
+
+|               | Before                  | After (from the archive)                                                                                                     |
+| ------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Container     | flat `max-width: 80rem` | breakpoint-stepped: 40/48/64/80/96/**104rem**, `px-5` → `lg:px-8`                                                            |
+| Hero height   | `min-h-svh` (900px)     | `54rem` → `52rem` → `56rem` → `clamp(65rem, 99.1667vw, 89.25rem)`                                                            |
+| Hero content  | flex column             | absolutely positioned: headline at `left:10.35% top:28.7% w:38.82%`, logos at `bottom:5.55% left:50%`                        |
+| "Why" section | two even columns        | `grid-cols-[42.7%_57.3%]`, sticky left column, `min-h-[24rem]` bordered article rows, `lg:pt-[16.5rem]`                      |
+| Services      | 4-up card grid          | heading pinned left, rows in a centred `max-w-2xl` measure, hover dims siblings to 0.4                                       |
+| Project grid  | uniform 3-up            | asymmetric 12-col — cards 1/4/5 span 7, cards 2/3/6 span 5                                                                   |
+| Project card  | bordered box            | `rounded-3xl` media, tech stack above in parens, client name overlaid with `mix-blend-exclusion`, stats over the bottom edge |
+| Header blur   | one masked layer        | five stacked layers in a fixed `h-40` band                                                                                   |
+| Typeface      | Inter Tight             | PP Neue Montreal variable (**see B-2**)                                                                                      |
+
+The flat 80rem container was the single biggest cause of the layout reading as
+cramped — the reference is half again as wide on a large monitor.
+
+Two defects found and fixed while rebuilding, both caught by measuring rather
+than by eye: project cards in the same grid row ended at different heights
+(wide cards honoured a 4:3 ratio while narrow ones came up 153px short), and a
+two-line card summary pushed its neighbour's media 24px shorter.
 
 ### F-13. Visual fidelity was raised to match the reference exactly
 
@@ -382,7 +426,9 @@ Swept 22 representative pages at 375px, 768px and 1280px — 66 checks:
 
 ## What needs your attention
 
-1. **B-2 — buy a Neue Montreal licence**, or confirm Inter Tight is acceptable.
+1. **B-2 — ⚠️ BUY A FONT LICENCE, or revert to Inter Tight.** PP Neue Montreal
+   and SFMono are both shipping from the archive and neither is licensed for
+   web distribution. This is the highest-risk item on the list.
 2. **B-1 — get a legal opinion on trade dress** if WildHands competes with the
    reference company in the same market.
 3. **B-3 — confirm the service model.** The whole page inventory assumes web

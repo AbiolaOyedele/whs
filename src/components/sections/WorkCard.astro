@@ -1,10 +1,15 @@
 ---
 /**
- * Case-study card. Reused on the home featured grid, the /work index, and the
- * "related work" strips on service and industry pages.
+ * Case-study card.
+ *
+ * Layout matched to the reference: the tech stack sits *above* the card in
+ * parentheses, the client name overlays the top-left of the media with
+ * `mix-blend-exclusion` so it stays legible on any image, and stat callouts
+ * overlay the bottom edge.
+ *
+ * The whole card is one link, so the media is the tap target — no separate
+ * stretched-link pseudo-element is needed.
  */
-import Tag from '../ui/Tag.astro'
-
 interface Stat {
   value: string
   label: string
@@ -16,49 +21,61 @@ interface Props {
   summary: string
   techStack?: readonly string[]
   stats?: readonly Stat[]
+  /** Media aspect ratio. The reference alternates wide and tall cards. */
   class?: string
 }
 
 const { href, client, summary, techStack = [], stats = [], class: className = '' } = Astro.props
 ---
 
-<article
-  class={`group relative flex flex-col rounded-xl border border-border bg-card p-6 transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md focus-within:-translate-y-0.5 focus-within:shadow-md ${className}`}
->
-  <h3 class="text-lg font-medium">
-    <a href={href} class="after:absolute after:inset-0 after:content-['']">
-      {client}
-    </a>
-  </h3>
-  <p class="mt-2 text-sm text-muted-foreground">{summary}</p>
-
-  {
-    stats.length > 0 && (
-      <dl class="mt-6 flex flex-wrap gap-x-8 gap-y-4">
-        {stats.slice(0, 2).map((stat) => (
-          <div>
-            <dt class="sr-only">{stat.label}</dt>
-            <dd>
-              <span class="block text-2xl font-medium tracking-tighter tabular-nums md:text-3xl">
-                {stat.value}
-              </span>
-              <span class="mt-0.5 block text-xs text-muted-foreground">{stat.label}</span>
-            </dd>
-          </div>
-        ))}
-      </dl>
-    )
-  }
-
+<a href={href} class={`group relative mb-20 flex h-full flex-col rounded-3xl ${className}`}>
   {
     techStack.length > 0 && (
-      <ul class="mt-6 flex flex-wrap gap-2 border-t border-border pt-4">
-        {techStack.map((tech) => (
-          <li>
-            <Tag>{tech}</Tag>
-          </li>
-        ))}
-      </ul>
+      <span class="absolute -top-8 ml-5 text-sm text-muted-foreground">
+        ({techStack.join(', ')})
+      </span>
     )
   }
-</article>
+
+  <span
+    class="pointer-events-none absolute top-5 left-5 z-20 flex text-2xl text-white mix-blend-exclusion md:text-3xl"
+  >
+    {client}
+  </span>
+
+  <div
+    class="relative z-10 flex min-h-[22rem] flex-1 flex-col justify-between overflow-clip rounded-3xl bg-neutral-200 transition-transform duration-300 ease-out group-hover:scale-[1.01] md:min-h-[28rem]"
+  >
+    <!--
+      TODO: no case-study imagery exists yet. The reference renders a <picture>
+      with a responsive screenshot here, plus a muted hover-preview video.
+      Swap this placeholder for <Image> once real assets are supplied.
+    -->
+    <div
+      aria-hidden="true"
+      class="absolute inset-0"
+      style="background:
+        linear-gradient(140deg, #1c1c1f 0%, #2b2b30 46%, #191919 100%),
+        radial-gradient(60% 50% at 70% 20%, color-mix(in oklab, var(--accent) 30%, transparent), transparent 70%);
+        background-blend-mode: screen;"
+    >
+    </div>
+
+    <div class="absolute right-5 bottom-5 left-5 z-10 flex flex-wrap items-end gap-x-8 gap-y-1">
+      {
+        stats.slice(0, 2).map((stat) => (
+          <span class="text-white">
+            <span class="block text-2xl font-medium tracking-tighter tabular-nums md:text-3xl">
+              {stat.value}
+            </span>
+            <span class="block text-xs text-white/70">{stat.label}</span>
+          </span>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Clamped to two lines with a reserved height, so a longer summary on one
+       card cannot push its media shorter than its neighbour's in the same row. -->
+  <p class="mt-4 line-clamp-2 min-h-[3.5rem] max-w-prose text-muted-foreground">{summary}</p>
+</a>

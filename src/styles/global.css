@@ -1,5 +1,28 @@
 @import 'tailwindcss';
 
+/*
+ * PP Neue Montreal (Pangram Pangram) — variable weight.
+ *
+ * ⚠️  LICENCE REQUIRED BEFORE LAUNCH. This is a commercial typeface. Buy a web
+ * licence from pangrampangram.com and keep this file, or swap --font-sans to
+ * the Inter Tight fallback already in the stack. See docs/PROGRESS.md § B-2.
+ */
+@font-face {
+  font-family: 'NeueMontreal';
+  src: url('/fonts/PPNeueMontreal-Variable-opt.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SFMono-Regular';
+  src: url('/fonts/SFMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ==========================================================================
    WildHands Studios — design tokens
    Tailwind v4, CSS-first config. No tailwind.config.js.
@@ -64,7 +87,7 @@
   --font-sans:
     'NeueMontreal', 'Inter Tight', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
     sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  --font-mono: 'SFMono-Regular', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
   /* --- easing (verified live) --- */
   --ease-sweep: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* footer underline */
@@ -222,15 +245,149 @@
 
 @layer components {
   /* Page container. Gutters step up with the viewport, mobile-first. */
+  /*
+   * Breakpoint-stepped container, matched to the reference's compiled CSS.
+   * NOT a flat max-width — it steps at every breakpoint and tops out at
+   * 104rem (1664px), which is what gives the layout its width on large screens.
+   */
   .wh-container {
     width: 100%;
-    max-width: 80rem; /* 1280px — verified live */
     margin-inline: auto;
-    padding-inline: 1.25rem; /* 20px mobile */
+    padding-inline: calc(var(--spacing, 0.25rem) * 5); /* 20px */
   }
   @media (width >= 40rem) {
     .wh-container {
-      padding-inline: 2rem; /* 32px from sm up — verified live */
+      max-width: 40rem;
+    }
+  }
+  @media (width >= 48rem) {
+    .wh-container {
+      max-width: 48rem;
+    }
+  }
+  @media (width >= 64rem) {
+    .wh-container {
+      max-width: 64rem;
+      padding-inline: calc(var(--spacing, 0.25rem) * 8); /* 32px */
+    }
+  }
+  @media (width >= 80rem) {
+    .wh-container {
+      max-width: 80rem;
+    }
+  }
+  @media (width >= 96rem) {
+    .wh-container {
+      max-width: 96rem;
+    }
+  }
+  @media (width >= 104rem) {
+    .wh-container {
+      max-width: 104rem;
+    }
+  }
+
+  /*
+   * Hero light beam. Two heavily-blurred, rotated gradient bands over a
+   * near-black field, plus a warm accent glow — the same visual language as the
+   * reference's background video, built in CSS so no external asset is needed.
+   * `will-change` is deliberately omitted: these never animate.
+   */
+  .wh-hero-beam {
+    position: absolute;
+    top: -40%;
+    left: -30%;
+    width: 160%;
+    height: 190%;
+    transform: rotate(-34deg);
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(255, 255, 255, 0.02) 26%,
+      rgba(255, 255, 255, 0.16) 40%,
+      rgba(255, 255, 255, 0.3) 47%,
+      rgba(255, 255, 255, 0.14) 54%,
+      rgba(255, 255, 255, 0.02) 70%,
+      transparent 100%
+    );
+    filter: blur(60px);
+  }
+
+  .wh-hero-beam--secondary {
+    top: -20%;
+    left: -10%;
+    width: 130%;
+    height: 150%;
+    transform: rotate(-28deg);
+    background: linear-gradient(
+      to right,
+      transparent 30%,
+      rgba(255, 255, 255, 0.1) 48%,
+      rgba(255, 255, 255, 0.02) 62%,
+      transparent 78%
+    );
+    filter: blur(90px);
+    opacity: 0.8;
+  }
+
+  .wh-hero-glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        50rem 34rem at 82% 8%,
+        color-mix(in oklab, var(--accent) 18%, transparent),
+        transparent 62%
+      ),
+      radial-gradient(38rem 30rem at 8% 96%, rgba(255, 255, 255, 0.05), transparent 68%);
+  }
+
+  /* Home hero height ramp, taken verbatim from the reference's compiled CSS. */
+  .wh-hero-home {
+    min-height: 54rem;
+  }
+  @media (width >= 22.5rem) {
+    .wh-hero-home {
+      min-height: 52rem;
+    }
+  }
+  @media (width >= 48rem) {
+    .wh-hero-home {
+      min-height: 56rem;
+    }
+  }
+  @media (width >= 64rem) {
+    .wh-hero-home {
+      height: clamp(65rem, 99.1667vw, 89.25rem);
+      min-height: 0;
+    }
+  }
+
+  /*
+   * Featured projects: asymmetric 12-column rhythm. Cards 1, 4 and 5 span 7
+   * columns; 2, 3 and 6 span 5. This alternation is what makes the grid read
+   * as editorial rather than as a uniform card wall.
+   */
+  @media (width >= 48rem) {
+    .wh-projects-grid > :nth-child(6n + 1),
+    .wh-projects-grid > :nth-child(6n + 4),
+    .wh-projects-grid > :nth-child(6n + 5) {
+      grid-column: span 7 / span 7;
+    }
+    .wh-projects-grid > :nth-child(6n + 2),
+    .wh-projects-grid > :nth-child(6n + 3),
+    .wh-projects-grid > :nth-child(6n + 6) {
+      grid-column: span 5 / span 5;
+    }
+  }
+
+  /* Services list: hovering one row dims the others. */
+  @media (hover: hover) {
+    .wh-services-list:has(.wh-service-row:hover) .wh-service-row:not(:hover) {
+      opacity: 0.4;
+    }
+    .wh-service-row {
+      transition: opacity 0.5s;
     }
   }
 
@@ -315,11 +472,29 @@
 
   /* Scroll-linked progressive blur under the header. Intensity is set on
      :root by SiteHeader; the mask fades the blur out below the top edge. */
+  /*
+   * One layer of the progressive header blur. Each instance sets its own blur
+   * radius and mask slice via custom properties, and `--progressive-header-blur`
+   * (updated on scroll by SiteHeader) scales the whole stack in and out.
+   */
   .wh-header-blur {
-    -webkit-backdrop-filter: blur(var(--progressive-header-blur));
-    backdrop-filter: blur(var(--progressive-header-blur));
-    mask-image: var(--progressive-header-mask);
-    -webkit-mask-image: var(--progressive-header-mask);
+    --layer-blur: 1px;
+    --layer-start: 0%;
+    --layer-end: 20%;
+    -webkit-backdrop-filter: blur(calc(var(--layer-blur) * var(--progressive-header-scale, 0)));
+    backdrop-filter: blur(calc(var(--layer-blur) * var(--progressive-header-scale, 0)));
+    mask-image: linear-gradient(
+      to bottom,
+      #000 var(--layer-start),
+      #000 var(--layer-end),
+      transparent calc(var(--layer-end) + 20%)
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000 var(--layer-start),
+      #000 var(--layer-end),
+      transparent calc(var(--layer-end) + 20%)
+    );
   }
 
   /* AnimatedText reveal. Lines start hidden ONLY when JS is driving them, so

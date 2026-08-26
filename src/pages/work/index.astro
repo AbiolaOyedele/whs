@@ -93,11 +93,10 @@ const jsonLd = [
       {work.length === 1 ? 'project' : 'projects'}
     </p>
 
-    <div class="mt-10 grid gap-1 gap-y-10 md:grid-cols-12" data-work-grid>
+    <div class="wh-projects-grid mt-16 grid gap-1 gap-y-10 md:grid-cols-12" data-work-grid>
       {
         work.map((entry) => (
           <div
-            class="md:col-span-6 lg:col-span-4"
             data-work-item
             data-service={entry.data.services.join('|')}
             data-tech={entry.data.techStack.join('|')}
@@ -109,7 +108,6 @@ const jsonLd = [
               summary={entry.data.summary}
               techStack={entry.data.techStack}
               stats={entry.data.stats}
-              class="h-full"
             />
           </div>
         ))

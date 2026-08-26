@@ -2,10 +2,10 @@
 /**
  * Dark hero band.
  *
- * Structure matched to the reference (verified live 2026-08-26): a full-bleed
- * background layer, a top-to-bottom gradient scrim over it for text contrast,
- * then the content absolutely positioned above both. Bottom corners are
- * rounded 2rem so the light page beneath shows through.
+ * Layout taken from the reference's compiled markup. On large screens the two
+ * content blocks are absolutely positioned rather than stacked in flow — the
+ * headline sits at 10.35% / 28.7% at 38.82% width, and the client logo block
+ * anchors to the bottom-right half. Below `lg` both fall back to a flex column.
  *
  * `data-dark-hero` is what SiteHeader measures to decide when to flip its text
  * colour, so any page opening with this component gets that behaviour free.
@@ -16,12 +16,9 @@ interface Props {
   eyebrow?: string | undefined
   title: string
   subtitle?: string | undefined
-  /** `full` fills the viewport (home page). `compact` is for inner pages. */
-  size?: 'full' | 'compact'
-  /**
-   * Optional looping background video, matching the reference treatment.
-   * Falls back to the gradient wash when absent. TODO: no asset exists yet.
-   */
+  /** `home` uses the full height ramp; `page` is the shorter inner-page band. */
+  variant?: 'home' | 'page'
+  /** Optional looping background video, matching the reference treatment. */
   videoSrc?: string | undefined
   posterSrc?: string | undefined
   class?: string
@@ -31,23 +28,23 @@ const {
   eyebrow,
   title,
   subtitle,
-  size = 'compact',
+  variant = 'page',
   videoSrc,
   posterSrc,
   class: className = '',
 } = Astro.props
 
-const isFull = size === 'full'
+const isHome = variant === 'home'
 ---
 
 <section
   data-dark-hero
-  class={`relative isolate overflow-hidden rounded-b-[2rem] bg-surface-dark text-white ${isFull ? 'min-h-svh' : ''} ${className}`}
+  class={`relative isolate overflow-hidden rounded-b-[2rem] bg-[#131314] text-white ${isHome ? 'wh-hero-home' : ''} ${className}`}
 >
   {
     videoSrc ? (
       <video
-        class="absolute inset-0 -z-20 size-full object-cover"
+        class="absolute inset-0 size-full object-cover"
         src={videoSrc}
         poster={posterSrc}
         autoplay
@@ -57,44 +54,52 @@ const isFull = size === 'full'
         aria-hidden="true"
       />
     ) : (
-      /* TODO: the reference plays a looped light-beam video here. No WildHands
-         asset exists yet, so this reproduces the same diagonal beam in CSS.
-         Pass `videoSrc` once a real asset is supplied. */
-      <div
-        aria-hidden="true"
-        class="absolute inset-0 -z-20"
-        style="background:
-          radial-gradient(120% 80% at 78% -20%, rgba(255,255,255,0.22), transparent 55%),
-          linear-gradient(112deg, transparent 28%, rgba(255,255,255,0.16) 42%, rgba(255,255,255,0.04) 52%, transparent 66%),
-          radial-gradient(90rem 50rem at 85% 10%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 60%);"
-      />
+      /* TODO: the reference plays a looped light-beam video here on their CDN.
+         Their artwork is not ours to use, so this reproduces the same visual
+         language in CSS — a near-black field with a soft, wide diagonal light
+         beam. Pass `videoSrc` to swap in a real WildHands asset. */
+      <div aria-hidden="true" class="absolute inset-0 overflow-hidden bg-[#0a0a0b]">
+        <div class="wh-hero-beam" />
+        <div class="wh-hero-beam wh-hero-beam--secondary" />
+        <div class="wh-hero-glow" />
+      </div>
     )
   }
 
-  <!-- Scrim: keeps the headline legible whatever the art behind it does. -->
+  <!-- Scrim, matched to the reference gradient stops. -->
   <div
     aria-hidden="true"
-    class="absolute inset-0 -z-10"
-    style="background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 38%, rgba(0,0,0,0.75) 100%);"
+    class="pointer-events-none absolute inset-0"
+    style="background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.08) 55%, rgba(0,0,0,0.38) 100%);"
   >
   </div>
 
-  <div
-    class={`wh-container relative flex flex-col ${isFull ? 'min-h-svh pt-36 pb-8' : 'pt-36 pb-16 md:pt-44 md:pb-20'}`}
-  >
-    <div class={isFull ? 'mt-auto' : ''}>
+  <div class="absolute inset-0 z-10 flex flex-col px-5 pt-36 pb-5 sm:px-8 sm:pb-8 lg:block lg:p-0">
+    <div
+      class={`self-start md:ml-[calc(10.35%-2rem)] lg:absolute lg:left-[10.35%] lg:ml-0 lg:w-[38.82%] ${isHome ? 'lg:top-[28.7%]' : 'lg:top-[38%]'}`}
+    >
       {
         eyebrow && (
-          <p class="mb-4 text-sm font-medium tracking-widest text-white/50 uppercase">{eyebrow}</p>
+          <p class="mb-5 text-sm font-medium tracking-widest text-white/50 uppercase">{eyebrow}</p>
         )
       }
       <AnimatedText immediate>
-        <h1 class="wh-h1 max-w-[16ch] text-balance">{title}</h1>
+        <h1 class="wh-h1 mix-blend-difference">{title}</h1>
       </AnimatedText>
-      {subtitle && <p class="wh-lede mt-6 text-white/70">{subtitle}</p>}
+      {
+        subtitle && (
+          <p class="mt-8 max-w-[35rem] text-xl leading-[1.25] font-medium text-white/70 md:text-2xl md:leading-[1.2]">
+            {subtitle}
+          </p>
+        )
+      }
       <slot />
     </div>
 
-    <slot name="footer" />
+    <div
+      class="mt-12 flex flex-col justify-end md:ml-[calc(10.35%-2rem)] md:w-[60%] lg:absolute lg:right-8 lg:bottom-[5.55%] lg:left-1/2 lg:mt-0 lg:ml-0 lg:w-auto"
+    >
+      <slot name="footer" />
+    </div>
   </div>
 </section>
