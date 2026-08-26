@@ -27,7 +27,10 @@ const { id, label, allLabel, name, values } = Astro.props
 ---
 
 <div class="relative" data-filter-select data-filter={name} data-value="">
-  <span id={`${id}-label`} class="block text-xs font-medium tracking-widest text-muted-foreground uppercase">
+  <span
+    id={`${id}-label`}
+    class="block text-xs font-medium tracking-widest text-muted-foreground uppercase"
+  >
     {label}
   </span>
 
@@ -70,8 +73,9 @@ const { id, label, allLabel, name, values } = Astro.props
       data-option-value=""
       class="wh-tap flex cursor-pointer items-center gap-2 rounded-xl px-3 text-base outline-none hover:bg-muted focus-visible:bg-muted aria-selected:font-medium"
     >
-      <span class="size-1.5 shrink-0 rounded-full bg-accent opacity-0 aria-hidden:opacity-0" data-option-dot
-      ></span>
+      <span
+        class="size-1.5 shrink-0 rounded-full bg-accent opacity-0 aria-hidden:opacity-0"
+        data-option-dot></span>
       {allLabel}
     </li>
     {
@@ -114,7 +118,8 @@ const { id, label, allLabel, name, values } = Astro.props
       list.hidden = !open
       trigger.setAttribute('aria-expanded', String(open))
       root.dataset['open'] = String(open)
-      if (open) (options.find((o) => o.getAttribute('aria-selected') === 'true') ?? options[0])?.focus()
+      if (open)
+        (options.find((o) => o.getAttribute('aria-selected') === 'true') ?? options[0])?.focus()
     }
 
     const select = (option: HTMLLIElement) => {

@@ -679,25 +679,42 @@ Swept 22 representative pages at 375px, 768px and 1280px — 66 checks:
 
 ## What needs your attention
 
-1. **B-2 — ⚠️ BUY A FONT LICENCE, or revert to Inter Tight.** PP Neue Montreal
+1. **Domain — `whstd.com`. Three things only you can do.**
+   - **Set `PUBLIC_SITE_URL=https://whstd.com`** in Vercel (Production). This one
+     variable drives canonical tags, `sitemap.xml`, `robots.txt` and Open Graph.
+     Without it the build falls back to the `*.vercel.app` host and every one of
+     those points at the wrong origin. Verified locally: with it set, canonicals
+     and the sitemap render `https://whstd.com/...`.
+   - **`https`, not `http`.** The domain was given as `http://whstd.com/`. Vercel
+     redirects http to https, so an http canonical sends every crawler through a
+     redirect. Everything here uses https.
+   - **Add the domain to the Vercel project and point DNS at it**, then turn off
+     Deployment Protection — the site currently returns Vercel's login page.
+2. **Mailboxes on whstd.com do not exist yet.** `hello@`, `sales@` and `hr@` are
+   printed on the contact page and inside the agent instructions. Create them or
+   set up forwarding before launch, or enquiries go nowhere.
+3. **B-2 — ⚠️ BUY A FONT LICENCE, or revert to Inter Tight.** PP Neue Montreal
    and SFMono are both shipping from the archive and neither is licensed for
    web distribution. This is the highest-risk item on the list.
-2. **B-1 — get a legal opinion on trade dress** if WildHands competes with the
+4. **B-1 — get a legal opinion on trade dress** if WildHands competes with the
    reference company in the same market.
-3. **B-3 — confirm the service model.** The whole page inventory assumes web
+5. **B-3 — confirm the service model.** The whole page inventory assumes web
    design/dev/migration.
-4. **Copy: home, services and all four case studies are now real.** Still
+6. **Copy: home, services and all four case studies are now real.** Still
    placeholder: stack, insights, industries, enterprise, careers, freelance hub.
    `grep -rl "placeholder: true" src/content/`
-5. **"Studio" or "Studios"?** All prose now reads _WildHands Studio_, matching
+7. **"Studio" or "Studios"?** All prose now reads _WildHands Studio_, matching
    `SITE.name` and the copy doc you supplied. The logo artwork still spells
    _studios_. One of the two has to move — the copy is a one-line change, the
    wordmark is not. Tell me which.
-6. **Those reference-inherited sections are still there.** Stack (14 pages),
+8. **Those reference-inherited sections are still there.** Stack (14 pages),
    Insights (11), Careers (9), Industries (3), Enterprise (1), Freelance Hub (1)
    — 39 of 55 pages, all still carrying migration-era copy and the word
    "estate". This is the question from earlier that never got an answer.
-7. **Privacy policy is an unreviewed draft** with TODOs in the legal substance.
-8. **F-10 — decide where application videos go**, or drop the step.
-9. **Resend sending domain** is still `onboarding@resend.dev`.
-10. **F-8 — decide on a headless CMS** before real content lands.
+9. **Privacy policy is an unreviewed draft** with TODOs in the legal substance.
+10. **F-10 — decide where application videos go**, or drop the step.
+11. **Resend sending domain** is still `onboarding@resend.dev`. Verify
+    whstd.com in Resend (SPF + DKIM), then switch the `from:` in
+    `src/lib/resend.ts` to `hello@whstd.com` — one line, but not before the DNS
+    records land, or every form on the site stops sending.
+12. **F-8 — decide on a headless CMS** before real content lands.

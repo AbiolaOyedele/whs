@@ -12,10 +12,23 @@ export const SITE = {
   tagline: 'Custom systems that give you your time back.',
   description:
     'WildHands designs and builds custom websites, apps, and internal tools for teams done doing repetitive work by hand.',
-  /** TODO: confirm real contact addresses before launch. */
-  email: 'hello@wildhands.example.com',
-  salesEmail: 'sales@wildhands.example.com',
-  hrEmail: 'hr@wildhands.example.com',
+  /**
+   * Canonical origin. Everything user-facing — canonical tags, sitemap.xml,
+   * robots.txt, Open Graph — reads PUBLIC_SITE_URL, not this; this is the value
+   * that variable should hold, kept here so the build warning can name it.
+   *
+   * https, not http: the site is served over TLS and Vercel redirects http to
+   * it, so an http canonical would point every crawler at a redirect.
+   */
+  origin: 'https://whstd.com',
+  /**
+   * TODO: these mailboxes do not exist yet. Create them (or set up forwarding)
+   * on whstd.com before launch — they are printed on the contact page and in
+   * the agent instructions, so a missing mailbox silently loses enquiries.
+   */
+  email: 'hello@whstd.com',
+  salesEmail: 'sales@whstd.com',
+  hrEmail: 'hr@whstd.com',
 } as const
 
 /**

@@ -61,7 +61,7 @@ function resolveSiteUrl(): string {
     console.warn(
       `⚠️  PUBLIC_SITE_URL is not set. Falling back to ${resolved}.\n` +
         '   Canonical URLs, sitemap.xml, robots.txt and Open Graph tags will all\n' +
-        '   use that host. Set PUBLIC_SITE_URL to your real domain before launch.'
+        '   use that host. Set PUBLIC_SITE_URL to https://whstd.com before launch.'
     )
     return resolved
   }
