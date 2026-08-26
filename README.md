@@ -100,9 +100,17 @@ WildHands has worked with.
 
 ## Deployment
 
-Vercel, via `@astrojs/vercel`. Push to the default branch to deploy; set the five
-environment variables above in the Vercel project settings first, or the build
-will fail its env validation (by design).
+Vercel, via `@astrojs/vercel`. Push to the default branch to deploy.
+
+The build succeeds with no environment variables configured — pages are static
+and only the API routes need secrets, which are validated on first use. Two
+things to set in the Vercel project before launch:
+
+- **`PUBLIC_SITE_URL`** — your real domain. Without it, canonical URLs, the
+  sitemap, robots.txt and OG tags all point at the `.vercel.app` deployment
+  host. The build prints a warning when this happens.
+- **`RESEND_API_KEY`** and **`CONTACT_NOTIFICATION_EMAIL`** — until these are
+  set, the four forms return a plain-English error rather than sending.
 
 ## Project structure
 

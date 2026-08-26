@@ -39,9 +39,22 @@ function resolveSiteUrl(): string {
 
   const vercelHost = source['VERCEL_PROJECT_PRODUCTION_URL'] ?? source['VERCEL_URL']
   if (typeof vercelHost === 'string' && vercelHost.length > 0) {
-    return vercelHost.startsWith('http') ? vercelHost : `https://${vercelHost}`
+    const resolved = vercelHost.startsWith('http') ? vercelHost : `https://${vercelHost}`
+    // Loud, because it is silently wrong rather than broken: the site builds
+    // fine, but every canonical URL, sitemap entry and OG tag points at the
+    // deployment host instead of the real domain.
+    console.warn(
+      `⚠️  PUBLIC_SITE_URL is not set. Falling back to ${resolved}.\n` +
+        '   Canonical URLs, sitemap.xml, robots.txt and Open Graph tags will all\n' +
+        '   use that host. Set PUBLIC_SITE_URL to your real domain before launch.'
+    )
+    return resolved
   }
 
+  console.warn(
+    '⚠️  PUBLIC_SITE_URL is not set and no deployment host was found.\n' +
+      '   Falling back to http://localhost:4321 — do not ship this build.'
+  )
   return 'http://localhost:4321'
 }
 
