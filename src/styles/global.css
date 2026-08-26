@@ -1,0 +1,25 @@
+@import 'tailwindcss';
+
+/*
+ * TODO (Step 5): Replace this placeholder token block with the full verified
+ * @theme layer. Two tokens are BLOCKED pending manager confirmation:
+ *   --accent      : WildHands' own brand colour (must NOT reuse Bejamas' lime)
+ *   --font-sans   : WildHands' own typeface
+ * See docs/PROGRESS.md § Blocked / Needs Confirmation.
+ */
+
+:root {
+  --background: oklch(96.44% 0.0013 286.38);
+  --foreground: oklch(18.72% 0.002 286.2);
+  --radius: 0.5rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}

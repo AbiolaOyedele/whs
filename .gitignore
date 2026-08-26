@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.astro/
+.vercel/
+
+# environment
+.env
+.env.local
+.env.staging
+.env.production
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-error.log*
+
+# os / editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# test output
+coverage/
+test-results/
+playwright-report/

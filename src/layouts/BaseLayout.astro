@@ -1,0 +1,31 @@
+---
+/**
+ * Placeholder base layout. Replaced in Step 8 with the real SiteHeader /
+ * Footer chrome and in Step 19 with the full SEO + JSON-LD head layer.
+ */
+import '@/styles/global.css'
+
+interface Props {
+  /** Page title, rendered into <title>. */
+  title: string
+  /** Meta description for search and AI crawlers. */
+  description: string
+}
+
+const { title, description } = Astro.props
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin)
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

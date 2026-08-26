@@ -1,0 +1,25 @@
+---
+// TODO: placeholder scaffold. getStaticPaths returns [] until the matching
+// content collection is seeded. Built out in a later step per docs/PROGRESS.md.
+import type { GetStaticPaths } from 'astro'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+
+interface RouteParams {
+  category: string
+}
+
+/** No paths until the backing content collection is seeded. */
+export const getStaticPaths = (() => []) satisfies GetStaticPaths
+
+const { category } = Astro.params as unknown as RouteParams
+---
+
+<BaseLayout
+  title="Stack category — WildHands Studios"
+  description="Placeholder stack category template."
+>
+  <main>
+    <h1>Stack category</h1>
+    <p>Placeholder template for {category}.</p>
+  </main>
+</BaseLayout>
