@@ -1,14 +1,21 @@
 /**
  * Environment variable validation.
  *
- * This is the ONLY module in the codebase permitted to read from
- * `import.meta.env` / `process.env`. Every other file imports from here.
+ * This is the ONLY module permitted to read `import.meta.env` / `process.env`.
+ * Every other file imports from here. ESLint enforces it.
  *
- * Two exports, deliberately split:
- *  - `publicEnv` — PUBLIC_* variables only. Safe to import from client islands.
- *  - `serverEnv` — includes secrets. Server-only; throws if imported in a browser bundle.
+ * Two exports, deliberately split and validated at different times:
  *
- * @see docs/PROGRESS.md for the note on Astro's built-in `astro:env` alternative.
+ *  - `publicEnv` — PUBLIC_* only, validated at import. Safe in client islands.
+ *  - `serverEnv()` — includes secrets, validated lazily on first call.
+ *
+ * The timing split matters. This is a static site: the pages are prerendered at
+ * build time and only the API routes need Resend, at request time. Validating
+ * secrets at module load meant a build with no secrets configured failed before
+ * it rendered a single page — which is exactly what happened on the first
+ * deploy. Validating them on first use keeps the build green while still
+ * failing loudly, with a real error, the moment a form is actually submitted
+ * without a key.
  */
 import { z } from 'zod'
 
@@ -16,6 +23,26 @@ import { z } from 'zod'
 const source: Record<string, unknown> = {
   ...(typeof process !== 'undefined' && process.env ? process.env : {}),
   ...(import.meta.env as Record<string, unknown>),
+}
+
+/**
+ * Resolves the canonical origin.
+ *
+ * Vercel does not set PUBLIC_SITE_URL, but it does expose the deployment host —
+ * without a protocol — so we normalise it. Preferring the production host keeps
+ * canonical URLs and sitemap entries pointing at the real domain even when a
+ * preview deployment builds them.
+ */
+function resolveSiteUrl(): string {
+  const explicit = source['PUBLIC_SITE_URL']
+  if (typeof explicit === 'string' && explicit.length > 0) return explicit
+
+  const vercelHost = source['VERCEL_PROJECT_PRODUCTION_URL'] ?? source['VERCEL_URL']
+  if (typeof vercelHost === 'string' && vercelHost.length > 0) {
+    return vercelHost.startsWith('http') ? vercelHost : `https://${vercelHost}`
+  }
+
+  return 'http://localhost:4321'
 }
 
 const publicSchema = z.object({
@@ -29,47 +56,48 @@ const serverSchema = z.object({
   CONTACT_NOTIFICATION_EMAIL: z.email(),
 })
 
-/** Formats a Zod error into a readable multi-line message for startup failures. */
+/** Formats a Zod error into a readable multi-line message. */
 function formatIssues(error: z.ZodError): string {
   return error.issues
     .map((issue) => `  - ${issue.path.join('.') || '(root)'}: ${issue.message}`)
     .join('\n')
 }
 
-const publicParsed = publicSchema.safeParse(source)
+const publicParsed = publicSchema.safeParse({ ...source, PUBLIC_SITE_URL: resolveSiteUrl() })
 if (!publicParsed.success) {
-  const message = `Invalid public environment variables:\n${formatIssues(publicParsed.error)}`
-  console.error(`❌ ${message}`)
+  console.error(`❌ Invalid public environment variables:\n${formatIssues(publicParsed.error)}`)
   throw new Error('Environment validation failed. App cannot start.')
 }
 
 /** Validated PUBLIC_* environment variables. Safe to use in client islands. */
 export const publicEnv = publicParsed.data
 
-/** True when this module is evaluating inside a browser bundle. */
-const isBrowser = typeof window !== 'undefined'
-
 type ServerEnv = z.infer<typeof serverSchema>
 
-let serverEnvValue: ServerEnv | null = null
-
-if (!isBrowser) {
-  const serverParsed = serverSchema.safeParse(source)
-  if (!serverParsed.success) {
-    const message = `Invalid server environment variables:\n${formatIssues(serverParsed.error)}`
-    console.error(`❌ ${message}`)
-    throw new Error('Environment validation failed. App cannot start.')
-  }
-  serverEnvValue = serverParsed.data
-}
+let cachedServerEnv: ServerEnv | null = null
 
 /**
  * Validated server-side environment variables, including secrets.
- * Never import this from a client island — it throws in the browser by design.
+ *
+ * Validated on first call rather than at import, so a build without secrets
+ * configured still succeeds. Never call this from a client island — it throws
+ * in the browser by design, and the secrets are not there anyway.
  */
 export function serverEnv(): ServerEnv {
-  if (serverEnvValue === null) {
+  if (cachedServerEnv) return cachedServerEnv
+
+  if (typeof window !== 'undefined') {
     throw new Error('serverEnv() is server-only and must not be called from client code.')
   }
-  return serverEnvValue
+
+  const parsed = serverSchema.safeParse(source)
+  if (!parsed.success) {
+    console.error(`❌ Invalid server environment variables:\n${formatIssues(parsed.error)}`)
+    throw new Error(
+      'Server environment validation failed. Set RESEND_API_KEY and CONTACT_NOTIFICATION_EMAIL.'
+    )
+  }
+
+  cachedServerEnv = parsed.data
+  return cachedServerEnv
 }

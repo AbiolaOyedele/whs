@@ -233,3 +233,18 @@ describe('readBody', () => {
     await expect(readBody(req)).rejects.toMatchObject({ code: 'FORM_BODY_UNREADABLE' })
   })
 })
+
+describe('env resolution', () => {
+  it('does not require server secrets at import time', async () => {
+    // The build must succeed with no secrets configured — this is what broke
+    // the first Vercel deploy. Importing the module must not throw.
+    const mod = await import('@/config/env')
+    expect(typeof mod.serverEnv).toBe('function')
+    expect(mod.publicEnv.PUBLIC_SITE_URL).toBeTruthy()
+  })
+
+  it('resolves a canonical site URL', async () => {
+    const { publicEnv } = await import('@/config/env')
+    expect(() => new URL(publicEnv.PUBLIC_SITE_URL)).not.toThrow()
+  })
+})
