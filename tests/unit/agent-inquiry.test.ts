@@ -78,4 +78,37 @@ ok`
 not the brief`)
     expect(parsed?.projectDetails).toBeUndefined()
   })
+
+  it('ignores the instructions document, which embeds a worked example', () => {
+    // /agent/prompt.md carries its own `wildhands-inquiry-instructions vN`
+    // marker AND shows a full example block. A substring test on the stem
+    // matched it, so pasting the instructions filled the form in with the
+    // example's fictional details.
+    const instructions = `<!-- ${INQUIRY_MARKER}-instructions v2 -->
+
+# Send a project enquiry to WildHands
+
+Output the approved submission as a single fenced block in exactly this shape:
+
+**Name:** Ada Iwu
+**Email:** ada@company.com
+
+## Brief
+
+The approved brief, as plain text.`
+    expect(parseInquiryBlock(instructions)).toBeNull()
+  })
+
+  it('requires a versioned marker comment, not a bare mention', () => {
+    expect(
+      parseInquiryBlock(
+        'I read about wildhands-inquiry\n\n**Name:** X\n**Email:** x@y.z\n\n## Brief\n\nhi'
+      )
+    ).toBeNull()
+  })
+
+  it('accepts future block versions', () => {
+    const v9 = block.replace(`${INQUIRY_MARKER} v1`, `${INQUIRY_MARKER} v9`)
+    expect(parseInquiryBlock(v9)?.name).toBe('Ada Iwu')
+  })
 })

@@ -12,8 +12,20 @@
  * parser is a convenience, not a trust boundary.
  */
 
-/** Present on the block's first line. Cheap test before parsing. */
+/** Present on the block's first line. Also the stem of the instructions marker. */
 export const INQUIRY_MARKER = 'wildhands-inquiry'
+
+/**
+ * Matches an inquiry block's opening comment, and deliberately NOT the
+ * instructions document's own `wildhands-inquiry-instructions vN` marker.
+ *
+ * That distinction matters: /agent/prompt.md contains a worked example with
+ * real-looking Name, Email and `## Brief` lines. A plain substring test on
+ * INQUIRY_MARKER matches that document too, so pasting the instructions
+ * themselves would fill the form in with the example's fictional details.
+ * Requiring whitespace then `v<digits>` after the stem rules it out.
+ */
+const BLOCK_MARKER = /<!--\s*wildhands-inquiry\s+v\d+\s*-->/i
 
 export interface ParsedInquiry {
   name?: string
@@ -46,7 +58,7 @@ const field = (text: string, label: string): string | undefined => {
  * approved is silently lost.
  */
 export function parseInquiryBlock(text: string): ParsedInquiry | null {
-  if (!text.includes(INQUIRY_MARKER)) return null
+  if (!BLOCK_MARKER.test(text)) return null
 
   const name = field(text, 'Name')
   const email = field(text, 'Email')
