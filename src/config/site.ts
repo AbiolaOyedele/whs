@@ -32,6 +32,21 @@ export const SITE = {
 } as const
 
 /**
+ * Registered company details, printed in the privacy policy.
+ *
+ * Leave a field as an empty string and the policy omits that line rather than
+ * printing a placeholder. Fill these in once the company is registered.
+ */
+export const COMPANY = {
+  /** Registered name, if it differs from the trading name. */
+  registeredName: '',
+  /** Companies House (or equivalent) number. */
+  number: '',
+  /** Registered office address, one line. */
+  address: '',
+} as const
+
+/**
  * How an engagement runs. Replaces price tiers on the service pages — we quote
  * after discovery rather than publishing packages.
  */

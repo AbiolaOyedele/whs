@@ -93,17 +93,23 @@ const isHome = variant === 'home'
     class={`wh-container relative z-10 flex flex-1 flex-col ${
       isHome
         ? /* justify-between puts the standfirst and CTAs on the bottom edge
-             without an absolute offset, so the band can be viewport-height. */
-          'justify-between gap-16 pt-32 pb-10 md:pt-36 lg:pt-44 lg:pb-16'
+             without an absolute offset, so the band can be viewport-height.
+             The top pad sets where the headline starts; it eats the slack in
+             the middle of the band rather than growing it. */
+          'justify-between gap-16 pt-44 pb-10 md:pt-52 lg:pt-60 lg:pb-16'
         : /* Clears the fixed header, then leaves breathing room below it
              before the headline starts. */
           'gap-10 pt-36 pb-16 lg:pt-44 lg:pb-24'
     }`}
   >
     <!-- Block A: headline and client wordmarks -->
-    <!-- Wider at xl so the headline stays two or three lines as the type grows
-         with the viewport, rather than stepping down to three words a line. -->
-    <div class="max-w-[52rem] xl:max-w-[64rem]">
+    <!--
+      Home: measure set for a three-line headline, widened at xl so it stays
+      three rather than stepping to four as the type grows with the viewport.
+      Inner pages keep the wider measure — their titles are full sentences, and
+      the home measure ran them to four and five lines.
+    -->
+    <div class={isHome ? 'max-w-[35rem] xl:max-w-[46rem]' : 'max-w-[52rem]'}>
       {
         eyebrow && (
           <p class="mb-5 text-sm font-medium tracking-widest text-white/60 uppercase">{eyebrow}</p>

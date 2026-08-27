@@ -2,103 +2,379 @@
 /**
  * Privacy policy.
  *
- * BLOCKER (see docs/PROGRESS.md § B-6): this is a structural placeholder, NOT
- * legal advice and NOT launch-ready. It must be reviewed and completed by
- * someone qualified before the site goes live, particularly the controller
- * identity, retention periods, legal bases, and the supervisory authority.
+ * Written against what the code actually does, not a template:
+ *  - No database. Every form submission is delivered as email through Resend
+ *    (src/lib/resend.ts) and lives in the WildHands mailbox. Nothing is written
+ *    to storage by this site.
+ *  - PostHog is consent-gated and configured with `autocapture: false`, so it
+ *    records page views, not clicks or form input (PostHogLoader.astro).
+ *  - The consent choice and PostHog's identifier are in localStorage, not
+ *    cookies (ConsentBanner.astro).
+ *  - The rate limiter holds a hashed-free IP key in per-instance memory inside
+ *    an expiring window (src/lib/rate-limit.ts).
  *
- * The gaps are written out in the page's own voice rather than as inline
- * "TODO:" strings. Nothing here is invented — each unfinished section says what
- * is missing and that it lands before launch, and the banner at the top of the
- * page states the document's status outright.
+ * Retention periods and lawful bases below are the positions WildHands has
+ * chosen to operate to. They are reasonable and standard, but they are business
+ * decisions — if the business changes how it handles enquiries or applications,
+ * this page has to change with it.
+ *
+ * Registered company details come from COMPANY in src/config/site.ts. Fill
+ * those in once the company is registered; blank fields are omitted rather than
+ * printed as placeholders.
+ *
+ * Not legal advice. Have a qualified adviser read this before launch.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import Prose from '@/components/ui/Prose.astro'
-import { SITE } from '@/config/site'
+import { COMPANY, SITE } from '@/config/site'
 
-const updated = '26 August 2026'
+const updated = '27 August 2026'
+
+/** Purpose → lawful basis, under the UK GDPR. */
+const BASES = [
+  {
+    purpose: 'Replying to an enquiry you send us',
+    data: 'Name, email, phone, what you write',
+    basis: 'Legitimate interests',
+    why: 'You contacted us about working together, and you expect a reply.',
+  },
+  {
+    purpose: 'Assessing a job or freelance application',
+    data: 'Name, contact details, profile links, CV, your answers',
+    basis: 'Steps prior to a contract',
+    why: 'We cannot consider you for work without reading what you sent.',
+  },
+  {
+    purpose: 'Keeping an application on file for future roles',
+    data: 'The same application',
+    basis: 'Consent',
+    why: 'Only if you tick the box. You can withdraw it at any time.',
+  },
+  {
+    purpose: 'Sending the freelance newsletter',
+    data: 'Email address',
+    basis: 'Consent',
+    why: 'You asked for it, and every email carries an unsubscribe link.',
+  },
+  {
+    purpose: 'Understanding which pages are useful',
+    data: 'Page views, browser and country',
+    basis: 'Consent',
+    why: 'Analytics stay switched off unless you accept them.',
+  },
+] as const
+
+const RETENTION = [
+  {
+    what: 'Enquiries sent through the contact form',
+    how: '24 months from your last message to us',
+  },
+  { what: 'Applications for a role we advertised', how: '12 months from the decision' },
+  {
+    what: 'Applications you asked us to keep on file',
+    how: '24 months, then we ask again or delete',
+  },
+  { what: 'CVs and attachments', how: 'Deleted with the application they arrived with' },
+  { what: 'Newsletter subscriptions', how: 'Until you unsubscribe' },
+  { what: 'Analytics', how: '12 months, then aggregated' },
+] as const
 ---
 
 <BaseLayout
   title="Privacy Policy"
-  description="How WildHands collects, uses and stores personal data."
+  description="What WildHands collects, why, how long we keep it, and how to get it deleted."
 >
-  <div class="wh-container pt-28 pb-16 md:pt-36 md:pb-24">
-    <div class="max-w-[65ch]">
-      <h1 class="text-3xl font-medium tracking-tight md:text-5xl">Privacy Policy</h1>
-      <p class="mt-4 text-sm text-muted-foreground">Last updated {updated}</p>
+  <div class="wh-container pt-36 pb-16 md:pt-44 md:pb-24">
+    <div class="max-w-[68ch]">
+      <h1 class="wh-h1-page">Privacy Policy</h1>
+      <p class="mt-5 text-sm text-muted-foreground">Last updated {updated}</p>
 
-      <div
-        class="mt-8 rounded-xl border border-[color:var(--destructive)]/40 bg-[color:var(--destructive)]/5 p-5"
-      >
-        <p class="text-sm">
-          <strong>Placeholder document.</strong> This policy is a structural draft only. It has not been
-          reviewed by a qualified adviser and must be completed before launch.
-        </p>
+      <!-- The short version, for anyone who will not read the whole thing. -->
+      <div class="mt-10 rounded-2xl border border-border bg-card p-6 md:p-8">
+        <h2 class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+          The short version
+        </h2>
+        <ul class="mt-4 space-y-3 text-base">
+          <li>
+            We collect what you type into our forms, and nothing else unless you accept analytics.
+          </li>
+          <li>
+            We do not run a database. Form submissions arrive as email and stay in our mailbox.
+          </li>
+          <li>We do not sell your data, and we do not use it for advertising.</li>
+          <li>The site sets no cookies at all until you make a choice in the banner.</li>
+          <li>
+            Email <a href={`mailto:${SITE.email}`} class="underline underline-offset-4">
+              {SITE.email}
+            </a> and we will delete everything we hold about you.
+          </li>
+        </ul>
       </div>
 
-      <Prose class="mt-10">
+      <Prose class="mt-12">
         <h2>Who we are</h2>
         <p>
-          {SITE.legalName} operates this website. The registered company name, company number, registered
-          address and the identity of the data controller will be stated here before launch.
+          {SITE.legalName} is the data controller for the personal data described on this page. That means
+          we decide what is collected and why, and we are responsible for looking after it.
+        </p>
+        {
+          (COMPANY.registeredName || COMPANY.number || COMPANY.address) && (
+            <p>
+              {COMPANY.registeredName && (
+                <Fragment>Registered as {COMPANY.registeredName}. </Fragment>
+              )}
+              {COMPANY.number && <Fragment>Company number {COMPANY.number}. </Fragment>}
+              {COMPANY.address && <Fragment>Registered office: {COMPANY.address}.</Fragment>}
+            </p>
+          )
+        }
+        <p>
+          For anything about this policy, or to exercise any of the rights below, email{' '}
+          <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. A person reads that address.
         </p>
 
         <h2>What we collect</h2>
-        <p>We collect personal data in three situations:</p>
+        <p>There are only four ways we end up with your personal data.</p>
         <ul>
           <li>
-            <strong>When you contact us.</strong> Your name, email address, optional phone number, and
-            whatever you write in the message.
+            <strong>You contact us.</strong> Your name, email address, your phone number if you give one,
+            what you write about your project, and how you heard about us if you tell us.
           </li>
           <li>
-            <strong>When you apply to work with us.</strong> Your name, contact details, professional
-            profile links, your CV, and your answers to the application questions.
+            <strong>You apply to work with us.</strong> Your name and contact details, links to your professional
+            profiles, your CV, and your answers to the application questions. Freelance applications also
+            ask where you are resident for tax, what you are available for, and how many hours a month
+            you want.
           </li>
           <li>
-            <strong>When you accept analytics cookies.</strong> Anonymised usage data about which pages
-            you visited. Analytics do not load unless you accept them.
+            <strong>You subscribe to the freelance newsletter.</strong> Your email address.
+          </li>
+          <li>
+            <strong>You accept analytics.</strong> Which pages you visited, roughly where in the world
+            you are, and what browser you used. Analytics do not load unless you accept them.
           </li>
         </ul>
-
-        <h2>Why we collect it</h2>
         <p>
-          To reply to your enquiry, to assess your application, and to understand which parts of the
-          site are useful. The lawful basis for each of these purposes will be stated here before
-          launch.
+          We do not ask for anything sensitive, and we would rather you did not send it. Please do
+          not put health information, financial details or identity documents into a form on this
+          site.
+        </p>
+
+        <h2>Why we collect it, and our lawful basis</h2>
+        <p>
+          Under the UK GDPR we have to have a lawful basis for each thing we do with your data. Here
+          is ours, in full.
+        </p>
+      </Prose>
+
+      <div class="mt-6 overflow-x-auto rounded-xl border border-border">
+        <table class="w-full min-w-[44rem] border-collapse text-left text-sm">
+          <thead>
+            <tr class="border-b border-border bg-muted/50">
+              <th scope="col" class="p-4 font-medium">What we do</th>
+              <th scope="col" class="p-4 font-medium">What that uses</th>
+              <th scope="col" class="p-4 font-medium">Lawful basis</th>
+              <th scope="col" class="p-4 font-medium">Why that one</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              BASES.map((row) => (
+                <tr class="border-b border-border last:border-0">
+                  <th scope="row" class="p-4 align-top font-medium">
+                    {row.purpose}
+                  </th>
+                  <td class="p-4 align-top text-muted-foreground">{row.data}</td>
+                  <td class="p-4 align-top">{row.basis}</td>
+                  <td class="p-4 align-top text-muted-foreground">{row.why}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <Prose class="mt-6">
+        <p>
+          Where we rely on legitimate interests, we have weighed our interest in running the
+          business against your privacy. Replying to an enquiry you chose to send us is not
+          something we think you would object to. If you disagree, you can object &mdash; see your
+          rights below.
         </p>
 
         <h2>How long we keep it</h2>
         <p>
-          Retention periods for enquiries, applications and analytics data will be stated here
-          before launch.
+          Because form submissions arrive as email rather than going into a database, deletion means
+          removing the message and its attachments from our mailbox. These are the periods we work
+          to.
+        </p>
+      </Prose>
+
+      <div class="mt-6 overflow-x-auto rounded-xl border border-border">
+        <table class="w-full min-w-[32rem] border-collapse text-left text-sm">
+          <thead>
+            <tr class="border-b border-border bg-muted/50">
+              <th scope="col" class="p-4 font-medium">What</th>
+              <th scope="col" class="p-4 font-medium">How long</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              RETENTION.map((row) => (
+                <tr class="border-b border-border last:border-0">
+                  <th scope="row" class="p-4 align-top font-medium">
+                    {row.what}
+                  </th>
+                  <td class="p-4 align-top text-muted-foreground">{row.how}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <Prose class="mt-6">
+        <p>
+          If a project starts, the enquiry stops being an enquiry and becomes part of the client
+          record, which we keep for as long as the law requires us to keep business records. Ask us
+          and we will tell you exactly what we still hold.
         </p>
 
-        <h2>Who we share it with</h2>
+        <h2>Who else touches it</h2>
         <p>
-          Form submissions are delivered by email through Resend, our email provider. Analytics,
-          when you accept them, are processed by PostHog. The full processor list, where each one
-          operates, and the transfer mechanism for any processing outside the UK and EEA will be
-          confirmed here before launch.
+          Three companies process data on our behalf. Each is bound by a contract that limits them
+          to acting on our instructions.
+        </p>
+        <ul>
+          <li>
+            <strong>Resend</strong> delivers every form submission to us by email, including any CV you
+            attach. Without Resend, the form does not reach anyone.
+          </li>
+          <li>
+            <strong>PostHog</strong> processes analytics, and only if you accept them.
+          </li>
+          <li>
+            <strong>Vercel</strong> hosts the site and serves every page. Its access logs record IP addresses
+            for a short period as part of running the infrastructure.
+          </li>
+        </ul>
+        <p>
+          Nobody else gets your data. We do not sell it, we do not trade it, and we do not hand it
+          to advertisers. We would disclose it if a court or the law required us to, and we would
+          tell you unless we were forbidden from doing so.
         </p>
 
-        <h2>Cookies</h2>
+        <h2>Where it goes</h2>
         <p>
-          The site sets no cookies until you make a choice in the consent banner. If you accept
-          analytics, PostHog stores an identifier in your browser so repeat visits are not counted
-          as new people. Declining leaves analytics switched off entirely.
+          Our providers operate internationally, so your data may be processed outside the UK and
+          the EEA &mdash; in practice, in the United States. Where that happens it is covered by the
+          UK International Data Transfer Addendum and the EU Standard Contractual Clauses, which are
+          the safeguards the law provides for exactly this. You can ask us for a copy of the
+          relevant terms.
+        </p>
+
+        <h2>Cookies, and what we store in your browser</h2>
+        <p>
+          <strong>This site sets no cookies.</strong> Nothing at all is stored in your browser until you
+          choose Accept or Decline in the banner.
+        </p>
+        <ul>
+          <li>
+            <strong>Your choice.</strong> We save it in your browser's local storage so we do not ask
+            again on every page. Nothing about it is sent to us.
+          </li>
+          <li>
+            <strong>If you accept analytics,</strong> PostHog stores an identifier in local storage so
+            that a returning visitor is not counted as a new person. It is switched off entirely if you
+            decline, and it never loads before you decide.
+          </li>
+        </ul>
+        <p>
+          Analytics here are deliberately narrow. We record page views. We do not record clicks,
+          keystrokes, form contents, or session replays.
+        </p>
+        <p>
+          To change your mind, clear this site's data in your browser settings. The banner will
+          appear again on your next visit and you can choose differently.
+        </p>
+
+        <h2>Keeping it safe</h2>
+        <p>
+          The site is served only over HTTPS. Form endpoints are rate-limited to make abuse
+          expensive, which involves holding your IP address briefly in memory &mdash; it is never
+          written to disk and never sent anywhere. Uploaded CVs are checked by file type and size
+          and renamed on our side, so a filename can never be used to attack our systems. Access to
+          the mailbox holding enquiries is limited to the people who need it, and protected by
+          two-factor authentication.
+        </p>
+        <p>
+          No system is perfect. If we ever suffer a breach that puts you at risk, we will tell the
+          Information Commissioner's Office within 72 hours and tell you without undue delay.
         </p>
 
         <h2>Your rights</h2>
+        <p>You can ask us to do any of the following, free of charge.</p>
+        <ul>
+          <li>
+            <strong>See it.</strong> Get a copy of everything we hold about you.
+          </li>
+          <li>
+            <strong>Fix it.</strong> Correct anything that is wrong or incomplete.
+          </li>
+          <li>
+            <strong>Delete it.</strong> Have it erased where we have no overriding reason to keep it.
+          </li>
+          <li>
+            <strong>Limit it.</strong> Have us pause using it while a dispute is sorted out.
+          </li>
+          <li>
+            <strong>Object to it.</strong> Tell us to stop, where we are relying on legitimate interests.
+          </li>
+          <li>
+            <strong>Move it.</strong> Get it in a portable format, or have us send it somewhere else.
+          </li>
+          <li>
+            <strong>Withdraw consent.</strong> Where consent is the basis, you can take it back at any
+            time. That does not undo anything we did lawfully beforehand.
+          </li>
+        </ul>
         <p>
-          You can ask us for a copy of your data, ask us to correct or delete it, or object to how
-          we use it. The supervisory authority and the route for making a complaint will be named
-          here before launch.
+          Email <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. We will reply within one month.
+          We may ask you to confirm who you are first, so that we do not hand your data to somebody
+          else.
+        </p>
+
+        <h2>If you are unhappy</h2>
+        <p>
+          Please tell us first &mdash; most things are quicker to fix directly. If we do not put it
+          right, you have the right to complain to the UK's data protection regulator, the{' '}
+          <a href="https://ico.org.uk/make-a-complaint/" rel="noopener noreferrer" target="_blank">
+            Information Commissioner's Office
+          </a>. Complaining to them does not affect your right to a legal remedy.
+        </p>
+        <p>
+          If you are in the EEA, you can also complain to the supervisory authority where you live
+          or work.
+        </p>
+
+        <h2>Children</h2>
+        <p>
+          This site is aimed at businesses and at people looking for professional work. It is not
+          intended for anyone under 16, and we do not knowingly collect their data. If you believe a
+          child has sent us something, email us and we will delete it.
+        </p>
+
+        <h2>Changes to this policy</h2>
+        <p>
+          When we change how we handle data, we update this page and move the date at the top. If a
+          change matters to you &mdash; a new processor, a new purpose &mdash; we will say so
+          clearly here rather than burying it.
         </p>
 
         <h2>Contact</h2>
         <p>
-          For anything about this policy, email <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+          Email <a href={`mailto:${SITE.email}`}>{SITE.email}</a> for anything on this page: questions,
+          corrections, deletions, or complaints.
         </p>
       </Prose>
     </div>
