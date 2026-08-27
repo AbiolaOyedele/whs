@@ -3,7 +3,6 @@
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import Hero from '@/components/sections/Hero.astro'
 import SectionHeading from '@/components/sections/SectionHeading.astro'
-import StatCallout from '@/components/sections/StatCallout.astro'
 import CTASection from '@/components/sections/CTASection.astro'
 import Tag from '@/components/ui/Tag.astro'
 import Button from '@/components/ui/Button.astro'
@@ -19,13 +18,11 @@ const jsonLd = [
   ]),
 ]
 
-/** TODO: placeholder figures. Do not publish until these are real. */
-const STATS = [
-  { value: 'TODO', label: 'Employee net promoter score' },
-  { value: 'TODO', label: 'Retention over 2 years' },
-  { value: 'TODO', label: 'Work-life balance rating' },
-  { value: 'TODO', label: 'Learning budget rating' },
-]
+/*
+ * The "How we score ourselves" section is deliberately absent. It needs real
+ * survey figures; four rendered "TODO"s at display size were worse than no
+ * section at all. Restore it once an internal survey has run.
+ */
 
 const WORK_RULES = [
   { title: 'Remote only', body: 'No office, no hybrid expectation, no core-hours theatre.' },
@@ -52,25 +49,6 @@ const WORK_RULES = [
     title="Small team, unglamorous problems, real ownership."
     subtitle="We are remote-only and async-first, and we would rather tell you what the work is than sell you on it."
   />
-
-  <section class="wh-container wh-section">
-    <SectionHeading level={2}>How we score ourselves</SectionHeading>
-    <dl class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-      {
-        STATS.map((stat) => (
-          <div class="border-t border-border pt-5">
-            <dt class="sr-only">{stat.label}</dt>
-            <dd>
-              <StatCallout value={stat.value} label={stat.label} />
-            </dd>
-          </div>
-        ))
-      }
-    </dl>
-    <p class="mt-6 text-xs text-muted-foreground">
-      Figures deliberately unfilled pending a real internal survey. See docs/PROGRESS.md.
-    </p>
-  </section>
 
   <section class="wh-container wh-section">
     <SectionHeading level={2}>How we work</SectionHeading>

@@ -4,7 +4,6 @@ import BaseLayout from '@/layouts/BaseLayout.astro'
 import Hero from '@/components/sections/Hero.astro'
 import SectionHeading from '@/components/sections/SectionHeading.astro'
 import NumberedList from '@/components/sections/NumberedList.astro'
-import StatCallout from '@/components/sections/StatCallout.astro'
 import FAQAccordion from '@/components/sections/FAQAccordion.astro'
 import FreelanceApplicationForm from '@/components/forms/FreelanceApplicationForm.tsx'
 import NewsletterForm from '@/components/forms/NewsletterForm.tsx'
@@ -14,12 +13,12 @@ import { publicEnv } from '@/config/env'
 
 const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
 
-/** TODO: placeholder figures. Do not publish rate data until it is real. */
-const EARNINGS = [
-  { value: 'TODO', label: 'Average hourly rate' },
-  { value: 'TODO', label: 'Average engagement length' },
-  { value: '30 days', label: 'Payment terms' },
-]
+/*
+ * The "What to expect" stat row is deliberately absent: two of its three
+ * figures need real rate data, and rendering "TODO" at display size was worse
+ * than no row. The thirty-day terms it carried are stated in BENEFITS below.
+ * Restore it once rate data exists.
+ */
 
 const BENEFITS = [
   {
@@ -116,25 +115,6 @@ const jsonLd = [
     title="Work with us, not for us."
     subtitle="Scoped briefs, a paid trial task, and no unpaid pitching. Here is exactly how it runs."
   />
-
-  <section class="wh-container wh-section">
-    <SectionHeading level={2}>What to expect</SectionHeading>
-    <dl class="mt-10 grid gap-8 sm:grid-cols-3">
-      {
-        EARNINGS.map((item) => (
-          <div class="border-t border-border pt-5">
-            <dt class="sr-only">{item.label}</dt>
-            <dd>
-              <StatCallout value={item.value} label={item.label} />
-            </dd>
-          </div>
-        ))
-      }
-    </dl>
-    <p class="mt-6 text-xs text-muted-foreground">
-      Rate figures deliberately unfilled pending real data. See docs/PROGRESS.md.
-    </p>
-  </section>
 
   <section class="wh-container wh-section">
     <SectionHeading level={2}>Why people stay in the pool</SectionHeading>

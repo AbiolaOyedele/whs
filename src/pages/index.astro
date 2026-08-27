@@ -13,6 +13,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro'
 import Hero from '@/components/sections/Hero.astro'
 import WorkCard from '@/components/sections/WorkCard.astro'
 import AnimatedText from '@/components/sections/AnimatedText.astro'
+import CTASection from '@/components/sections/CTASection.astro'
 import Button from '@/components/ui/Button.astro'
 import { SITE } from '@/config/site'
 import { SERVICE_PILLARS, SERVICE_PILLAR_LABELS, SERVICE_PILLAR_TAGLINES } from '@/content.config'
@@ -54,7 +55,7 @@ const problems = [
     standfirst="WildHands designs and builds custom websites, apps, and internal tools for teams done doing repetitive work by hand."
   >
     <Fragment slot="logos">
-      <p class="text-base text-white/50 mix-blend-difference">Built by WildHands</p>
+      <p class="text-base text-white/70">Built by WildHands</p>
       <ul class="mt-3 flex flex-wrap items-center gap-x-7 gap-y-2">
         {
           BUILT_BY_WILDHANDS.map((name) => (
@@ -74,56 +75,69 @@ const problems = [
     </Fragment>
   </Hero>
 
-  <!-- The problem -->
+  <!--
+    The problem.
+
+    Full-bleed band, but the copy lives inside `.wh-container` so it lands on
+    the same left edge as every other section. It previously carried its own
+    `px-5 md:px-8` gutters, which held 32px at 768px while the container around
+    it held 20px, and 32px at 1920px while the container held 153px.
+
+    The "The Problem" label is in normal flow at every breakpoint rather than
+    absolutely positioned at lg — the absolute version needed a 16.5rem top pad
+    to float in, which read as a ~490px void above the heading.
+  -->
   <section
-    class="relative overflow-clip rounded-[2rem] bg-background text-foreground"
+    class="relative overflow-clip rounded-section bg-background text-foreground"
     aria-labelledby="homepage-problem-title"
   >
-    <p
-      class="px-5 pt-8 text-base text-muted-foreground md:px-8 lg:absolute lg:top-8 lg:left-8 lg:p-0"
-    >
-      The Problem
-    </p>
-    <div class="lg:pt-[16.5rem]">
-      <div
-        class="lg:grid lg:min-h-[57.1875rem] lg:grid-cols-[42.7%_57.3%] lg:border-t lg:border-border"
-      >
-        <div class="border-b border-border px-5 py-10 md:px-8 lg:border-r lg:border-b-0 lg:py-0">
-          <div
-            class="flex flex-col justify-between gap-32 lg:sticky lg:top-24 lg:h-[min(calc(100dvh-6rem),100%)] lg:py-10"
-          >
-            <AnimatedText>
-              <h2 id="homepage-problem-title" class="wh-h2 max-w-[34rem]">
-                Your team is spending hours on work a system could do in seconds.
-              </h2>
-            </AnimatedText>
-            <div class="max-w-[28rem] lg:pb-6">
-              <p class="mb-9 text-base text-muted-foreground">
-                Manual data entry. Reports rebuilt from scratch every week. No single place to see
-                what is actually happening. That is hours gone that should have gone into the work
-                only you can do.
-              </p>
-              <Button href="/services" variant="link">See how we fix this &rarr;</Button>
+    <div class="wh-container">
+      <p class="pt-8 text-base text-muted-foreground lg:pt-12">The Problem</p>
+
+      <div class="mt-10 lg:mt-20">
+        <div
+          class="lg:grid lg:min-h-[57.1875rem] lg:grid-cols-[42.7%_57.3%] lg:border-t lg:border-border"
+        >
+          <div class="border-b border-border py-10 lg:border-r lg:border-b-0 lg:py-0 lg:pr-10">
+            <!-- gap-10 below lg: `gap-32` fired at every breakpoint, dropping
+                 128px of nothing between the heading and the paragraph that
+                 explains it on a phone. -->
+            <div
+              class="flex flex-col justify-between gap-10 lg:sticky lg:top-24 lg:h-[min(calc(100dvh-6rem),100%)] lg:gap-32 lg:py-10"
+            >
+              <AnimatedText>
+                <h2 id="homepage-problem-title" class="wh-h2-display max-w-[34rem]">
+                  Your team is spending hours on work a system could do in seconds.
+                </h2>
+              </AnimatedText>
+              <div class="max-w-[28rem] lg:pb-6">
+                <p class="mb-9 text-base text-muted-foreground">
+                  Manual data entry. Reports rebuilt from scratch every week. No single place to see
+                  what is actually happening. That is hours gone that should have gone into the work
+                  only you can do.
+                </p>
+                <Button href="/services" variant="link">See how we fix this &rarr;</Button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="grid">
-          {
-            problems.map((item, index) => (
-              <article class="min-h-[24rem] border-b border-border px-5 py-10 last:border-b-0 md:px-8 lg:pt-[2.875rem] lg:pr-8 lg:pl-[7.3vw]">
-                <span class="text-sm text-muted-foreground tabular-nums">
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-                <h3 class="mt-4 max-w-[42.25rem] text-4xl leading-[1.18] font-medium tracking-[-0.025em] text-balance md:text-5xl lg:text-[3.5rem]">
-                  {item.title}
-                </h3>
-                <p class="mt-10 max-w-[42.25rem] text-xl leading-[1.2] font-medium md:mt-12 md:text-2xl">
-                  {item.body}
-                </p>
-              </article>
-            ))
-          }
+          <div class="grid">
+            {
+              problems.map((item, index) => (
+                <article class="min-h-[20rem] border-b border-border py-10 last:border-b-0 lg:min-h-[24rem] lg:pt-[2.875rem] lg:pl-10">
+                  <span class="text-sm text-muted-foreground tabular-nums">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <h3 class="mt-4 max-w-[42.25rem] text-2xl leading-[1.2] font-medium tracking-[-0.02em] text-balance md:text-3xl lg:text-[2.5rem]">
+                    {item.title}
+                  </h3>
+                  <p class="mt-6 max-w-[42.25rem] text-lg leading-[1.35] text-muted-foreground md:mt-8 md:text-xl">
+                    {item.body}
+                  </p>
+                </article>
+              ))
+            }
+          </div>
         </div>
       </div>
     </div>
@@ -216,32 +230,13 @@ const problems = [
     The stat strip was dropped for launch, per docs/site-copy.md.
   -->
 
-  <!-- Closing CTA -->
-  <div class="mx-auto mt-20 lg:max-w-[92rem] xl:max-w-[100rem]">
-    <section
-      class="relative flex min-h-svh flex-col justify-center overflow-clip rounded-3xl bg-[#131314] px-5 py-10 text-white md:px-[10vh] lg:py-32"
-    >
-      <div
-        aria-hidden="true"
-        class="pointer-events-none absolute inset-0 z-[1]"
-        style="background: radial-gradient(70rem 40rem at 78% 12%, color-mix(in oklab, var(--accent) 14%, transparent), transparent 62%), linear-gradient(90deg, rgba(19,19,20,0.9) 0%, rgba(19,19,20,0.2) 55%, transparent 100%);"
-      >
-      </div>
-
-      <div class="relative z-10 max-w-3xl">
-        <AnimatedText>
-          <h2 class="text-[clamp(2.25rem,6vw,4rem)] leading-[1.1] tracking-[-0.03em]">
-            Ready to get some time back?
-          </h2>
-        </AnimatedText>
-        <p class="mt-6 max-w-[35rem] text-xl text-white/70">
-          Tell us what is eating your hours. We will show you what a system built for it looks like.
-        </p>
-        <div class="mt-10">
-          <Button href="/get-in-touch" variant="accent" size="lg">Talk to Us</Button>
-        </div>
-        <p class="mt-6 text-sm text-white/50">A real conversation, not a sales pitch.</p>
-      </div>
-    </section>
-  </div>
+  <!-- Closing CTA. Was a hand-rolled copy of CTASection with its own radius,
+       padding and heading scale; now the shared component at `lg`. -->
+  <CTASection
+    size="lg"
+    heading="Ready to get some time back?"
+    subheading="Tell us what is eating your hours. We will show you what a system built for it looks like."
+    ctaLabel="Talk to Us"
+    note="A real conversation, not a sales pitch."
+  />
 </BaseLayout>

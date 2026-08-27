@@ -2,20 +2,23 @@
 /**
  * Dark hero band.
  *
- * `home` — two absolutely-positioned blocks on large screens, matching the
- * reference:
- *   Block A (upper left, 10.35% / 28.7%, 38.82% wide) — headline, then the
- *           client wordmark row directly beneath it.
- *   Block B (lower right half, bottom 5.55%) — the standfirst paragraph, then
- *           a two-column grid of full-width CTA buttons 80px tall.
- * Below `lg` both fall back to a single flex column. The section carries an
- * explicit height (`.wh-hero-home`) precisely because its content is absolute
- * and contributes none.
+ * Both variants lay their content out inside `.wh-container`, so the headline
+ * sits on the same left edge as every section below it. The previous version
+ * indented by `10.35%` (and `calc(10.35% - 2rem)` at md), which put the hero on
+ * a horizontal grid nothing else on the page shared — at 768px the H1 started
+ * at 71px while the sections under it started at 20px, and on `/work` the page
+ * title sat 124px right of the filters directly beneath it.
+ *
+ * `home` — a flex column that fills the viewport and no more: headline and
+ * wordmarks at the top, standfirst and CTAs pinned to the bottom in a two-up
+ * row. It used to be two absolutely-positioned blocks inside an explicit
+ * `clamp(65rem, 99.1667vw, 89.25rem)` height, which ran to 1269px on a 900px
+ * screen and 1428px on a 1080px one — putting both calls to action below the
+ * fold on every desktop size, and leaving the lower-left quarter of the band
+ * empty.
  *
  * `page` — the same blocks in normal flow, so the section is as tall as its
- * content. This is deliberate rather than incidental: the absolute treatment
- * without a height class collapses the band to 0px, which clips the H1 out of
- * sight and drops inner-page content flush under the floating header.
+ * content.
  *
  * `data-dark-hero` is what SiteHeader measures to decide when to flip its text
  * colour, so any page opening with this component gets that behaviour free.
@@ -26,7 +29,7 @@ import AnimatedGradient from '@/components/ui/animated-gradient.tsx'
 interface Props {
   eyebrow?: string | undefined
   title: string
-  /** Standfirst, rendered bottom-right on the home hero. */
+  /** Standfirst, rendered bottom-left on the home hero. */
   standfirst?: string | undefined
   /** Short subtitle rendered under the headline on inner pages. */
   subtitle?: string | undefined
@@ -52,7 +55,7 @@ const isHome = variant === 'home'
 
 <section
   data-dark-hero
-  class={`relative isolate overflow-hidden rounded-b-[2rem] bg-[#131314] text-white ${isHome ? 'wh-hero-home' : ''} ${className}`}
+  class={`relative isolate flex flex-col overflow-hidden rounded-b-section bg-[#131314] text-white ${isHome ? 'wh-hero-home' : ''} ${className}`}
 >
   {
     videoSrc ? (
@@ -87,52 +90,65 @@ const isHome = variant === 'home'
   </div>
 
   <div
-    class={isHome
-      ? 'absolute inset-0 z-10 flex flex-col px-5 pt-36 pb-5 sm:px-8 sm:pb-8 lg:block lg:p-0'
-      : /* Clears the fixed header, then leaves the reference's breathing room
-             below it before the headline starts. */
-        'relative z-10 flex flex-col px-5 pt-40 pb-16 sm:px-8 lg:pt-48 lg:pb-24'}
+    class={`wh-container relative z-10 flex flex-1 flex-col ${
+      isHome
+        ? /* justify-between puts the standfirst and CTAs on the bottom edge
+             without an absolute offset, so the band can be viewport-height. */
+          'justify-between gap-16 pt-32 pb-10 md:pt-36 lg:pt-44 lg:pb-16'
+        : /* Clears the fixed header, then leaves breathing room below it
+             before the headline starts. */
+          'gap-10 pt-36 pb-16 lg:pt-44 lg:pb-24'
+    }`}
   >
     <!-- Block A: headline and client wordmarks -->
-    <div
-      class={isHome
-        ? 'self-start md:ml-[calc(10.35%-2rem)] lg:absolute lg:top-[28.7%] lg:left-[10.35%] lg:ml-0 lg:w-[38.82%]'
-        : 'self-start md:ml-[calc(10.35%-2rem)] lg:ml-[10.35%] lg:max-w-[52rem]'}
-    >
+    <!-- Wider at xl so the headline stays two or three lines as the type grows
+         with the viewport, rather than stepping down to three words a line. -->
+    <div class="max-w-[52rem] xl:max-w-[64rem]">
       {
         eyebrow && (
-          <p class="mb-5 text-sm font-medium tracking-widest text-white/50 uppercase">{eyebrow}</p>
+          <p class="mb-5 text-sm font-medium tracking-widest text-white/60 uppercase">{eyebrow}</p>
         )
       }
+      <!--
+        No `mix-blend-difference` on the headline. The backdrop is a dark scrim
+        over a near-black field, so plain white reads fine — and the blend mode
+        made the H1 render through the open mega-menu panel and compete with
+        the menu labels, as well as putting the site's largest piece of type
+        beyond the reach of any contrast check.
+      -->
       <AnimatedText immediate>
-        <h1 class={isHome ? 'wh-h1 mix-blend-difference' : 'wh-h1-page text-balance'}>{title}</h1>
+        <h1 class={isHome ? 'wh-h1 text-balance' : 'wh-h1-page text-balance'}>{title}</h1>
       </AnimatedText>
       {
         subtitle && (
-          <p class="mt-8 max-w-[35rem] text-xl leading-[1.25] font-medium text-white/70">
+          <p class="mt-8 max-w-[38rem] text-xl leading-[1.25] font-medium text-white/75">
             {subtitle}
           </p>
         )
       }
-      <div class="mt-8 max-w-[35rem] empty:hidden">
+      <div class="mt-8 empty:hidden">
         <slot name="logos" />
       </div>
     </div>
 
-    <!-- Block B: standfirst and the CTA pair -->
+    <!--
+      Block B: standfirst and the CTA pair. Two columns at lg so the lower half
+      of the band carries content across its full width instead of leaving the
+      left side empty.
+    -->
     <div
-      class={isHome
-        ? 'mt-12 flex flex-col justify-end md:ml-[calc(10.35%-2rem)] md:w-[60%] lg:absolute lg:right-8 lg:bottom-[5.55%] lg:left-1/2 lg:mt-0 lg:ml-0 lg:w-auto'
-        : 'flex flex-col justify-end empty:hidden md:ml-[calc(10.35%-2rem)] md:w-[60%] lg:ml-[10.35%]'}
+      class={`empty:hidden ${
+        isHome
+          ? 'flex flex-col gap-10 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-16'
+          : 'flex flex-col'
+      }`}
     >
       {
         standfirst && (
-          <p class="max-w-[35rem] text-xl leading-[1.25] sm:text-2xl lg:leading-[1.2]">
-            {standfirst}
-          </p>
+          <p class="max-w-[38rem] text-xl leading-[1.3] text-white/85 sm:text-2xl">{standfirst}</p>
         )
       }
-      <div class="mt-10 grid gap-1 empty:hidden sm:grid-cols-2 lg:mt-[7.75rem]">
+      <div class="grid w-full gap-3 empty:hidden sm:auto-cols-fr sm:grid-flow-col lg:w-auto">
         <slot name="cta" />
       </div>
       <slot />

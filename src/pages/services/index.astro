@@ -14,6 +14,7 @@ import { getCollection } from 'astro:content'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import AnimatedText from '@/components/sections/AnimatedText.astro'
 import Button from '@/components/ui/Button.astro'
+import CTASection from '@/components/sections/CTASection.astro'
 import { breadcrumbSchema } from '@/lib/seo'
 import { publicEnv } from '@/config/env'
 import {
@@ -159,23 +160,12 @@ const blocks = SERVICE_PILLARS.map((pillar: ServicePillar) => ({
     ))
   }
 
-  <!-- Closing CTA -->
-  <section class="wh-container my-10 text-center lg:my-20">
-    <div class="rounded-3xl bg-[#131314] px-6 py-16 text-white md:px-12 md:py-24">
-      <AnimatedText>
-        <h2
-          class="mx-auto max-w-[20ch] text-[clamp(2rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em]"
-        >
-          Ready to get some time back?
-        </h2>
-      </AnimatedText>
-      <p class="mx-auto mt-6 max-w-[34rem] text-lg text-white/70">
-        Tell us what is eating your hours. We will show you what a system built for it looks like.
-      </p>
-      <div class="mt-10 flex justify-center">
-        <Button href="/get-in-touch" variant="accent" size="lg">Talk to Us</Button>
-      </div>
-      <p class="mt-6 text-sm text-white/50">A real conversation, not a sales pitch.</p>
-    </div>
-  </section>
+  <!-- Closing CTA. Was a second hand-rolled copy of CTASection. -->
+  <CTASection
+    align="center"
+    heading="Ready to get some time back?"
+    subheading="Tell us what is eating your hours. We will show you what a system built for it looks like."
+    ctaLabel="Talk to Us"
+    note="A real conversation, not a sales pitch."
+  />
 </BaseLayout>

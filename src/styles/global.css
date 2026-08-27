@@ -106,14 +106,30 @@
   --surface-dark: #131314;
   --surface-dark-foreground: oklch(100% 0 0);
 
-  /* --- radius (verified: base 0.5rem) --- */
+  /*
+   * --- radius ---
+   *
+   * The ramp used to stop at --radius-xl, so `rounded-2xl` and `rounded-3xl`
+   * fell through to Tailwind's defaults while everything below them was
+   * tokenised. Ten distinct radii were in play across src/, and the three dark
+   * closing panels alone carried 12px, 24px and 32px corners.
+   *
+   * Four surface steps, one pill. Anything outside these needs a reason:
+   *   xl       12px  small surfaces — tables, banners, form status
+   *   2xl      16px  cards in a grid
+   *   3xl      24px  large panels — CTA bands, work cards, the form card
+   *   section  32px  full-bleed page bands — hero, footer, the problem band
+   */
   --radius: 0.5rem;
   --radius-xs: 0.125rem;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  /* Mega-menu panel override, verified live */
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-section: 2rem;
+  /* Mega-menu panel */
   --radius-mega: 1.25rem;
 
   /*
@@ -182,6 +198,9 @@
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+  --radius-3xl: var(--radius-3xl);
+  --radius-section: var(--radius-section);
   --radius-mega: var(--radius-mega);
 
   --ease-sweep: var(--ease-sweep);
@@ -390,24 +409,22 @@
       radial-gradient(38rem 30rem at 8% 96%, rgba(255, 255, 255, 0.05), transparent 68%);
   }
 
-  /* Home hero height ramp, taken verbatim from the reference's compiled CSS. */
+  /*
+   * Home hero height.
+   *
+   * One viewport, capped. The previous ramp set an explicit
+   * `clamp(65rem, 99.1667vw, 89.25rem)` — 1269px on a 1280x900 screen and
+   * 1428px on a 1920x1080 one — so the standfirst and both calls to action sat
+   * below the fold at every desktop size. `min-height` rather than `height`, so
+   * a long headline or a third CTA still grows the band instead of overflowing
+   * it. `svh` so mobile browser chrome does not push the CTAs out of view.
+   */
   .wh-hero-home {
-    min-height: 54rem;
-  }
-  @media (width >= 22.5rem) {
-    .wh-hero-home {
-      min-height: 52rem;
-    }
-  }
-  @media (width >= 48rem) {
-    .wh-hero-home {
-      min-height: 56rem;
-    }
+    min-height: 100svh;
   }
   @media (width >= 64rem) {
     .wh-hero-home {
-      height: clamp(65rem, 99.1667vw, 89.25rem);
-      min-height: 0;
+      min-height: min(100svh, 56rem);
     }
   }
 
@@ -468,9 +485,17 @@
 
   /* Display headings. Weights and tracking verified live: the H1 is 400, not
      a heavier weight, and the tracking is tighter than the Tailwind tokens. */
+  /*
+   * Display H1.
+   *
+   * The floor was 3rem, which on a 375px screen ran a 45-character headline to
+   * four lines in a 335px measure — the smallest viewport got the worst wrap.
+   * Above lg the size now grows with the viewport instead of stopping dead at
+   * 4.5rem, so a 1920px screen is not given a 72px headline in a 740px column.
+   */
   .wh-h1 {
     font-family: var(--font-display);
-    font-size: clamp(3rem, 12vw, 4.5rem);
+    font-size: clamp(2.5rem, 11vw, 4.5rem);
     line-height: 1.05;
     letter-spacing: -0.035em;
     font-weight: var(--font-weight-display);
@@ -478,8 +503,8 @@
   @media (width >= 64rem) {
     .wh-h1 {
       font-family: var(--font-display);
-      font-size: 4.5rem;
-      line-height: 1.2;
+      font-size: clamp(4.5rem, 5vw, 6rem);
+      line-height: 1.1;
     }
   }
   /*
@@ -513,6 +538,23 @@
       font-size: 2rem;
     }
   }
+  /*
+   * Statement H2 — the large section headings that carry a full sentence.
+   *
+   * It exists so those headings stop being written as one-off
+   * `text-[clamp(...)]` values. Four different H2 sizes were in play across the
+   * site (32px, 52px, 56px, 64px), and on the home page the H2 rendered at 32px
+   * while the H3s inside it rendered at 56px — a reader scanning by size read
+   * the subordinate items as the section headings. Every display H2 now sits
+   * above every H3 in the scale.
+   */
+  .wh-h2-display {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    font-weight: var(--font-weight-display);
+  }
   .wh-h3 {
     font-family: var(--font-display);
     font-size: 1.25rem;
@@ -540,6 +582,22 @@
   .wh-tap {
     min-height: 2.75rem;
     min-width: 2.75rem;
+  }
+
+  /*
+   * Footer links. `wh-tap` gave every one a 44px box, so ten 14px links stacked
+   * to a 480px column of small type floating in large boxes. The target is kept
+   * where a finger needs it and relaxed for a mouse.
+   */
+  .wh-footer-link {
+    min-height: 2rem;
+  }
+  @media (pointer: coarse) {
+    .wh-footer-link {
+      min-height: 2.75rem;
+      /* Short labels ("X", "Work") need the horizontal target too. */
+      min-width: 2.75rem;
+    }
   }
 
   /* Footer/inline link underline sweep. The animated layer is a child span so
@@ -600,6 +658,26 @@
       opacity 0.5s var(--ease-standard),
       transform 0.5s var(--ease-standard);
     transition-delay: calc(var(--line-index, 0) * 80ms);
+  }
+
+  /*
+   * Accordion. Global rather than scoped to FAQAccordion.astro, because
+   * /services uses this markup without rendering that component — scoped styles
+   * carry a component hash and never reached it. Driven by src/scripts/accordion.ts.
+   *
+   * Without JS the panel simply appears — no clipping, nothing hidden.
+   */
+  .wh-faq__panel {
+    overflow: hidden;
+  }
+  .wh-faq[data-animating] .wh-faq__panel {
+    animation-fill-mode: forwards;
+  }
+  .wh-faq[data-animating='open'] .wh-faq__panel {
+    animation: var(--animate-accordion-down);
+  }
+  .wh-faq[data-animating='close'] .wh-faq__panel {
+    animation: var(--animate-accordion-up);
   }
 
   /* Marquee pauses on hover and for reduced-motion users. */

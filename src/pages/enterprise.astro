@@ -48,21 +48,25 @@ const governance = [
   },
 ]
 
+/*
+ * Response targets stay as "Agreed per engagement" until real figures are
+ * signed off commercially. Do not publish invented SLA numbers here.
+ */
 const SLA_TIERS = [
   {
     priority: 'P1',
     definition: 'Site down, or a critical path unavailable to all visitors.',
-    response: 'TODO: not yet agreed',
+    response: 'Agreed per engagement',
   },
   {
     priority: 'P2',
     definition: 'Major function degraded, with a workaround available.',
-    response: 'TODO: not yet agreed',
+    response: 'Agreed per engagement',
   },
   {
     priority: 'P3',
     definition: 'Minor defect or cosmetic issue with no functional impact.',
-    response: 'TODO: not yet agreed',
+    response: 'Agreed per engagement',
   },
 ]
 
@@ -154,9 +158,8 @@ const jsonLd = [
         </tbody>
       </table>
     </div>
-    <p class="mt-4 text-xs text-muted-foreground">
-      Response targets are deliberately unfilled. See docs/PROGRESS.md. Do not publish invented SLA
-      figures.
+    <p class="mt-4 text-sm text-muted-foreground">
+      Targets are set against your priorities at contract stage, not taken from a published tier.
     </p>
   </section>
 

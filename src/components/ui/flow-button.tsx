@@ -27,6 +27,15 @@ interface FlowButtonProps {
   arrows?: boolean
   className?: string
   type?: 'button' | 'submit'
+  /** Matches Button.astro's scale so islands and static pages agree. */
+  size?: 'md' | 'lg'
+  /** Applies to the <button> form only; a disabled link is not a thing. */
+  disabled?: boolean
+}
+
+const SIZES: Record<'md' | 'lg', string> = {
+  md: 'min-h-12 px-8 text-base',
+  lg: 'min-h-14 px-10 text-lg md:text-xl',
 }
 
 /** Resting surface, and the colour the expanding circle fills with. */
@@ -56,15 +65,19 @@ export function FlowButton({
   arrows = true,
   className = '',
   type = 'button',
+  size = 'md',
+  disabled = false,
 }: FlowButtonProps) {
   const tone = VARIANTS[variant]
 
   const classes = cn(
     'group relative inline-flex items-center justify-center gap-1 overflow-hidden',
-    'rounded-[100px] px-8 py-3 text-base font-medium',
-    'min-h-12 cursor-pointer transition-all duration-[600ms] ease-[cubic-bezier(0.23,1,0.32,1)]',
+    'rounded-[100px] py-3 font-medium',
+    'cursor-pointer transition-all duration-[600ms] ease-[cubic-bezier(0.23,1,0.32,1)]',
     'hover:rounded-[12px] hover:border-transparent active:scale-[0.97]',
     'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+    'disabled:pointer-events-none disabled:opacity-50',
+    SIZES[size],
     tone.base,
     tone.hoverText,
     variant === 'outline' && onDark && 'text-white',
@@ -123,7 +136,7 @@ export function FlowButton({
       {inner}
     </a>
   ) : (
-    <button type={type} className={classes}>
+    <button type={type} disabled={disabled} className={classes}>
       {inner}
     </button>
   )

@@ -30,6 +30,23 @@ interface Props {
 }
 
 const { href, client, summary, techStack = [], stats = [], class: className = '' } = Astro.props
+
+/*
+ * Placeholder artwork, varied per project.
+ *
+ * Every card previously rendered the identical gradient, so the grid's 7/5
+ * column rhythm was doing editorial work on what read as four copies of one
+ * tile. Seeded off the client name so a given project keeps its own colour
+ * across the home page and the work index. Replace wholesale when real
+ * screenshots land.
+ */
+const seed = [...client].reduce((total, char) => total + char.charCodeAt(0), 0)
+const hue = (seed * 47) % 360
+const angle = 120 + (seed % 5) * 15
+const placeholder =
+  `linear-gradient(${angle}deg, #1c1c1f 0%, #2b2b30 46%, #191919 100%), ` +
+  `radial-gradient(70% 60% at ${25 + (seed % 5) * 12}% ${18 + (seed % 4) * 14}%, ` +
+  `oklch(72% 0.14 ${hue} / 0.5), transparent 70%)`
 ---
 
 <a href={href} class={`group relative flex h-full flex-col rounded-3xl ${className}`}>
@@ -61,10 +78,7 @@ const { href, client, summary, techStack = [], stats = [], class: className = ''
     <div
       aria-hidden="true"
       class="absolute inset-0"
-      style="background:
-        linear-gradient(140deg, #1c1c1f 0%, #2b2b30 46%, #191919 100%),
-        radial-gradient(60% 50% at 70% 20%, color-mix(in oklab, var(--accent) 30%, transparent), transparent 70%);
-        background-blend-mode: screen;"
+      style={`background: ${placeholder}; background-blend-mode: screen;`}
     >
     </div>
 
@@ -87,14 +101,14 @@ const { href, client, summary, techStack = [], stats = [], class: className = ''
     rather than sitting flush with its edge, and set at reading size rather
     than as muted supporting text.
 
-    Clamped to two lines with a reserved height, so a longer summary on one
-    card cannot push its media shorter than its neighbour's in the same row.
+    Clamped to two lines. The reserved 3.375/4.5rem min-height and the 66.67%
+    max-width are gone: the media has its own min-height, so it was never the
+    caption holding the row square — all the reserve did was leave 36px of dead
+    space under a one-line summary and 334px of dead width beside every caption.
+    The wrapper went with them; it was `flex justify-between` around a single
+    child, so it had nothing to justify.
   -->
-  <span class="flex w-full items-start justify-between gap-4 px-5">
-    <span
-      class="line-clamp-2 min-h-[3.375rem] pt-5 text-lg text-balance md:min-h-[4.5rem] md:max-w-2/3 md:text-2xl"
-    >
-      {summary}
-    </span>
+  <span class="line-clamp-2 w-full px-5 pt-5 text-lg text-balance md:text-2xl">
+    {summary}
   </span>
 </a>

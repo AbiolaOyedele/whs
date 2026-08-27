@@ -47,6 +47,14 @@ const facets = [
   },
 ] as const
 
+/*
+ * Built as one string rather than two adjacent expressions: the newline between
+ * `{work.length}` and the pluralised noun collapsed, so the served HTML read
+ * "Showing 4projects" until the filter script rewrote it. Shared with that
+ * script below so both paths produce the same text.
+ */
+const countLabel = (n: number) => `Showing ${n} ${n === 1 ? 'project' : 'projects'}`
+
 const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
 const jsonLd = [
   breadcrumbSchema([
@@ -96,8 +104,7 @@ const jsonLd = [
     </div>
 
     <p class="mt-6 text-sm text-muted-foreground" data-filter-count aria-live="polite">
-      Showing {work.length}
-      {work.length === 1 ? 'project' : 'projects'}
+      {countLabel(work.length)}
     </p>
 
     <div class="wh-projects-grid mt-16 grid md:grid-cols-12" data-work-grid>

@@ -5,6 +5,9 @@
  * Analytics stay off until the visitor explicitly accepts, which is what makes
  * the PostHog loader in Analytics.astro compliant. Hidden by default and
  * revealed by script, so it never flashes for someone who already decided.
+ *
+ * Anchored bottom-right rather than centred. Centred and 42rem wide, it landed
+ * squarely on the home hero's call-to-action pair.
  */
 ---
 
@@ -13,7 +16,7 @@
   hidden
   role="region"
   aria-label="Cookie choices"
-  class="fixed inset-x-3 bottom-3 z-100 mx-auto max-w-2xl rounded-xl border border-border bg-card p-5 shadow-lg"
+  class="fixed right-3 bottom-3 left-3 z-100 max-w-md rounded-xl border border-border bg-card p-5 shadow-lg sm:left-auto"
 >
   <p class="text-sm text-muted-foreground">
     We use analytics cookies to understand how the site is used. They stay off unless you accept.

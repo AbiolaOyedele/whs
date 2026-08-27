@@ -4,7 +4,9 @@
  * Client-side validation here is UX only — every rule is enforced again on the
  * server. Nothing in this file is a security control.
  */
-import type { ReactNode } from 'react'
+import { Children, cloneElement, isValidElement } from 'react'
+import type { ReactElement, ReactNode } from 'react'
+import { FlowButton } from '@/components/ui/flow-button'
 import { HONEYPOT_FIELD } from '@/lib/schemas/form-constants'
 
 export type FieldErrors = Record<string, string>
@@ -106,6 +108,24 @@ export function Field({
   variant = 'boxed',
 }: FieldProps) {
   const underline = variant === 'underline'
+
+  /*
+   * The hint and error markup already carried ids, but nothing pointed at them,
+   * so neither was announced — they existed only to be referenced. Cloning the
+   * control here keeps every call site free of the wiring.
+   */
+  const describedBy = [hint ? `${name}-hint` : null, error ? `${name}-error` : null]
+    .filter(Boolean)
+    .join(' ')
+
+  const only = Children.only(children)
+  const control =
+    describedBy && isValidElement(only)
+      ? cloneElement(only as ReactElement<{ 'aria-describedby'?: string }>, {
+          'aria-describedby': describedBy,
+        })
+      : children
+
   return (
     <div
       className={
@@ -135,7 +155,7 @@ export function Field({
           {hint}
         </p>
       )}
-      <div className={underline ? 'mt-3' : 'mt-2'}>{children}</div>
+      <div className={underline ? 'mt-3' : 'mt-2'}>{control}</div>
       {error && (
         <p
           id={`${name}-error`}
@@ -169,7 +189,15 @@ export const underlineInputClass =
 
 export const underlineTextareaClass = underlineInputClass + ' min-h-40 resize-y'
 
-/** Submit button with a busy state. */
+/**
+ * Submit button with a busy state.
+ *
+ * Delegates to FlowButton so the most important button on the site behaves like
+ * every other call to action on it. This used to be a separate implementation —
+ * permanent pill, `hover:opacity-90`, its own `h-14 md:h-20` sizing — so a
+ * visitor who had learned the site's button behaviour on four other pages met a
+ * different one at the point of conversion.
+ */
 export function SubmitButton({
   busy,
   children,
@@ -177,28 +205,23 @@ export function SubmitButton({
   size = 'md',
 }: {
   busy: boolean
-  children: ReactNode
+  children: string
   /** `accent` is the lime pill used on the contact page. */
   tone?: 'primary' | 'accent'
-  /** `lg` is the contact page's full-bleed-on-mobile button. */
   size?: 'md' | 'lg'
 }) {
-  const toneClass =
-    tone === 'accent'
-      ? 'bg-[color:var(--accent)] text-[color:var(--accent-foreground)]'
-      : 'bg-primary text-primary-foreground'
-  const sizeClass =
-    size === 'lg'
-      ? 'h-14 w-full px-6 text-xl sm:w-auto sm:min-w-64 md:h-20 md:px-12'
-      : 'px-6 text-base'
   return (
-    <button
+    <FlowButton
       type="submit"
+      variant={tone}
+      size={size}
       disabled={busy}
-      className={`wh-tap inline-flex items-center justify-center rounded-full font-medium transition-[opacity,transform] hover:opacity-90 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 ${toneClass} ${sizeClass}`}
-    >
-      {busy ? 'Sending…' : children}
-    </button>
+      /* Arrows off: the label changes to "Sending…" mid-flight, and a label
+         sliding sideways while its text swaps reads as a glitch. */
+      arrows={false}
+      className={size === 'lg' ? 'w-full sm:w-auto sm:min-w-64' : ''}
+      text={busy ? 'Sending…' : children}
+    />
   )
 }
 

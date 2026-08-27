@@ -4,8 +4,13 @@
  *
  * Structure verified live 2026-08-26 (docs/PROGRESS.md § D-1, D-2):
  *  - Work, Services and Stack open mega menus. About and Insights are links.
- *  - The header sits absolutely at the top of the page rather than fixed.
- *  - A masked backdrop-filter layer fades the blur out below the top edge.
+ *  - The header is fixed, so the nav is reachable from anywhere on a page that
+ *    runs to several thousand pixels. It is taken out of flow rather than made
+ *    sticky because every hero already pads itself clear of the header height.
+ *  - A masked backdrop-filter layer fades the blur out below the top edge. It
+ *    is a child of the header so the two travel together; when it was fixed
+ *    inside an absolute header it stayed welded to the viewport after the nav
+ *    had scrolled away, leaving a blurred band over the page with no nav in it.
  *
  * Accessibility note: the live reference renders its mega-menu triggers as
  * <a> elements with no href, which is neither keyboard- nor crawler-friendly.
@@ -42,7 +47,8 @@ const [services, work, stack] = await Promise.all([
 ])
 
 const servicesByPillar = services.sort((a, b) => a.data.order - b.data.order)
-const featuredWork = work.filter((entry) => entry.data.featured).slice(0, 3)
+/* Four, not three: chunked two per column this fills both columns evenly. */
+const featuredWork = work.filter((entry) => entry.data.featured).slice(0, 4)
 
 /** Groups the stack entries by category, keeping only the recommended picks. */
 const stackColumns: NavMenuColumn[] = STACK_CATEGORIES.map((category) => ({
@@ -61,23 +67,39 @@ const stackColumns: NavMenuColumn[] = STACK_CATEGORIES.map((category) => ({
   },
 }))
 
-/** Services split across four columns, one per delivery pillar. */
-const serviceColumns: NavMenuColumn[] = SERVICE_PILLARS.map((pillar) => ({
+/*
+ * Services, one column per delivery pillar. The index link is attached to the
+ * last column only — giving it to every column printed "All services" three
+ * times in a row along the foot of the panel.
+ */
+const serviceColumns: NavMenuColumn[] = SERVICE_PILLARS.map((pillar, index) => ({
   label: SERVICE_PILLAR_LABELS[pillar],
   links: servicesByPillar
     .filter((entry) => entry.data.pillar === pillar)
     .map((entry) => ({ label: entry.data.title, href: `/services/${entry.id}` })),
-  allLink: { label: 'All services', href: '/services' },
+  ...(index === SERVICE_PILLARS.length - 1
+    ? { allLink: { label: 'All services', href: '/services' } }
+    : {}),
 }))
 
-/** Work, chunked into four columns so the grid stays even. */
-const workColumns: NavMenuColumn[] = Array.from({ length: 4 }, (_, column) => ({
+/*
+ * Work, chunked two per column. Empty columns are dropped, so the index link
+ * is attached after the filter rather than to a fixed index — pinned to column
+ * 3 it was filtered out with that column, and the panel shipped with no link
+ * to /work at all.
+ */
+const populatedWorkColumns: NavMenuColumn[] = Array.from({ length: 4 }, (_, column) => ({
   label: column === 0 ? 'Featured' : 'More work',
   links: featuredWork
     .slice(column * 2, column * 2 + 2)
     .map((entry) => ({ label: entry.data.client, href: `/work/${entry.id}` })),
-  allLink: column === 3 ? { label: 'All work', href: '/work' } : undefined,
 })).filter((column) => column.links.length > 0)
+
+const workColumns: NavMenuColumn[] = populatedWorkColumns.map((column, index) =>
+  index === populatedWorkColumns.length - 1
+    ? { ...column, allLink: { label: 'All work', href: '/work' } }
+    : column
+)
 
 // TODO: feature-card copy is provisional placeholder text.
 const menus: NavMenu[] = [
@@ -123,16 +145,18 @@ const menus: NavMenu[] = [
 <header
   data-site-header
   data-over-hero={overDarkHero ? 'true' : undefined}
-  class="site-header absolute inset-x-0 top-0 z-50"
+  class="site-header fixed inset-x-0 top-0 z-50"
 >
   <!--
-    Progressive blur: five stacked layers inside a fixed 10rem band. Each layer
-    blurs a little more and is masked to a different slice, so the blur ramps
-    smoothly instead of ending on a hard edge. Matched to the reference.
+    Progressive blur: five stacked layers inside a 10rem band anchored to the
+    header. Each layer blurs a little more and is masked to a different slice,
+    so the blur ramps smoothly instead of ending on a hard edge. Negative z
+    keeps it behind the nav pill and the mobile panel while staying above the
+    page, since the z-50 header is its own stacking context.
   -->
   <div
     aria-hidden="true"
-    class="pointer-events-none fixed inset-x-0 top-0 z-[21] h-40 overflow-hidden"
+    class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-40 overflow-hidden"
   >
     {
       [1, 2, 3, 4, 5].map((step) => (
@@ -174,7 +198,7 @@ const menus: NavMenu[] = [
         data-mobile-toggle
         aria-expanded="false"
         aria-controls="mobile-menu"
-        class="wh-tap -mr-2 inline-flex flex-col items-center justify-center gap-1.5 rounded-md px-2 lg:hidden"
+        class="wh-tap -mr-3 inline-flex flex-col items-center justify-center gap-1.5 rounded-md px-3 lg:hidden"
       >
         <span class="sr-only">Menu</span>
         <span aria-hidden="true" class="wh-burger block h-px w-6 bg-current"></span>

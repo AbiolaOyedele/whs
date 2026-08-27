@@ -87,5 +87,11 @@ const schemas: JsonLd[] = [organizationSchema(siteUrl), webSiteSchema(siteUrl), 
     </main>
 
     <Footer />
+
+    <!-- Accordion behaviour, loaded once for every page. No-op where there are
+         no accordions. -->
+    <script>
+      import '@/scripts/accordion'
+    </script>
   </body>
 </html>

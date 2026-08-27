@@ -307,22 +307,47 @@ interface MegaPanelProps {
  * toggled — so its links stay in the served HTML for crawlers.
  */
 function MegaPanel({ menu, open, reducedMotion }: MegaPanelProps) {
+  /*
+   * The track count follows the data. It used to be hard-coded to four, which
+   * left the Work panel — which only ever produces two populated columns —
+   * showing two blank 151px tracks beside its links.
+   *
+   * Width follows from the count, with a 30rem floor so the feature card at the
+   * foot still has room for its image and copy in a two-column panel. Tracks
+   * are `1fr` rather than a fixed 9.4375rem so a narrow panel spends the slack
+   * on its links instead of leaving it at the right-hand edge.
+   */
+  const columnCount = Math.max(menu.columns.length, 1)
+  const naturalRem = columnCount * 9.4375 + (columnCount - 1) * 2 + 4
+  const widthRem = Math.max(naturalRem, 30)
+
   return (
     <div
       id={menu.id}
       hidden={!open}
       className={cn(
         'absolute top-full left-1/2 mt-3 -translate-x-1/2 rounded-[1.25rem] text-white',
-        'bg-[color-mix(in_oklab,var(--primary)_48%,transparent)] backdrop-blur-[24px]',
+        /* 92%, matching the mobile panel. At 48% the hero headline read
+           straight through the panel and competed with the menu labels. */
+        'bg-[color-mix(in_oklab,var(--primary)_92%,transparent)] backdrop-blur-[24px]',
         reducedMotion
           ? ''
           : 'transition-[opacity,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
         open ? 'scale-100 opacity-100' : 'pointer-events-none scale-[0.96] opacity-0'
       )}
     >
-      <div className="grid w-[47.75rem] max-w-[calc(100vw-3rem)] grid-cols-[repeat(4,9.4375rem)] items-stretch gap-x-8 gap-y-6 px-8 py-5">
+      <div
+        className="grid max-w-[calc(100vw-3rem)] items-stretch gap-x-8 gap-y-6 px-8 py-5"
+        style={{
+          width: `${widthRem}rem`,
+          gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
+        }}
+      >
+        {/* No column min-height: the grid stretches every column to the tallest
+            already, and the old fixed 15.75rem floor left a ~100px void under a
+            column holding one or two links. */}
         {menu.columns.map((column) => (
-          <div key={column.label} className="flex min-h-[15.75rem] flex-col gap-4">
+          <div key={column.label} className="flex flex-col gap-4">
             <p className="text-xs leading-normal text-white/65">({column.label})</p>
 
             <div className="flex flex-col gap-3">
@@ -351,7 +376,8 @@ function MegaPanel({ menu, open, reducedMotion }: MegaPanelProps) {
         {menu.feature && (
           <a
             href={menu.feature.href}
-            className="group col-span-4 flex gap-4 rounded-xl bg-white p-3 text-[#131314] transition-colors hover:bg-white/95"
+            style={{ gridColumn: '1 / -1' }}
+            className="group flex gap-4 rounded-xl bg-white p-3 text-[#131314] transition-colors hover:bg-white/95"
           >
             {/* 159x128 image box, per the reference. TODO: real artwork. */}
             <span
