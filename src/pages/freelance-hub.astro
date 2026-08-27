@@ -50,7 +50,6 @@ const BENEFITS = [
 const PROCESS = [
   { title: 'Apply', body: 'Send the form below with a portfolio we can actually look at.' },
   { title: 'Short call', body: 'Thirty minutes on what you like working on and what you avoid.' },
-  { title: 'Paid trial task', body: 'A small, real, scoped piece of work. Paid at your rate.' },
   { title: 'Into the pool', body: 'We match you against briefs as they come in.' },
   {
     title: 'First engagement',
@@ -60,19 +59,9 @@ const PROCESS = [
 
 const faqs = [
   {
-    question: 'Do I need to be a registered business to work with you?',
-    answer:
-      'Yes. We contract business to business, so you need to be able to invoice as a registered company or sole trader in your country.',
-  },
-  {
     question: 'How are freelance rates set?',
     answer:
       'You tell us your rate. We do not run reverse auctions and we do not ask people to undercut each other for a brief.',
-  },
-  {
-    question: 'Is the trial task paid?',
-    answer:
-      'Yes, at your normal rate. It is a small piece of real work, not a speculative exercise.',
   },
   {
     question: 'How much work can I expect?',
@@ -106,14 +95,14 @@ const jsonLd = [
 
 <BaseLayout
   title="Freelance Hub"
-  description="Freelance with WildHands. Scoped briefs, paid trials, direct client contact, thirty-day payment terms."
+  description="Freelance with WildHands. Scoped briefs, direct client contact, no unpaid pitching, thirty-day payment terms."
   jsonLd={jsonLd}
   darkHero
 >
   <Hero
     eyebrow="Freelance Hub"
     title="Work with us, not for us."
-    subtitle="Scoped briefs, a paid trial task, and no unpaid pitching. Here is exactly how it runs."
+    subtitle="Scoped briefs, direct client contact, and no unpaid pitching. Here is exactly how it runs."
   />
 
   <section class="wh-container wh-section">
@@ -131,7 +120,7 @@ const jsonLd = [
       <SectionHeading level={2}>Apply</SectionHeading>
       <p class="mt-4 text-muted-foreground">One form. We read every one and reply either way.</p>
       <div class="mt-10">
-        <FreelanceApplicationForm client:visible />
+        <FreelanceApplicationForm client:load />
       </div>
     </div>
   </section>
@@ -158,7 +147,7 @@ const jsonLd = [
           We email when new briefs open up. No more than monthly.
         </p>
         <div class="mt-4">
-          <NewsletterForm client:visible />
+          <NewsletterForm client:load />
         </div>
       </div>
     </div>

@@ -12,8 +12,35 @@
  *     was always a <button>, which is wrong for navigation and breaks
  *     middle-click, open-in-new-tab, and the browser's own link affordances.
  */
-import { ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+
+/*
+ * The arrow is drawn inline rather than pulled from lucide-react.
+ *
+ * Two reasons. It is the same markup Button.astro uses, so the static twin and
+ * this one are genuinely identical instead of sourcing their icon from
+ * different places. And it keeps an icon package out of the bundle of every
+ * form on the site — form-primitives imports this component, so a single
+ * unresolved icon import took down hydration for the contact form, the
+ * freelance application and the newsletter at once.
+ */
+function ArrowRight({ className }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
+    </svg>
+  )
+}
 
 type FlowVariant = 'outline' | 'accent' | 'primary'
 
@@ -88,10 +115,7 @@ export function FlowButton({
     <>
       {arrows && (
         /* Arrow that slides in from the left on hover. */
-        <ArrowRight
-          aria-hidden="true"
-          className="absolute left-[-25%] z-[9] h-4 w-4 fill-none stroke-current transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:left-4"
-        />
+        <ArrowRight className="absolute left-[-25%] z-[9] h-4 w-4 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:left-4" />
       )}
 
       <span
@@ -123,10 +147,7 @@ export function FlowButton({
 
       {arrows && (
         /* Arrow that slides out to the right on hover. */
-        <ArrowRight
-          aria-hidden="true"
-          className="absolute right-4 z-[9] h-4 w-4 fill-none stroke-current transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:right-[-25%]"
-        />
+        <ArrowRight className="absolute right-4 z-[9] h-4 w-4 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:right-[-25%]" />
       )}
     </>
   )

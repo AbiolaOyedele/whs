@@ -82,6 +82,15 @@ const publicSchema = z.object({
 const serverSchema = z.object({
   RESEND_API_KEY: z.string().min(1),
   CONTACT_NOTIFICATION_EMAIL: z.email(),
+  /*
+   * Cloudinary stores CV uploads. Optional: with these unset the application
+   * still submits and the CV still arrives as an email attachment, it is just
+   * not filed anywhere. A missing variable must not lose someone's
+   * application. See src/lib/cloudinary.ts.
+   */
+  CLOUDINARY_CLOUD_NAME: z.string().min(1).optional(),
+  CLOUDINARY_API_KEY: z.string().min(1).optional(),
+  CLOUDINARY_API_SECRET: z.string().min(1).optional(),
 })
 
 /** Formats a Zod error into a readable multi-line message. */

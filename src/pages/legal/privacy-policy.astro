@@ -4,8 +4,10 @@
  *
  * Written against what the code actually does, not a template:
  *  - No database. Every form submission is delivered as email through Resend
- *    (src/lib/resend.ts) and lives in the WildHands mailbox. Nothing is written
- *    to storage by this site.
+ *    (src/lib/resend.ts) and lives in the WildHands mailbox.
+ *  - CVs are additionally stored in Cloudinary as private, authenticated raw
+ *    assets (src/lib/cloudinary.ts), reachable only through an expiring signed
+ *    link. Nothing else is written to storage by this site.
  *  - PostHog is consent-gated and configured with `autocapture: false`, so it
  *    records page views, not clicks or form input (PostHogLoader.astro).
  *  - The consent choice and PostHog's identifier are in localStorage, not
@@ -54,7 +56,7 @@ const BASES = [
     purpose: 'Sending the freelance newsletter',
     data: 'Email address',
     basis: 'Consent',
-    why: 'You asked for it, and every email carries an unsubscribe link.',
+    why: 'You asked for it, and you can tell us to stop at any time.',
   },
   {
     purpose: 'Understanding which pages are useful',
@@ -74,7 +76,7 @@ const RETENTION = [
     what: 'Applications you asked us to keep on file',
     how: '24 months, then we ask again or delete',
   },
-  { what: 'CVs and attachments', how: 'Deleted with the application they arrived with' },
+  { what: 'CVs, stored as private files', how: 'Deleted with the application they arrived with' },
   { what: 'Newsletter subscriptions', how: 'Until you unsubscribe' },
   { what: 'Analytics', how: '12 months, then aggregated' },
 ] as const
@@ -99,7 +101,8 @@ const RETENTION = [
             We collect what you type into our forms, and nothing else unless you accept analytics.
           </li>
           <li>
-            We do not run a database. Form submissions arrive as email and stay in our mailbox.
+            We do not run a database of you. Submissions arrive as email; a CV is also filed
+            privately so we can read it again.
           </li>
           <li>We do not sell your data, and we do not use it for advertising.</li>
           <li>The site sets no cookies at all until you make a choice in the banner.</li>
@@ -144,7 +147,8 @@ const RETENTION = [
             <strong>You apply to work with us.</strong> Your name and contact details, links to your professional
             profiles, your CV, and your answers to the application questions. Freelance applications also
             ask where you are resident for tax, what you are available for, and how many hours a month
-            you want.
+            you want. Your CV is also stored as a private file so we can read it again during the process;
+            everything else stays in the email.
           </li>
           <li>
             <strong>You subscribe to the freelance newsletter.</strong> Your email address.
@@ -204,9 +208,9 @@ const RETENTION = [
 
         <h2>How long we keep it</h2>
         <p>
-          Because form submissions arrive as email rather than going into a database, deletion means
-          removing the message and its attachments from our mailbox. These are the periods we work
-          to.
+          Form submissions arrive as email rather than going into a database, so deletion means
+          removing the message and its attachments from our mailbox — and, for an application,
+          deleting the stored copy of the CV. These are the periods we work to.
         </p>
       </Prose>
 
@@ -242,13 +246,18 @@ const RETENTION = [
 
         <h2>Who else touches it</h2>
         <p>
-          Three companies process data on our behalf. Each is bound by a contract that limits them
-          to acting on our instructions.
+          Four companies process data on our behalf. Each is bound by a contract that limits them to
+          acting on our instructions.
         </p>
         <ul>
           <li>
             <strong>Resend</strong> delivers every form submission to us by email, including any CV you
             attach. Without Resend, the form does not reach anyone.
+          </li>
+          <li>
+            <strong>Cloudinary</strong> stores CVs sent with an application. They are kept as private
+            files, not on a public address — reaching one needs a signed link that we generate and that
+            expires.
           </li>
           <li>
             <strong>PostHog</strong> processes analytics, and only if you accept them.
@@ -303,9 +312,10 @@ const RETENTION = [
           The site is served only over HTTPS. Form endpoints are rate-limited to make abuse
           expensive, which involves holding your IP address briefly in memory &mdash; it is never
           written to disk and never sent anywhere. Uploaded CVs are checked by file type and size
-          and renamed on our side, so a filename can never be used to attack our systems. Access to
-          the mailbox holding enquiries is limited to the people who need it, and protected by
-          two-factor authentication.
+          and renamed on our side, so a filename can never be used to attack our systems. A stored
+          CV is uploaded as a private file, not a public one, so it has no address anyone can guess
+          — reaching it needs a signed link that expires. Access to the mailbox holding enquiries is
+          limited to the people who need it, and protected by two-factor authentication.
         </p>
         <p>
           No system is perfect. If we ever suffer a breach that puts you at risk, we will tell the

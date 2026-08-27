@@ -5,6 +5,7 @@
  */
 import type { z } from 'zod'
 import { AppError } from './errors'
+import { storeCv } from './cloudinary'
 import { sendNotification, type OutgoingAttachment } from './resend'
 import { slugify, validateCvUpload } from './uploads'
 import {
@@ -129,6 +130,19 @@ export async function submitNewsletter(body: Record<string, unknown>): Promise<v
   })
 }
 
+/**
+ * Uploads a CV to storage and returns the line to print in the notification.
+ *
+ * The attachment is kept either way: storage is the filing system, the
+ * attachment is what makes the email useful on a phone. If storage is not
+ * configured, or the upload fails, the email is unchanged.
+ */
+async function cvStorageLine(cv: OutgoingAttachment): Promise<string | undefined> {
+  const stored = await storeCv(cv.filename, cv.content)
+  if (!stored) return undefined
+  return `${stored.url}\n(link valid for 30 days; the file is stored as ${stored.publicId})`
+}
+
 /** Validates and delivers a freelance application, including the CV attachment. */
 export async function submitFreelanceApplication(form: FormData): Promise<void> {
   const body = Object.fromEntries(form.entries())
@@ -146,6 +160,7 @@ export async function submitFreelanceApplication(form: FormData): Promise<void> 
 
   const cv = await validateCvUpload(form.get('cv'), slugify(`${data.firstName} ${data.lastName}`))
   const attachments: OutgoingAttachment[] = [cv]
+  const cvLink = await cvStorageLine(cv)
 
   await sendNotification({
     subject: `Freelance application: ${data.firstName} ${data.lastName} (${data.position})`,
@@ -163,6 +178,7 @@ export async function submitFreelanceApplication(form: FormData): Promise<void> 
       ['Hours per month', data.hoursPerMonth],
       ['Open to long-term work', data.longTermInterest],
       ['Consents to future contact', data.consentsToFutureContact ? 'yes' : 'no'],
+      ['CV', cvLink],
     ]),
   })
 }
@@ -181,9 +197,12 @@ export async function submitJobApplication(form: FormData): Promise<void> {
   const data = parseOrThrow(jobApplicationSchema, normalised, 'FORM_JOB_INVALID_INPUT')
 
   const attachments: OutgoingAttachment[] = []
+  let cvLink: string | undefined
   const cvField = form.get('cv')
   if (cvField instanceof File && cvField.size > 0) {
-    attachments.push(await validateCvUpload(cvField, slugify(`${data.firstName} ${data.lastName}`)))
+    const cv = await validateCvUpload(cvField, slugify(`${data.firstName} ${data.lastName}`))
+    attachments.push(cv)
+    cvLink = await cvStorageLine(cv)
   }
 
   await sendNotification({
@@ -195,6 +214,7 @@ export async function submitJobApplication(form: FormData): Promise<void> {
       ['Name', `${data.firstName} ${data.lastName}`],
       ['Email', data.email],
       ['LinkedIn', data.linkedinUrl || undefined],
+      ['CV', cvLink],
       ['Cover note', data.coverNote ? `\n${data.coverNote}` : undefined],
     ]),
   })

@@ -83,18 +83,14 @@ const problems = [
     `px-5 md:px-8` gutters, which held 32px at 768px while the container around
     it held 20px, and 32px at 1920px while the container held 153px.
 
-    The "The Problem" label is in normal flow at every breakpoint rather than
-    absolutely positioned at lg — the absolute version needed a 16.5rem top pad
-    to float in, which read as a ~490px void above the heading.
+    The section carries no eyebrow label — the heading says what it is.
   -->
   <section
     class="relative overflow-clip rounded-section bg-background text-foreground"
     aria-labelledby="homepage-problem-title"
   >
     <div class="wh-container">
-      <p class="pt-8 text-base text-muted-foreground lg:pt-12">The Problem</p>
-
-      <div class="mt-10 lg:mt-20">
+      <div class="pt-12 lg:pt-20">
         <div
           class="lg:grid lg:min-h-[57.1875rem] lg:grid-cols-[42.7%_57.3%] lg:border-t lg:border-border"
         >
@@ -207,7 +203,6 @@ const problems = [
                 href={`/work/${entry.id}`}
                 client={entry.data.client}
                 summary={entry.data.summary}
-                techStack={entry.data.techStack}
                 stats={entry.data.stats}
               />
             ))}

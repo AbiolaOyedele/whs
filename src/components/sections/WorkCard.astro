@@ -2,10 +2,12 @@
 /**
  * Case-study card.
  *
- * Layout matched to the reference: the tech stack sits *above* the card in
- * parentheses, the client name overlays the top-left of the media with
- * `mix-blend-exclusion` so it stays legible on any image, and stat callouts
- * overlay the bottom edge.
+ * The client name overlays the top-left of the media with `mix-blend-exclusion`
+ * so it stays legible on any image, and stat callouts overlay the bottom edge.
+ *
+ * No tech-stack line: a parenthesised "(Next.js, Supabase, Deepgram)" above
+ * every card sold the tooling rather than the outcome, and it sat on its own
+ * indent off the page grid. The full stack is on the case-study page.
  *
  * The whole card is one link, so the media is the tap target — no separate
  * stretched-link pseudo-element is needed.
@@ -23,13 +25,12 @@ interface Props {
   href: string
   client: string
   summary: string
-  techStack?: readonly string[]
   stats?: readonly Stat[]
   /** Media aspect ratio. The reference alternates wide and tall cards. */
   class?: string
 }
 
-const { href, client, summary, techStack = [], stats = [], class: className = '' } = Astro.props
+const { href, client, summary, stats = [], class: className = '' } = Astro.props
 
 /*
  * Placeholder artwork, varied per project.
@@ -50,17 +51,6 @@ const placeholder =
 ---
 
 <a href={href} class={`group relative flex h-full flex-col rounded-3xl ${className}`}>
-  {
-    techStack.length > 0 && (
-      /* Anchored to the card's top edge rather than offset from it, so a stack
-         list long enough to wrap grows upward instead of running under the
-         media. Capped at three entries — the full stack is on the detail page. */
-      <span class="absolute right-0 bottom-full left-5 mb-3 pr-5 text-sm text-muted-foreground">
-        ({techStack.slice(0, 3).join(', ')})
-      </span>
-    )
-  }
-
   <span
     class="pointer-events-none absolute top-5 left-5 z-20 flex text-2xl text-white mix-blend-exclusion md:text-3xl"
   >

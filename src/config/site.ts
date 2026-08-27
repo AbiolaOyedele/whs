@@ -65,12 +65,17 @@ export const PROCESS_STEPS = [
   },
 ] as const
 
-/** Social/profile links rendered in the footer. TODO: real URLs. */
+/**
+ * Social/profile links rendered in the footer.
+ *
+ * Instagram and LinkedIn only for now. GitHub, Dribbble and X were removed —
+ * they pointed at the platforms' own home pages rather than at WildHands.
+ *
+ * TODO: swap in the real handles. These are still the bare domains.
+ */
 export const SOCIAL_LINKS: ReadonlyArray<{ label: string; href: string }> = [
-  { label: 'GitHub', href: 'https://github.com' },
+  { label: 'Instagram', href: 'https://www.instagram.com' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com' },
-  { label: 'Dribbble', href: 'https://dribbble.com' },
-  { label: 'X', href: 'https://x.com' },
 ]
 
 export interface FooterColumn {
@@ -90,7 +95,6 @@ export const FOOTER_COLUMNS: ReadonlyArray<FooterColumn> = [
       { label: 'Enterprise', href: '/enterprise' },
       { label: 'Careers', href: '/careers' },
       { label: 'Freelance Hub', href: '/freelance-hub' },
-      { label: 'llms.txt Generator', href: '/tools/llms-txt-generator' },
       { label: 'Get in touch', href: '/get-in-touch' },
     ],
   },

@@ -24,7 +24,10 @@ export default defineConfig({
   integrations: [
     react(),
     sitemap({
-      filter: (page) => !page.includes('/tools/ai-ascii-art-generator'),
+      // The llms.txt generator is deliberately unlisted: the route works, but
+      // it is not part of the offer right now. It is also noindex'd and out of
+      // the footer nav. Delete this filter to bring it back.
+      filter: (page) => !page.includes('/tools/llms-txt-generator'),
     }),
   ],
   vite: {
