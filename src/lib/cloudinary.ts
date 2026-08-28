@@ -28,7 +28,7 @@ import { serverEnv } from '@/config/env'
 /** Everything under one prefix, so retention can be applied to the folder. */
 const CV_FOLDER = 'wildhands/cv'
 
-/** How long a delivery link in a notification email stays valid. */
+/** How long a download link in a notification email stays valid. */
 const LINK_TTL_SECONDS = 60 * 60 * 24 * 30
 
 export interface StoredCv {
@@ -127,11 +127,18 @@ export async function storeCv(filename: string, content: Buffer): Promise<Stored
 }
 
 /**
- * Mints a time-limited delivery URL for a stored CV.
+ * Mints a time-limited download URL for a stored CV.
  *
- * Authenticated raw assets are delivered under a `s--<signature>--` segment;
- * the signature covers the expiry and the public_id, so a link cannot be
- * extended by editing it.
+ * This goes through Cloudinary's signed `download` endpoint rather than a
+ * `res.cloudinary.com` delivery URL, because only the former honours an
+ * expiry. A plain signed delivery URL for an authenticated asset works, but it
+ * works forever — which is the wrong lifetime for a stranger's CV sitting in an
+ * email thread.
+ *
+ * Verified against the live API: the signature must cover exactly
+ * `expires_at`, `public_id`, `timestamp` and `type`, alphabetically sorted.
+ * Including `resource_type` (which belongs in the path, not the payload) is
+ * rejected with a 401.
  *
  * @returns The URL, or null when storage is not configured.
  */
@@ -139,16 +146,19 @@ export function signedCvUrl(publicId: string, ttlSeconds = LINK_TTL_SECONDS): st
   const creds = credentials()
   if (!creds) return null
 
-  const expiresAt = Math.floor(Date.now() / 1000) + ttlSeconds
-  const toSign = `exp=${expiresAt}/${publicId}`
-  const signature = crypto
-    .createHash('sha256')
-    .update(toSign + creds.apiSecret)
-    .digest('base64url')
-    .slice(0, 32)
+  const now = Math.floor(Date.now() / 1000)
+  const params = {
+    expires_at: now + ttlSeconds,
+    public_id: publicId,
+    timestamp: now,
+    type: 'authenticated',
+  }
 
-  return (
-    `https://res.cloudinary.com/${creds.cloudName}/raw/authenticated/` +
-    `s--${signature}--/exp_${expiresAt}/${publicId}`
-  )
+  const query = new URLSearchParams({
+    ...Object.fromEntries(Object.entries(params).map(([key, value]) => [key, String(value)])),
+    api_key: creds.apiKey,
+    signature: sign(params, creds.apiSecret),
+  })
+
+  return `https://api.cloudinary.com/v1_1/${creds.cloudName}/raw/download?${query}`
 }
