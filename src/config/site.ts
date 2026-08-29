@@ -21,10 +21,13 @@ export const SITE = {
    * it, so an http canonical would point every crawler at a redirect.
    */
   origin: 'https://whstd.com',
-  /**
-   * TODO: these mailboxes do not exist yet. Create them (or set up forwarding)
-   * on whstd.com before launch — they are printed on the contact page and in
-   * the agent instructions, so a missing mailbox silently loses enquiries.
+  /*
+   * All three deliver. whstd.com is verified in Resend for sending, and inbound
+   * is handled by registrar-level forwarding (MX → eforward*.registrar-servers.com),
+   * so mail to these addresses reaches a real inbox.
+   *
+   * Verified 2026-08-28 by sending to each through Resend: all three came back
+   * `delivered`, not bounced.
    */
   email: 'hello@whstd.com',
   salesEmail: 'sales@whstd.com',
@@ -68,14 +71,11 @@ export const PROCESS_STEPS = [
 /**
  * Social/profile links rendered in the footer.
  *
- * Instagram and LinkedIn only for now. GitHub, Dribbble and X were removed —
- * they pointed at the platforms' own home pages rather than at WildHands.
- *
- * TODO: swap in the real handles. These are still the bare domains.
+ * Instagram only for now — there is no LinkedIn page yet. Add it here and it
+ * appears in the footer automatically.
  */
 export const SOCIAL_LINKS: ReadonlyArray<{ label: string; href: string }> = [
-  { label: 'Instagram', href: 'https://www.instagram.com' },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com' },
+  { label: 'Instagram', href: 'https://www.instagram.com/wildhands.studios/' },
 ]
 
 export interface FooterColumn {

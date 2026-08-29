@@ -95,10 +95,7 @@
   --destructive: #ef4444;
   --destructive-foreground: #fafafa;
 
-  /* Accent, matched to the reference site (verified live 2026-08-26).
-     NOTE: this is the reference brand's own lime. Kept per explicit instruction
-     to match the reference exactly — see docs/PROGRESS.md § B-1 for the
-     trade-dress note if WildHands competes in the same market. */
+  /* The WildHands lime. Also carried in the logo artwork. */
   --accent: oklch(91.98% 0.1905 128.5);
   --accent-foreground: oklch(18.72% 0.002 286.2);
 
