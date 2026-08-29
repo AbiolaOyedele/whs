@@ -69,13 +69,6 @@ Endpoint behaviour verified against the running server:
 
 ## ⛔ BLOCKED — needs manager confirmation before proceeding
 
-### B-1. Accent colour (blocks Step 5)
-
-Bejamas' `--accent` is `oklch(91.98% .1905 128.5)` / `#befc65`, a lime-chartreuse.
-Confirmed live. **This is their brand mark and will not be reused.**
-`src/styles/global.css` currently ships neutral placeholder tokens with no accent
-defined at all. **Need: WildHands Studios' actual brand accent colour.**
-
 ### B-2. ⚠️ PP Neue Montreal is now shipping — YOU MUST BUY A LICENCE
 
 `public/fonts/PPNeueMontreal-Variable-opt.woff2` was taken from the site archive
@@ -141,8 +134,8 @@ of the folder structure deviates.
 
 ### F-2. Copy rules override Part 2 of the reference document
 
-`docs/reference-analysis.md` Part 2 instructs building a verbatim clone —
-"reuse copy verbatim", "do not paraphrase", and it lists Bejamas' real client
+`the removed reference analysis` Part 2 instructs building a verbatim clone —
+"reuse copy verbatim", "do not paraphrase", and it lists the prior reference' real client
 roster for logo walls and case-study seeds. **That section is superseded by the
 CONTENT & COPYRIGHT RULES in the build brief and is not being followed.** All
 copy will be original placeholder text; all client names will be obviously
@@ -312,7 +305,7 @@ with a CSS rule giving the wrapper a real box.
 ### F-14. Layout rebuilt from the saved site archive
 
 A site archive was supplied at
-`~/Downloads/bejamas.com-1787734766415/`, containing the compiled CSS, the real
+the supplied site archive, containing the compiled CSS, the real
 markup for 50 pages, and the font files. The homepage layout was rebuilt against
 it rather than against measurements taken through the DOM. What changed:
 
@@ -442,7 +435,7 @@ text, no heading skips, and no invisible H1s.
 
 ### F-21. Contact page rebuilt to the supplied spec, plus the agent protocol
 
-Built from `bejamasgetintouchspec.md`. The form is the spec's treatment: no
+Built from the supplied spec. The form is the spec's treatment: no
 boxed inputs, a single hairline under each label/input pair that darkens on
 `focus-within`, 20px input text, "(optional)" in muted grey and **no asterisks**
 on required fields — required is carried by the control's own attribute, which
@@ -587,10 +580,10 @@ Email Routing replaces the Namecheap forwarding.
 Left in place for that day: `whstd.com` is already added to Resend and its DKIM
 record verifies. Only the `send` MX is missing.
 
-## 🔍 Live verification log — bejamas.com
+## 🔍 Live verification log — the reference site (removed)
 
 Fetched and inspected live on **2026-08-26** (computed styles + DOM + stylesheet
-rules read directly in-browser), checked against `docs/reference-analysis.md`
+rules read directly in-browser), checked against `the removed reference analysis`
 §4.1–4.2 as the brief requires.
 
 **Generator confirmed:** `Astro v7.2.2` live. We are on `astro@7.2.7` — same minor,
@@ -757,31 +750,30 @@ Swept 22 representative pages at 375px, 768px and 1280px — 66 checks:
      redirect. Everything here uses https.
    - **Add the domain to the Vercel project and point DNS at it**, then turn off
      Deployment Protection — the site currently returns Vercel's login page.
-2. **Mailboxes on whstd.com do not exist yet.** `hello@`, `sales@` and `hr@` are
-   printed on the contact page and inside the agent instructions. Create them or
-   set up forwarding before launch, or enquiries go nowhere.
+2. ~~Mailboxes on whstd.com do not exist yet.~~ **Resolved.** Inbound is handled
+   by registrar-level forwarding (MX → `eforward*.registrar-servers.com`).
+   Verified 2026-08-28 by sending to each through Resend: `hello@`, `sales@` and
+   `hr@` all returned `delivered`.
 3. **B-2 — ⚠️ BUY A FONT LICENCE, or revert to Inter Tight.** PP Neue Montreal
    and SFMono are both shipping from the archive and neither is licensed for
    web distribution. This is the highest-risk item on the list.
-4. **B-1 — get a legal opinion on trade dress** if WildHands competes with the
-   reference company in the same market.
-5. **B-3 — confirm the service model.** The whole page inventory assumes web
+4. **B-3 — confirm the service model.** The whole page inventory assumes web
    design/dev/migration.
-6. **Copy: home, services and all four case studies are now real.** Still
+5. **Copy: home, services and all four case studies are now real.** Still
    placeholder: stack, insights, industries, enterprise, careers, freelance hub.
    `grep -rl "placeholder: true" src/content/`
-7. **"Studio" or "Studios"?** All prose now reads _WildHands Studio_, matching
+6. **"Studio" or "Studios"?** All prose now reads _WildHands Studio_, matching
    `SITE.name` and the copy doc you supplied. The logo artwork still spells
    _studios_. One of the two has to move — the copy is a one-line change, the
    wordmark is not. Tell me which.
-8. **Those reference-inherited sections are still there.** Stack (14 pages),
+7. **Those reference-inherited sections are still there.** Stack (14 pages),
    Insights (11), Careers (9), Industries (3), Enterprise (1), Freelance Hub (1)
    — 39 of 55 pages, all still carrying migration-era copy and the word
    "estate". This is the question from earlier that never got an answer.
-9. **Privacy policy is an unreviewed draft** with TODOs in the legal substance.
-10. **F-10 — decide where application videos go**, or drop the step.
-11. **Resend sending domain** is still `onboarding@resend.dev`. Verify
+8. **Privacy policy is an unreviewed draft** with TODOs in the legal substance.
+9. **F-10 — decide where application videos go**, or drop the step.
+10. **Resend sending domain** is still `onboarding@resend.dev`. Verify
     whstd.com in Resend (SPF + DKIM), then switch the `from:` in
     `src/lib/resend.ts` to `hello@whstd.com` — one line, but not before the DNS
     records land, or every form on the site stops sending.
-12. **F-8 — decide on a headless CMS** before real content lands.
+11. **F-8 — decide on a headless CMS** before real content lands.

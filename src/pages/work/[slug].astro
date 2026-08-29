@@ -1,8 +1,8 @@
 ---
 /**
- * Case study detail, laid out to the reference's project pages.
+ * Case study detail.
  *
- * The reference runs a single narrow column — index number and year on one
+ * A single narrow column — index number and year on one
  * row, then a Services/Stack meta pair, a full-bleed media panel, and the
  * narrative in a `max-w-2xl` measure with small muted section labels rather
  * than large headings. The dark banner above it is ours, kept deliberately.
@@ -51,7 +51,7 @@ const jsonLd = [
   ]),
 ]
 
-/** Two-digit running number, matching the reference's `(34)` treatment. */
+/** Two-digit running number, rendered as `(04)`. */
 const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
 ---
 
@@ -60,7 +60,7 @@ const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
 
   <div class="wh-container">
     <div class="max-w-2xl pt-14 lg:ml-[10.35%] lg:pt-24">
-      <!-- The reference sets both sides at display scale because its right-hand
+      <!-- Both sides sit at display scale because the right-hand
            value is a bare year range. Ours are descriptive ("Started June 2026,
            in active development"), which at 48px wraps to three lines and
            swamps the number, so the date keeps a reading size. -->
@@ -117,9 +117,9 @@ const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
   </div>
 
   <!--
-    TODO: no case-study imagery exists yet. The reference runs a full-bleed
+    TODO: no case-study imagery exists yet. A full-bleed
     screenshot here. This is the same placeholder treatment the cards use, so
-    the page keeps the reference's rhythm without inventing a fake screenshot.
+    the page keeps its rhythm without inventing a fake screenshot.
   -->
   <div class="wh-container mt-16 lg:mt-20">
     <div
@@ -183,7 +183,7 @@ const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
     </div>
   </div>
 
-  <!-- Next project. Mirrors the reference: label, running number, name, and
+  <!-- Next project: label, running number, name, and
        an accent chevron that slides on hover. -->
   <div class="wh-container mt-24 lg:mt-36">
     <a

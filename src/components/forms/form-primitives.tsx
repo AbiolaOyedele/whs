@@ -139,9 +139,11 @@ export function Field({
         className={underline ? 'block pt-4 text-xl font-medium' : 'block text-sm font-medium'}
       >
         {label}
-        {/* The underline treatment marks only optional fields, matching the
-            reference. Required is still carried by the control's own
-            `required` attribute, which assistive tech announces. */}
+        {/* The underline treatment marks only optional fields — on a form
+            where nearly everything is required, marking the exceptions is
+            quieter than an asterisk on every label. Required is still carried
+            by the control's own `required` attribute, which assistive tech
+            announces. */}
         {required && !underline && <span className="text-muted-foreground"> *</span>}
         {!required && <span className="text-muted-foreground"> (optional)</span>}
       </label>

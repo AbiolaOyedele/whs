@@ -82,21 +82,18 @@ but empty; they are worth filling once real content and a staging URL exist.
 
 ## Design
 
-Layout, spacing, type scale, colour and motion are matched to a reference site
-by measurement — computed styles were read from the live site and compared
-value by value, not approximated by eye. `docs/PROGRESS.md` § F-13 lists exactly
-what was matched.
+The design system lives in `src/styles/global.css` as Tailwind v4 `@theme`
+tokens: one colour ramp, four surface radii plus the pill, a display scale
+(`.wh-h1` → `.wh-h3`, with `.wh-h2-display` for statement headings), and a
+breakpoint-stepped `.wh-container` that every section sits on. Nothing should
+need an arbitrary value; if it does, that is a gap in the tokens.
 
-The typeface is the one exception. The reference self-hosts **Neue Montreal**, a
-commercial licence we do not hold, so it cannot be shipped. The stack is
-`'NeueMontreal', 'Inter Tight', …` and Inter Tight renders today. Buy the
-licence, drop the woff2 into `public/fonts/`, add one `@font-face` — nothing
-else changes.
+Two self-hosted typefaces, no third-party font request: **Diagramm** for display
+and **IBM Plex Sans** for body copy and UI. Weights are set once via
+`--font-weight-display`.
 
 **Copy is original.** All body text, headlines, testimonials and client names are
-placeholder content with fictional companies. Reproducing the reference's copy
-would infringe its copyright, and using its client names would misrepresent who
-WildHands has worked with.
+placeholder content with fictional companies until real content lands.
 
 ## Deployment
 
@@ -124,7 +121,7 @@ src/
   pages/        routes; api/v1/ for server endpoints
   styles/       global.css — Tailwind v4 @theme tokens
   types/  utils/
-docs/           reference-analysis.md · PROGRESS.md
+docs/           PROGRESS.md · site-copy.md
 tests/          unit · integration · e2e
 ```
 
@@ -140,8 +137,7 @@ Enforced; a violation is a blocker.
 
 ## Content rules
 
-Structure, layout, component architecture and animation behaviour are modelled on
-an analysis of a reference site (`docs/reference-analysis.md`). **Copy, client
-names and testimonials are not.** All seed content is original placeholder text
-with obviously fictional client names, marked `placeholder: true` in frontmatter.
-See `docs/PROGRESS.md` § F-2.
+All seed content is original placeholder text with obviously fictional client
+names, marked `placeholder: true` in frontmatter. **Nothing ships with an
+invented statistic, testimonial or client name presented as real.** Swap the
+frontmatter flag when the content behind it becomes true.

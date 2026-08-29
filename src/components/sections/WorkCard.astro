@@ -26,7 +26,7 @@ interface Props {
   client: string
   summary: string
   stats?: readonly Stat[]
-  /** Media aspect ratio. The reference alternates wide and tall cards. */
+  /** Extra classes for the card. The grid alternates wide and tall spans. */
   class?: string
 }
 
@@ -61,9 +61,9 @@ const placeholder =
     class="relative z-10 flex min-h-[22rem] flex-1 flex-col justify-between overflow-clip rounded-3xl bg-neutral-200 transition-transform duration-300 ease-out group-hover:scale-[1.01] md:min-h-[28rem]"
   >
     <!--
-      TODO: no case-study imagery exists yet. The reference renders a <picture>
-      with a responsive screenshot here, plus a muted hover-preview video.
-      Swap this placeholder for <Image> once real assets are supplied.
+      TODO: no case-study imagery exists yet. This is a seeded placeholder,
+      varied per project so the grid does not read as four copies of one tile.
+      Swap it for <Image> once real screenshots are supplied.
     -->
     <div
       aria-hidden="true"
@@ -87,9 +87,9 @@ const placeholder =
   </div>
 
   <!--
-    Caption row, matched to the reference: indented to the card's inner gutter
-    rather than sitting flush with its edge, and set at reading size rather
-    than as muted supporting text.
+    Caption row: indented to the card's inner gutter rather than sitting flush
+    with its edge, and set at reading size rather than as muted supporting text
+    — it is the sentence that explains the project, not a footnote.
 
     Clamped to two lines. The reserved 3.375/4.5rem min-height and the 66.67%
     max-width are gone: the media has its own min-height, so it was never the

@@ -12,12 +12,11 @@
  *    inside an absolute header it stayed welded to the viewport after the nav
  *    had scrolled away, leaving a blurred band over the page with no nav in it.
  *
- * Accessibility note: the live reference renders its mega-menu triggers as
- * <a> elements with no href, which is neither keyboard- nor crawler-friendly.
- * Ours are real links to the section index, carrying `aria-expanded` for the
- * panel they reveal on hover or focus — so clicking "Work" goes to /work
- * instead of doing nothing, and the panel stays a shortcut rather than the only
- * way in. Each panel also keeps its own index link ("All services", "All work").
+ * Accessibility note: the mega-menu triggers are real links to the section
+ * index, carrying `aria-expanded` for the panel they reveal on hover or focus.
+ * Clicking "Work" goes to /work rather than doing nothing, so the panel is a
+ * shortcut rather than the only way in, and the destination is crawlable. Each
+ * panel also keeps its own index link ("All services", "All work").
  */
 import { getCollection } from 'astro:content'
 import Button from '../ui/Button.astro'

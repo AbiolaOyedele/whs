@@ -379,7 +379,7 @@ function MegaPanel({ menu, open, reducedMotion }: MegaPanelProps) {
             style={{ gridColumn: '1 / -1' }}
             className="group flex gap-4 rounded-xl bg-white p-3 text-[#131314] transition-colors hover:bg-white/95"
           >
-            {/* 159x128 image box, per the reference. TODO: real artwork. */}
+            {/* 159x128 image box. TODO: real artwork. */}
             <span
               aria-hidden="true"
               className="hidden h-32 w-[159px] shrink-0 overflow-hidden rounded-[4px] bg-[#f3f3f4] sm:block"

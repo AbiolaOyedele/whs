@@ -310,9 +310,9 @@
 @layer components {
   /* Page container. Gutters step up with the viewport, mobile-first. */
   /*
-   * Breakpoint-stepped container, matched to the reference's compiled CSS.
-   * NOT a flat max-width — it steps at every breakpoint and tops out at
-   * 104rem (1664px), which is what gives the layout its width on large screens.
+   * Breakpoint-stepped, not a flat max-width: it steps at every breakpoint and
+   * tops out at 104rem (1664px), which is what gives the layout its width on
+   * large screens without letting text run to an unreadable measure.
    */
   .wh-container {
     width: 100%;
@@ -354,7 +354,7 @@
   /*
    * Hero light beam. Two heavily-blurred, rotated gradient bands over a
    * near-black field, plus a warm accent glow — the same visual language as the
-   * reference's background video, built in CSS so no external asset is needed.
+   * hero's motion, built in CSS so no external video asset is needed.
    * `will-change` is deliberately omitted: these never animate.
    */
   .wh-hero-beam {
@@ -434,9 +434,8 @@
    * work index share one rhythm. The row gap is deliberately much larger than
    * the column gap: each card carries a caption underneath, so rows need clear
    * separation to stop a caption reading as a heading for the row below.
-   * 7.5rem matches the reference, which reaches the same figure as a 2.5rem
-   * row gap plus a 5rem bottom margin on every card. One property here, rather
-   * than two, so there is a single number to change.
+   * 7.5rem, set as one property rather than a row gap plus a card margin, so
+   * there is a single number to change.
    */
   .wh-projects-grid {
     column-gap: 1rem;
@@ -470,7 +469,8 @@
     }
   }
 
-  /* Section vertical rhythm, matched to the reference's `my-10 lg:my-20`. */
+  /* Section vertical rhythm. One class so the spacing between every major
+     section is set in a single place. */
   .wh-section {
     margin-block: 2.5rem;
   }
@@ -508,7 +508,7 @@
    * Inner-page H1. Smaller and tighter than the home H1: page titles are full
    * sentences rather than three-word headlines, and the home clamp's 3rem floor
    * runs a case-study title to eight lines on a phone. Values from the
-   * reference's inner pages (text-4xl / lg:text-7xl, tracking -0.04em).
+   * inner pages: 2.25rem rising to 4.5rem, tracking -0.04em.
    */
   .wh-h1-page {
     font-family: var(--font-display);

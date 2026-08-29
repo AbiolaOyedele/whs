@@ -11,8 +11,8 @@
  * at itself instead of production. In production it renders as
  * https://www.whstd.com, which is what the source copy specifies.
  *
- * DEVIATION FROM THE REFERENCE, logged in docs/PROGRESS.md § F-21: the
- * reference offers agents a public POST endpoint. Ours is deliberately not
+ * Deliberate choice, logged in docs/PROGRESS.md § F-21: an agent-facing public
+ * POST endpoint was considered and rejected. Ours is deliberately not
  * available — `/api/v1/contact` enforces same-origin, which the brief requires
  * ("CORS: same-origin only, no wildcard"). Opening a public write endpoint to
  * satisfy this flow would trade a stated security requirement for convenience,
