@@ -243,12 +243,20 @@ export default function WebsiteEditor({
 
       {!publishEnabled && (
         <div className="mb-6 rounded-2xl border border-border bg-muted p-4">
-          <p className="text-base">
-            Publishing is not connected. Add a Vercel deploy hook as
-            <code className="mx-1 font-mono text-sm">VERCEL_DEPLOY_HOOK_URL</code>
-            and this button will rebuild the site. Saving works regardless: your edits are stored
-            and will appear on the next deploy.
+          <p className="mb-3 text-base">
+            Publishing is not connected yet, so the Publish button cannot rebuild the site. Saving
+            still works: your edits are stored and appear on the next deploy either way.
           </p>
+          <ol className="flex list-decimal flex-col gap-1 pl-5 text-base text-muted-foreground">
+            <li>
+              In Vercel: Project Settings → Git → Deploy Hooks. Create one on the{' '}
+              <span className="font-mono text-sm">main</span> branch.
+            </li>
+            <li>
+              Set the URL it gives you as{' '}
+              <span className="font-mono text-sm">WH_VERCEL_DEPLOY_HOOK_URL</span>, then redeploy.
+            </li>
+          </ol>
         </div>
       )}
 
