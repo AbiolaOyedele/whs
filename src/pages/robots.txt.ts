@@ -30,7 +30,16 @@ const AI_CRAWLERS = [
 ]
 
 /** Routes that should never be indexed. */
-const DISALLOWED = ['/api/', '/tools/ai-ascii-art-generator', '/careers/apply/']
+const DISALLOWED = [
+  '/api/',
+  // The admin panel and client quotes. Both already send noindex; this is the
+  // belt to that pair of braces. A quote URL carries commercial pricing, so it
+  // should never be fetched by a crawler in the first place.
+  '/admin',
+  '/quote/',
+  '/tools/ai-ascii-art-generator',
+  '/careers/apply/',
+]
 
 export const GET: APIRoute = () => {
   const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')

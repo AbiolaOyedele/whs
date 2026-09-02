@@ -10,6 +10,7 @@ import Seo from '@/components/layout/Seo.astro'
 import Analytics from '@/components/layout/Analytics.astro'
 import { organizationSchema, webSiteSchema, type JsonLd } from '@/lib/seo'
 import { publicEnv } from '@/config/env'
+import { loadSiteContent, tokenOverrideCss } from '@/lib/admin/content'
 
 interface Props {
   title: string
@@ -31,6 +32,17 @@ const {
   publishedTime,
   jsonLd = [],
 } = Astro.props
+
+/*
+ * Load any edited copy and design tokens before the page body renders.
+ *
+ * Every route renders through this layout, so one await here covers the whole
+ * site. It is cached for the process, which means the static build issues a
+ * single database read for all fifty-six pages, and it never throws: an
+ * unreachable database renders the copy committed in the repository.
+ */
+await loadSiteContent()
+const tokenCss = tokenOverrideCss()
 
 const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
 const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', siteUrl).href
@@ -71,6 +83,11 @@ const schemas: JsonLd[] = [organizationSchema(siteUrl), webSiteSchema(siteUrl), 
       jsonLd={schemas}
     />
     <Analytics />
+    {
+      /* Only the tokens that differ from global.css, so an unedited site ships
+        no extra bytes. Inline, so it cascades without a second request. */
+    }
+    {tokenCss && <style set:html={tokenCss} />}
   </head>
   <body>
     <a
@@ -92,6 +109,19 @@ const schemas: JsonLd[] = [organizationSchema(siteUrl), webSiteSchema(siteUrl), 
          no accordions. -->
     <script>
       import '@/scripts/accordion'
+    </script>
+
+    <!--
+      Loaded unconditionally, and gates itself at runtime on ?whpreview=1.
+
+      It used to sit behind `{isPreviewFrame && ...}`, which does not work:
+      Astro hoists and bundles `<script>` tags at build time, and one inside a
+      JSX expression is never collected — so the bridge shipped on no page at
+      all, and the live preview silently never updated. Self-gating costs a few
+      hundred bytes and actually runs.
+    -->
+    <script>
+      import '@/scripts/preview-bridge'
     </script>
   </body>
 </html>

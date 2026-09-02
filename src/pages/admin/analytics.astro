@@ -1,0 +1,90 @@
+---
+/**
+ * Analytics.
+ *
+ * Data is fetched server-side so the range is a URL rather than component
+ * state — bookmarkable, and the back button works. Only the chart's hover layer
+ * needs the browser, so only that hydrates.
+ */
+import AdminLayout from '@/layouts/AdminLayout.astro'
+import { AnalyticsDashboard } from '@/components/admin/analytics/AnalyticsDashboard'
+import { fetchAnalytics, type AnalyticsRange } from '@/lib/admin/analytics'
+
+export const prerender = false
+
+const session = Astro.locals.adminSession
+
+const rangeParam = Astro.url.searchParams.get('range')
+const range: AnalyticsRange = (['24h', '7d', '30d', '90d'] as const).includes(
+  rangeParam as AnalyticsRange
+)
+  ? (rangeParam as AnalyticsRange)
+  : '7d'
+
+const result = await fetchAnalytics(range)
+---
+
+<AdminLayout title="Analytics" section="analytics" email={session?.email}>
+  <div class="mb-8">
+    <h1 class="wh-h3">Analytics</h1>
+    <p class="mt-1 text-muted-foreground">
+      Who is visiting, what they read, and where they came from.
+    </p>
+  </div>
+
+  {
+    result.ok ? (
+      <AnalyticsDashboard client:load data={result.data} />
+    ) : (
+      <div class="max-w-2xl rounded-3xl border border-border bg-card p-6 md:p-8">
+        {result.reason === 'no-data' && (
+          <>
+            <h2 class="mb-3 font-display text-xl">Nothing recorded yet</h2>
+            <p class="mb-5 text-base text-muted-foreground">
+              Analytics are collected first-party, from this site's own database. Nothing appears
+              until someone visits and accepts analytics cookies.
+            </p>
+            <ul class="mb-6 flex list-disc flex-col gap-2 pl-5 text-base text-muted-foreground">
+              <li>Views are only counted after a visitor accepts the cookie banner.</li>
+              <li>Obvious bots and crawlers are filtered out, so they never show here.</li>
+              <li>
+                Nothing about a visitor is stored: no cookie, no identifier, and the daily visitor
+                digest cannot be linked from one day to the next.
+              </li>
+            </ul>
+            <p class="text-base text-muted-foreground">
+              Open the site in another browser, accept the banner, and this fills in.
+            </p>
+          </>
+        )}
+
+        {result.reason === 'not-configured' && (
+          <>
+            <h2 class="mb-3 font-display text-xl">Analytics are not connected</h2>
+            <p class="text-base text-muted-foreground">
+              The admin database is not configured, so there is nowhere to record visits. See
+              /admin/setup.
+            </p>
+          </>
+        )}
+
+        {result.reason === 'unavailable' && (
+          <>
+            <h2 class="mb-3 font-display text-xl">Could not read the analytics</h2>
+            <p class="mb-5 text-base text-muted-foreground">
+              The aggregation functions are missing or unreachable. Run
+              <span class="font-mono text-sm">
+                {' '}
+                supabase/migrations/0005_analytics_rollups.sql{' '}
+              </span>
+              in the Supabase SQL editor, then reload.
+            </p>
+            {result.detail && (
+              <p class="font-mono text-sm text-muted-foreground">{result.detail}</p>
+            )}
+          </>
+        )}
+      </div>
+    )
+  }
+</AdminLayout>

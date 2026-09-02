@@ -37,6 +37,16 @@ interface Props {
   videoSrc?: string | undefined
   posterSrc?: string | undefined
   class?: string
+  /**
+   * Content-registry keys for the headline and standfirst.
+   *
+   * Rendered as `data-wh-content` so the website editor's live preview can
+   * patch the text in place as you type, instead of reloading the page. Purely
+   * additive: a data attribute costs nothing when nobody is previewing, and the
+   * hero renders identically without them.
+   */
+  titleKey?: string | undefined
+  standfirstKey?: string | undefined
 }
 
 const {
@@ -48,6 +58,8 @@ const {
   videoSrc,
   posterSrc,
   class: className = '',
+  titleKey,
+  standfirstKey,
 } = Astro.props
 
 const isHome = variant === 'home'
@@ -123,7 +135,12 @@ const isHome = variant === 'home'
         beyond the reach of any contrast check.
       -->
       <AnimatedText immediate>
-        <h1 class={isHome ? 'wh-h1 text-balance' : 'wh-h1-page text-balance'}>{title}</h1>
+        <h1
+          class={isHome ? 'wh-h1 text-balance' : 'wh-h1-page text-balance'}
+          data-wh-content={titleKey}
+        >
+          {title}
+        </h1>
       </AnimatedText>
       {
         subtitle && (
@@ -151,7 +168,12 @@ const isHome = variant === 'home'
     >
       {
         standfirst && (
-          <p class="max-w-[38rem] text-xl leading-[1.3] text-white/85 sm:text-2xl">{standfirst}</p>
+          <p
+            class="max-w-[38rem] text-xl leading-[1.3] text-white/85 sm:text-2xl"
+            data-wh-content={standfirstKey}
+          >
+            {standfirst}
+          </p>
         )
       }
       <div class="grid w-full gap-3 empty:hidden sm:auto-cols-fr sm:grid-flow-col lg:w-auto">

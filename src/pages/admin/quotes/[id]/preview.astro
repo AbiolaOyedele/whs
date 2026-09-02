@@ -1,0 +1,97 @@
+---
+/**
+ * Admin preview of a client quote — no access code.
+ *
+ * Renders `QuoteDocument`, the same component the real page at /quote/<slug>
+ * renders. Not a copy: a preview built from separate markup drifts from the
+ * thing it previews, and then it tells you a document is fine when it is not.
+ *
+ * Two deliberate differences from the client page:
+ *
+ *  1. The PIN gate is skipped, because the admin session already proves who is
+ *     asking. This route sits behind the same middleware as the rest of /admin.
+ *  2. No view is recorded. The operator checking their own work must not appear
+ *     in the client's activity log or inflate `view_count` — otherwise the one
+ *     number telling you whether the client has actually opened it stops
+ *     meaning anything.
+ */
+import '@/styles/global.css'
+import QuoteDocument from '@/components/quote/QuoteDocument.astro'
+import { computeTotals } from '@/lib/admin/money'
+import { getQuoteById } from '@/lib/admin/quotes'
+import { SITE } from '@/config/site'
+import { isPayableCurrency, isPaystackConfigured } from '@/lib/paystack'
+
+export const prerender = false
+
+const { id } = Astro.params
+const quote = id ? await getQuoteById(id) : null
+if (!quote) return Astro.redirect('/admin/quotes')
+
+const totals = computeTotals({
+  lineItems: quote.lineItems,
+  discountMinor: quote.discountMinor,
+  taxRateBp: quote.taxRateBp,
+  depositPercent: quote.depositPercent,
+})
+
+/** Set when embedded in the editor's preview pane, which has its own chrome. */
+const bare = Astro.url.searchParams.get('bare') === '1'
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      href="/fonts/IBMPlexSans-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/Diagramm-Medium.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <title>Preview — {quote.projectTitle} | {SITE.name}</title>
+  </head>
+
+  <body class="bg-background text-foreground">
+    {
+      !bare && (
+        /* Sticky, because the document below is long and a banner at the top
+           would scroll away exactly when you have forgotten which one this is. */
+        <div class="sticky top-0 z-50 flex flex-wrap items-center justify-between gap-3 bg-accent px-5 py-2 text-accent-foreground">
+          <p class="text-sm">
+            Preview. Your client sees this after entering their code. No view is being recorded.
+          </p>
+          <a href={`/admin/quotes/${quote.id}`} class="min-h-11 text-sm underline">
+            Back to the editor
+          </a>
+        </div>
+      )
+    }
+
+    <QuoteDocument
+      quote={quote}
+      totals={totals}
+      mode="preview"
+      payment={{
+        enabled: isPaystackConfigured() && isPayableCurrency(quote.currency),
+        amountMinor:
+          quote.depositPercent > 0 && quote.depositPercent < 100
+            ? totals.depositMinor
+            : totals.totalMinor,
+        kind: quote.depositPercent > 0 && quote.depositPercent < 100 ? 'deposit' : 'full',
+        paid: false,
+      }}
+    />
+  </body>
+</html>

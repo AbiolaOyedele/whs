@@ -1,0 +1,98 @@
+---
+/**
+ * Quote editor host.
+ *
+ * The page loads the quote on the server and hands it to one React island.
+ * `client:load` rather than `client:visible`: this is the whole page, behind a
+ * password, and a deferred hydration would show a form that silently ignores
+ * typing for its first moments.
+ */
+import AdminLayout from '@/layouts/AdminLayout.astro'
+import QuoteEditor from '@/components/admin/quotes/QuoteEditor'
+import { publicEnv } from '@/config/env'
+import { getQuoteById, listQuoteEvents } from '@/lib/admin/quotes'
+import { collapseEvents } from '@/lib/admin/repositories/quotes'
+import { availableProviders } from '@/lib/ai'
+import { isCloudinaryConfigured } from '@/lib/cloudinary'
+
+export const prerender = false
+
+const session = Astro.locals.adminSession
+const { id } = Astro.params
+
+/*
+ * Both queries at once, not one after the other.
+ *
+ * Round trips to this Supabase project measure 0.6–2.5s each, so sequential
+ * awaits were adding a whole second to every page load for no reason: the
+ * activity log does not depend on the quote, it only shares its id.
+ */
+const [quote, events] = id
+  ? await Promise.all([getQuoteById(id), listQuoteEvents(id, 200)])
+  : [null, []]
+
+if (!quote) return Astro.redirect('/admin/quotes')
+
+/* Twenty colleagues opening a quote produced twenty identical rows and buried
+   the one that mattered. Runs collapse; order is preserved. */
+const activity = collapseEvents(events).slice(0, 15)
+
+const providers = availableProviders()
+
+const eventFormat = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  hour: '2-digit',
+  minute: '2-digit',
+})
+
+const EVENT_LABELS: Record<string, string> = {
+  viewed: 'Opened the quote',
+  pin_failed: 'Wrong access code',
+  accepted: 'Accepted',
+  declined: 'Declined',
+  downloaded: 'Downloaded',
+}
+---
+
+<AdminLayout title={`Quote — ${quote.clientName}`} section="quotes" email={session?.email}>
+  <a
+    href="/admin/quotes"
+    class="mb-6 inline-flex min-h-11 items-center text-base text-muted-foreground transition-colors hover:text-foreground"
+  >
+    ← All quotes
+  </a>
+
+  <QuoteEditor
+    client:load
+    initialQuote={quote}
+    siteUrl={publicEnv.PUBLIC_SITE_URL}
+    aiProviders={providers}
+    imagesEnabled={isCloudinaryConfigured()}
+  />
+
+  {
+    activity.length > 0 && (
+      <section class="mt-10 rounded-3xl border border-border bg-card p-5 md:p-6">
+        <h2 class="mb-4 font-display text-xl">Activity</h2>
+        <ul class="flex flex-col gap-2">
+          {activity.map((entry) => (
+            <li class="flex flex-wrap items-baseline justify-between gap-3 border-b border-border pb-2 text-base last:border-0">
+              <span>
+                {EVENT_LABELS[entry.type] ?? entry.type}
+                {entry.count > 1 && (
+                  <span class="ml-2 text-sm text-muted-foreground">× {entry.count}</span>
+                )}
+              </span>
+              <span class="text-sm text-muted-foreground">
+                {entry.count > 1 && entry.firstAt !== entry.lastAt
+                  ? `${eventFormat.format(new Date(entry.firstAt))} – ${eventFormat.format(new Date(entry.lastAt))}`
+                  : eventFormat.format(new Date(entry.lastAt))}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</AdminLayout>

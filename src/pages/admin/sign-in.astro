@@ -1,0 +1,105 @@
+---
+/**
+ * Admin sign-in.
+ *
+ * Handled server-side on POST rather than through a React island: a login form
+ * is the last place to require JavaScript, and doing it this way means the
+ * password never passes through client code we would then have to reason about.
+ * No island, no fetch, no token in a script — the browser posts a form and the
+ * server sets an httpOnly cookie.
+ */
+import AdminLayout from '@/layouts/AdminLayout.astro'
+import { publicEnv } from '@/config/env'
+import { assertAdminOrigin, signIn } from '@/lib/admin/auth'
+import { isAppError } from '@/lib/errors'
+import { clientIp, enforceRateLimit } from '@/lib/rate-limit'
+
+export const prerender = false
+
+const next = Astro.url.searchParams.get('next')
+/** Only ever redirect within our own admin: an open redirect here would turn a
+ *  sign-in link into a phishing primitive. */
+const safeNext = next && /^\/admin(?:\/|$)/.test(next) ? next : '/admin'
+
+let error: string | null = null
+let email = ''
+/* Set on success, acted on below. Astro frontmatter is a module body, so the
+   redirect is issued at the top level rather than from inside the try. */
+let redirectTo: string | null = null
+
+if (Astro.request.method === 'POST') {
+  try {
+    assertAdminOrigin(Astro.request, publicEnv.PUBLIC_SITE_URL)
+    enforceRateLimit(`admin-signin-page:${clientIp(Astro.request)}`, 5, 60_000)
+
+    const form = await Astro.request.formData()
+    email = String(form.get('email') ?? '').trim()
+    const password = String(form.get('password') ?? '')
+
+    if (!email || !password) {
+      error = 'Enter both an email and a password.'
+    } else {
+      await signIn(email, password, Astro.cookies)
+      redirectTo = safeNext
+    }
+  } catch (cause) {
+    error = isAppError(cause)
+      ? cause.message
+      : 'Something on our end stopped that from going through. Please try again.'
+  }
+}
+
+if (redirectTo) return Astro.redirect(redirectTo)
+---
+
+<AdminLayout title="Sign in" chrome={false}>
+  <div class="w-full max-w-md">
+    <h1 class="wh-h3 mb-2">Sign in</h1>
+    <p class="mb-8 text-muted-foreground">The WildHands admin. Staff only.</p>
+
+    {
+      error && (
+        <div
+          role="alert"
+          class="mb-6 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-base text-foreground"
+        >
+          {error}
+        </div>
+      )
+    }
+
+    <form method="post" class="flex flex-col gap-6">
+      <div class="flex flex-col gap-2">
+        <label for="email" class="text-sm text-muted-foreground">Email</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          value={email}
+          autocomplete="username"
+          required
+          class="min-h-12 rounded-xl border border-border bg-card px-4 text-lg outline-none focus-visible:border-foreground"
+        />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="password" class="text-sm text-muted-foreground">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required
+          class="min-h-12 rounded-xl border border-border bg-card px-4 text-lg outline-none focus-visible:border-foreground"
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="min-h-14 rounded-full bg-primary px-8 text-lg text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+      >
+        Sign in
+      </button>
+    </form>
+  </div>
+</AdminLayout>

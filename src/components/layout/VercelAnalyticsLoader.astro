@@ -1,0 +1,45 @@
+---
+/**
+ * Consent-gated Vercel Web Analytics.
+ *
+ * Vercel's tracker is cookieless and stores no identifier, so an argument
+ * exists for loading it unconditionally. It is gated anyway, for one reason:
+ * the consent banner on this site tells visitors that analytics stay off until
+ * they accept. Loading a tracker regardless would make that sentence false,
+ * and the sentence is the promise, not the cookie.
+ *
+ * The script is served from the site's own origin (`/_vercel/insights/script.js`),
+ * which Vercel routes at the edge, so no third-party request is made either.
+ */
+---
+
+<script is:inline>
+  ;(function () {
+    let loaded = false
+
+    function load() {
+      if (loaded) return
+      loaded = true
+
+      // The queue the tracker drains once it boots.
+      window.va =
+        window.va ||
+        function (...args) {
+          ;(window.vaq = window.vaq || []).push(args)
+        }
+
+      const script = document.createElement('script')
+      script.src = '/_vercel/insights/script.js'
+      script.defer = true
+      document.head.appendChild(script)
+    }
+
+    try {
+      if (localStorage.getItem('wh-consent') === 'granted') load()
+    } catch {
+      // Storage blocked: stay off, which is the privacy-preserving default.
+    }
+
+    window.addEventListener('wh:consent-granted', load)
+  })()
+</script>

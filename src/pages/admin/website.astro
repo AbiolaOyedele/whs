@@ -1,0 +1,66 @@
+---
+/**
+ * Website editor host.
+ *
+ * Registries and current overrides are resolved server-side and handed to the
+ * island, so the editor opens with real values rather than a loading state.
+ */
+import AdminLayout from '@/layouts/AdminLayout.astro'
+import WebsiteEditor from '@/components/admin/website/WebsiteEditor'
+import { CONTENT_PAGES, CONTENT_REGISTRY } from '@/config/content-registry'
+import { TOKEN_GROUPS, TOKEN_REGISTRY } from '@/config/token-registry'
+import { adminEnv } from '@/config/env'
+import { currentContent, currentTokens, loadSiteContent } from '@/lib/admin/content'
+import { listPublishes } from '@/lib/admin/repositories/content'
+
+export const prerender = false
+
+const session = Astro.locals.adminSession
+
+await loadSiteContent()
+
+const publishes = await listPublishes(5)
+const publishEnabled = Boolean(adminEnv().WH_VERCEL_DEPLOY_HOOK_URL)
+
+const dateFormat = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  hour: '2-digit',
+  minute: '2-digit',
+})
+---
+
+<AdminLayout title="Website" section="website" email={session?.email}>
+  <WebsiteEditor
+    client:load
+    entries={[...CONTENT_REGISTRY]}
+    tokens={[...TOKEN_REGISTRY]}
+    contentValues={currentContent() as Record<string, string | string[]>}
+    tokenValues={currentTokens()}
+    pages={[...CONTENT_PAGES]}
+    tokenGroups={[...TOKEN_GROUPS]}
+    publishEnabled={publishEnabled}
+    previewPath="/"
+  />
+
+  {
+    publishes.length > 0 && (
+      <section class="mt-10 rounded-3xl border border-border bg-card p-5 md:p-6">
+        <h2 class="mb-4 font-display text-xl">Recent publishes</h2>
+        <ul class="flex flex-col gap-2">
+          {publishes.map((entry) => (
+            <li class="flex flex-wrap items-baseline justify-between gap-3 border-b border-border pb-2 text-base last:border-0">
+              <span>
+                {entry.status === 'triggered' ? 'Rebuild requested' : 'Failed'}
+                {entry.email && <span class="text-muted-foreground"> by {entry.email}</span>}
+              </span>
+              <span class="text-sm text-muted-foreground">
+                {dateFormat.format(new Date(entry.createdAt))}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</AdminLayout>

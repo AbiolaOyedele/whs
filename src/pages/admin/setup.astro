@@ -1,0 +1,62 @@
+---
+/**
+ * Setup screen.
+ *
+ * Reachable without a session, because until the admin is configured there is
+ * no session to have. It therefore lists variable NAMES only, never values —
+ * this page is effectively public on a fresh deployment.
+ */
+import AdminLayout from '@/layouts/AdminLayout.astro'
+import { adminConfigIssues, isAdminConfigured } from '@/config/env'
+
+export const prerender = false
+
+// Configured already? Nothing to set up.
+if (isAdminConfigured()) return Astro.redirect('/admin')
+
+const missing = adminConfigIssues()
+
+const GUIDE: Record<string, string> = {
+  SUPABASE_URL: 'Supabase → Project Settings → API → Project URL.',
+  SUPABASE_ANON_KEY: 'Supabase → Project Settings → API → anon public key.',
+  SUPABASE_SERVICE_ROLE_KEY:
+    'Supabase → Project Settings → API → service_role key. Server-only. Treat it as a root password.',
+  ADMIN_ALLOWED_EMAILS:
+    'Comma-separated list of addresses allowed to sign in. A correct password is not enough on its own.',
+  QUOTE_PIN_PEPPER:
+    'Any random string of 16 characters or more. Generate one with: openssl rand -base64 32',
+}
+---
+
+<AdminLayout title="Setup" chrome={false}>
+  <div class="w-full max-w-2xl">
+    <h1 class="wh-h3 mb-2">Finish setting up the admin</h1>
+    <p class="mb-8 text-muted-foreground">
+      The marketing site is running normally: every page is live and all four forms still send. Only
+      the admin needs the settings below.
+    </p>
+
+    <ol class="mb-10 flex flex-col gap-5">
+      {
+        missing.map((name) => (
+          <li class="rounded-2xl border border-border bg-card p-5">
+            <code class="font-mono text-base break-all">{name}</code>
+            <p class="mt-2 text-base text-muted-foreground">
+              {GUIDE[name] ?? 'Set this in your environment, then redeploy.'}
+            </p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="rounded-2xl border border-border bg-muted p-5">
+      <h2 class="mb-2 font-display text-lg">Then run the database migration</h2>
+      <p class="text-base text-muted-foreground">
+        Open the Supabase SQL editor and run
+        <code class="font-mono text-sm">supabase/migrations/0001_admin_panel.sql</code> from the repository.
+        It creates the quote, content and analytics tables, and turns on row-level security for all of
+        them.
+      </p>
+    </div>
+  </div>
+</AdminLayout>

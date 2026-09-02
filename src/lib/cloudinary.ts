@@ -162,3 +162,100 @@ export function signedCvUrl(publicId: string, ttlSeconds = LINK_TTL_SECONDS): st
 
   return `https://api.cloudinary.com/v1_1/${creds.cloudName}/raw/download?${query}`
 }
+
+/* ==========================================================================
+ * Quote images
+ *
+ * Different storage posture from CVs, and deliberately so. A CV is personal
+ * data and is stored `authenticated`, reachable only through a signed URL with
+ * an expiry. A quote image is a mockup or a reference shot that has to render
+ * inside the client's browser on a page we do not control the fetch for, so it
+ * is stored as a normal public asset.
+ *
+ * The mitigation is the public_id: 16 random hex characters, so a URL cannot be
+ * guessed or walked from one client's quote to another's. That is weaker than
+ * the CV treatment and it should be — but do not put anything genuinely
+ * confidential in a quote image and assume the PIN protects it. The PIN
+ * protects the page, not the asset.
+ * ======================================================================== */
+
+const QUOTE_IMAGE_FOLDER = 'wildhands/quotes'
+
+/** 8MB. Generous for a mockup, small enough to keep a quote page quick. */
+export const QUOTE_IMAGE_MAX_BYTES = 8_000_000
+
+export const QUOTE_IMAGE_MIME_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/avif',
+  'image/gif',
+] as const
+
+export interface StoredQuoteImage {
+  publicId: string
+  url: string
+  width: number | null
+  height: number | null
+  bytes: number
+}
+
+/**
+ * Uploads a quote image and returns its public delivery URL.
+ *
+ * Unlike `storeCv`, this throws on failure rather than returning null: there is
+ * no fallback path for an image the operator is trying to put in a document, so
+ * silently dropping it would leave them staring at an editor that appears to
+ * have worked.
+ */
+export async function storeQuoteImage(
+  filename: string,
+  content: Buffer,
+  contentType: string
+): Promise<StoredQuoteImage> {
+  const creds = credentials()
+  if (!creds) {
+    throw new Error('Cloudinary is not configured, so quote images cannot be stored.')
+  }
+
+  const timestamp = Math.floor(Date.now() / 1000)
+  const random = crypto.randomBytes(8).toString('hex')
+  const publicId = `${QUOTE_IMAGE_FOLDER}/${random}`
+  const params = { public_id: publicId, timestamp }
+
+  const form = new FormData()
+  form.append('file', new Blob([new Uint8Array(content)], { type: contentType }), filename)
+  form.append('api_key', creds.apiKey)
+  form.append('public_id', publicId)
+  form.append('timestamp', String(timestamp))
+  form.append('signature', sign(params, creds.apiSecret))
+
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${creds.cloudName}/image/upload`, {
+    method: 'POST',
+    body: form,
+  })
+
+  if (!response.ok) {
+    throw new Error(`Cloudinary rejected the upload (${response.status}).`)
+  }
+
+  const result = (await response.json()) as {
+    public_id?: string
+    secure_url?: string
+    width?: number
+    height?: number
+    bytes?: number
+  }
+
+  if (typeof result.public_id !== 'string' || typeof result.secure_url !== 'string') {
+    throw new Error('Cloudinary returned an unexpected response.')
+  }
+
+  return {
+    publicId: result.public_id,
+    url: result.secure_url,
+    width: result.width ?? null,
+    height: result.height ?? null,
+    bytes: result.bytes ?? content.byteLength,
+  }
+}

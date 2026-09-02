@@ -1,0 +1,82 @@
+---
+/**
+ * Custom select for server-rendered admin pages.
+ *
+ * The React `Select` cannot be used here: these pages are plain Astro with no
+ * island, and mounting React to render one dropdown would ship a framework to
+ * a form with three fields.
+ *
+ * So this is the same button-plus-listbox, built with an inline script that
+ * costs nothing until the control is opened. The chosen value rides in a hidden
+ * input, so the surrounding `<form>` submits exactly as it did with the
+ * `<select>` this replaces.
+ *
+ * Progressive enhancement note: with JavaScript off the trigger does nothing,
+ * so the hidden input's initial value is what submits. Both call sites default
+ * to a sensible value (all statuses, GBP) for exactly that reason.
+ */
+interface Props {
+  id: string
+  name: string
+  label: string
+  value: string
+  options: ReadonlyArray<{ value: string; label: string }>
+  class?: string
+}
+
+const { id, name, label, value, options, class: className = '' } = Astro.props
+const selected = options.find((option) => option.value === value) ?? options[0]
+---
+
+<div class:list={['relative', className]} data-wh-select>
+  <label for={`${id}-trigger`} class="sr-only">{label}</label>
+  <input type="hidden" name={name} value={selected?.value ?? ''} data-wh-select-input />
+
+  <button
+    id={`${id}-trigger`}
+    type="button"
+    role="combobox"
+    aria-expanded="false"
+    aria-haspopup="listbox"
+    aria-controls={`${id}-listbox`}
+    data-wh-select-trigger
+    class="flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 text-left text-base transition-colors outline-none focus-visible:border-foreground"
+  >
+    <span data-wh-select-label class="truncate">{selected?.label ?? 'Choose…'}</span>
+    <svg viewBox="0 0 12 8" aria-hidden="true" class="size-3 shrink-0 transition-transform">
+      <path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.5"></path>
+    </svg>
+  </button>
+
+  <ul
+    id={`${id}-listbox`}
+    role="listbox"
+    aria-label={label}
+    tabindex="-1"
+    hidden
+    data-wh-select-list
+    class="absolute z-50 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-border bg-popover p-1 shadow-lg"
+  >
+    {
+      options.map((option) => (
+        <li
+          role="option"
+          data-value={option.value}
+          aria-selected={option.value === (selected?.value ?? '')}
+          class="flex min-h-11 cursor-pointer items-center justify-between gap-2 rounded-lg px-3 text-base hover:bg-muted aria-selected:font-medium"
+        >
+          <span class="truncate">{option.label}</span>
+          <span
+            aria-hidden="true"
+            class="size-2 shrink-0 rounded-full bg-accent opacity-0 aria-selected:opacity-100"
+            data-wh-select-dot
+          />
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<script>
+  import '@/scripts/admin-select'
+</script>

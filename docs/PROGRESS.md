@@ -4,7 +4,7 @@ Running log of completed build steps, flagged decisions, unverified details, and
 placeholder seed content. This is the manager's checklist of what still needs a
 real answer before launch.
 
-Last updated: 2026-08-26
+Last updated: 2026-09-02
 
 ---
 
@@ -579,6 +579,189 @@ Email Routing replaces the Namecheap forwarding.
 
 Left in place for that day: `whstd.com` is already added to Resend and its DKIM
 record verifies. Only the `send` MX is missing.
+
+### F-25. Admin panel built — website editor, analytics, client quotes
+
+Added 2026-09-02. Three sections at `/admin`, behind Supabase Auth plus an email
+allowlist. Roughly 4,000 lines across schema, services, routes and UI. All gates
+green: `astro check` 0 errors across 162 files, `eslint --max-warnings=0` clean,
+**160 tests** (was 68), `astro build` succeeds.
+
+**The public site is still fully static.** This was the load-bearing decision.
+The admin writes to Supabase; a Publish button fires a Vercel deploy hook; the
+rebuild bakes the edits into static HTML. Visitors never wait on a database, and
+the Core Web Vitals and AI-answer-engine work already paid for is untouched. The
+alternative — pages reading the database per request — would have made every
+page server-rendered and thrown that away.
+
+**Content fallback chain, which is what makes editing safe:**
+`database override → registry default (the copy committed here) → ''`. A missing
+row, an unreachable Supabase, or an admin that was never configured all render
+the site exactly as committed. Clearing a field in the editor **deletes** the row
+rather than storing `""`, so it restores the original copy instead of emptying
+the page. Verified: the build with no database renders the home hero unchanged.
+
+#### Flagged — packages added outside the confirmed stack
+
+| Package                 | Why                                                          |
+| ----------------------- | ------------------------------------------------------------ |
+| `@supabase/supabase-js` | In the confirmed stack. Auth + Postgres.                     |
+| `@anthropic-ai/sdk`     | **Outside the stack.** Required for AI quote drafting.       |
+| `@google/genai`         | **Outside the stack.** Added on your instruction for Gemini. |
+| `@vercel/analytics`     | **Outside the stack.** The analytics source you chose.       |
+
+No charting library: the analytics charts are hand-built inline SVG, which is
+also the only way to hold the brand's line weights and radii exactly.
+
+#### Decisions worth keeping
+
+- **Two gates on sign-in.** Supabase verifies the password _and_ the address must
+  appear in `ADMIN_ALLOWED_EMAILS`. Without the second, anyone who ever gets a
+  row in the project's auth table becomes an administrator of this site.
+- **Supabase is server-only.** The admin UI calls our own `/api/v1/admin/*`
+  routes and the session sits in an httpOnly cookie, so no Supabase key of any
+  kind reaches a client bundle and an XSS bug cannot walk off with a session.
+- **RLS on every table with no policies.** Deliberate, not an oversight: nothing
+  connects except the service role, which bypasses RLS. A leaked anon key grants
+  exactly nothing. Adding a permissive `authenticated` policy would quietly undo
+  that — do not, without changing the access model first.
+- **Money is integer minor units everywhere.** Database, API, UI state. One
+  rounding site (`lineAmount`), half away from zero. Discount before tax; a
+  discount can never drive a total negative; optional items are priced and shown
+  but never in the total.
+- **AI drafts are never saved.** A draft lands in the editor as unsaved changes,
+  so a person is always between a model's guess at a price and a document a
+  client reads. The prompt is instructed to write `0` and say so rather than
+  invent a rate the brief does not support.
+- **Quote pages and the PIN gate are server-rendered with no island.** A client
+  opening a quote on mobile data gets a readable document immediately, and both
+  forms work with JavaScript disabled entirely.
+
+#### Client quote security
+
+Six digits is a million combinations, which is only adequate because guessing is
+expensive. The controls are a set; removing one breaks the others.
+
+- SHA-256 over (pepper, slug, PIN), compared in constant time. The PIN is shown
+  once and can only be replaced, never recovered.
+- The slug is inside the digest, so one client's code cannot open another's
+  quote, and equal hashes never reveal equal PINs.
+- Rate limited **per address and per quote**. The per-quote limit can lock a
+  legitimate client out while someone attacks their quote; that is the right
+  trade for a document carrying commercial terms.
+- Nothing priced is read from the database until the PIN verifies. `/admin` and
+  `/quote/` send `noindex`, are excluded from `sitemap.xml`, and are disallowed
+  in `robots.txt`.
+- Renaming a quote re-hashes the PIN, because the slug is in the digest.
+  Otherwise renaming would silently void a code the client already holds.
+
+**Found and fixed while building:** `@astrojs/sitemap` reads the route manifest,
+not just static output, so every `/admin` route was being listed in
+`sitemap-0.xml` — advertising the admin surface to every crawler. `noindex` stops
+indexing; it does not stop a sitemap naming the pages out loud. Filtered in
+`astro.config.mjs`, and `/admin` and `/quote/` added to `robots.txt`.
+
+#### ⚠️ Open items on this work
+
+1. **Vercel's analytics READ API is not a documented, versioned endpoint.** It is
+   the one their own dashboard calls, and it is gated on the plan that includes
+   Web Analytics. Every failure is handled as a first-class outcome — the page
+   explains what is wrong and links to the Vercel dashboard — but if it ever
+   stops working, collection is unaffected and their dashboard is authoritative.
+2. **The website editor covers the home page and site-wide strings so far.** The
+   mechanism is complete and proven end to end; extending it to another page is
+   two mechanical steps (add entries to `src/config/content-registry.ts`, read
+   them with `text()` in the template). The other pages are not yet wired, so
+   they are not yet editable.
+3. **Quote images are stored as public Cloudinary assets**, with a 16-hex-character
+   random `public_id` so URLs cannot be guessed or walked between clients. That is
+   weaker than the `authenticated` treatment CVs get, because the client's browser
+   has to load them. Do not put anything genuinely confidential in a quote image
+   and assume the PIN protects it — the PIN protects the page, not the asset.
+4. **Rate limiting is still per-instance memory** (§ F-9). The admin sign-in and
+   quote PIN endpoints inherit that limitation. It matters more here than on the
+   public forms: move to Vercel Firewall or a durable store before this sees real
+   traffic.
+5. **Gemini's model id defaults to `gemini-2.5-pro`** and is overridable with
+   `GEMINI_MODEL`, because model names move faster than this repository. Set the
+   variable rather than editing code when it moves on.
+6. **Nothing has been run against a real Supabase project yet.** The build, types,
+   lint and 160 tests all pass, and the unconfigured paths were verified in a
+   browser at 375 / 768 / 1280 with no overflow. The signed-in admin screens have
+   not been exercised against live data because that needs your project.
+
+---
+
+### F-26. Admin panel: payments, invoices, live preview, first-party analytics
+
+Added 2026-09-02, same day as F-25. Five migrations now (`0001`–`0005`).
+
+**Analytics moved off Vercel's read API onto first-party data.** F-25 flagged
+that endpoint as undocumented and plan-gated; it returned nothing usable, which
+is exactly the risk that was written down. Views are now recorded by our own
+beacon into `page_views` and aggregated in Postgres. Vercel's tracker still runs
+and their dashboard still works — the admin panel simply no longer depends on
+an endpoint nobody promised us. Cookie-free: `visitor_hash` is a digest of
+(date, address, user agent, secret), so a person is countable once per day and
+cannot be linked across days.
+
+**Paystack** (flagged deviation: the stack names Stripe). Deposit or full
+payment from the quote page, amounts recomputed server-side, webhooks
+HMAC-SHA512 verified against the raw body, settlement guarded on
+`status = 'pending'` so retries cannot double-record. ⚠️ Paystack cannot charge
+GBP — the pay button is hidden on a quote it could not settle, deliberately.
+
+**PDF invoices.** `pdf-lib` plus `wawoff2` to decompress the site's woff2 files
+to TTF at request time, so the invoice uses Diagramm and IBM Plex rather than
+Helvetica. Invoice numbers come from a Postgres sequence, not `count(*) + 1`,
+and amounts are snapshotted at issue so editing a quote cannot rewrite a
+document already sent.
+
+**Quote document redesigned.** Two columns with the commercial summary pinned
+in a rail, terms and payment collapsed into `<details>`, phases two-up, and a
+bento gallery for images. Verified at 375 / 768 / 1280: no overflow at any
+width, rail stacks below `lg`.
+
+#### Bugs found and fixed this round
+
+| Bug                                                    | Why it mattered                                                                                                                                                              |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `request.formData()` read twice on one POST            | Unlocking with a correct PIN threw "Body has already been read".                                                                                                             |
+| The unlock POST fell through into the decision handler | Could have recorded an accept/decline the client never made.                                                                                                                 |
+| Renaming a quote silently broke the client's PIN       | The code _claimed_ to re-hash (the slug is in the digest) and never did.                                                                                                     |
+| Quote access cookie scoped to `/quote`                 | The invoice and payment endpoints live under `/api/v1/quote/…`, which is not beneath it, so both answered `QUOTE_ACCESS_EXPIRED` to a client who had just unlocked the page. |
+| Live preview never updated                             | The bridge script sat inside `{cond && <script>}`; Astro hoists script tags at build time and never collects one inside a JSX expression, so it shipped on no page at all.   |
+| Every `/admin` route listed in `sitemap.xml`           | `@astrojs/sitemap` reads the route manifest, not just static output. `noindex` stops indexing; it does not stop a sitemap naming the admin surface out loud.                 |
+| Env vars prefixed `VERCEL_`                            | Reserved by Vercel, and the CLI reads `VERCEL_PROJECT_ID` to choose a project. Renamed `WH_VERCEL_*`.                                                                        |
+| PDF pay link was dead                                  | pdf-lib turns a bare string into a `PDFName`, and the annotation was never registered. The file opened fine and linked nowhere.                                              |
+| Paystack rejects `.example` emails                     | The seeded demo quotes could never have been paid.                                                                                                                           |
+
+#### Cleanup
+
+Removed `/api/v1/quote/[slug]/access.ts` and `/decision.ts`: the page handles
+both inline now, so those were a second, unauthenticated implementation of PIN
+checking to keep in sync. Also removed `getInvoiceByNumber` and
+`clearQuoteAccess`, neither of which had a caller.
+
+Every native control is gone from the admin, on a standing instruction: custom
+listbox (React and Astro versions, full keyboard contract) and a designed
+confirm dialog with a focus trap, in place of `<select>` and `window.confirm`.
+
+#### ⚠️ Still open
+
+1. **Migration `0005` must be run** or the analytics panel says so and explains
+   how. `0001`–`0004` are already applied.
+2. **Paystack is in test mode** and cannot charge GBP. Price a quote in NGN or
+   USD to exercise the flow.
+3. **The signed-in admin screens have not been eyeballed at 375px.** The static
+   audit is clean (no fixed widths, every multi-column grid breakpoint-prefixed,
+   tables carry a mobile fallback) and the reachable pages pass, but signing in
+   needs a password nobody should be handing to a tool.
+4. **The website editor still only covers the home page and site-wide strings.**
+   Unchanged from F-25: the mechanism works end to end, extending it to another
+   page is two mechanical steps.
+
+---
 
 ## 🔍 Live verification log — the reference site (removed)
 

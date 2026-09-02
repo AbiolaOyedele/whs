@@ -1,0 +1,127 @@
+---
+/**
+ * Where Paystack returns the client after checkout.
+ *
+ * This page CONFIRMS rather than decides. The authoritative record is the
+ * webhook; a browser arriving here proves only that a browser arrived here.
+ * So it verifies with Paystack directly and settles if the webhook has not yet
+ * landed — the two race, `settlePayment` is guarded on `status = 'pending'`,
+ * and whichever wins, the client sees the truth.
+ */
+import '@/styles/global.css'
+import Logo from '@/components/ui/Logo.astro'
+import { SITE } from '@/config/site'
+import { isAdminConfigured } from '@/config/env'
+import { formatMoney } from '@/lib/admin/money'
+import { getPaymentByReference, settlePayment } from '@/lib/admin/repositories/payments'
+import { verifyTransaction } from '@/lib/paystack'
+import { hasQuoteAccess } from '@/lib/admin/quote-session'
+
+export const prerender = false
+
+const slug = Astro.params.slug ?? ''
+const reference = Astro.url.searchParams.get('reference') ?? Astro.url.searchParams.get('trxref')
+
+let state: 'paid' | 'pending' | 'failed' | 'unknown' = 'unknown'
+let amount = ''
+
+if (isAdminConfigured() && reference && (await hasQuoteAccess(slug, Astro.cookies))) {
+  const payment = await getPaymentByReference(reference)
+
+  if (payment) {
+    amount = formatMoney(payment.amountMinor, payment.currency)
+
+    if (payment.status === 'paid') {
+      state = 'paid'
+    } else {
+      try {
+        const verified = await verifyTransaction(reference)
+        if (
+          verified.amountMinor === payment.amountMinor &&
+          verified.currency === payment.currency
+        ) {
+          await settlePayment(reference, {
+            status: verified.status,
+            paidAt: verified.paidAt,
+            channel: verified.channel,
+            feesMinor: verified.feesMinor,
+            raw: verified.raw,
+          })
+        }
+        state =
+          verified.status === 'paid' ? 'paid' : verified.status === 'failed' ? 'failed' : 'pending'
+      } catch {
+        // Verification is down, not the payment. Say so honestly.
+        state = 'pending'
+      }
+    }
+  }
+}
+
+const COPY = {
+  paid: {
+    title: 'Payment received',
+    body: 'Thank you. We have this and will be in touch shortly to get started.',
+  },
+  pending: {
+    title: 'We are confirming your payment',
+    body: 'This usually takes a few seconds. You do not need to pay again: if anything is wrong we will email you.',
+  },
+  failed: {
+    title: 'That payment did not go through',
+    body: 'Nothing has been taken. You can try again from your quote, or reply to our email and we will arrange a transfer.',
+  },
+  unknown: {
+    title: 'We could not find that payment',
+    body: 'If you were charged, email us with the reference and we will sort it out straight away.',
+  },
+} as const
+
+const copy = COPY[state]
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{copy.title} | {SITE.name}</title>
+  </head>
+
+  <body class="bg-background text-foreground">
+    <main class="flex min-h-svh items-center justify-center px-5 py-12">
+      <div class="w-full max-w-md">
+        <Logo variant="mark" class="mb-8 h-7 w-auto" label={SITE.name} />
+
+        <h1 class="wh-h3 mb-3">{copy.title}</h1>
+        {amount && state === 'paid' && <p class="mb-3 font-mono text-2xl">{amount}</p>}
+        <p class="mb-8 text-lg text-muted-foreground">{copy.body}</p>
+
+        <div class="flex flex-wrap gap-3">
+          <a
+            href={`/quote/${slug}`}
+            class="inline-flex min-h-12 items-center rounded-full bg-primary px-6 text-base text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+          >
+            Back to your quote
+          </a>
+          <a
+            href={`mailto:${SITE.email}`}
+            class="inline-flex min-h-12 items-center rounded-full border border-border px-6 text-base transition-colors hover:border-foreground"
+          >
+            Email us
+          </a>
+        </div>
+
+        {
+          reference && (
+            <p class="mt-8 text-sm text-muted-foreground">
+              Reference <span class="font-mono">{reference}</span>
+            </p>
+          )
+        }
+      </div>
+    </main>
+  </body>
+</html>

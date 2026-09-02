@@ -24,10 +24,23 @@ export default defineConfig({
   integrations: [
     react(),
     sitemap({
-      // The llms.txt generator is deliberately unlisted: the route works, but
-      // it is not part of the offer right now. It is also noindex'd and out of
-      // the footer nav. Delete this filter to bring it back.
-      filter: (page) => !page.includes('/tools/llms-txt-generator'),
+      /*
+       * Private routes are excluded here, not only by their noindex tag.
+       *
+       * @astrojs/sitemap reads the route manifest, so on-demand routes are
+       * listed too unless filtered — which is how /admin/sign-in ended up
+       * advertised to every crawler. noindex stops them being indexed; it does
+       * not stop a sitemap naming the admin surface out loud, and a client
+       * quote URL has no business in a public file at all.
+       *
+       * The llms.txt generator is unlisted for a different reason: the route
+       * works, but it is not part of the offer right now. Delete that clause
+       * to bring it back.
+       */
+      filter: (page) =>
+        !page.includes('/admin') &&
+        !page.includes('/quote/') &&
+        !page.includes('/tools/llms-txt-generator'),
     }),
   ],
   vite: {

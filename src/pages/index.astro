@@ -16,6 +16,7 @@ import AnimatedText from '@/components/sections/AnimatedText.astro'
 import CTASection from '@/components/sections/CTASection.astro'
 import Button from '@/components/ui/Button.astro'
 import { SITE } from '@/config/site'
+import { list, text } from '@/lib/admin/content'
 import { SERVICE_PILLARS, SERVICE_PILLAR_LABELS, SERVICE_PILLAR_TAGLINES } from '@/content.config'
 
 const [work, services] = await Promise.all([
@@ -26,36 +27,32 @@ const [work, services] = await Promise.all([
 const featured = work.filter((e) => e.data.featured).sort((a, b) => a.data.order - b.data.order)
 const pillars = services.sort((a, b) => a.data.order - b.data.order)
 
-/**
- * TODO: the trust row should be products and apps WildHands has built, not
- * client logos — these are products WildHands designed and built.
+/*
+ * Copy comes from the website editor, falling back to the defaults registered
+ * in src/config/content-registry.ts — which are the strings that used to be
+ * written out here. Editing one of these in /admin/website and publishing
+ * changes the page; an unreachable database changes nothing.
  */
-const BUILT_BY_WILDHANDS = ['Dumpty', 'Auto Flow', 'Lazy Meet', 'The Ruff Agency']
+const BUILT_BY_WILDHANDS = list('home.hero.logos')
 
-const problems = [
-  {
-    title: 'Automate the repeats.',
-    body: 'We build tools that take repetitive work off your plate for good.',
-  },
-  {
-    title: 'Get hours back.',
-    body: 'Every system we build is judged the same way: how much time it saves you.',
-  },
-  {
-    title: 'See what is happening, in real time.',
-    body: 'Custom dashboards that show you the numbers that matter, without digging for them.',
-  },
-]
+const problems = [0, 1, 2].map((index) => ({
+  title: text(`home.problems.${index}.title`),
+  body: text(`home.problems.${index}.body`),
+}))
 ---
 
-<BaseLayout title={SITE.name} description={SITE.description} darkHero>
+<BaseLayout title={SITE.name} description={text('site.description')} darkHero>
   <Hero
     variant="home"
-    title="Custom systems that give you your time back."
-    standfirst="WildHands designs and builds custom websites, apps, and internal tools for teams done doing repetitive work by hand."
+    title={text('home.hero.title')}
+    standfirst={text('home.hero.standfirst')}
+    titleKey="home.hero.title"
+    standfirstKey="home.hero.standfirst"
   >
     <Fragment slot="logos">
-      <p class="text-base text-white/70">Built by WildHands</p>
+      <p class="text-base text-white/70" data-wh-content="home.hero.logosLabel">
+        {text('home.hero.logosLabel')}
+      </p>
       <ul class="mt-3 flex flex-wrap items-center gap-x-7 gap-y-2">
         {
           BUILT_BY_WILDHANDS.map((name) => (
@@ -67,10 +64,10 @@ const problems = [
 
     <Fragment slot="cta">
       <Button href="/get-in-touch" variant="accent" arrows={false} class="h-16 w-full md:h-20">
-        Talk to Us
+        {text('home.hero.ctaPrimary')}
       </Button>
       <Button href="/work" variant="outline" onDark arrows={false} class="h-16 w-full md:h-20">
-        See Our Work
+        {text('home.hero.ctaSecondary')}
       </Button>
     </Fragment>
   </Hero>
@@ -124,10 +121,16 @@ const problems = [
                   <span class="text-sm text-muted-foreground tabular-nums">
                     {String(index + 1).padStart(2, '0')}
                   </span>
-                  <h3 class="mt-4 max-w-[42.25rem] text-2xl leading-[1.2] font-medium tracking-[-0.02em] text-balance md:text-3xl lg:text-[2.5rem]">
+                  <h3
+                    class="mt-4 max-w-[42.25rem] text-2xl leading-[1.2] font-medium tracking-[-0.02em] text-balance md:text-3xl lg:text-[2.5rem]"
+                    data-wh-content={`home.problems.${index}.title`}
+                  >
                     {item.title}
                   </h3>
-                  <p class="mt-6 max-w-[42.25rem] text-lg leading-[1.35] text-muted-foreground md:mt-8 md:text-xl">
+                  <p
+                    class="mt-6 max-w-[42.25rem] text-lg leading-[1.35] text-muted-foreground md:mt-8 md:text-xl"
+                    data-wh-content={`home.problems.${index}.body`}
+                  >
                     {item.body}
                   </p>
                 </article>

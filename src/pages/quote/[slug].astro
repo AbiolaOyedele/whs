@@ -1,0 +1,305 @@
+---
+/**
+ * The client-facing quote.
+ *
+ * PIN gate and document in one route, both server-rendered. No island: a
+ * client opening a quote on a phone on mobile data should get a readable
+ * document immediately, and there is nothing here that needs to react to
+ * anything. The PIN form and the accept/decline form are plain form posts, so
+ * the page works with JavaScript disabled entirely.
+ *
+ * Strictly on brand, deliberately: the logo, Diagramm for display, IBM Plex for
+ * body copy, the lime accent, and the same radius scale as the marketing site.
+ * This is often the second thing a client ever sees from us.
+ *
+ * Access control order matters and is not negotiable — the quote is not read
+ * from the database until `hasQuoteAccess` returns true. Rendering first and
+ * hiding second would put pricing in the HTML of a page anyone could request.
+ */
+import '@/styles/global.css'
+import Logo from '@/components/ui/Logo.astro'
+import QuoteDocument from '@/components/quote/QuoteDocument.astro'
+import { isAdminConfigured, publicEnv } from '@/config/env'
+import { SITE } from '@/config/site'
+import { computeTotals } from '@/lib/admin/money'
+import {
+  getQuoteAuthBySlug,
+  getQuoteBySlug,
+  markQuoteViewed,
+  recordQuoteDecision,
+  recordQuoteEvent,
+} from '@/lib/admin/repositories/quotes'
+import { sendNotification } from '@/lib/resend'
+import { verifyPin } from '@/lib/admin/quote-access'
+import { grantQuoteAccess, hasQuoteAccess, hashIp } from '@/lib/admin/quote-session'
+import { assertSameOrigin } from '@/lib/forms'
+import { isPayableCurrency, isPaystackConfigured } from '@/lib/paystack'
+import { listPaymentsForQuote } from '@/lib/admin/repositories/payments'
+import { clientIp, enforceRateLimit } from '@/lib/rate-limit'
+import { isAppError } from '@/lib/errors'
+import type { Quote } from '@/types/quote'
+
+export const prerender = false
+
+const slug = Astro.params.slug ?? ''
+
+/*
+ * Quotes live in the admin's database, so with the admin unconfigured there is
+ * nothing to serve. Checked before anything touches `adminEnv()`, which throws
+ * by design — a client following a link should get a sentence they can act on,
+ * not a 500.
+ */
+const configured = isAdminConfigured()
+
+/*
+ * The request body is read ONCE, here.
+ *
+ * Two branches below want it — the PIN gate and the accept/decline form — and a
+ * Request body is a stream that can only be consumed once. On the POST where a
+ * correct PIN unlocks the page, both branches run in the same pass, and the
+ * second `formData()` threw "Body has already been read". Reading it up front
+ * removes the ordering hazard entirely rather than relying on the branches
+ * staying mutually exclusive, which they are not.
+ */
+const isPost = Astro.request.method === 'POST'
+const submitted: FormData | null = isPost ? await Astro.request.formData().catch(() => null) : null
+
+let pinError: string | null = null
+let unlocked = configured ? await hasQuoteAccess(slug, Astro.cookies) : false
+
+/* --- PIN submission ---------------------------------------------------- */
+if (configured && isPost && !unlocked) {
+  try {
+    assertSameOrigin(Astro.request, publicEnv.PUBLIC_SITE_URL)
+
+    const ip = clientIp(Astro.request)
+    // Both limits are load-bearing: per address stops one attacker, per quote
+    // stops a distributed attempt against one client's pricing.
+    enforceRateLimit(`quote-pin-ip:${ip}`, 8, 60_000)
+    enforceRateLimit(`quote-pin-slug:${slug}`, 20, 60_000)
+
+    const pin = String(submitted?.get('pin') ?? '').trim()
+
+    const auth = await getQuoteAuthBySlug(slug)
+    // One message for every failure, so this cannot be used to work out which
+    // clients we have quoted.
+    const rejection = 'That code does not match. Check the code we sent you and try again.'
+
+    if (!auth || !/^\d{6}$/.test(pin)) {
+      pinError = rejection
+    } else if (!(await verifyPin(pin, slug, auth.pinHash))) {
+      await recordQuoteEvent(auth.id, 'pin_failed', {
+        ipHash: await hashIp(ip),
+        userAgent: Astro.request.headers.get('user-agent') ?? undefined,
+      })
+      pinError = rejection
+    } else if (auth.status === 'draft') {
+      pinError = 'This quote is not quite ready. Please get in touch with us.'
+    } else {
+      await grantQuoteAccess(slug, Astro.cookies)
+      unlocked = true
+    }
+  } catch (cause) {
+    pinError = isAppError(cause)
+      ? cause.message
+      : 'Something went wrong at our end. Please try again in a moment.'
+  }
+}
+
+/* --- Load, only once access is established ------------------------------ */
+let quote: Quote | null = null
+
+if (unlocked) {
+  quote = await getQuoteBySlug(slug)
+
+  /* --- Decision submission ---------------------------------------------
+   * Handled here rather than posted to the JSON API, so the form works with
+   * JavaScript off. Posting a plain form to an API route would land the client
+   * on a page of raw JSON, which is not something to send a paying customer.
+   */
+  /*
+   * Only when this POST was actually a decision. Without the `decision` check,
+   * the POST that unlocks the page would fall straight through into here.
+   */
+  if (
+    quote &&
+    isPost &&
+    submitted?.get('decision') &&
+    quote.status !== 'accepted' &&
+    quote.status !== 'declined'
+  ) {
+    try {
+      assertSameOrigin(Astro.request, publicEnv.PUBLIC_SITE_URL)
+      enforceRateLimit(`quote-decision:${clientIp(Astro.request)}`, 5, 60_000)
+
+      const choice = String(submitted?.get('decision') ?? '')
+      const note = String(submitted?.get('note') ?? '').slice(0, 2000)
+
+      if (choice === 'accepted' || choice === 'declined') {
+        await recordQuoteDecision(quote.id, choice, note)
+        await recordQuoteEvent(quote.id, choice, {
+          ipHash: await hashIp(clientIp(Astro.request)),
+          userAgent: Astro.request.headers.get('user-agent') ?? undefined,
+        })
+
+        quote = { ...quote, status: choice }
+
+        // Best effort. The decision is already recorded, so a mail failure must
+        // not tell the client their response did not register.
+        try {
+          await sendNotification({
+            subject: `Quote ${choice}: ${quote.clientName} — ${quote.projectTitle}`,
+            ...(quote.clientEmail ? { replyTo: quote.clientEmail } : {}),
+            text: [
+              `${quote.clientName} ${choice} the quote.`,
+              `Project: ${quote.projectTitle}`,
+              `Link: ${publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')}/quote/${quote.slug}`,
+              note ? `\nTheir note:\n${note}` : '',
+            ].join('\n'),
+          })
+        } catch (cause) {
+          console.error('[quote-decision-notify]', cause)
+        }
+      }
+    } catch (cause) {
+      console.error('[quote-decision]', cause)
+    }
+  }
+
+  if (quote) {
+    await markQuoteViewed(quote.id, quote.status)
+    await recordQuoteEvent(quote.id, 'viewed', {
+      ipHash: await hashIp(clientIp(Astro.request)),
+      userAgent: Astro.request.headers.get('user-agent') ?? undefined,
+    })
+  }
+}
+
+const totals = quote
+  ? computeTotals({
+      lineItems: quote.lineItems,
+      discountMinor: quote.discountMinor,
+      taxRateBp: quote.taxRateBp,
+      depositPercent: quote.depositPercent,
+    })
+  : null
+
+const quoteTotals = totals ?? { depositMinor: 0, totalMinor: 0 }
+const totalsReady = totals !== null
+
+/*
+ * Whether to offer payment, decided here rather than in the document.
+ *
+ * All three conditions must hold, and the currency one is the easy one to
+ * forget: Paystack cannot charge GBP, so a quote priced in pounds must not show
+ * a pay button that fails after the client clicks it.
+ */
+let payment: { enabled: boolean; amountMinor: number; kind: string; paid: boolean } | undefined
+
+if (quote && totalsReady) {
+  const payments = await listPaymentsForQuote(quote.id)
+  const paid = payments.some((entry) => entry.status === 'paid')
+  const takingDeposit = quote.depositPercent > 0 && quote.depositPercent < 100
+
+  payment = {
+    enabled: isPaystackConfigured() && isPayableCurrency(quote.currency) && !paid,
+    amountMinor: takingDeposit ? quoteTotals.depositMinor : quoteTotals.totalMinor,
+    kind: takingDeposit ? 'deposit' : 'full',
+    paid,
+  }
+}
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#131314" />
+    <!-- A client's pricing has no business in a search index. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      href="/fonts/IBMPlexSans-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/Diagramm-Medium.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <title>{quote ? `${quote.projectTitle} | ${SITE.name}` : `Quote | ${SITE.name}`}</title>
+  </head>
+
+  <body class="bg-background text-foreground">
+    {
+      !unlocked || !quote || !totals ? (
+        /* --- The gate --- */
+        <main class="flex min-h-svh items-center justify-center px-5 py-12">
+          <div class="w-full max-w-md">
+            <Logo variant="mark" class="mb-8 h-7 w-auto" label={SITE.name} />
+
+            <h1 class="wh-h3 mb-2">Your quote</h1>
+            <p class="mb-8 text-lg text-muted-foreground">
+              {configured
+                ? 'Enter the six-digit code we sent you.'
+                : 'Quotes are not available at the moment. Please email us and we will send yours across.'}
+            </p>
+
+            {pinError && (
+              <div
+                role="alert"
+                class="mb-6 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-base"
+              >
+                {pinError}
+              </div>
+            )}
+
+            {configured && (
+              <form method="post" class="flex flex-col gap-6">
+                <div class="flex flex-col gap-2">
+                  <label for="pin" class="text-sm text-muted-foreground">
+                    Access code
+                  </label>
+                  <input
+                    id="pin"
+                    name="pin"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    pattern="[0-9]{6}"
+                    maxlength="6"
+                    required
+                    class="min-h-14 rounded-xl border border-border bg-card px-4 text-center font-mono text-3xl tracking-[0.3em] outline-none focus-visible:border-foreground"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  class="min-h-14 rounded-full bg-primary px-8 text-lg text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                >
+                  Open my quote
+                </button>
+              </form>
+            )}
+
+            <p class="mt-8 text-base text-muted-foreground">
+              Lost the code? Email{' '}
+              <a class="underline" href={`mailto:${SITE.email}`}>
+                {SITE.email}
+              </a>{' '}
+              and we will send another.
+            </p>
+          </div>
+        </main>
+      ) : (
+        /* --- The quote. One implementation, shared with the admin preview. --- */
+        <QuoteDocument quote={quote} totals={totals} mode="client" payment={payment} />
+      )
+    }
+  </body>
+</html>

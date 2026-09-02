@@ -8,6 +8,7 @@
  */
 import ConsentBanner from './ConsentBanner.astro'
 import PostHogLoader from './PostHogLoader.astro'
+import VercelAnalyticsLoader from './VercelAnalyticsLoader.astro'
 import { publicEnv } from '@/config/env'
 
 const posthogKey = publicEnv.PUBLIC_POSTHOG_KEY
@@ -15,5 +16,21 @@ const host = publicEnv.PUBLIC_POSTHOG_HOST
 ---
 
 {posthogKey && host && <PostHogLoader posthogKey={posthogKey} host={host} />}
+
+{
+  /* Vercel Web Analytics: the source behind /admin/analytics. Cookieless, and
+    served from our own origin, but still consent-gated so the banner's promise
+    holds. Inert outside a Vercel deployment. */
+}
+<VercelAnalyticsLoader />
+
+{
+  /* First-party beacon: the source the admin's analytics panel reads. Vercel's
+    tracker above still runs and their own dashboard still works; this exists
+    because their READ API is undocumented and returned nothing usable. */
+}
+<script>
+  import '@/scripts/track'
+</script>
 
 <ConsentBanner />

@@ -1,0 +1,204 @@
+---
+/**
+ * Quote list.
+ *
+ * Server-rendered rather than an island: it is a table of links, the data is
+ * already on the server, and shipping React to render it would cost the
+ * operator a framework download to read fifteen rows.
+ */
+import AdminLayout from '@/layouts/AdminLayout.astro'
+import FormSelect from '@/components/admin/FormSelect.astro'
+import { listQuotes } from '@/lib/admin/quotes'
+import { formatMoney } from '@/lib/admin/money'
+import { QUOTE_STATUSES, QUOTE_STATUS_LABELS, type QuoteStatus } from '@/types/quote'
+
+export const prerender = false
+
+const session = Astro.locals.adminSession
+const search = Astro.url.searchParams.get('q')?.trim() ?? ''
+const statusParam = Astro.url.searchParams.get('status')
+const status = QUOTE_STATUSES.includes(statusParam as QuoteStatus)
+  ? (statusParam as QuoteStatus)
+  : undefined
+
+const quotes = await listQuotes({ status, search: search || undefined })
+
+const STATUS_TONE: Record<QuoteStatus, string> = {
+  draft: 'bg-muted text-muted-foreground',
+  sent: 'bg-primary text-primary-foreground',
+  viewed: 'bg-accent text-accent-foreground',
+  accepted: 'bg-accent text-accent-foreground',
+  declined: 'bg-destructive/15 text-destructive',
+  expired: 'bg-muted text-muted-foreground',
+}
+
+const dateFormat = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+})
+const formatDate = (value: string | null): string =>
+  value ? dateFormat.format(new Date(value)) : '—'
+---
+
+<AdminLayout title="Quotes" section="quotes" email={session?.email}>
+  <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="wh-h3">Quotes</h1>
+      <p class="mt-1 text-muted-foreground">
+        {quotes.length}
+        {quotes.length === 1 ? 'quote' : 'quotes'}
+      </p>
+    </div>
+
+    <a
+      href="/admin/quotes/new"
+      class="inline-flex min-h-12 items-center rounded-full bg-primary px-6 text-base text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+    >
+      New quote
+    </a>
+  </div>
+
+  <form method="get" class="mb-8 flex flex-wrap gap-3">
+    <label class="sr-only" for="q">Search quotes</label>
+    <input
+      id="q"
+      name="q"
+      type="search"
+      value={search}
+      placeholder="Client, company or project"
+      class="min-h-12 min-w-0 flex-1 rounded-xl border border-border bg-card px-4 text-base outline-none focus-visible:border-foreground"
+    />
+    <FormSelect
+      id="status"
+      name="status"
+      label="Filter by status"
+      value={status ?? ''}
+      class="w-full sm:w-56"
+      options={[
+        { value: '', label: 'All statuses' },
+        ...QUOTE_STATUSES.map((entry) => ({ value: entry, label: QUOTE_STATUS_LABELS[entry] })),
+      ]}
+    />
+    <button
+      type="submit"
+      class="min-h-12 rounded-full border border-border bg-card px-6 text-base transition-colors hover:border-foreground"
+    >
+      Filter
+    </button>
+  </form>
+
+  {
+    quotes.length === 0 ? (
+      <div class="rounded-3xl border border-border bg-card p-8 text-center">
+        <h2 class="mb-2 font-display text-xl">
+          {search || status ? 'Nothing matches that' : 'No quotes yet'}
+        </h2>
+        <p class="mx-auto max-w-md text-muted-foreground">
+          {search || status
+            ? 'Try a different search, or clear the filter.'
+            : 'Create one, price it, and send the client a link with an access code.'}
+        </p>
+      </div>
+    ) : (
+      /* Cards on mobile, a table from md. A seven-column table on a 375px
+         screen is unreadable no matter how it is scrolled. */
+      <ul class="flex flex-col gap-3 md:hidden">
+        {quotes.map((quote) => (
+          <li>
+            <a
+              href={`/admin/quotes/${quote.id}`}
+              class="block rounded-2xl border border-border bg-card p-4 transition-colors hover:border-foreground"
+            >
+              <div class="mb-2 flex items-start justify-between gap-3">
+                <span class="font-display text-lg leading-tight">{quote.clientName}</span>
+                <span
+                  class={`shrink-0 rounded-full px-3 py-1 text-sm ${STATUS_TONE[quote.status]}`}
+                >
+                  {QUOTE_STATUS_LABELS[quote.status]}
+                </span>
+              </div>
+              <p class="mb-3 text-base text-muted-foreground">{quote.projectTitle}</p>
+              <div class="flex items-baseline justify-between gap-3 text-sm">
+                <span class="font-mono text-base">
+                  {formatMoney(quote.totalMinor, quote.currency)}
+                </span>
+                <span class="text-muted-foreground">{formatDate(quote.updatedAt)}</span>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  {
+    quotes.length > 0 && (
+      <div class="hidden overflow-x-auto md:block">
+        <table class="w-full border-collapse text-left">
+          <thead>
+            <tr class="border-b border-border text-sm text-muted-foreground">
+              <th scope="col" class="py-3 pr-4 font-normal">
+                Client
+              </th>
+              <th scope="col" class="py-3 pr-4 font-normal">
+                Project
+              </th>
+              <th scope="col" class="py-3 pr-4 text-right font-normal">
+                Value
+              </th>
+              <th scope="col" class="py-3 pr-4 font-normal">
+                Status
+              </th>
+              <th scope="col" class="py-3 pr-4 text-right font-normal">
+                Views
+              </th>
+              <th scope="col" class="py-3 font-normal">
+                Updated
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {quotes.map((quote) => (
+              /*
+               * Whole row clickable, via one stretched anchor.
+               *
+               * A <tr> cannot be wrapped in an <a>, and putting a link in every
+               * cell would give screen readers six links to the same place. So
+               * the single real anchor spans the row with an absolutely
+               * positioned ::after, which keeps one link, one tab stop and one
+               * accessible name while making the entire row a target.
+               */
+              <tr class="relative border-b border-border transition-colors hover:bg-muted">
+                <td class="py-4 pr-4">
+                  <a
+                    href={`/admin/quotes/${quote.id}`}
+                    class="font-display text-lg after:absolute after:inset-0 after:content-['']"
+                  >
+                    {quote.clientName}
+                  </a>
+                  {quote.clientCompany && (
+                    <span class="block text-sm text-muted-foreground">{quote.clientCompany}</span>
+                  )}
+                </td>
+                <td class="py-4 pr-4 text-base">{quote.projectTitle}</td>
+                <td class="py-4 pr-4 text-right font-mono text-base">
+                  {formatMoney(quote.totalMinor, quote.currency)}
+                </td>
+                <td class="relative py-4 pr-4">
+                  <span
+                    class={`inline-block rounded-full px-3 py-1 text-sm ${STATUS_TONE[quote.status]}`}
+                  >
+                    {QUOTE_STATUS_LABELS[quote.status]}
+                  </span>
+                </td>
+                <td class="py-4 pr-4 text-right font-mono text-base">{quote.viewCount}</td>
+                <td class="py-4 text-base text-muted-foreground">{formatDate(quote.updatedAt)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+</AdminLayout>

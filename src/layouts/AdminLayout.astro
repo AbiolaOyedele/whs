@@ -1,0 +1,153 @@
+---
+/**
+ * Admin shell.
+ *
+ * Deliberately not BaseLayout: the marketing header, footer, SEO block and
+ * JSON-LD all exist to be crawled and shared, none of which applies to a page
+ * behind a password. What it does share is the design system — same tokens,
+ * same two typefaces, same radii — so the admin reads as the same product
+ * rather than a bolted-on tool.
+ *
+ * Mobile-first. The navigation is a horizontal scroller under the header on
+ * small screens and a pinned rail from `lg` up; there is no hamburger, because
+ * a five-item nav does not need a disclosure and a menu that hides the section
+ * you are in is worse than one that scrolls.
+ *
+ * The rail is `sticky` with `self-start`. Both are needed: a flex child
+ * stretches to the container's full height by default, which leaves sticky
+ * nothing to move within, so the rail scrolled away with the page. `self-start`
+ * holds it to its own `h-svh` and lets it pin.
+ */
+import '@/styles/global.css'
+import Logo from '@/components/ui/Logo.astro'
+import { SITE } from '@/config/site'
+
+interface Props {
+  title: string
+  /** Nav item to mark current. */
+  section?: 'overview' | 'website' | 'analytics' | 'quotes'
+  /** Sign-in and setup render without the nav rail. */
+  chrome?: boolean
+  email?: string | undefined
+}
+
+const { title, section, chrome = true, email } = Astro.props
+
+const NAV = [
+  { id: 'overview', label: 'Overview', href: '/admin' },
+  { id: 'website', label: 'Website', href: '/admin/website' },
+  { id: 'analytics', label: 'Analytics', href: '/admin/analytics' },
+  { id: 'quotes', label: 'Quotes', href: '/admin/quotes' },
+] as const
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#131314" />
+    <!-- Nothing under /admin is for a crawler, and a stray index of a sign-in
+         page is an invitation. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      href="/fonts/IBMPlexSans-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/Diagramm-Medium.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <title>{title} | {SITE.name} admin</title>
+  </head>
+
+  <body class="min-h-svh bg-background text-foreground">
+    <a
+      href="#admin-main"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-100 focus:rounded-md focus:bg-primary focus:px-4 focus:py-3 focus:text-primary-foreground"
+    >
+      Skip to content
+    </a>
+
+    {
+      chrome ? (
+        <div class="lg:flex lg:min-h-svh">
+          {/* Rail: horizontal scroller on mobile, fixed column from lg. */}
+          <header class="sticky top-0 z-40 border-b border-border bg-surface-dark text-surface-dark-foreground lg:top-0 lg:flex lg:h-svh lg:w-64 lg:shrink-0 lg:flex-col lg:self-start lg:overflow-y-auto lg:border-r lg:border-b-0">
+            <div class="flex items-center justify-between gap-4 px-5 py-4 lg:block lg:px-6 lg:py-8">
+              <a href="/admin" class="flex items-center gap-3 lg:mb-10">
+                <Logo variant="mark" class="h-6 w-auto" label="WildHands admin" />
+                <span class="font-display text-lg leading-none">Admin</span>
+              </a>
+
+              <form method="post" action="/admin/sign-out" class="lg:hidden">
+                <button
+                  type="submit"
+                  class="min-h-11 rounded-full px-4 text-sm text-white/70 transition-colors hover:text-accent"
+                >
+                  Sign out
+                </button>
+              </form>
+            </div>
+
+            <nav aria-label="Admin sections" class="lg:flex-1 lg:px-4">
+              <ul class="flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-col lg:gap-1 lg:overflow-visible lg:px-0 lg:pb-0">
+                {NAV.map((item) => (
+                  <li class="shrink-0 lg:shrink">
+                    <a
+                      href={item.href}
+                      aria-current={section === item.id ? 'page' : undefined}
+                      class:list={[
+                        'flex min-h-11 items-center rounded-full px-4 text-base transition-colors lg:rounded-xl',
+                        section === item.id
+                          ? 'bg-accent text-accent-foreground'
+                          : 'text-white/70 hover:bg-white/10 hover:text-white',
+                      ]}
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div class="hidden lg:block lg:px-6 lg:py-6">
+              {email && <p class="mb-3 truncate text-sm text-white/50">{email}</p>}
+              <div class="flex flex-col gap-2">
+                <a
+                  href="/"
+                  class="flex min-h-11 items-center text-sm text-white/70 transition-colors hover:text-accent"
+                >
+                  View the site
+                </a>
+                <form method="post" action="/admin/sign-out">
+                  <button
+                    type="submit"
+                    class="flex min-h-11 items-center text-sm text-white/70 transition-colors hover:text-accent"
+                  >
+                    Sign out
+                  </button>
+                </form>
+              </div>
+            </div>
+          </header>
+
+          <main id="admin-main" class="min-w-0 flex-1 px-5 py-8 lg:px-10 lg:py-12">
+            <slot />
+          </main>
+        </div>
+      ) : (
+        <main id="admin-main" class="flex min-h-svh items-center justify-center px-5 py-12">
+          <slot />
+        </main>
+      )
+    }
+  </body>
+</html>
