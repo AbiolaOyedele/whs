@@ -113,3 +113,109 @@ export async function createInvoice(input: {
   if (error) fail('CREATE', error)
   return toInvoice(data as Row)
 }
+
+export interface InvoiceListRow extends InvoiceRecord {
+  quoteSlug: string
+  clientName: string
+  clientCompany: string | null
+  projectTitle: string
+  /** Settled, whether by card or marked off by hand. */
+  paid: boolean
+  paidAt: string | null
+  paidVia: string | null
+}
+
+/**
+ * Every invoice, with whether it has actually been paid.
+ *
+ * Paid state comes from `quote_payments`, not from a column on the invoice: a
+ * payment is the event, and duplicating its outcome onto the invoice would give
+ * two places to disagree about whether money arrived.
+ */
+export async function listInvoices(): Promise<InvoiceListRow[]> {
+  const { data, error } = await serviceClient()
+    .from('invoices')
+    .select(
+      `${SELECT}, quotes ( slug, client_name, client_company, project_title, quote_payments ( status, paid_at, channel, kind ) )`
+    )
+    .order('issued_at', { ascending: false })
+
+  if (error) fail('LIST', error)
+
+  /* PostgREST types an embedded relation as an array even when the foreign key
+     makes it at most one row, so it is read as an array and the first element
+     taken. */
+  interface JoinedQuote {
+    slug: string
+    client_name: string
+    client_company: string | null
+    project_title: string
+    quote_payments: Array<{
+      status: string
+      paid_at: string | null
+      channel: string | null
+      kind: string
+    }> | null
+  }
+
+  type Joined = Row & { quotes: JoinedQuote[] | JoinedQuote | null }
+
+  return (data as unknown as Joined[]).map((row) => {
+    const quote = Array.isArray(row.quotes) ? (row.quotes[0] ?? null) : row.quotes
+    const settled = (quote?.quote_payments ?? []).find(
+      (payment) => payment.status === 'paid' && payment.kind === row.kind
+    )
+
+    return {
+      ...toInvoice(row),
+      quoteSlug: quote?.slug ?? '',
+      clientName: quote?.client_name ?? 'Unknown',
+      clientCompany: quote?.client_company ?? null,
+      projectTitle: quote?.project_title ?? '',
+      paid: Boolean(settled),
+      paidAt: settled?.paid_at ?? null,
+      paidVia: settled?.channel ?? null,
+    }
+  })
+}
+
+/**
+ * Records a payment that happened outside Paystack.
+ *
+ * Bank transfers are how most of these will actually be settled, and an invoice
+ * list that can only see card payments would show half the truth. Written as a
+ * `quote_payments` row with channel `manual`, so paid state still has exactly
+ * one source.
+ */
+export async function markInvoicePaid(invoiceId: string, note: string): Promise<void> {
+  const invoice = await serviceClient()
+    .from('invoices')
+    .select('id, quote_id, amount_minor, currency, kind')
+    .eq('id', invoiceId)
+    .maybeSingle()
+
+  if (invoice.error || !invoice.data) fail('MARK_PAID_LOOKUP', invoice.error)
+
+  const row = invoice.data as {
+    quote_id: string
+    amount_minor: number
+    currency: string
+    kind: string
+  }
+
+  const { error } = await serviceClient()
+    .from('quote_payments')
+    .insert({
+      quote_id: row.quote_id,
+      reference: `manual_${invoiceId.slice(0, 8)}_${Date.now()}`,
+      status: 'paid',
+      amount_minor: row.amount_minor,
+      currency: row.currency,
+      kind: row.kind,
+      paid_at: new Date().toISOString(),
+      channel: 'manual',
+      raw: { markedByOperator: true, note: note.slice(0, 500) },
+    })
+
+  if (error) fail('MARK_PAID', error)
+}

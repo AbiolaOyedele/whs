@@ -69,10 +69,9 @@ Timeline rules:
 - Phases should describe what happens, what the client receives at the end of it, and roughly how long it takes.
 - Use relative durations ("2 weeks", "3 to 4 weeks"), never calendar dates. Dates go stale the moment a quote sits in an inbox.
 
-Terms rules. Always write both paymentTerms and terms, never leave them empty:
-- paymentTerms: the split, when each instalment falls due, and the invoice period. Keep it to two or three sentences.
-- terms: cover what is INCLUDED, what is NOT included, and what happens when scope changes. Where the brief supports it, also cover: dependencies you need from the client (accounts, test environments, sign-off turnaround) and what happens to the timeline if they are late; third-party costs billed separately; how many rounds of revision are included; and what support period follows handover.
-- Write terms as short paragraphs, not legal boilerplate. This is a studio quote, not a contract. Never invent a legal clause, a warranty, a liability cap or an IP assignment: those need a solicitor, not a language model. If the engagement clearly needs one, put that in questions.
+Terms rules:
+- Write paymentTerms only: the split, when each instalment falls due, and the invoice period. Two or three sentences.
+- Do NOT write the terms and conditions. Return an empty string for the terms field. The studio has a fixed set covering revisions, rebuilds, redesigns and new features, and it is deliberately the same on every quote. Never invent a legal clause, a warranty, a liability cap or an IP assignment.
 
 Two separate lists, and the difference matters:
 - assumptions: gaps you FILLED with a judgement, and every rate or figure you assumed. The operator checks these.

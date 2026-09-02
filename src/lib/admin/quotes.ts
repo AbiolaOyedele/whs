@@ -3,6 +3,7 @@
  * body in here, and format whatever comes back.
  */
 import { AppError } from '@/lib/errors'
+import { STANDARD_PAYMENT_TERMS, STANDARD_TERMS } from '@/config/terms'
 import { draftQuote, type AiProvider, type QuoteDraft } from '@/lib/ai'
 import { currencyMeta } from './money'
 import {
@@ -14,6 +15,7 @@ import {
   quoteSlug,
 } from './quote-access'
 import * as repo from './repositories/quotes'
+import { findOrCreateClient } from './repositories/clients'
 import type { Quote } from '@/types/quote'
 import type { SaveQuoteInput } from '@/lib/schemas/quotes'
 
@@ -58,6 +60,16 @@ export async function createQuote(
     createdBy: userId,
   })
 
+  /* Terms are standard on every quote, so they are filled in at creation
+     rather than left for someone to remember. Editable afterwards. */
+  const client = await findOrCreateClient({ name: input.clientName }, userId)
+
+  await repo.updateQuote(id, {
+    terms: STANDARD_TERMS,
+    paymentTerms: STANDARD_PAYMENT_TERMS,
+    ...(client ? { clientId: client.id } : {}),
+  })
+
   return { id, slug, pin }
 }
 
@@ -69,7 +81,7 @@ export async function createQuote(
  * already has — and there would be no way to tell from the data that it had
  * happened. The PIN itself is unchanged; only its hash moves.
  */
-export async function saveQuote(id: string, input: SaveQuoteInput): Promise<Quote> {
+export async function saveQuote(id: string, input: SaveQuoteInput, userId: string): Promise<Quote> {
   const existing = await repo.getQuoteById(id)
   if (!existing) throw new AppError(404, 'That quote no longer exists.', 'QUOTE_NOT_FOUND')
 
@@ -98,8 +110,27 @@ export async function saveQuote(id: string, input: SaveQuoteInput): Promise<Quot
   const slugChanged = slug !== existing.slug
   const currentPin = slugChanged ? await revealPin(id) : null
 
+  /*
+   * Every save reconciles the client list.
+   *
+   * This is what makes "add a client while writing a quote and it appears under
+   * Clients" true without anyone maintaining two places. Matching is by email,
+   * so filling one in on an existing quote links it to the right record rather
+   * than creating a second.
+   */
+  const client = await findOrCreateClient(
+    {
+      name: input.clientName,
+      company: input.clientCompany,
+      email: input.clientEmail,
+      role: input.clientRole,
+    },
+    userId
+  )
+
   await repo.updateQuote(id, {
     slug,
+    ...(client ? { clientId: client.id } : {}),
     ...(slugChanged && currentPin ? { pinHash: await hashPin(currentPin, slug) } : {}),
     status: input.status,
     clientName: input.clientName,

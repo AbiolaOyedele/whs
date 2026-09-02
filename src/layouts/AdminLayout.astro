@@ -25,7 +25,7 @@ import { SITE } from '@/config/site'
 interface Props {
   title: string
   /** Nav item to mark current. */
-  section?: 'overview' | 'website' | 'analytics' | 'quotes'
+  section?: 'overview' | 'website' | 'analytics' | 'quotes' | 'clients' | 'invoices'
   /** Sign-in and setup render without the nav rail. */
   chrome?: boolean
   email?: string | undefined
@@ -38,6 +38,8 @@ const NAV = [
   { id: 'website', label: 'Website', href: '/admin/website' },
   { id: 'analytics', label: 'Analytics', href: '/admin/analytics' },
   { id: 'quotes', label: 'Quotes', href: '/admin/quotes' },
+  { id: 'clients', label: 'Clients', href: '/admin/clients' },
+  { id: 'invoices', label: 'Invoices', href: '/admin/invoices' },
 ] as const
 ---
 

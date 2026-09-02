@@ -1,0 +1,21 @@
+---
+/**
+ * Invoices.
+ *
+ * The ledger: what has been invoiced and what has actually been paid. Paid
+ * state is read from the payment records rather than stored on the invoice, so
+ * card payments and bank transfers marked off by hand appear the same way.
+ */
+import AdminLayout from '@/layouts/AdminLayout.astro'
+import InvoicesPanel from '@/components/admin/invoices/InvoicesPanel'
+import { listInvoices } from '@/lib/admin/repositories/invoices'
+
+export const prerender = false
+
+const session = Astro.locals.adminSession
+const invoices = await listInvoices()
+---
+
+<AdminLayout title="Invoices" section="invoices" email={session?.email}>
+  <InvoicesPanel client:load invoices={invoices} />
+</AdminLayout>

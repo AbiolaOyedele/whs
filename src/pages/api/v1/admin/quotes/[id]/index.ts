@@ -40,7 +40,7 @@ export const GET: APIRoute = async ({ cookies, params }) => {
 export const PUT: APIRoute = async ({ request, cookies, params }) => {
   try {
     assertAdminOrigin(request, publicEnv.PUBLIC_SITE_URL)
-    await requireSession(cookies)
+    const session = await requireSession(cookies)
 
     const parsed = saveQuoteSchema.safeParse(await readBody(request))
     if (!parsed.success) {
@@ -61,7 +61,7 @@ export const PUT: APIRoute = async ({ request, cookies, params }) => {
       )
     }
 
-    return json({ quote: await saveQuote(quoteId(params), parsed.data) })
+    return json({ quote: await saveQuote(quoteId(params), parsed.data, session.userId) })
   } catch (error) {
     return toErrorResponse(error)
   }

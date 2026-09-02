@@ -112,13 +112,8 @@ export const GET: APIRoute = async ({ cookies, params }) => {
       amountDueMinor: invoice.amountMinor,
       kind: invoice.kind,
       paymentTerms: quote.paymentTerms,
-      /* Only when a payment could actually complete. A pay button in a PDF
-         that leads to an unsupported currency is worse than none, because the
-         PDF outlives the page and cannot be corrected. */
-      payUrl:
-        !paid && isPaystackConfigured() && isPayableCurrency(quote.currency)
-          ? `${origin}/quote/${quote.slug}`
-          : null,
+      quoteUrl: `${origin}/quote/${quote.slug}`,
+      payable: !paid && isPaystackConfigured() && isPayableCurrency(quote.currency),
       studio: {
         name: SITE.name,
         email: SITE.email,

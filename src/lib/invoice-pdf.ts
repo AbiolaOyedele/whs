@@ -19,6 +19,7 @@ import path from 'node:path'
 import fontkit from '@pdf-lib/fontkit'
 import { PDFDocument, PDFName, PDFString, rgb, type PDFFont, type PDFPage } from 'pdf-lib'
 import { decompress } from 'wawoff2'
+import { MARK_PATHS, MARK_VIEW_BOX } from '@/components/ui/logo-paths'
 import { formatMoney } from '@/lib/admin/money'
 
 /* Brand colours, converted from the oklch tokens in global.css. Kept here as
@@ -58,8 +59,10 @@ export interface InvoiceData {
   amountDueMinor: number
   kind: 'deposit' | 'balance' | 'full'
   paymentTerms: string
-  /** Rendered as a tappable link. Omitted when payment is not available. */
-  payUrl: string | null
+  /** The quote's own URL. Always present: the client always gets a way back. */
+  quoteUrl: string
+  /** Whether card payment can actually complete for this currency. */
+  payable: boolean
   studio: { name: string; email: string; site: string }
 }
 
@@ -158,19 +161,37 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<Uint8Array> {
     })
   }
 
-  /* --- Header ---------------------------------------------------------- */
-  ctx.y -= 8
-  text(data.studio.name, { size: 20, font: display })
-  // The lime dot from the wordmark, so the document is recognisably ours.
-  ctx.page.drawCircle({
-    x: MARGIN + display.widthOfTextAtSize(data.studio.name, 20) + 5,
-    y: ctx.y + 3,
-    size: 2.6,
-    color: ACCENT,
-  })
+  /* --- Header ------------------------------------------------------------
+   *
+   * The real "whs." mark, drawn from the same path data the site's Logo
+   * component uses, rather than the studio name set in a typeface. Setting the
+   * name as text was close but it was not the logo, and this is a document
+   * that goes out under the brand.
+   *
+   * SVG's y-axis points down and PDF's points up, so the artwork is flipped and
+   * translated into place. Scale comes from the mark's own viewBox, so a change
+   * to the artwork does not need a matching change to a magic number here.
+   */
+  const viewBox = MARK_VIEW_BOX.split(' ').map(Number)
+  const vbX = viewBox[0] ?? 0
+  const vbY = viewBox[1] ?? 0
+  const vbH = viewBox[3] ?? 1
+  const logoHeight = 15
+  const logoScale = logoHeight / vbH
+
+  ctx.y -= 6
+  for (const shape of MARK_PATHS) {
+    ctx.page.drawSvgPath(shape.d, {
+      x: MARGIN - vbX * logoScale,
+      y: ctx.y + logoHeight + vbY * logoScale,
+      scale: logoScale,
+      color: shape.accent ? ACCENT : INK,
+    })
+  }
+
   text('INVOICE', { size: 10, font: bodyMedium, colour: MUTED, align: 'right' })
 
-  ctx.y -= 16
+  ctx.y -= 18
   text(data.studio.site, { size: 9, colour: MUTED })
   text(data.number, { size: 16, font: display, align: 'right' })
 
@@ -275,12 +296,20 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<Uint8Array> {
   totalRow(dueLabel, money(data.amountDueMinor), true)
 
   /* --- Payment ---------------------------------------------------------- */
-  if (data.payUrl) {
-    ensure(90)
+  {
+    ensure(110)
     ctx.y -= 34
 
+    /*
+     * There is always a link, and the label tells the truth about it.
+     *
+     * It used to be omitted entirely when the currency was one Paystack cannot
+     * charge, which meant a GBP invoice arrived with no way back to the quote
+     * at all. The dead-end this was avoiding is a button that says "pay" and
+     * cannot; the fix is honest labelling, not removing the link.
+     */
     const buttonHeight = 30
-    const label = 'Pay this invoice'
+    const label = data.payable ? 'Pay this invoice' : 'View your quote online'
     const labelWidth = bodyMedium.widthOfTextAtSize(label, 11)
     const buttonWidth = labelWidth + 34
 
@@ -289,8 +318,8 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<Uint8Array> {
       y: ctx.y - 9,
       width: buttonWidth,
       height: buttonHeight,
-      color: ACCENT,
-      borderColor: ACCENT,
+      color: data.payable ? ACCENT : rgb(1, 1, 1),
+      borderColor: data.payable ? ACCENT : LINE,
       borderWidth: 1,
     })
     ctx.page.drawText(label, {
@@ -324,16 +353,29 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<Uint8Array> {
         A: doc.context.obj({
           Type: 'Action',
           S: 'URI',
-          URI: PDFString.of(data.payUrl),
+          URI: PDFString.of(data.quoteUrl),
         }),
       })
     )
     ctx.page.node.set(PDFName.of('Annots'), doc.context.obj([annotationRef]))
 
     ctx.y -= 22
-    for (const line of wrap(data.payUrl, body, 8, inner)) {
+    for (const line of wrap(data.quoteUrl, body, 8, inner)) {
       text(line, { size: 8, colour: MUTED })
       ctx.y -= 10
+    }
+
+    if (!data.payable) {
+      ctx.y -= 6
+      for (const line of wrap(
+        `We cannot take card payments in ${data.currency}. Reply to our email and we will send bank transfer details.`,
+        body,
+        9,
+        inner
+      )) {
+        text(line, { size: 9, colour: MUTED })
+        ctx.y -= 11
+      }
     }
   }
 

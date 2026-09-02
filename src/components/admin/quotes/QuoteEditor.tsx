@@ -75,6 +75,8 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
   const [pinState, setPinState] = useState<'hidden' | 'loading' | 'shown' | 'unavailable'>('hidden')
   const [confirmingReissue, setConfirmingReissue] = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
+  const [pendingCurrency, setPendingCurrency] = useState<string | null>(null)
+  const [converting, setConverting] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
   const shareUrl = `${siteUrl.replace(/\/$/, '')}/quote/${quote.slug}`
@@ -231,6 +233,67 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
     setCurrentPin(issued)
     setPinState('shown')
   }, [quote.id])
+
+  /**
+   * Switches currency, converting every amount at today's rate.
+   *
+   * Changing the currency alone only changed the label: £4,200 became ₦4,200,
+   * which is out by a factor of about two thousand and would have gone to a
+   * client that way.
+   *
+   * The rate is applied ONCE and the results are stored as ordinary figures. A
+   * quote is never re-priced from a live rate afterwards: a client who was sent
+   * a total must see that total tomorrow, whatever the market did overnight.
+   */
+  const convertCurrency = useCallback(
+    async (to: string) => {
+      const from = quote.currency
+      setConverting(true)
+      setMessage(null)
+
+      try {
+        const response = await fetch(`/api/v1/admin/fx?from=${from}&to=${to}`)
+        const body: unknown = await response.json()
+
+        if (!response.ok) {
+          setMessage({
+            tone: 'error',
+            text:
+              (body as { error?: { message?: string } }).error?.message ??
+              'We could not get an exchange rate.',
+          })
+          return
+        }
+
+        const { rate, asOf } = body as { rate: number; asOf: string }
+        const convert = (minor: number) => Math.round(minor * rate)
+
+        dispatch({
+          type: 'replaceAll',
+          dirty: true,
+          quote: {
+            ...quote,
+            currency: to as Quote['currency'],
+            discountMinor: convert(quote.discountMinor),
+            lineItems: quote.lineItems.map((item) => ({
+              ...item,
+              unitPriceMinor: convert(item.unitPriceMinor),
+            })),
+          },
+        })
+
+        setMessage({
+          tone: 'success',
+          text: `Converted at 1 ${from} = ${rate.toLocaleString('en-GB', { maximumFractionDigits: 4 })} ${to} (rate from ${asOf}). Check the prices, then save.`,
+        })
+      } catch {
+        setMessage({ tone: 'error', text: 'We could not reach the server. Try again.' })
+      } finally {
+        setConverting(false)
+      }
+    },
+    [quote, dispatch]
+  )
 
   const deleteQuote = useCallback(async () => {
     setDeleting(true)
@@ -502,7 +565,13 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                       label="Currency"
                       value={quote.currency}
                       options={currencyOptions}
-                      onChange={(currency) => setField({ currency: currency as Quote['currency'] })}
+                      onChange={(currency) => {
+                        // Never silently: converting rewrites every price, and
+                        // not converting leaves them numerically wrong. The
+                        // operator picks, with the consequences spelled out.
+                        if (currency === quote.currency) return
+                        setPendingCurrency(currency)
+                      }}
                     />
                     <MoneyInput
                       label="Discount"
@@ -945,7 +1014,8 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                       projectSummary: draft.projectSummary,
                       introNote: draft.introNote || quote.introNote,
                       paymentTerms: draft.paymentTerms || quote.paymentTerms,
-                      terms: draft.terms || quote.terms,
+                      // Terms are standard and fixed. A draft never replaces them.
+                      terms: quote.terms,
                       depositPercent: draft.suggestedDepositPercent,
                       validUntil:
                         quote.validUntil ??
@@ -996,6 +1066,24 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
 
       {/* Save bar. Fixed, because the tab content is long and the button must
           never be a scroll away. */}
+      <ConfirmDialog
+        open={pendingCurrency !== null}
+        title={`Convert prices to ${pendingCurrency ?? ''}?`}
+        body={`Every price on this quote will be converted at today's rate. Choose "Change the label only" if the figures are already correct in ${pendingCurrency ?? ''} and you just need the symbol changed.`}
+        confirmLabel={converting ? 'Converting…' : "Convert at today's rate"}
+        cancelLabel="Change the label only"
+        onCancel={() => {
+          const target = pendingCurrency
+          setPendingCurrency(null)
+          if (target) setField({ currency: target as Quote['currency'] })
+        }}
+        onConfirm={() => {
+          const target = pendingCurrency
+          setPendingCurrency(null)
+          if (target) void convertCurrency(target)
+        }}
+      />
+
       <ConfirmDialog
         open={confirmingDelete}
         tone="danger"

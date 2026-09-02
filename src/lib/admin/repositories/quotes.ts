@@ -443,6 +443,7 @@ export interface QuotePatch {
   pinHash?: string
   pinEncrypted?: string
   sentAt?: string | null
+  clientId?: string | null
 }
 
 const PATCH_COLUMNS: Record<keyof QuotePatch, string> = {
@@ -465,6 +466,7 @@ const PATCH_COLUMNS: Record<keyof QuotePatch, string> = {
   pinHash: 'pin_hash',
   pinEncrypted: 'pin_encrypted',
   sentAt: 'sent_at',
+  clientId: 'client_id',
 }
 
 export async function updateQuote(id: string, patch: QuotePatch): Promise<void> {

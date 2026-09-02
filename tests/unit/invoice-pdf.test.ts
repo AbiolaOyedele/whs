@@ -50,7 +50,8 @@ const base: InvoiceData = {
   amountDueMinor: 436_800,
   kind: 'deposit',
   paymentTerms: '40% to start, 30% at build end, 30% on handover.',
-  payUrl: 'https://whstd.com/quote/northwind-logistics',
+  quoteUrl: 'https://whstd.com/quote/northwind-logistics',
+  payable: true,
   studio: { name: 'WildHands', email: 'hello@whstd.com', site: 'whstd.com' },
 }
 
@@ -68,10 +69,10 @@ describe('renderInvoicePdf', () => {
     expect(await linkCount(await renderInvoicePdf(base))).toBe(1)
   }, 30_000)
 
-  it('omits the link entirely when there is nothing to pay', async () => {
-    // A dead pay button in a PDF is worse than none: the file outlives the
-    // page and cannot be corrected after it is sent.
-    expect(await linkCount(await renderInvoicePdf({ ...base, payUrl: null }))).toBe(0)
+  it('still links back to the quote when card payment is not possible', async () => {
+    // The link is never omitted. A client who cannot pay by card still needs a
+    // way back to their quote; the label is what changes, not the presence.
+    expect(await linkCount(await renderInvoicePdf({ ...base, payable: false }))).toBe(1)
   }, 30_000)
 
   it('embeds the brand typefaces rather than falling back to a standard font', async () => {

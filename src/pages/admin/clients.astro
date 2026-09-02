@@ -1,0 +1,20 @@
+---
+/**
+ * Clients.
+ *
+ * The list is resolved server-side with each client's quote activity, so the
+ * page opens with real numbers rather than a loading state.
+ */
+import AdminLayout from '@/layouts/AdminLayout.astro'
+import ClientsPanel from '@/components/admin/clients/ClientsPanel'
+import { listClients } from '@/lib/admin/repositories/clients'
+
+export const prerender = false
+
+const session = Astro.locals.adminSession
+const clients = await listClients()
+---
+
+<AdminLayout title="Clients" section="clients" email={session?.email}>
+  <ClientsPanel client:load clients={clients} />
+</AdminLayout>
