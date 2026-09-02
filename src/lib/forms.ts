@@ -25,16 +25,40 @@ export function assertSameOrigin(request: Request, siteUrl: string): void {
   // Same-origin fetches from some browsers omit Origin entirely; that is fine.
   if (origin === null) return
 
-  let expected: string
+  if (!allowedOrigins(siteUrl).includes(origin)) {
+    throw new AppError(403, 'This request was blocked.', 'REQUEST_ORIGIN_REJECTED')
+  }
+}
+
+/**
+ * The origins a form may legitimately be submitted from: the configured one,
+ * and its apex/www counterpart.
+ *
+ * Both, because the two are the same site. whstd.com redirects to
+ * www.whstd.com, so a visitor who typed the bare domain is served the www page
+ * and submits with a www origin — but anyone reaching an endpoint on the apex
+ * host directly sends the apex origin, and that was being rejected with a 403.
+ * Every form on the site was affected, not just the quote gate.
+ *
+ * This is not a loosening: it names two exact hosts derived from the configured
+ * one. No wildcard, no subdomain matching, and nothing else is accepted.
+ */
+export function allowedOrigins(siteUrl: string): string[] {
+  let url: URL
   try {
-    expected = new URL(siteUrl).origin
+    url = new URL(siteUrl)
   } catch {
     throw new AppError(500, 'Server configuration problem.', 'CONFIG_SITE_URL_INVALID')
   }
 
-  if (origin !== expected) {
-    throw new AppError(403, 'This request was blocked.', 'REQUEST_ORIGIN_REJECTED')
-  }
+  /* `host`, not `hostname`: hostname drops the port, which turned
+     http://localhost:4321 into http://localhost and would have refused every
+     form in local development. */
+  const hostname = url.hostname
+  const port = url.port ? `:${url.port}` : ''
+  const counterpart = hostname.startsWith('www.') ? hostname.slice(4) : `www.${hostname}`
+
+  return [`${url.protocol}//${hostname}${port}`, `${url.protocol}//${counterpart}${port}`]
 }
 
 /** Throws if the honeypot field carries any value. */
