@@ -23,6 +23,7 @@ import {
 } from '../ui'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { MoneyInput } from './MoneyInput'
+import { LineItemList } from './LineItemList'
 import { QuoteTotals } from './QuoteTotals'
 import { AiDraftPanel } from './AiDraftPanel'
 import { ImageUploader } from './ImageUploader'
@@ -40,12 +41,8 @@ import {
   tabForPath,
   type FieldErrors,
 } from './field-errors'
-import { formatMoney, lineAmount, optionTotalMinor } from '@/lib/admin/money'
+import { formatMoney, optionTotalMinor } from '@/lib/admin/money'
 import { cn } from '@/lib/utils'
-
-/* A sentinel, because the listbox speaks in strings and "no option" is a real
-   choice the operator makes rather than an absence. */
-const BASE_SCOPE = '__base__'
 
 /**
  * The host of a reference link, for the collapsed row summary.
@@ -72,6 +69,7 @@ import type { AiProvider } from '@/lib/ai/types'
 const TABS = [
   { id: 'client', label: 'Client' },
   { id: 'cost', label: 'Scope & cost' },
+  { id: 'packages', label: 'Packages' },
   { id: 'timeline', label: 'Timeline' },
   { id: 'references', label: 'References' },
   { id: 'images', label: 'Images' },
@@ -517,262 +515,23 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
             {tab === 'cost' && (
               <>
                 <Panel
-                  title="Options the client chooses from"
-                  description="Packages are pick-one. Add-ons are tick-any. Leave this empty for a single fixed scope."
-                  action={
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        onClick={() => rows.add('options', { ...BLANK_OPTION, kind: 'package' })}
-                      >
-                        Add package
-                      </Button>
-                      <Button
-                        onClick={() => rows.add('options', { ...BLANK_OPTION, kind: 'addon' })}
-                      >
-                        Add add-on
-                      </Button>
-                    </div>
-                  }
-                >
-                  {quote.options.length === 0 ? (
-                    <p className="text-base text-muted-foreground">
-                      No options. Every line below is charged as one fixed scope.
-                    </p>
-                  ) : (
-                    <ul className="flex flex-col gap-4">
-                      {quote.options.map((option, index) => (
-                        <CollapsibleRow
-                          key={option.id}
-                          label={`${option.kind === 'package' ? 'Package' : 'Add-on'} ${index + 1}`}
-                          title={option.title}
-                          meta={
-                            optionTotals.get(option.id)
-                              ? formatMoney(optionTotals.get(option.id) ?? 0, quote.currency)
-                              : undefined
-                          }
-                          defaultOpen={!option.title}
-                          actions={
-                            <>
-                              <Button
-                                tone="ghost"
-                                onClick={() => rows.move('options', option.id, -1)}
-                                disabled={index === 0}
-                              >
-                                Up
-                              </Button>
-                              <Button
-                                tone="ghost"
-                                onClick={() => rows.move('options', option.id, 1)}
-                                disabled={index === quote.options.length - 1}
-                              >
-                                Down
-                              </Button>
-                              <Button
-                                tone="ghost"
-                                onClick={() => {
-                                  /* Lines under a deleted option go with it.
-                                     Leaving them behind would silently move
-                                     their prices into base scope, charging the
-                                     client for a package they did not pick. */
-                                  quote.lineItems
-                                    .filter((item) => item.optionId === option.id)
-                                    .forEach((item) => rows.remove('lineItems', item.id))
-                                  rows.remove('options', option.id)
-                                }}
-                              >
-                                Remove
-                              </Button>
-                            </>
-                          }
-                        >
-                          <div className="flex flex-col gap-4">
-                            <TextInput
-                              label="Name"
-                              required
-                              value={option.title}
-                              dataField={`options.${index}.title`}
-                              error={fieldErrors[`options.${index}.title`]}
-                              onChange={(title) => rows.update('options', option.id, { title })}
-                            />
-                            <TextArea
-                              label="What it covers"
-                              rows={2}
-                              value={option.description}
-                              onChange={(description) =>
-                                rows.update('options', option.id, { description })
-                              }
-                            />
-                            <div className="grid gap-3 sm:grid-cols-2">
-                              <Select
-                                label="Type"
-                                value={option.kind}
-                                options={OPTION_KINDS}
-                                onChange={(kind) =>
-                                  rows.update('options', option.id, {
-                                    kind: kind as 'package' | 'addon',
-                                    /* Switching a selected package to an add-on
-                                       is fine, but two selected packages is not
-                                       — clear the flag rather than risk it. */
-                                    isSelected: false,
-                                  })
-                                }
-                              />
-                              <div className="flex items-end">
-                                <Checkbox
-                                  label="Pre-select this one"
-                                  checked={option.isSelected}
-                                  onChange={(isSelected) => {
-                                    if (isSelected && option.kind === 'package') {
-                                      quote.options
-                                        .filter(
-                                          (other) =>
-                                            other.kind === 'package' && other.id !== option.id
-                                        )
-                                        .forEach((other) =>
-                                          rows.update('options', other.id, { isSelected: false })
-                                        )
-                                    }
-                                    rows.update('options', option.id, {
-                                      isSelected,
-                                      isDefault: isSelected,
-                                    })
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </CollapsibleRow>
-                      ))}
-                    </ul>
-                  )}
-                </Panel>
-
-                <Panel
                   title="Cost breakdown"
-                  description="One line per piece of work the client could ask about."
+                  description="Work charged on every version of this quote, whatever the client picks."
                   action={
                     <Button onClick={() => rows.add('lineItems', BLANK_LINE_ITEM)}>Add line</Button>
                   }
                 >
-                  {quote.lineItems.length === 0 ? (
-                    <p className="text-base text-muted-foreground">
-                      No lines yet. Add one, or let the AI drafter propose a breakdown.
-                    </p>
-                  ) : (
-                    <ul className="flex flex-col gap-4">
-                      {quote.lineItems.map((item, index) => (
-                        <CollapsibleRow
-                          key={item.id}
-                          label={String(index + 1).padStart(2, '0')}
-                          title={item.title}
-                          meta={formatMoney(lineAmount(item), quote.currency)}
-                          defaultOpen={!item.title}
-                          actions={
-                            <>
-                              <Button
-                                tone="ghost"
-                                onClick={() => rows.move('lineItems', item.id, -1)}
-                                disabled={index === 0}
-                              >
-                                <span aria-hidden="true">↑</span>
-                                <span className="sr-only">Move up</span>
-                              </Button>
-                              <Button
-                                tone="ghost"
-                                onClick={() => rows.move('lineItems', item.id, 1)}
-                                disabled={index === quote.lineItems.length - 1}
-                              >
-                                <span aria-hidden="true">↓</span>
-                                <span className="sr-only">Move down</span>
-                              </Button>
-                              <Button
-                                tone="danger"
-                                onClick={() => rows.remove('lineItems', item.id)}
-                              >
-                                Remove
-                              </Button>
-                            </>
-                          }
-                        >
-                          <div className="flex flex-col gap-4">
-                            <TextInput
-                              label="What it is"
-                              required
-                              dataField={`lineItems.${index}.title`}
-                              error={fieldErrors[`lineItems.${index}.title`]}
-                              value={item.title}
-                              onChange={(title) => rows.update('lineItems', item.id, { title })}
-                            />
-                            <TextArea
-                              label="What it includes"
-                              rows={2}
-                              value={item.description}
-                              onChange={(description) =>
-                                rows.update('lineItems', item.id, { description })
-                              }
-                            />
-                            <div className="grid gap-4 sm:grid-cols-3">
-                              <label className="flex flex-col gap-1.5">
-                                <span className="text-sm text-muted-foreground">Quantity</span>
-                                <input
-                                  type="number"
-                                  min={0}
-                                  step="0.25"
-                                  value={item.quantity}
-                                  onChange={(event) =>
-                                    rows.update('lineItems', item.id, {
-                                      quantity: Number(event.target.value) || 0,
-                                    })
-                                  }
-                                  className="min-h-11 w-full rounded-xl border border-border bg-card px-3 py-2 text-right font-mono text-base outline-none focus-visible:border-foreground"
-                                />
-                              </label>
-                              <MoneyInput
-                                label="Unit price"
-                                currency={quote.currency}
-                                valueMinor={item.unitPriceMinor}
-                                onChange={(unitPriceMinor) =>
-                                  rows.update('lineItems', item.id, { unitPriceMinor })
-                                }
-                              />
-                              <div className="flex items-end">
-                                <Checkbox
-                                  label="Optional"
-                                  checked={item.isOptional}
-                                  onChange={(isOptional) =>
-                                    rows.update('lineItems', item.id, { isOptional })
-                                  }
-                                />
-                              </div>
-                            </div>
-
-                            {quote.options.length > 0 && (
-                              <div className="mt-4">
-                                <Select
-                                  label="Applies to"
-                                  value={item.optionId ?? BASE_SCOPE}
-                                  options={[
-                                    { value: BASE_SCOPE, label: 'Base scope — always charged' },
-                                    ...quote.options.map((option) => ({
-                                      value: option.id,
-                                      label: `${option.title || 'Untitled'} (${
-                                        option.kind === 'package' ? 'package' : 'add-on'
-                                      })`,
-                                    })),
-                                  ]}
-                                  onChange={(value) =>
-                                    rows.update('lineItems', item.id, {
-                                      optionId: value === BASE_SCOPE ? null : value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            )}
-                          </div>
-                        </CollapsibleRow>
-                      ))}
-                    </ul>
-                  )}
+                  <LineItemList
+                    lineItems={quote.lineItems}
+                    options={quote.options}
+                    currency={quote.currency}
+                    optionId={null}
+                    fieldErrors={fieldErrors}
+                    emptyMessage="No lines yet. Add one, or let the AI drafter propose a breakdown."
+                    onUpdate={(id, patch) => rows.update('lineItems', id, patch)}
+                    onRemove={(id) => rows.remove('lineItems', id)}
+                    onReorder={(lineItems) => setField({ lineItems })}
+                  />
                 </Panel>
 
                 <Panel title="Adjustments">
@@ -829,6 +588,178 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                   </div>
                 </Panel>
               </>
+            )}
+
+            {tab === 'packages' && (
+              <Panel
+                title="Options the client chooses from"
+                description="Packages are pick-one. Add-ons are tick-any. Leave this empty for a single fixed scope."
+                action={
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      onClick={() => rows.add('options', { ...BLANK_OPTION, kind: 'package' })}
+                    >
+                      Add package
+                    </Button>
+                    <Button onClick={() => rows.add('options', { ...BLANK_OPTION, kind: 'addon' })}>
+                      Add add-on
+                    </Button>
+                  </div>
+                }
+              >
+                {quote.options.length === 0 ? (
+                  <p className="text-base text-muted-foreground">
+                    No options. Every line below is charged as one fixed scope.
+                  </p>
+                ) : (
+                  <ul className="flex flex-col gap-4">
+                    {quote.options.map((option, index) => (
+                      <CollapsibleRow
+                        key={option.id}
+                        label={`${option.kind === 'package' ? 'Package' : 'Add-on'} ${index + 1}`}
+                        title={option.title}
+                        meta={
+                          optionTotals.get(option.id)
+                            ? formatMoney(optionTotals.get(option.id) ?? 0, quote.currency)
+                            : undefined
+                        }
+                        defaultOpen={!option.title}
+                        actions={
+                          <>
+                            <Button
+                              tone="ghost"
+                              onClick={() => rows.move('options', option.id, -1)}
+                              disabled={index === 0}
+                            >
+                              Up
+                            </Button>
+                            <Button
+                              tone="ghost"
+                              onClick={() => rows.move('options', option.id, 1)}
+                              disabled={index === quote.options.length - 1}
+                            >
+                              Down
+                            </Button>
+                            <Button
+                              tone="ghost"
+                              onClick={() => {
+                                /* Lines under a deleted option go with it.
+                                     Leaving them behind would silently move
+                                     their prices into base scope, charging the
+                                     client for a package they did not pick. */
+                                quote.lineItems
+                                  .filter((item) => item.optionId === option.id)
+                                  .forEach((item) => rows.remove('lineItems', item.id))
+                                rows.remove('options', option.id)
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          </>
+                        }
+                      >
+                        <div className="flex flex-col gap-4">
+                          <TextInput
+                            label="Name"
+                            required
+                            value={option.title}
+                            dataField={`options.${index}.title`}
+                            error={fieldErrors[`options.${index}.title`]}
+                            onChange={(title) => rows.update('options', option.id, { title })}
+                          />
+                          <TextArea
+                            label="What it covers"
+                            rows={2}
+                            value={option.description}
+                            onChange={(description) =>
+                              rows.update('options', option.id, { description })
+                            }
+                          />
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            <Select
+                              label="Type"
+                              value={option.kind}
+                              options={OPTION_KINDS}
+                              onChange={(kind) =>
+                                rows.update('options', option.id, {
+                                  kind: kind as 'package' | 'addon',
+                                  /* Switching a selected package to an add-on
+                                       is fine, but two selected packages is not
+                                       — clear the flag rather than risk it. */
+                                  isSelected: false,
+                                })
+                              }
+                            />
+                            <div className="flex items-end">
+                              <Checkbox
+                                label="Pre-select this one"
+                                checked={option.isSelected}
+                                onChange={(isSelected) => {
+                                  if (isSelected && option.kind === 'package') {
+                                    quote.options
+                                      .filter(
+                                        (other) =>
+                                          other.kind === 'package' && other.id !== option.id
+                                      )
+                                      .forEach((other) =>
+                                        rows.update('options', other.id, { isSelected: false })
+                                      )
+                                  }
+                                  rows.update('options', option.id, {
+                                    isSelected,
+                                    isDefault: isSelected,
+                                  })
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                          {/*
+                              The package owns its lines here, rather than the
+                              operator adding them to a flat list and then
+                              picking this package from a dropdown. Same rows,
+                              same table — but building a package reads as
+                              building a package.
+                            */}
+                          <div className="rounded-2xl border border-border p-4">
+                            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                              <div>
+                                <p className="text-base">What's included</p>
+                                <p className="text-sm text-muted-foreground">
+                                  Charged only while the client has this{' '}
+                                  {option.kind === 'package' ? 'package' : 'add-on'} selected.
+                                </p>
+                              </div>
+                              <Button
+                                onClick={() =>
+                                  rows.add('lineItems', {
+                                    ...BLANK_LINE_ITEM,
+                                    optionId: option.id,
+                                  })
+                                }
+                              >
+                                Add item
+                              </Button>
+                            </div>
+
+                            <LineItemList
+                              lineItems={quote.lineItems}
+                              options={quote.options}
+                              currency={quote.currency}
+                              optionId={option.id}
+                              fieldErrors={fieldErrors}
+                              emptyMessage="Nothing in here yet. Add the work this option covers."
+                              onUpdate={(id, patch) => rows.update('lineItems', id, patch)}
+                              onRemove={(id) => rows.remove('lineItems', id)}
+                              onReorder={(lineItems) => setField({ lineItems })}
+                            />
+                          </div>
+                        </div>
+                      </CollapsibleRow>
+                    ))}
+                  </ul>
+                )}
+              </Panel>
             )}
 
             {tab === 'timeline' && (
