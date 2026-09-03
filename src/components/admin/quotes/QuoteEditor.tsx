@@ -11,7 +11,16 @@
  * round trip, and nothing else.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Button, Checkbox, Panel, Select, StatusLine, TextArea, TextInput } from '../ui'
+import {
+  Button,
+  Checkbox,
+  CollapsibleRow,
+  Panel,
+  Select,
+  StatusLine,
+  TextArea,
+  TextInput,
+} from '../ui'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { MoneyInput } from './MoneyInput'
 import { QuoteTotals } from './QuoteTotals'
@@ -31,11 +40,27 @@ import {
   tabForPath,
   type FieldErrors,
 } from './field-errors'
+import { formatMoney, lineAmount, optionTotalMinor } from '@/lib/admin/money'
 import { cn } from '@/lib/utils'
 
 /* A sentinel, because the listbox speaks in strings and "no option" is a real
    choice the operator makes rather than an absence. */
 const BASE_SCOPE = '__base__'
+
+/**
+ * The host of a reference link, for the collapsed row summary.
+ *
+ * `new URL` throws on anything that is not yet a URL, and this runs on every
+ * keystroke while the operator types one — so an unguarded call blanks the
+ * whole editor somewhere around "htt".
+ */
+function hostnameOf(url: string): string | undefined {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return undefined
+  }
+}
 
 const OPTION_KINDS = [
   { value: 'package', label: 'Package — client picks one' },
@@ -75,6 +100,17 @@ interface Props {
 export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, imagesEnabled }: Props) {
   const { state, totals, setField, rows, reset, dispatch } = useQuoteEditor(initialQuote)
   const { quote, dirty } = state
+
+  /* What each option adds, for the collapsed row summary. Derived from the
+     line items rather than stored, so it cannot disagree with the client's
+     copy of the same figure. */
+  const optionTotals = useMemo(
+    () =>
+      new Map(
+        quote.options.map((option) => [option.id, optionTotalMinor(option.id, quote.lineItems)])
+      ),
+    [quote.options, quote.lineItems]
+  )
 
   const [tab, setTab] = useState<TabId>('client')
   const [saving, setSaving] = useState(false)
@@ -505,12 +541,18 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                   ) : (
                     <ul className="flex flex-col gap-4">
                       {quote.options.map((option, index) => (
-                        <li key={option.id} className="rounded-2xl border border-border p-4">
-                          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                            <span className="font-mono text-sm text-muted-foreground">
-                              {option.kind === 'package' ? 'Package' : 'Add-on'} {index + 1}
-                            </span>
-                            <div className="flex gap-1">
+                        <CollapsibleRow
+                          key={option.id}
+                          label={`${option.kind === 'package' ? 'Package' : 'Add-on'} ${index + 1}`}
+                          title={option.title}
+                          meta={
+                            optionTotals.get(option.id)
+                              ? formatMoney(optionTotals.get(option.id) ?? 0, quote.currency)
+                              : undefined
+                          }
+                          defaultOpen={!option.title}
+                          actions={
+                            <>
                               <Button
                                 tone="ghost"
                                 onClick={() => rows.move('options', option.id, -1)}
@@ -540,12 +582,13 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                               >
                                 Remove
                               </Button>
-                            </div>
-                          </div>
-
+                            </>
+                          }
+                        >
                           <div className="flex flex-col gap-4">
                             <TextInput
                               label="Name"
+                              required
                               value={option.title}
                               dataField={`options.${index}.title`}
                               error={fieldErrors[`options.${index}.title`]}
@@ -598,7 +641,7 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                               </div>
                             </div>
                           </div>
-                        </li>
+                        </CollapsibleRow>
                       ))}
                     </ul>
                   )}
@@ -618,12 +661,14 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                   ) : (
                     <ul className="flex flex-col gap-4">
                       {quote.lineItems.map((item, index) => (
-                        <li key={item.id} className="rounded-2xl border border-border p-4">
-                          <div className="mb-4 flex items-center justify-between gap-2">
-                            <span className="font-mono text-sm text-muted-foreground">
-                              {String(index + 1).padStart(2, '0')}
-                            </span>
-                            <div className="flex items-center gap-1">
+                        <CollapsibleRow
+                          key={item.id}
+                          label={String(index + 1).padStart(2, '0')}
+                          title={item.title}
+                          meta={formatMoney(lineAmount(item), quote.currency)}
+                          defaultOpen={!item.title}
+                          actions={
+                            <>
                               <Button
                                 tone="ghost"
                                 onClick={() => rows.move('lineItems', item.id, -1)}
@@ -646,9 +691,9 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                               >
                                 Remove
                               </Button>
-                            </div>
-                          </div>
-
+                            </>
+                          }
+                        >
                           <div className="flex flex-col gap-4">
                             <TextInput
                               label="What it is"
@@ -724,7 +769,7 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                               </div>
                             )}
                           </div>
-                        </li>
+                        </CollapsibleRow>
                       ))}
                     </ul>
                   )}
@@ -800,12 +845,14 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                 ) : (
                   <ol className="flex flex-col gap-4">
                     {quote.phases.map((phase, index) => (
-                      <li key={phase.id} className="rounded-2xl border border-border p-4">
-                        <div className="mb-4 flex items-center justify-between gap-2">
-                          <span className="font-mono text-sm text-muted-foreground">
-                            Phase {index + 1}
-                          </span>
-                          <div className="flex items-center gap-1">
+                      <CollapsibleRow
+                        key={phase.id}
+                        label={`Phase ${index + 1}`}
+                        title={phase.title}
+                        meta={phase.durationLabel || undefined}
+                        defaultOpen={!phase.title}
+                        actions={
+                          <>
                             <Button
                               tone="ghost"
                               onClick={() => rows.move('phases', phase.id, -1)}
@@ -825,9 +872,9 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                             <Button tone="danger" onClick={() => rows.remove('phases', phase.id)}>
                               Remove
                             </Button>
-                          </div>
-                        </div>
-
+                          </>
+                        }
+                      >
                         <div className="flex flex-col gap-4">
                           <div className="grid gap-4 sm:grid-cols-[1fr_10rem]">
                             <TextInput
@@ -870,7 +917,7 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                             }
                           />
                         </div>
-                      </li>
+                      </CollapsibleRow>
                     ))}
                   </ol>
                 )}
@@ -892,18 +939,21 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                 ) : (
                   <ul className="flex flex-col gap-4">
                     {quote.references.map((reference, index) => (
-                      <li key={reference.id} className="rounded-2xl border border-border p-4">
-                        <div className="mb-4 flex items-center justify-between gap-2">
-                          <span className="font-mono text-sm text-muted-foreground">
-                            {String(index + 1).padStart(2, '0')}
-                          </span>
+                      <CollapsibleRow
+                        key={reference.id}
+                        label={String(index + 1).padStart(2, '0')}
+                        title={reference.label}
+                        meta={hostnameOf(reference.url)}
+                        defaultOpen={!reference.label}
+                        actions={
                           <Button
                             tone="danger"
                             onClick={() => rows.remove('references', reference.id)}
                           >
                             Remove
                           </Button>
-                        </div>
+                        }
+                      >
                         <div className="flex flex-col gap-4">
                           <TextInput
                             label="Label"
@@ -932,7 +982,7 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                             }
                           />
                         </div>
-                      </li>
+                      </CollapsibleRow>
                     ))}
                   </ul>
                 )}

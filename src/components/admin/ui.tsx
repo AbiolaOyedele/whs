@@ -11,7 +11,7 @@
  * not something an internal tool gets to opt out of.
  */
 import type { ChangeEvent, ReactNode } from 'react'
-import { useId } from 'react'
+import { useId, useState } from 'react'
 import { cn } from '@/lib/utils'
 
 const CONTROL =
@@ -256,5 +256,80 @@ export function StatusLine({
     >
       {children}
     </p>
+  )
+}
+
+/**
+ * One row of a repeated collection, collapsed to a summary until opened.
+ *
+ * A quote with three packages, thirteen lines and four phases is several
+ * screens of open form fields, and the operator is looking for one of them.
+ * Collapsed, the same quote is a list they can scan.
+ *
+ * The row's controls (reorder, remove) sit OUTSIDE the disclosure button
+ * rather than inside it: a button inside a button is invalid HTML, and every
+ * browser resolves it by dropping one of them — usually the one you needed.
+ */
+export function CollapsibleRow({
+  label,
+  title,
+  meta,
+  actions,
+  defaultOpen = false,
+  children,
+}: {
+  /** The row's kind and position, e.g. "Package 1". Always visible. */
+  label: string
+  /** What this row is. Falls back to a prompt when the row is still blank. */
+  title: string
+  /** A figure or short qualifier shown on the right when collapsed. */
+  meta?: string | undefined
+  actions?: ReactNode
+  /** New rows open on mount — a blank row is useless collapsed. */
+  defaultOpen?: boolean | undefined
+  children: ReactNode
+}) {
+  const id = useId()
+  const [open, setOpen] = useState(defaultOpen)
+
+  return (
+    <li className="rounded-2xl border border-border">
+      <div className="flex items-center gap-2 pr-2 pl-4">
+        <button
+          type="button"
+          onClick={() => setOpen((value) => !value)}
+          aria-expanded={open}
+          aria-controls={id}
+          className="flex min-h-14 flex-1 items-center gap-3 text-left outline-none focus-visible:underline"
+        >
+          <span
+            className={cn(
+              'shrink-0 text-muted-foreground transition-transform',
+              open && 'rotate-180'
+            )}
+            aria-hidden="true"
+          >
+            ▾
+          </span>
+          <span className="shrink-0 font-mono text-sm text-muted-foreground">{label}</span>
+          <span
+            className={cn('min-w-0 flex-1 truncate', !title && 'text-muted-foreground/60 italic')}
+          >
+            {title || 'Untitled'}
+          </span>
+          {meta && <span className="shrink-0 font-mono text-sm text-muted-foreground">{meta}</span>}
+        </button>
+        {actions && <div className="flex shrink-0 items-center">{actions}</div>}
+      </div>
+
+      {/* Unmounted rather than hidden: these bodies hold form controls, and a
+          hidden-but-present control is still focusable, still submitted, and
+          still counted by assistive tech. */}
+      {open && (
+        <div id={id} className="border-t border-border p-4">
+          {children}
+        </div>
+      )}
+    </li>
   )
 }

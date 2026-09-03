@@ -205,6 +205,7 @@ const chooserLocked = !isPreview && selection?.locked === true
                     class="sr-only"
                     data-option-input
                     data-option-kind="package"
+                    data-option-slug={quote.slug}
                   />
 
                   <span class="flex items-start justify-between gap-3">
@@ -214,6 +215,7 @@ const chooserLocked = !isPreview && selection?.locked === true
                         'mt-1 flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors',
                         option.isSelected ? 'border-foreground bg-foreground' : 'border-border',
                       ]}
+                      data-option-indicator
                       aria-hidden="true"
                     >
                       <span
@@ -221,6 +223,7 @@ const chooserLocked = !isPreview && selection?.locked === true
                           'size-2 rounded-full bg-background transition-opacity',
                           option.isSelected ? 'opacity-100' : 'opacity-0',
                         ]}
+                        data-option-dot
                       />
                     </span>
                   </span>
@@ -244,17 +247,38 @@ const chooserLocked = !isPreview && selection?.locked === true
                     <span class="mt-2 text-base text-muted-foreground">{option.description}</span>
                   )}
 
+                  {/*
+                      The breakdown folds away.
+
+                      What a client compares is the name, the price and the one
+                      sentence. Three packages listing every line at once is a
+                      wall of text at exactly the moment they are choosing.
+
+                      `details` rather than script, so it still opens with
+                      JavaScript off. The summary sits inside the package label,
+                      so its click is intercepted — without that, expanding the
+                      breakdown would also select the package.
+                    */}
                   {itemsFor(option.id).length > 0 && (
-                    <ul class="mt-4 flex flex-col gap-2 border-t border-border pt-4">
-                      {itemsFor(option.id).map((item) => (
-                        <li class="flex items-baseline justify-between gap-3 text-base">
-                          <span class="min-w-0">{item.title}</span>
-                          <span class="shrink-0 font-mono text-sm text-muted-foreground">
-                            {money(lineAmount(item))}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                    <details class="group mt-4 border-t border-border pt-3" data-option-details>
+                      <summary class="flex min-h-11 cursor-pointer list-none items-center gap-2 text-base text-muted-foreground">
+                        <span class="transition-transform group-open:rotate-180" aria-hidden="true">
+                          ▾
+                        </span>
+                        What&#39;s included
+                        <span class="ml-auto font-mono text-sm">{itemsFor(option.id).length}</span>
+                      </summary>
+                      <ul class="mt-3 flex flex-col gap-2">
+                        {itemsFor(option.id).map((item) => (
+                          <li class="flex items-baseline justify-between gap-3 text-base">
+                            <span class="min-w-0">{item.title}</span>
+                            <span class="shrink-0 font-mono text-sm text-muted-foreground">
+                              {money(lineAmount(item))}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
                   )}
                 </label>
               ))}
@@ -293,6 +317,7 @@ const chooserLocked = !isPreview && selection?.locked === true
                       class="sr-only"
                       data-option-input
                       data-option-kind="addon"
+                      data-option-slug={quote.slug}
                       value={option.id}
                     />
 
@@ -535,6 +560,7 @@ const chooserLocked = !isPreview && selection?.locked === true
             'mb-5 font-mono leading-none',
             totals.totalMinor >= 100_000_000 ? 'text-xl' : 'text-3xl',
           ]}
+          data-total="total"
         >
           {money(totals.totalMinor)}
         </p>
@@ -549,13 +575,15 @@ const chooserLocked = !isPreview && selection?.locked === true
         >
           <div class="flex justify-between gap-4">
             <dt class="text-muted-foreground">Subtotal</dt>
-            <dd class="font-mono">{money(totals.subtotalMinor)}</dd>
+            <dd class="font-mono" data-total="subtotal">{money(totals.subtotalMinor)}</dd>
           </div>
           {
             totals.discountMinor > 0 && (
               <div class="flex justify-between gap-4">
                 <dt class="text-muted-foreground">Discount</dt>
-                <dd class="font-mono">− {money(totals.discountMinor)}</dd>
+                <dd class="font-mono" data-total="discount">
+                  − {money(totals.discountMinor)}
+                </dd>
               </div>
             )
           }
@@ -563,7 +591,9 @@ const chooserLocked = !isPreview && selection?.locked === true
             quote.taxRateBp > 0 && (
               <div class="flex justify-between gap-4">
                 <dt class="text-muted-foreground">Tax ({quote.taxRateBp / 100}%)</dt>
-                <dd class="font-mono">{money(totals.taxMinor)}</dd>
+                <dd class="font-mono" data-total="tax">
+                  {money(totals.taxMinor)}
+                </dd>
               </div>
             )
           }
@@ -572,11 +602,15 @@ const chooserLocked = !isPreview && selection?.locked === true
               <>
                 <div class="mt-2 flex justify-between gap-4 border-t border-border pt-3">
                   <dt class="text-muted-foreground">To start ({quote.depositPercent}%)</dt>
-                  <dd class="font-mono">{money(totals.depositMinor)}</dd>
+                  <dd class="font-mono" data-total="deposit">
+                    {money(totals.depositMinor)}
+                  </dd>
                 </div>
                 <div class="flex justify-between gap-4">
                   <dt class="text-muted-foreground">On delivery</dt>
-                  <dd class="font-mono">{money(totals.balanceMinor)}</dd>
+                  <dd class="font-mono" data-total="balance">
+                    {money(totals.balanceMinor)}
+                  </dd>
                 </div>
               </>
             )
@@ -812,34 +846,96 @@ const chooserLocked = !isPreview && selection?.locked === true
   /*
    * Package and add-on selection.
    *
-   * The server owns the arithmetic, so this does not patch the total in place.
-   * It writes the choice, then reloads. Patching would mean keeping the total,
-   * the deposit, the balance, the pay button's amount and the invoice's
-   * availability in step by hand — five figures derived from one number, each a
-   * chance for the page to show a total the server does not agree with. A
-   * reload costs a second and cannot drift.
+   * Two phases, because they have different deadlines.
+   *
+   * The CARD responds on the click, from state the browser already has. Waiting
+   * on a round trip to show a radio filling in makes a working page feel
+   * broken — the client clicks, nothing moves, and they click again.
+   *
+   * The FIGURES wait for the server, because the server owns the arithmetic.
+   * They arrive pre-formatted so this file never does currency itself, and they
+   * are keyed by name so a row the page does not have is caught rather than
+   * silently skipped.
    */
+  /*
+   * The "What's included" disclosure lives inside the package's <label>, so a
+   * click on it would toggle the details AND activate the label's radio —
+   * selecting a package the client only wanted to read about.
+   *
+   * `preventDefault` cancels both, and the open state is then set by hand.
+   * Keyboard activation of a <summary> dispatches a click too, so Enter and
+   * Space go through this same path.
+   */
+  document.querySelectorAll<HTMLElement>('[data-option-details] > summary').forEach((summary) => {
+    summary.addEventListener('click', (event) => {
+      event.preventDefault()
+      const details = summary.parentElement as HTMLDetailsElement | null
+      if (details) details.open = !details.open
+    })
+  })
+
   {
-    const inputs = document.querySelectorAll<HTMLInputElement>('[data-option-input]')
+    const inputs = [...document.querySelectorAll<HTMLInputElement>('[data-option-input]')]
+
     if (inputs.length > 0) {
-      const slug = window.location.pathname.split('/').filter(Boolean)[1] ?? ''
       const status = document.querySelector<HTMLElement>('[data-option-status]')
-      let busy = false
+
+      /*
+       * No slug means the markup and this script have drifted. Posting anyway
+       * builds `/api/v1/quote//select`, which normalises to a different route
+       * and 404s — a failure that reads to the client as "we could not save
+       * that" and gives nobody a reason. Refuse instead, and say so.
+       */
+      const slug = inputs[0]?.dataset['optionSlug']
+      if (!slug) {
+        console.error('[quote] option controls are missing data-option-slug')
+        inputs.forEach((input) => {
+          input.disabled = true
+        })
+        if (status) {
+          status.textContent =
+            'We cannot save changes to this quote right now. Please email us and we will sort it out.'
+          status.classList.remove('hidden')
+        }
+        throw new Error('missing data-option-slug')
+      }
+
+      const SELECTED_CARD = ['border-foreground', 'ring-1', 'ring-foreground']
+      const UNSELECTED_CARD = ['border-border', 'hover:border-foreground']
+      const SELECTED_MARK = ['border-foreground', 'bg-foreground']
+
+      /** Paints one option's card to match its input. No network, no waiting. */
+      const paint = (input: HTMLInputElement): void => {
+        const card = input.closest<HTMLElement>('[data-option-card]')
+        if (!card) return
+
+        card.classList.toggle('border-foreground', input.checked)
+        SELECTED_CARD.forEach((cls) => card.classList.toggle(cls, input.checked))
+        UNSELECTED_CARD.forEach((cls) => card.classList.toggle(cls, !input.checked))
+
+        const mark = card.querySelector<HTMLElement>('[data-option-indicator]')
+        SELECTED_MARK.forEach((cls) => mark?.classList.toggle(cls, input.checked))
+        mark?.classList.toggle('border-border', !input.checked)
+
+        const dot = card.querySelector<HTMLElement>('[data-option-dot]')
+        dot?.classList.toggle('opacity-100', input.checked)
+        dot?.classList.toggle('opacity-0', !input.checked)
+      }
+
+      /** Repaints every card. Radios are exclusive, so one click moves two. */
+      const paintAll = (): void => inputs.forEach(paint)
+
+      let inFlight = 0
 
       inputs.forEach((input) => {
         input.addEventListener('change', async () => {
-          if (busy) return
-          busy = true
+          // Immediate, before anything is sent.
+          paintAll()
 
-          // Every control goes down together: a second click while the first is
-          // in flight would race two writes against one selection.
-          inputs.forEach((other) => {
-            other.disabled = true
-          })
-          if (status) {
-            status.textContent = 'Updating your quote…'
-            status.classList.remove('hidden')
-          }
+          const previous = inputs.map((other) => other.checked)
+          const request = (inFlight += 1)
+
+          status?.classList.add('hidden')
 
           try {
             const response = await fetch(`/api/v1/quote/${slug}/select`, {
@@ -848,29 +944,61 @@ const chooserLocked = !isPreview && selection?.locked === true
               body: JSON.stringify({ optionId: input.value, selected: input.checked }),
             })
 
+            // A slower earlier click landing after a faster later one would
+            // otherwise repaint the page with the wrong answer.
+            if (request !== inFlight) return
+
             if (!response.ok) {
               const body = await response.json().catch(() => null)
+              inputs.forEach((other, index) => {
+                other.checked = previous[index] ?? false
+              })
+              paintAll()
               if (status) {
                 status.textContent =
                   body?.error?.message ?? 'We could not save that. Please try again.'
+                status.classList.remove('hidden')
               }
-              // Put the control back where the server still believes it is.
-              input.checked = !input.checked
-              inputs.forEach((other) => {
-                other.disabled = false
-              })
-              busy = false
               return
             }
 
-            window.location.reload()
-          } catch {
-            if (status) status.textContent = 'We could not reach the server. Please try again.'
-            input.checked = !input.checked
-            inputs.forEach((other) => {
-              other.disabled = false
+            const body = (await response.json()) as {
+              display: Record<string, string>
+              totalIsLarge: boolean
+              options: Array<{ id: string; isSelected: boolean }>
+            }
+
+            // The server is the authority on what is selected, not the click.
+            body.options.forEach((option) => {
+              const control = inputs.find((other) => other.value === option.id)
+              if (control) control.checked = option.isSelected
             })
-            busy = false
+            paintAll()
+
+            for (const [key, value] of Object.entries(body.display)) {
+              const cell = document.querySelector<HTMLElement>(`[data-total="${key}"]`)
+              if (!cell) {
+                // A row the server reports and the page cannot show means the
+                // two have diverged. Reload rather than display a partial truth.
+                window.location.reload()
+                return
+              }
+              cell.textContent = value
+            }
+
+            const total = document.querySelector<HTMLElement>('[data-total="total"]')
+            total?.classList.toggle('text-xl', body.totalIsLarge)
+            total?.classList.toggle('text-3xl', !body.totalIsLarge)
+          } catch {
+            if (request !== inFlight) return
+            inputs.forEach((other, index) => {
+              other.checked = previous[index] ?? false
+            })
+            paintAll()
+            if (status) {
+              status.textContent = 'We could not reach the server. Please try again.'
+              status.classList.remove('hidden')
+            }
           }
         })
       })

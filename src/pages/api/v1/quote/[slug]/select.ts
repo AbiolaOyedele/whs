@@ -14,7 +14,7 @@
 import type { APIRoute } from 'astro'
 import { publicEnv } from '@/config/env'
 import { AppError, toErrorResponse } from '@/lib/errors'
-import { computeTotals } from '@/lib/admin/money'
+import { computeTotals, formatMoney } from '@/lib/admin/money'
 import { getQuoteBySlug, setOptionSelection } from '@/lib/admin/repositories/quotes'
 import { listPaymentsForQuote } from '@/lib/admin/repositories/payments'
 import { selectionState } from '@/lib/admin/quote-selection'
@@ -77,11 +77,38 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
       depositPercent: updated.depositPercent,
     })
 
+    /*
+     * Figures come back ALREADY FORMATTED.
+     *
+     * The page patches the summary in place instead of reloading, and the
+     * moment it formats a number itself there are two implementations of
+     * currency display — one of which has no access to the symbol table or the
+     * grouping rules and will, eventually, render a total the server does not
+     * agree with. Formatting once, here, makes that impossible.
+     *
+     * Only the rows the document actually renders are included, under the same
+     * conditions the template uses. A key the page has no element for means the
+     * two have diverged, and the page reloads rather than showing a stale row.
+     */
+    const money = (minor: number): string => formatMoney(minor, updated.currency)
+
+    const display: Record<string, string> = {
+      total: money(totals.totalMinor),
+      subtotal: money(totals.subtotalMinor),
+    }
+    if (totals.discountMinor > 0) display['discount'] = `− ${money(totals.discountMinor)}`
+    if (updated.taxRateBp > 0) display['tax'] = money(totals.taxMinor)
+    if (updated.depositPercent > 0 && updated.depositPercent < 100) {
+      display['deposit'] = money(totals.depositMinor)
+      display['balance'] = money(totals.balanceMinor)
+    }
+
     return new Response(
       JSON.stringify({
-        totalMinor: totals.totalMinor,
-        depositMinor: totals.depositMinor,
-        subtotalMinor: totals.subtotalMinor,
+        display,
+        // Drives the one class the total's size depends on, so the script does
+        // not have to know the threshold.
+        totalIsLarge: totals.totalMinor >= 100_000_000,
         options: updated.options.map((option) => ({
           id: option.id,
           isSelected: option.isSelected,
