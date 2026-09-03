@@ -763,6 +763,66 @@ confirm dialog with a focus trap, in place of `<select>` and `window.confirm`.
 
 ---
 
+### F-27. Recording live payments without receiving the webhook
+
+Added 2026-09-03, on the instruction to go live on the shared Paystack business
+until WildHands' own account is approved.
+
+**The problem.** A Paystack business has exactly one live webhook URL, and this
+account's belongs to another product. `charge.success` is therefore never
+delivered to this deployment. F-26 built the webhook as the authoritative record
+of a payment, which means that in this configuration _nothing_ was
+authoritative: a client could pay and the row would sit at `pending` forever,
+the quote would keep showing an outstanding balance, and the ledger would keep
+showing it unpaid.
+
+**The fix.** Settlement moved to polling, in one function every surface calls —
+`src/lib/admin/payment-reconcile.ts`.
+
+- The return-from-checkout page verifies and settles. This catches almost every
+  payment, because Paystack redirects there automatically.
+- The client's quote page and the admin invoice ledger sweep stale pending rows
+  on the way past. That catches the client who paid and closed the tab.
+- The webhook route is kept working and correct. When WildHands' own Paystack
+  business is approved, pointing a webhook at
+  `https://www.whstd.com/api/v1/webhooks/paystack` is a URL change in their
+  dashboard and nothing else — the webhook simply starts winning the race, and
+  these sweeps stop finding anything.
+
+**The rule that makes it safe: only `paid` is ever persisted.** Verifying a
+reference the client has not finished paying returns `abandoned`, and writing
+that would take the row out of `pending` — the one state `settlePayment` is
+guarded on. The client would then pay and there would be no way left to record
+it. A payment that never happened stays pending and reads as unpaid, which is
+true anyway.
+
+Two more guards: rows younger than 2 minutes are skipped (a client mid-checkout
+is not a lost payment) and rows older than 7 days are dropped (never coming
+back), so a page render does not re-verify dead references forever. A sweep runs
+on the way past a page render, so it catches per payment and never throws.
+
+15 tests in `tests/unit/payment-reconcile.test.ts` cover the invariants: the
+non-paid states are never written, a mismatched amount or currency is refused, an
+unreachable Paystack writes nothing, two sweeps racing notify once, and a failed
+notification email still reports the payment as settled.
+
+The pattern is written up in `docs/QUOTE-SYSTEM-SPEC.md` §7 for the other build.
+
+#### ⚠️ Still open
+
+1. **The live keys belong to another business.** Money paid against a WildHands
+   quote settles into that account. This is deliberate and temporary, on
+   instruction. Swap both keys and point the webhook here the day WildHands'
+   own account is approved.
+2. **The two demo quotes are payable with live keys.** They are PIN-gated and
+   the PINs have only been shared privately, but a real card charge against a
+   fictional proposal is a real charge. Setting them to Draft closes it.
+3. **Two stale invoices** — `WHS-2026-0001` (GBP 10,248) and `WHS-2026-0002`
+   (GBP 11,010) — are left in the ledger from the currency bug and the old
+   per-instalment model. Neither reflects a real amount owed.
+
+---
+
 ## 🔍 Live verification log — the reference site (removed)
 
 Fetched and inspected live on **2026-08-26** (computed styles + DOM + stylesheet
