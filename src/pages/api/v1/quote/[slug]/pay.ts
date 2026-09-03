@@ -59,6 +59,7 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 
     const totals = computeTotals({
       lineItems: quote.lineItems,
+      options: quote.options,
       discountMinor: quote.discountMinor,
       taxRateBp: quote.taxRateBp,
       depositPercent: quote.depositPercent,

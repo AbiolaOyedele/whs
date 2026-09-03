@@ -48,6 +48,38 @@ export interface QuoteLineItem {
   unitPriceMinor: number
   /** Priced and shown, but excluded from the total until the client picks it. */
   isOptional: boolean
+  /**
+   * The option this item belongs to, or null for base scope.
+   *
+   * Base-scope items are included whatever the client chooses. An item tied to
+   * an option only counts while that option is selected.
+   */
+  optionId: string | null
+}
+
+/** How an option behaves when the client picks. */
+export type QuoteOptionKind =
+  /** Mutually exclusive — Essential / Standard / Premium. Exactly one wins. */
+  | 'package'
+  /** Independent. Tick any number; each adds its own line items. */
+  | 'addon'
+
+/**
+ * A choice the client makes on their own quote.
+ *
+ * Carries a name and an explanation, never a price: the money is in its line
+ * items and nowhere else, so the figure the client compares is by construction
+ * the figure the invoice will use.
+ */
+export interface QuoteOption {
+  id: string
+  kind: QuoteOptionKind
+  position: number
+  title: string
+  description: string
+  isSelected: boolean
+  /** Pre-ticked when sent — the one we recommend. A starting point, not a lock. */
+  isDefault: boolean
 }
 
 export interface QuotePhase {
@@ -118,6 +150,7 @@ export interface Quote extends QuoteSummary {
   decisionNote: string | null
   decidedAt: string | null
   lineItems: QuoteLineItem[]
+  options: QuoteOption[]
   phases: QuotePhase[]
   references: QuoteReference[]
   images: QuoteImage[]

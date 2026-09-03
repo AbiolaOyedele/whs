@@ -36,6 +36,7 @@ import { assertSameOrigin } from '@/lib/forms'
 import { isPayableCurrency, isPaystackConfigured } from '@/lib/paystack'
 import { listPaymentsForQuote } from '@/lib/admin/repositories/payments'
 import { pendingWorthChecking, reconcilePayments } from '@/lib/admin/payment-reconcile'
+import { selectionState } from '@/lib/admin/quote-selection'
 import { clientIp, enforceRateLimit } from '@/lib/rate-limit'
 import { isAppError } from '@/lib/errors'
 import type { Quote } from '@/types/quote'
@@ -179,6 +180,7 @@ if (unlocked) {
 const totals = quote
   ? computeTotals({
       lineItems: quote.lineItems,
+      options: quote.options,
       discountMinor: quote.discountMinor,
       taxRateBp: quote.taxRateBp,
       depositPercent: quote.depositPercent,
@@ -195,6 +197,8 @@ const totalsReady = totals !== null
  * forget: Paystack cannot charge GBP, so a quote priced in pounds must not show
  * a pay button that fails after the client clicks it.
  */
+let selection: { locked: boolean; message: string | null } | undefined
+
 let payment:
   | {
       enabled: boolean
@@ -214,6 +218,11 @@ if (quote && totalsReady) {
   if (unresolved.length > 0 && (await reconcilePayments(unresolved)) > 0) {
     payments = await listPaymentsForQuote(quote.id)
   }
+
+  /* Computed from the payment rows already loaded above rather than a second
+     query: the lock depends on whether anything has been paid, which is the
+     same question the payment block below is asking. */
+  selection = selectionState(quote, payments)
 
   const settled = payments.filter((entry) => entry.status === 'paid')
   const paidMinor = settled.reduce((sum, entry) => sum + entry.amountMinor, 0)
@@ -322,7 +331,13 @@ if (quote && totalsReady) {
         </main>
       ) : (
         /* --- The quote. One implementation, shared with the admin preview. --- */
-        <QuoteDocument quote={quote} totals={totals} mode="client" payment={payment} />
+        <QuoteDocument
+          quote={quote}
+          totals={totals}
+          mode="client"
+          payment={payment}
+          selection={selection}
+        />
       )
     }
   </body>

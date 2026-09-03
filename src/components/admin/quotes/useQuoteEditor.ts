@@ -12,10 +12,17 @@
  */
 import { useCallback, useMemo, useReducer } from 'react'
 import { computeTotals } from '@/lib/admin/money'
-import type { Quote, QuoteImage, QuoteLineItem, QuotePhase, QuoteReference } from '@/types/quote'
+import type {
+  Quote,
+  QuoteImage,
+  QuoteLineItem,
+  QuoteOption,
+  QuotePhase,
+  QuoteReference,
+} from '@/types/quote'
 
 /** Collections the generic row actions can address. */
-type CollectionKey = 'lineItems' | 'phases' | 'references' | 'images'
+type CollectionKey = 'lineItems' | 'options' | 'phases' | 'references' | 'images'
 
 type RowOf<K extends CollectionKey> = Quote[K][number]
 
@@ -34,6 +41,18 @@ export const BLANK_LINE_ITEM: Omit<QuoteLineItem, 'id' | 'position'> = {
   quantity: 1,
   unitPriceMinor: 0,
   isOptional: false,
+  // Base scope. A new line is charged unless it is deliberately moved under an
+  // option, which is the safe default: the alternative is a line the operator
+  // typed a price into that quietly charges nobody.
+  optionId: null,
+}
+
+export const BLANK_OPTION: Omit<QuoteOption, 'id' | 'position'> = {
+  kind: 'package',
+  title: '',
+  description: '',
+  isSelected: false,
+  isDefault: false,
 }
 
 export const BLANK_PHASE: Omit<QuotePhase, 'id' | 'position'> = {
@@ -133,12 +152,14 @@ export function useQuoteEditor(initial: Quote) {
     () =>
       computeTotals({
         lineItems: state.quote.lineItems,
+        options: state.quote.options,
         discountMinor: state.quote.discountMinor,
         taxRateBp: state.quote.taxRateBp,
         depositPercent: state.quote.depositPercent,
       }),
     [
       state.quote.lineItems,
+      state.quote.options,
       state.quote.discountMinor,
       state.quote.taxRateBp,
       state.quote.depositPercent,

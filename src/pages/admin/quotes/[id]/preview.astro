@@ -30,6 +30,7 @@ if (!quote) return Astro.redirect('/admin/quotes')
 
 const totals = computeTotals({
   lineItems: quote.lineItems,
+  options: quote.options,
   discountMinor: quote.discountMinor,
   taxRateBp: quote.taxRateBp,
   depositPercent: quote.depositPercent,

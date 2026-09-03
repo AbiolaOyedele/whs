@@ -46,6 +46,32 @@ export const lineItemSchema = z.object({
     .min(0, 'A price cannot be negative.')
     .max(1_000_000_000_00, 'That price is too large.'),
   isOptional: z.boolean().default(false),
+  /**
+   * Which option this line belongs to, by the id the editor is using — real for
+   * an option already saved, `new-N` for one added in this session. The
+   * repository remaps both to database ids after the options are written.
+   * Null means base scope: charged whatever the client picks.
+   */
+  optionId: z.string().trim().max(64).nullable().default(null),
+})
+
+/**
+ * A choice offered to the client.
+ *
+ * `id` is the editor's handle, carried through the save so line items can point
+ * at an option that does not have a database id yet.
+ */
+export const quoteOptionSchema = z.object({
+  id: z.string().trim().min(1).max(64),
+  kind: z.enum(['package', 'addon']),
+  title: z.string().trim().min(1, 'Every option needs a name.').max(120),
+  description: z
+    .string()
+    .trim()
+    .max(600, 'Keep the option blurb under 600 characters.')
+    .default(''),
+  isSelected: z.boolean().default(false),
+  isDefault: z.boolean().default(false),
 })
 
 export const phaseSchema = z.object({
@@ -154,6 +180,18 @@ export const saveQuoteSchema = z.object({
     .nullable()
     .or(z.literal('').transform(() => null)),
   lineItems: z.array(lineItemSchema).max(40, 'A quote can hold at most 40 lines.'),
+  options: z
+    .array(quoteOptionSchema)
+    .max(8, 'A quote can offer at most 8 options.')
+    /* Two selected packages means both sets of line items land in the total and
+       the client is quoted a figure that was never on the table. The database
+       has a partial unique index saying the same thing; this catches it first,
+       with a sentence a person can act on. */
+    .refine(
+      (options) => options.filter((o) => o.kind === 'package' && o.isSelected).length <= 1,
+      'Only one package can be selected at a time.'
+    )
+    .default([]),
   phases: z.array(phaseSchema).max(20, 'A quote can hold at most 20 phases.'),
   references: z.array(referenceSchema).max(20, 'A quote can hold at most 20 links.'),
   images: z.array(imageSchema).max(20, 'A quote can hold at most 20 images.'),

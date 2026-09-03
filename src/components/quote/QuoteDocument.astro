@@ -42,9 +42,16 @@ interface Props {
         outstandingMinor: number
       }
     | undefined
+  /**
+   * Whether the client may still change their selection.
+   *
+   * Resolved by the page for the same reason as `payment`: it depends on the
+   * payment records, which this component has no business reading.
+   */
+  selection?: { locked: boolean; message: string | null } | undefined
 }
 
-const { quote, totals, mode = 'client', payment } = Astro.props
+const { quote, totals, mode = 'client', payment, selection } = Astro.props
 const isPreview = mode === 'preview'
 
 const money = (minor: number): string => formatMoney(minor, quote.currency)
@@ -58,8 +65,21 @@ const dateFormat = new Intl.DateTimeFormat('en-GB', {
 const decided = quote.status === 'accepted' || quote.status === 'declined'
 const expired = Boolean(quote.validUntil && new Date(quote.validUntil) < new Date())
 
-const requiredItems = quote.lineItems.filter((item) => !item.isOptional)
-const optionalItems = quote.lineItems.filter((item) => item.isOptional)
+/* Base scope: charged whatever the client picks. Items belonging to an option
+   are rendered inside that option's card instead, so nothing appears twice. */
+const requiredItems = quote.lineItems.filter((item) => item.optionId === null && !item.isOptional)
+const optionalItems = quote.lineItems.filter((item) => item.optionId === null && item.isOptional)
+
+const packages = quote.options.filter((option) => option.kind === 'package')
+const addons = quote.options.filter((option) => option.kind === 'addon')
+
+const itemsFor = (optionId: string): typeof quote.lineItems =>
+  quote.lineItems.filter((item) => item.optionId === optionId)
+
+/* The preview pane is a rendering of the document, not a working copy of it —
+   clicking a package there would write a selection onto a live client quote. */
+const canChoose = !isPreview && selection?.locked !== true
+const chooserLocked = !isPreview && selection?.locked === true
 ---
 
 <header
@@ -129,6 +149,190 @@ const optionalItems = quote.lineItems.filter((item) => item.isOptional)
               }))}
             />
           </div>
+        )
+      }
+
+      {
+        (packages.length > 0 || addons.length > 0) && (
+          <p
+            class="mb-4 hidden rounded-2xl border border-border bg-card px-5 py-3 text-base"
+            role="status"
+            aria-live="polite"
+            data-option-status
+          />
+        )
+      }
+
+      {
+        packages.length > 0 && (
+          <section class="mb-12" data-option-group="package">
+            <h2 class="mb-1 font-display text-2xl">Choose your package</h2>
+            <p class="mb-4 max-w-prose text-base text-muted-foreground">
+              {chooserLocked
+                ? (selection?.message ?? 'This choice is now fixed.')
+                : 'Pick the one that fits. The total updates as you choose, and you can change your mind until you accept.'}
+            </p>
+
+            {/* One up on a phone, side by side from md. Packages are read by
+                  comparison, so they must sit at the same height with their
+                  prices on the same line — hence a grid rather than cards that
+                  size to their own content. */}
+            <div class="grid gap-4 sm:grid-cols-2">
+              {packages.map((option) => (
+                <label
+                  class:list={[
+                    /* `cursor-pointer` and `cursor-default` carry the same
+                       specificity, so listing both leaves the winner to whichever
+                       Tailwind emits last — not to the order written here. Choose
+                       one, never override. */
+                    'relative flex min-h-14 flex-col rounded-2xl border bg-card p-5 transition-colors',
+                    canChoose ? 'cursor-pointer' : 'cursor-default',
+                    option.isSelected
+                      ? 'border-foreground ring-1 ring-foreground'
+                      : 'border-border hover:border-foreground',
+                  ]}
+                  data-option-card={option.id}
+                >
+                  {/* A real radio, visually replaced rather than removed: it
+                        carries the keyboard and screen-reader behaviour that a
+                        div with a click handler would have to reimplement badly. */}
+                  <input
+                    type="radio"
+                    name="wh-package"
+                    value={option.id}
+                    checked={option.isSelected}
+                    disabled={!canChoose}
+                    class="sr-only"
+                    data-option-input
+                    data-option-kind="package"
+                  />
+
+                  <span class="flex items-start justify-between gap-3">
+                    <span class="font-display text-xl leading-tight">{option.title}</span>
+                    <span
+                      class:list={[
+                        'mt-1 flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors',
+                        option.isSelected ? 'border-foreground bg-foreground' : 'border-border',
+                      ]}
+                      aria-hidden="true"
+                    >
+                      <span
+                        class:list={[
+                          'size-2 rounded-full bg-background transition-opacity',
+                          option.isSelected ? 'opacity-100' : 'opacity-0',
+                        ]}
+                      />
+                    </span>
+                  </span>
+
+                  {/* Steps down with magnitude, as the summary card does. A
+                      package card is a third of a column at xl, and a
+                      seven-figure naira total at text-2xl runs past its edge. */}
+                  <span
+                    class:list={[
+                      'mt-2 font-mono leading-none',
+                      itemsFor(option.id).reduce((sum, item) => sum + lineAmount(item), 0) >=
+                      100_000_000
+                        ? 'text-lg'
+                        : 'text-2xl',
+                    ]}
+                  >
+                    {money(itemsFor(option.id).reduce((sum, item) => sum + lineAmount(item), 0))}
+                  </span>
+
+                  {option.description && (
+                    <span class="mt-2 text-base text-muted-foreground">{option.description}</span>
+                  )}
+
+                  {itemsFor(option.id).length > 0 && (
+                    <ul class="mt-4 flex flex-col gap-2 border-t border-border pt-4">
+                      {itemsFor(option.id).map((item) => (
+                        <li class="flex items-baseline justify-between gap-3 text-base">
+                          <span class="min-w-0">{item.title}</span>
+                          <span class="shrink-0 font-mono text-sm text-muted-foreground">
+                            {money(lineAmount(item))}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </label>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      {
+        addons.length > 0 && (
+          <section class="mb-12" data-option-group="addon">
+            <h2 class="mb-1 font-display text-2xl">Add anything else?</h2>
+            <p class="mb-4 max-w-prose text-base text-muted-foreground">
+              {chooserLocked
+                ? (selection?.message ?? 'This choice is now fixed.')
+                : 'Tick what you want. Each one adds to the total.'}
+            </p>
+
+            <ul class="flex flex-col gap-3">
+              {addons.map((option) => (
+                <li>
+                  <label
+                    class:list={[
+                      'flex min-h-14 items-start gap-4 rounded-2xl border bg-card p-5 transition-colors',
+                      canChoose ? 'cursor-pointer' : 'cursor-default',
+                      option.isSelected
+                        ? 'border-foreground ring-1 ring-foreground'
+                        : 'border-border hover:border-foreground',
+                    ]}
+                    data-option-card={option.id}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={option.isSelected}
+                      disabled={!canChoose}
+                      class="sr-only"
+                      data-option-input
+                      data-option-kind="addon"
+                      value={option.id}
+                    />
+
+                    <span
+                      class:list={[
+                        'mt-1 flex size-5 shrink-0 items-center justify-center rounded-md border transition-colors',
+                        option.isSelected ? 'border-foreground bg-foreground' : 'border-border',
+                      ]}
+                      aria-hidden="true"
+                    >
+                      <span
+                        class:list={[
+                          'font-mono text-xs text-background transition-opacity',
+                          option.isSelected ? 'opacity-100' : 'opacity-0',
+                        ]}
+                      >
+                        ✓
+                      </span>
+                    </span>
+
+                    <span class="flex min-w-0 flex-1 flex-col">
+                      <span class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                        <span class="font-display text-lg leading-tight">{option.title}</span>
+                        <span class="font-mono text-lg">
+                          {money(
+                            itemsFor(option.id).reduce((sum, item) => sum + lineAmount(item), 0)
+                          )}
+                        </span>
+                      </span>
+                      {option.description && (
+                        <span class="mt-1 text-base text-muted-foreground">
+                          {option.description}
+                        </span>
+                      )}
+                    </span>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </section>
         )
       }
 
@@ -604,4 +808,72 @@ const optionalItems = quote.lineItems.filter((item) => item.isOptional)
       }
     })
   })
+
+  /*
+   * Package and add-on selection.
+   *
+   * The server owns the arithmetic, so this does not patch the total in place.
+   * It writes the choice, then reloads. Patching would mean keeping the total,
+   * the deposit, the balance, the pay button's amount and the invoice's
+   * availability in step by hand — five figures derived from one number, each a
+   * chance for the page to show a total the server does not agree with. A
+   * reload costs a second and cannot drift.
+   */
+  {
+    const inputs = document.querySelectorAll<HTMLInputElement>('[data-option-input]')
+    if (inputs.length > 0) {
+      const slug = window.location.pathname.split('/').filter(Boolean)[1] ?? ''
+      const status = document.querySelector<HTMLElement>('[data-option-status]')
+      let busy = false
+
+      inputs.forEach((input) => {
+        input.addEventListener('change', async () => {
+          if (busy) return
+          busy = true
+
+          // Every control goes down together: a second click while the first is
+          // in flight would race two writes against one selection.
+          inputs.forEach((other) => {
+            other.disabled = true
+          })
+          if (status) {
+            status.textContent = 'Updating your quote…'
+            status.classList.remove('hidden')
+          }
+
+          try {
+            const response = await fetch(`/api/v1/quote/${slug}/select`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ optionId: input.value, selected: input.checked }),
+            })
+
+            if (!response.ok) {
+              const body = await response.json().catch(() => null)
+              if (status) {
+                status.textContent =
+                  body?.error?.message ?? 'We could not save that. Please try again.'
+              }
+              // Put the control back where the server still believes it is.
+              input.checked = !input.checked
+              inputs.forEach((other) => {
+                other.disabled = false
+              })
+              busy = false
+              return
+            }
+
+            window.location.reload()
+          } catch {
+            if (status) status.textContent = 'We could not reach the server. Please try again.'
+            input.checked = !input.checked
+            inputs.forEach((other) => {
+              other.disabled = false
+            })
+            busy = false
+          }
+        })
+      })
+    }
+  }
 </script>

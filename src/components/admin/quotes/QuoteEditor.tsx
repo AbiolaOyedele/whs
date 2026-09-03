@@ -17,7 +17,13 @@ import { MoneyInput } from './MoneyInput'
 import { QuoteTotals } from './QuoteTotals'
 import { AiDraftPanel } from './AiDraftPanel'
 import { ImageUploader } from './ImageUploader'
-import { BLANK_LINE_ITEM, BLANK_PHASE, BLANK_REFERENCE, useQuoteEditor } from './useQuoteEditor'
+import {
+  BLANK_LINE_ITEM,
+  BLANK_OPTION,
+  BLANK_PHASE,
+  BLANK_REFERENCE,
+  useQuoteEditor,
+} from './useQuoteEditor'
 import {
   labelForPath,
   readFieldErrors,
@@ -26,6 +32,15 @@ import {
   type FieldErrors,
 } from './field-errors'
 import { cn } from '@/lib/utils'
+
+/* A sentinel, because the listbox speaks in strings and "no option" is a real
+   choice the operator makes rather than an absence. */
+const BASE_SCOPE = '__base__'
+
+const OPTION_KINDS = [
+  { value: 'package', label: 'Package — client picks one' },
+  { value: 'addon', label: 'Add-on — client ticks any' },
+] as const
 import { CURRENCIES, QUOTE_STATUSES, QUOTE_STATUS_LABELS, type Quote } from '@/types/quote'
 import type { AiProvider } from '@/lib/ai/types'
 
@@ -118,6 +133,15 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
           validUntil: quote.validUntil ?? '',
           lineItems: quote.lineItems.map(({ id, position, ...rest }) => {
             void id
+            void position
+            return rest
+          }),
+          /* `id` is deliberately KEPT. Line items point at options by id, and
+             for an option added in this session that id exists only here — the
+             repository writes the options first and remaps. Stripping it, as
+             every other collection does, would detach every line from its
+             option on the first save. */
+          options: quote.options.map(({ position, ...rest }) => {
             void position
             return rest
           }),
@@ -457,6 +481,130 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
             {tab === 'cost' && (
               <>
                 <Panel
+                  title="Options the client chooses from"
+                  description="Packages are pick-one. Add-ons are tick-any. Leave this empty for a single fixed scope."
+                  action={
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        onClick={() => rows.add('options', { ...BLANK_OPTION, kind: 'package' })}
+                      >
+                        Add package
+                      </Button>
+                      <Button
+                        onClick={() => rows.add('options', { ...BLANK_OPTION, kind: 'addon' })}
+                      >
+                        Add add-on
+                      </Button>
+                    </div>
+                  }
+                >
+                  {quote.options.length === 0 ? (
+                    <p className="text-base text-muted-foreground">
+                      No options. Every line below is charged as one fixed scope.
+                    </p>
+                  ) : (
+                    <ul className="flex flex-col gap-4">
+                      {quote.options.map((option, index) => (
+                        <li key={option.id} className="rounded-2xl border border-border p-4">
+                          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                            <span className="font-mono text-sm text-muted-foreground">
+                              {option.kind === 'package' ? 'Package' : 'Add-on'} {index + 1}
+                            </span>
+                            <div className="flex gap-1">
+                              <Button
+                                tone="ghost"
+                                onClick={() => rows.move('options', option.id, -1)}
+                                disabled={index === 0}
+                              >
+                                Up
+                              </Button>
+                              <Button
+                                tone="ghost"
+                                onClick={() => rows.move('options', option.id, 1)}
+                                disabled={index === quote.options.length - 1}
+                              >
+                                Down
+                              </Button>
+                              <Button
+                                tone="ghost"
+                                onClick={() => {
+                                  /* Lines under a deleted option go with it.
+                                     Leaving them behind would silently move
+                                     their prices into base scope, charging the
+                                     client for a package they did not pick. */
+                                  quote.lineItems
+                                    .filter((item) => item.optionId === option.id)
+                                    .forEach((item) => rows.remove('lineItems', item.id))
+                                  rows.remove('options', option.id)
+                                }}
+                              >
+                                Remove
+                              </Button>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-4">
+                            <TextInput
+                              label="Name"
+                              value={option.title}
+                              dataField={`options.${index}.title`}
+                              error={fieldErrors[`options.${index}.title`]}
+                              onChange={(title) => rows.update('options', option.id, { title })}
+                            />
+                            <TextArea
+                              label="What it covers"
+                              rows={2}
+                              value={option.description}
+                              onChange={(description) =>
+                                rows.update('options', option.id, { description })
+                              }
+                            />
+                            <div className="grid gap-3 sm:grid-cols-2">
+                              <Select
+                                label="Type"
+                                value={option.kind}
+                                options={OPTION_KINDS}
+                                onChange={(kind) =>
+                                  rows.update('options', option.id, {
+                                    kind: kind as 'package' | 'addon',
+                                    /* Switching a selected package to an add-on
+                                       is fine, but two selected packages is not
+                                       — clear the flag rather than risk it. */
+                                    isSelected: false,
+                                  })
+                                }
+                              />
+                              <div className="flex items-end">
+                                <Checkbox
+                                  label="Pre-select this one"
+                                  checked={option.isSelected}
+                                  onChange={(isSelected) => {
+                                    if (isSelected && option.kind === 'package') {
+                                      quote.options
+                                        .filter(
+                                          (other) =>
+                                            other.kind === 'package' && other.id !== option.id
+                                        )
+                                        .forEach((other) =>
+                                          rows.update('options', other.id, { isSelected: false })
+                                        )
+                                    }
+                                    rows.update('options', option.id, {
+                                      isSelected,
+                                      isDefault: isSelected,
+                                    })
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </Panel>
+
+                <Panel
                   title="Cost breakdown"
                   description="One line per piece of work the client could ask about."
                   action={
@@ -552,6 +700,29 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                                 />
                               </div>
                             </div>
+
+                            {quote.options.length > 0 && (
+                              <div className="mt-4">
+                                <Select
+                                  label="Applies to"
+                                  value={item.optionId ?? BASE_SCOPE}
+                                  options={[
+                                    { value: BASE_SCOPE, label: 'Base scope — always charged' },
+                                    ...quote.options.map((option) => ({
+                                      value: option.id,
+                                      label: `${option.title || 'Untitled'} (${
+                                        option.kind === 'package' ? 'package' : 'add-on'
+                                      })`,
+                                    })),
+                                  ]}
+                                  onChange={(value) =>
+                                    rows.update('lineItems', item.id, {
+                                      optionId: value === BASE_SCOPE ? null : value,
+                                    })
+                                  }
+                                />
+                              </div>
+                            )}
                           </div>
                         </li>
                       ))}
@@ -1031,6 +1202,9 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                         // The model reasons in major units; the quote stores minor.
                         unitPriceMinor: Math.round(item.unitPrice * 100),
                         isOptional: item.isOptional,
+                        // A drafted line is base scope. The model is not asked
+                        // to invent packages; the operator builds those.
+                        optionId: null,
                       })),
                       phases: draft.phases.map((phase, index) => ({
                         id: `draft-phase-${index}`,

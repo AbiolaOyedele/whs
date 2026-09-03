@@ -49,7 +49,7 @@ export async function listClients(search?: string): Promise<ClientWithActivity[]
   let query = serviceClient()
     .from('clients')
     .select(
-      `${SELECT}, quotes ( status, currency, discount_minor, tax_rate_bp, deposit_percent, created_at, quote_line_items ( quantity, unit_price_minor, is_optional ) )`
+      `${SELECT}, quotes ( status, currency, discount_minor, tax_rate_bp, deposit_percent, created_at, quote_line_items ( quantity, unit_price_minor, is_optional, option_id ), quote_options ( id, is_selected ) )`
     )
     .order('updated_at', { ascending: false })
 
@@ -75,7 +75,9 @@ export async function listClients(search?: string): Promise<ClientWithActivity[]
         quantity: number | string
         unit_price_minor: number
         is_optional: boolean
+        option_id: string | null
       }> | null
+      quote_options: Array<{ id: string; is_selected: boolean }> | null
     }> | null
   }
 
@@ -95,6 +97,19 @@ export async function listClients(search?: string): Promise<ClientWithActivity[]
           quantity: typeof item.quantity === 'string' ? Number(item.quantity) : item.quantity,
           unitPriceMinor: item.unit_price_minor,
           isOptional: item.is_optional,
+          optionId: item.option_id,
+        })),
+        /* Options are joined in for the same reason `computeTotals` demands
+           them: without the selection, an accepted quote offering three
+           packages would report all three as won revenue. */
+        options: (quote.quote_options ?? []).map((option) => ({
+          id: option.id,
+          kind: 'package' as const,
+          position: 0,
+          title: '',
+          description: '',
+          isSelected: option.is_selected,
+          isDefault: false,
         })),
         discountMinor: quote.discount_minor,
         taxRateBp: quote.tax_rate_bp,

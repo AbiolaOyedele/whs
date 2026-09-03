@@ -10,7 +10,7 @@
  * `lineAmount` is the single function permitted to round, and it rounds half
  * away from zero — the behaviour a person doing this on paper would expect.
  */
-import { CURRENCIES, type QuoteLineItem, type QuoteTotals } from '@/types/quote'
+import { CURRENCIES, type QuoteLineItem, type QuoteOption, type QuoteTotals } from '@/types/quote'
 
 const FALLBACK = CURRENCIES[0]
 
@@ -30,15 +30,45 @@ export function lineAmount(item: Pick<QuoteLineItem, 'quantity' | 'unitPriceMino
 }
 
 /**
+ * Whether a line item is charged right now.
+ *
+ * Exported because the total is not the only thing that has to agree with it:
+ * the invoice lists the lines it is billing for, and a document whose lines and
+ * whose total were filtered by two different rules is the bug this codebase has
+ * already shipped once.
+ *
+ * Three cases, in order:
+ *
+ *  - Tied to an option: counts only while that option is selected. An item
+ *    whose option has been deleted counts as unselected rather than base
+ *    scope — the safe direction, since the alternative silently adds a charge.
+ *  - Base scope and optional: the existing menu behaviour. Shown and priced,
+ *    never charged until it is turned into a real item.
+ *  - Base scope: always.
+ */
+export function isCharged(item: QuoteLineItem, options: readonly QuoteOption[]): boolean {
+  if (item.optionId !== null) {
+    return options.find((option) => option.id === item.optionId)?.isSelected === true
+  }
+  return !item.isOptional
+}
+
+/**
  * Computes every derived figure on a quote.
  *
  * Order matters and is fixed: discount comes off before tax, tax applies to the
  * discounted subtotal, and the deposit is a percentage of the final total.
- * Optional items are summed separately and never reach the total — they are a
- * menu, not a charge.
+ * Anything not currently counted is summed separately into `optionalMinor` and
+ * never reaches the total — it is a menu, not a charge.
+ *
+ * `options` is REQUIRED, deliberately. Making it optional would let a call site
+ * forget it and quietly compute a total over every package at once, which is a
+ * number that was never offered to anybody. A required field makes the compiler
+ * list the call sites instead.
  */
 export function computeTotals(input: {
   lineItems: readonly QuoteLineItem[]
+  options: readonly QuoteOption[]
   discountMinor: number
   taxRateBp: number
   depositPercent: number
@@ -48,8 +78,8 @@ export function computeTotals(input: {
 
   for (const item of input.lineItems) {
     const amount = lineAmount(item)
-    if (item.isOptional) optionalMinor += amount
-    else subtotalMinor += amount
+    if (isCharged(item, input.options)) subtotalMinor += amount
+    else optionalMinor += amount
   }
 
   // A discount can never exceed the subtotal, or the total goes negative and
@@ -130,4 +160,17 @@ export function parseMoney(input: string, code: string): number | null {
 export function formatBasisPoints(bp: number): string {
   const percent = bp / 100
   return `${Number.isInteger(percent) ? percent : percent.toFixed(2).replace(/0$/, '')}%`
+}
+
+/**
+ * What one option adds to the quote, in minor units.
+ *
+ * This is what the client compares across packages, so it is computed from the
+ * option's own line items rather than stored — the number on the card and the
+ * number on the invoice come from the same arithmetic and cannot drift apart.
+ */
+export function optionTotalMinor(optionId: string, lineItems: readonly QuoteLineItem[]): number {
+  return lineItems
+    .filter((item) => item.optionId === optionId)
+    .reduce((sum, item) => sum + lineAmount(item), 0)
 }

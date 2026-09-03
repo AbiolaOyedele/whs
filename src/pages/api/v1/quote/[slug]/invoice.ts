@@ -16,7 +16,7 @@ import type { APIRoute } from 'astro'
 import { publicEnv } from '@/config/env'
 import { SITE } from '@/config/site'
 import { AppError, toErrorResponse } from '@/lib/errors'
-import { computeTotals, lineAmount } from '@/lib/admin/money'
+import { computeTotals, isCharged, lineAmount } from '@/lib/admin/money'
 import { getQuoteBySlug } from '@/lib/admin/repositories/quotes'
 import {
   createInvoice,
@@ -61,6 +61,7 @@ export const GET: APIRoute = async ({ cookies, params }) => {
 
     const totals = computeTotals({
       lineItems: quote.lineItems,
+      options: quote.options,
       discountMinor: quote.discountMinor,
       taxRateBp: quote.taxRateBp,
       depositPercent: quote.depositPercent,
@@ -77,8 +78,11 @@ export const GET: APIRoute = async ({ cookies, params }) => {
     const kind = 'full' as const
     const amountMinor = totals.totalMinor
 
+    /* The same predicate `computeTotals` used for `amountMinor` above. Filtering
+       on `!isOptional` alone would list every package's lines under a total that
+       only covers the one the client picked. */
     const lines: InvoiceLine[] = quote.lineItems
-      .filter((item) => !item.isOptional)
+      .filter((item) => isCharged(item, quote.options))
       .map((item) => ({
         title: item.title,
         description: item.description,

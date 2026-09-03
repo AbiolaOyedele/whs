@@ -14,6 +14,7 @@ const item = (overrides: Partial<QuoteLineItem>): QuoteLineItem => ({
   quantity: 1,
   unitPriceMinor: 0,
   isOptional: false,
+  optionId: null,
   ...overrides,
 })
 
@@ -31,6 +32,7 @@ describe('lineAmount', () => {
 describe('computeTotals', () => {
   it('excludes optional items from the total but reports them separately', () => {
     const totals = computeTotals({
+      options: [],
       lineItems: [
         item({ unitPriceMinor: 100_000 }),
         item({ id: 'y', unitPriceMinor: 40_000, isOptional: true }),
@@ -47,6 +49,7 @@ describe('computeTotals', () => {
 
   it('applies the discount before tax, not after', () => {
     const totals = computeTotals({
+      options: [],
       lineItems: [item({ unitPriceMinor: 100_000 })],
       discountMinor: 20_000,
       taxRateBp: 2000, // 20%
@@ -61,6 +64,7 @@ describe('computeTotals', () => {
 
   it('never lets a discount push the total below zero', () => {
     const totals = computeTotals({
+      options: [],
       lineItems: [item({ unitPriceMinor: 50_000 })],
       discountMinor: 900_000,
       taxRateBp: 0,
@@ -73,6 +77,7 @@ describe('computeTotals', () => {
 
   it('splits the deposit and balance so they always sum to the total', () => {
     const totals = computeTotals({
+      options: [],
       lineItems: [item({ unitPriceMinor: 33_333 })],
       discountMinor: 0,
       taxRateBp: 0,
@@ -84,6 +89,7 @@ describe('computeTotals', () => {
 
   it('treats an empty quote as zero rather than NaN', () => {
     const totals = computeTotals({
+      options: [],
       lineItems: [],
       discountMinor: 0,
       taxRateBp: 2000,

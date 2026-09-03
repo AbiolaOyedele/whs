@@ -152,6 +152,7 @@ export async function saveQuote(id: string, input: SaveQuoteInput, userId: strin
 
   await repo.replaceQuoteChildren(id, {
     lineItems: input.lineItems.map((item, index) => ({ ...item, position: index })),
+    options: input.options,
     phases: input.phases.map((phase, index) => ({ ...phase, position: index })),
     references: input.references.map((reference, index) => ({ ...reference, position: index })),
     images: input.images.map((image, index) => ({ ...image, position: index })),

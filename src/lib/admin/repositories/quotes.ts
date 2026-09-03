@@ -19,6 +19,8 @@ import type {
   QuoteEvent,
   QuoteImage,
   QuoteLineItem,
+  QuoteOption,
+  QuoteOptionKind,
   QuotePhase,
   QuoteReference,
   QuoteStatus,
@@ -66,6 +68,17 @@ interface LineItemRow {
   quantity: number | string
   unit_price_minor: number
   is_optional: boolean
+  option_id: string | null
+}
+
+interface OptionRow {
+  id: string
+  kind: QuoteOptionKind
+  position: number
+  title: string
+  description: string
+  is_selected: boolean
+  is_default: boolean
 }
 
 interface PhaseRow {
@@ -98,7 +111,8 @@ interface ImageRow {
 /** Children selected alongside a quote, in one round trip. */
 const CHILDREN_SELECT = `
   *,
-  quote_line_items ( id, position, title, description, quantity, unit_price_minor, is_optional ),
+  quote_line_items ( id, position, title, description, quantity, unit_price_minor, is_optional, option_id ),
+  quote_options ( id, kind, position, title, description, is_selected, is_default ),
   quote_phases ( id, position, title, description, duration_label, deliverables ),
   quote_references ( id, position, label, url, description ),
   quote_images ( id, position, url, public_id, caption, width, height )
@@ -106,6 +120,7 @@ const CHILDREN_SELECT = `
 
 type QuoteWithChildren = QuoteRow & {
   quote_line_items: LineItemRow[] | null
+  quote_options: OptionRow[] | null
   quote_phases: PhaseRow[] | null
   quote_references: ReferenceRow[] | null
   quote_images: ImageRow[] | null
@@ -130,13 +145,28 @@ function toLineItem(row: LineItemRow): QuoteLineItem {
     quantity: typeof row.quantity === 'string' ? Number(row.quantity) : row.quantity,
     unitPriceMinor: row.unit_price_minor,
     isOptional: row.is_optional,
+    optionId: row.option_id,
+  }
+}
+
+function toOption(row: OptionRow): QuoteOption {
+  return {
+    id: row.id,
+    kind: row.kind,
+    position: row.position,
+    title: row.title,
+    description: row.description,
+    isSelected: row.is_selected,
+    isDefault: row.is_default,
   }
 }
 
 function toQuote(row: QuoteWithChildren): Quote {
   const lineItems = byPosition(row.quote_line_items).map(toLineItem)
+  const options = byPosition(row.quote_options).map(toOption)
   const totals = computeTotals({
     lineItems,
+    options,
     discountMinor: row.discount_minor,
     taxRateBp: row.tax_rate_bp,
     depositPercent: row.deposit_percent,
@@ -170,6 +200,7 @@ function toQuote(row: QuoteWithChildren): Quote {
     decidedAt: row.decided_at,
     decisionNote: row.decision_note,
     lineItems,
+    options,
     phases: byPosition(row.quote_phases).map((phase) => ({
       id: phase.id,
       position: phase.position,
@@ -513,23 +544,43 @@ export async function replaceQuoteChildren(
   quoteId: string,
   children: {
     lineItems: Array<Omit<QuoteLineItem, 'id'>>
+    /** Carries the editor's own id so line items can point at a new option. */
+    options: Array<Omit<QuoteOption, 'position'> & { id: string }>
     phases: Array<Omit<QuotePhase, 'id'>>
     references: Array<Omit<QuoteReference, 'id'>>
     images: Array<Omit<QuoteImage, 'id'>>
   }
 ): Promise<void> {
+  /*
+   * Options are written FIRST and their new ids captured.
+   *
+   * Every save deletes and reinserts, so an option's database id changes on
+   * each write. Line items reference options by id, so writing the items
+   * against the ids the editor sent would point them at rows that no longer
+   * exist — Postgres would reject the insert, and if it did not, the items
+   * would silently detach from their option and stop being charged.
+   */
+  const optionIds = await replaceQuoteOptions(quoteId, children.options)
+
   await replaceCollection(
     'quote_line_items',
     quoteId,
-    children.lineItems.map((item, index) => ({
-      quote_id: quoteId,
-      position: index,
-      title: item.title,
-      description: item.description,
-      quantity: item.quantity,
-      unit_price_minor: item.unitPriceMinor,
-      is_optional: item.isOptional,
-    }))
+    children.lineItems
+      /* An item whose option is gone is dropped, not promoted to base scope.
+         Promoting it would add a charge the client never selected, which is the
+         one direction this must never fail in. It also matches what the
+         database does on its own: option_id cascades on delete. */
+      .filter((item) => item.optionId === null || optionIds.has(item.optionId))
+      .map((item, index) => ({
+        quote_id: quoteId,
+        position: index,
+        title: item.title,
+        description: item.description,
+        quantity: item.quantity,
+        unit_price_minor: item.unitPriceMinor,
+        is_optional: item.isOptional,
+        option_id: item.optionId === null ? null : (optionIds.get(item.optionId) ?? null),
+      }))
   )
 
   await replaceCollection(
@@ -570,6 +621,54 @@ export async function replaceQuoteChildren(
       height: image.height,
     }))
   )
+}
+
+/**
+ * Rewrites a quote's options and returns editor id → database id.
+ *
+ * Selection state comes from the payload rather than being preserved from the
+ * existing rows. That is deliberate: the editor loaded the quote, so it holds
+ * the client's current choice and writes it straight back. The cost is a narrow
+ * race — a client choosing a package in the seconds between the editor loading
+ * and saving has their choice overwritten. Acceptable, because selection locks
+ * the moment a quote is accepted or paid, which is when it starts to matter.
+ */
+async function replaceQuoteOptions(
+  quoteId: string,
+  options: Array<Omit<QuoteOption, 'position'> & { id: string }>
+): Promise<Map<string, string>> {
+  const db = serviceClient()
+
+  const { error: deleteError } = await db.from('quote_options').delete().eq('quote_id', quoteId)
+  if (deleteError) fail('OPTIONS_CLEAR', deleteError)
+
+  if (options.length === 0) return new Map()
+
+  const { data, error: insertError } = await db
+    .from('quote_options')
+    .insert(
+      options.map((option, index) => ({
+        quote_id: quoteId,
+        kind: option.kind,
+        position: index,
+        title: option.title,
+        description: option.description,
+        is_selected: option.isSelected,
+        is_default: option.isDefault,
+      }))
+    )
+    .select('id')
+
+  if (insertError) fail('OPTIONS_WRITE', insertError)
+
+  const inserted = data as Array<{ id: string }>
+  if (inserted.length !== options.length) {
+    fail('OPTIONS_WRITE', new Error('inserted option count did not match the payload'))
+  }
+
+  // PostgREST returns inserted rows in the order they were sent, which is how
+  // the editor's ids line up with the new database ids.
+  return new Map(options.map((option, index) => [option.id, inserted[index]!.id]))
 }
 
 /**
@@ -678,4 +777,56 @@ export async function getQuotePinCipher(id: string): Promise<string | null> {
 
   if (error) fail('GET_PIN', error)
   return (data as { pin_encrypted: string | null } | null)?.pin_encrypted ?? null
+}
+
+/**
+ * Applies a client's choice.
+ *
+ * Packages are exclusive, so choosing one clears its siblings in the same
+ * write. Add-ons toggle on their own. The caller has already established that
+ * the quote is unlocked; this function does not re-check, because a repository
+ * that enforces business rules is a business rule nobody can find.
+ */
+export async function setOptionSelection(
+  quoteId: string,
+  optionId: string,
+  selected: boolean
+): Promise<void> {
+  const db = serviceClient()
+
+  const { data, error } = await db
+    .from('quote_options')
+    .select('id, kind')
+    .eq('quote_id', quoteId)
+    .eq('id', optionId)
+    .maybeSingle()
+
+  if (error) fail('OPTION_GET', error)
+  if (!data) {
+    throw new AppError(404, 'That option is no longer on this quote.', 'QUOTE_OPTION_NOT_FOUND')
+  }
+
+  /*
+   * Siblings are cleared BEFORE the chosen one is set, never after. The
+   * database holds a partial unique index allowing one selected package per
+   * quote; setting first would collide with the outgoing selection and the
+   * write would fail with the client's click already registered in the UI.
+   */
+  if ((data as { kind: QuoteOptionKind }).kind === 'package') {
+    const { error: clearError } = await db
+      .from('quote_options')
+      .update({ is_selected: false })
+      .eq('quote_id', quoteId)
+      .eq('kind', 'package')
+    if (clearError) fail('OPTION_CLEAR', clearError)
+  }
+
+  if (!selected && (data as { kind: QuoteOptionKind }).kind === 'package') return
+
+  const { error: setError } = await db
+    .from('quote_options')
+    .update({ is_selected: selected })
+    .eq('quote_id', quoteId)
+    .eq('id', optionId)
+  if (setError) fail('OPTION_SET', setError)
 }
