@@ -6,8 +6,8 @@
  * payment and a bank transfer marked off by hand both land in the same column.
  */
 import { useMemo, useState } from 'react'
-import { Button, Panel, StatusLine, TextArea } from '../ui'
-import { formatMoney } from '@/lib/admin/money'
+import { Button, Panel, StatusLine, TextArea, TextInput } from '../ui'
+import { formatMoney, parseMoney } from '@/lib/admin/money'
 import { cn } from '@/lib/utils'
 import type { InvoiceListRow } from '@/lib/admin/repositories/invoices'
 
@@ -23,11 +23,12 @@ export default function InvoicesPanel({ invoices }: { invoices: InvoiceListRow[]
   const [filter, setFilter] = useState<Filter>('all')
   const [marking, setMarking] = useState<InvoiceListRow | null>(null)
   const [note, setNote] = useState('')
+  const [amount, setAmount] = useState('')
   const [message, setMessage] = useState<{ tone: 'error' | 'success'; text: string } | null>(null)
 
   const visible = useMemo(() => {
-    if (filter === 'paid') return invoices.filter((invoice) => invoice.paid)
-    if (filter === 'unpaid') return invoices.filter((invoice) => !invoice.paid)
+    if (filter === 'paid') return invoices.filter((invoice) => invoice.settledInFull)
+    if (filter === 'unpaid') return invoices.filter((invoice) => !invoice.settledInFull)
     return invoices
   }, [invoices, filter])
 
@@ -36,19 +37,28 @@ export default function InvoicesPanel({ invoices }: { invoices: InvoiceListRow[]
   const totals = useMemo(() => {
     const outstanding: Record<string, number> = {}
     const collected: Record<string, number> = {}
+
+    /* Amounts, not counts. A part-paid invoice contributes to both: what came
+       in is collected, what is left is still owed. Bucketing whole invoices as
+       one or the other made a 40% deposit look like nothing had been paid. */
     for (const invoice of invoices) {
-      const bucket = invoice.paid ? collected : outstanding
-      bucket[invoice.currency] = (bucket[invoice.currency] ?? 0) + invoice.amountMinor
+      if (invoice.paidMinor > 0) {
+        collected[invoice.currency] = (collected[invoice.currency] ?? 0) + invoice.paidMinor
+      }
+      if (invoice.outstandingMinor > 0) {
+        outstanding[invoice.currency] =
+          (outstanding[invoice.currency] ?? 0) + invoice.outstandingMinor
+      }
     }
     return { outstanding, collected }
   }, [invoices])
 
-  const markPaid = async (invoice: InvoiceListRow, reference: string) => {
+  const markPaid = async (invoice: InvoiceListRow, amountMinor: number, reference: string) => {
     try {
       const response = await fetch(`/api/v1/admin/invoices?id=${invoice.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ note: reference }),
+        body: JSON.stringify({ amountMinor, note: reference }),
       })
       if (response.ok) window.location.reload()
       else setMessage({ tone: 'error', text: 'That could not be marked as paid.' })
@@ -79,7 +89,7 @@ export default function InvoicesPanel({ invoices }: { invoices: InvoiceListRow[]
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <div className="rounded-2xl border border-border bg-card p-5">
-          <p className="text-sm text-muted-foreground">Outstanding</p>
+          <p className="text-sm text-muted-foreground">Still owed</p>
           <p className="mt-2 font-sans text-2xl leading-none tabular-nums">
             {money(totals.outstanding)}
           </p>
@@ -137,18 +147,19 @@ export default function InvoicesPanel({ invoices }: { invoices: InvoiceListRow[]
                     <span
                       className={cn(
                         'rounded-full px-3 py-1 text-sm',
-                        invoice.paid
+                        invoice.settledInFull
                           ? 'bg-accent text-accent-foreground'
-                          : 'bg-muted text-muted-foreground'
+                          : invoice.paidMinor > 0
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-muted-foreground'
                       )}
                     >
-                      {invoice.paid ? 'Paid' : 'Awaiting payment'}
+                      {invoice.settledInFull
+                        ? 'Paid'
+                        : invoice.paidMinor > 0
+                          ? 'Part paid'
+                          : 'Awaiting payment'}
                     </span>
-                    {invoice.kind !== 'full' && (
-                      <span className="text-sm text-muted-foreground capitalize">
-                        {invoice.kind}
-                      </span>
-                    )}
                   </div>
                   <p className="font-display text-lg leading-tight">
                     {invoice.clientCompany || invoice.clientName}
@@ -156,17 +167,27 @@ export default function InvoicesPanel({ invoices }: { invoices: InvoiceListRow[]
                   <p className="text-base text-muted-foreground">{invoice.projectTitle}</p>
                 </div>
 
-                <div className="text-right">
-                  <p className="font-mono text-xl">
-                    {formatMoney(invoice.amountMinor, invoice.currency)}
+                <div className="shrink-0 text-right">
+                  {/* The number that matters is what is still owed, so it leads
+                      and the invoice total sits under it as context. */}
+                  <p className="font-mono text-xl whitespace-nowrap">
+                    {invoice.settledInFull
+                      ? formatMoney(invoice.amountMinor, invoice.currency)
+                      : formatMoney(invoice.outstandingMinor, invoice.currency)}
                   </p>
                   <p className="text-sm text-muted-foreground">
+                    {invoice.settledInFull
+                      ? 'paid in full'
+                      : invoice.paidMinor > 0
+                        ? `outstanding of ${formatMoney(invoice.amountMinor, invoice.currency)}`
+                        : 'due'}
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
                     Issued {dateFormat.format(new Date(invoice.issuedAt))}
                   </p>
-                  {invoice.paid && invoice.paidAt && (
+                  {invoice.lastPaidAt && (
                     <p className="text-sm text-muted-foreground">
-                      Paid {dateFormat.format(new Date(invoice.paidAt))}
-                      {invoice.paidVia === 'manual' ? ' by transfer' : ''}
+                      Last payment {dateFormat.format(new Date(invoice.lastPaidAt))}
                     </p>
                   )}
                 </div>
@@ -179,14 +200,15 @@ export default function InvoicesPanel({ invoices }: { invoices: InvoiceListRow[]
                 >
                   The quote
                 </a>
-                {!invoice.paid && (
+                {!invoice.settledInFull && (
                   <Button
                     onClick={() => {
                       setNote('')
+                      setAmount((invoice.outstandingMinor / 100).toFixed(2))
                       setMarking(invoice)
                     }}
                   >
-                    Mark as paid
+                    Record a payment
                   </Button>
                 )}
               </div>
@@ -198,31 +220,42 @@ export default function InvoicesPanel({ invoices }: { invoices: InvoiceListRow[]
       {marking && (
         <div className="mt-6">
           <Panel
-            title={`Mark ${marking.number} as paid`}
-            description="For payments that came in outside Paystack, like a bank transfer."
+            title={`Record a payment against ${marking.number}`}
+            description="For money that came in outside Paystack, like a bank transfer. Part payments are fine."
             action={
               <Button tone="ghost" onClick={() => setMarking(null)}>
                 Cancel
               </Button>
             }
           >
-            <TextArea
-              label="Reference"
-              rows={2}
-              hint="Whatever helps you reconcile it later: a transfer reference, a date, a note."
-              value={note}
-              onChange={setNote}
-            />
+            <div className="grid gap-5 sm:grid-cols-2">
+              <TextInput
+                label="Amount received"
+                required
+                hint={`Outstanding: ${formatMoney(marking.outstandingMinor, marking.currency)}`}
+                value={amount}
+                onChange={setAmount}
+              />
+              <TextArea
+                label="Reference"
+                rows={2}
+                hint="Whatever helps you reconcile it later."
+                value={note}
+                onChange={setNote}
+              />
+            </div>
             <div className="mt-4">
               <Button
                 tone="primary"
+                disabled={(parseMoney(amount, marking.currency) ?? 0) <= 0}
                 onClick={() => {
                   const target = marking
+                  const minor = parseMoney(amount, marking.currency) ?? 0
                   setMarking(null)
-                  if (target) void markPaid(target, note)
+                  if (target && minor > 0) void markPaid(target, minor, note)
                 }}
               >
-                Record payment of {formatMoney(marking.amountMinor, marking.currency)}
+                Record payment
               </Button>
             </div>
           </Panel>

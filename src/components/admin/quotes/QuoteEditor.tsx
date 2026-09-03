@@ -1068,10 +1068,10 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
           never be a scroll away. */}
       <ConfirmDialog
         open={pendingCurrency !== null}
-        title={`Convert prices to ${pendingCurrency ?? ''}?`}
-        body={`Every price on this quote will be converted at today's rate. Choose "Change the label only" if the figures are already correct in ${pendingCurrency ?? ''} and you just need the symbol changed.`}
-        confirmLabel={converting ? 'Converting…' : "Convert at today's rate"}
-        cancelLabel="Change the label only"
+        title={`Switching to ${pendingCurrency ?? ''}`}
+        body={`Convert every price at today's exchange rate, or keep the numbers exactly as they are and just change the symbol. Keep them if the figures are already correct in ${pendingCurrency ?? ''}.`}
+        confirmLabel={converting ? 'Converting…' : 'Convert'}
+        cancelLabel="Keep the numbers"
         onCancel={() => {
           const target = pendingCurrency
           setPendingCurrency(null)

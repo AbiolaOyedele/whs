@@ -194,18 +194,32 @@ const totalsReady = totals !== null
  * forget: Paystack cannot charge GBP, so a quote priced in pounds must not show
  * a pay button that fails after the client clicks it.
  */
-let payment: { enabled: boolean; amountMinor: number; kind: string; paid: boolean } | undefined
+let payment:
+  | {
+      enabled: boolean
+      amountMinor: number
+      kind: string
+      paidMinor: number
+      outstandingMinor: number
+    }
+  | undefined
 
 if (quote && totalsReady) {
-  const payments = await listPaymentsForQuote(quote.id)
-  const paid = payments.some((entry) => entry.status === 'paid')
-  const takingDeposit = quote.depositPercent > 0 && quote.depositPercent < 100
+  const settled = (await listPaymentsForQuote(quote.id)).filter((entry) => entry.status === 'paid')
+  const paidMinor = settled.reduce((sum, entry) => sum + entry.amountMinor, 0)
+  const outstandingMinor = Math.max(0, quoteTotals.totalMinor - paidMinor)
+
+  /* Instalments: the deposit first, then whatever is left. The button has to
+     stay available while anything is owed, or a client who paid a deposit has
+     no way to pay the rest. */
+  const takingDeposit = paidMinor === 0 && quote.depositPercent > 0 && quote.depositPercent < 100
 
   payment = {
-    enabled: isPaystackConfigured() && isPayableCurrency(quote.currency) && !paid,
-    amountMinor: takingDeposit ? quoteTotals.depositMinor : quoteTotals.totalMinor,
-    kind: takingDeposit ? 'deposit' : 'full',
-    paid,
+    enabled: outstandingMinor > 0 && isPaystackConfigured() && isPayableCurrency(quote.currency),
+    amountMinor: takingDeposit ? quoteTotals.depositMinor : outstandingMinor,
+    kind: takingDeposit ? 'deposit' : 'balance',
+    paidMinor,
+    outstandingMinor,
   }
 }
 ---

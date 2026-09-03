@@ -9,6 +9,34 @@
 import { serviceClient } from '@/lib/supabase'
 import { AppError } from '@/lib/errors'
 
+/**
+ * The figures as they stood when the invoice was issued.
+ *
+ * An invoice is a document, not a view of a quote. Everything it shows is
+ * frozen here so it renders identically forever, whatever happens to the quote
+ * afterwards.
+ */
+export interface InvoiceSnapshot {
+  currency: string
+  clientName: string
+  clientCompany: string | null
+  clientEmail: string | null
+  projectTitle: string
+  paymentTerms: string
+  lines: Array<{
+    title: string
+    description: string
+    quantity: number
+    unitPriceMinor: number
+    amountMinor: number
+  }>
+  subtotalMinor: number
+  discountMinor: number
+  taxRateBp: number
+  taxMinor: number
+  totalMinor: number
+}
+
 export interface InvoiceRecord {
   id: string
   quoteId: string
@@ -18,7 +46,7 @@ export interface InvoiceRecord {
   kind: 'deposit' | 'balance' | 'full'
   issuedAt: string
   dueAt: string | null
-  snapshot: Record<string, unknown>
+  snapshot: InvoiceSnapshot
 }
 
 interface Row {
@@ -30,7 +58,7 @@ interface Row {
   kind: InvoiceRecord['kind']
   issued_at: string
   due_at: string | null
-  snapshot: Record<string, unknown>
+  snapshot: InvoiceSnapshot
 }
 
 const SELECT = 'id, quote_id, number, amount_minor, currency, kind, issued_at, due_at, snapshot'
@@ -44,7 +72,7 @@ const toInvoice = (row: Row): InvoiceRecord => ({
   kind: row.kind,
   issuedAt: row.issued_at,
   dueAt: row.due_at,
-  snapshot: row.snapshot ?? {},
+  snapshot: row.snapshot,
 })
 
 function fail(op: string, cause: unknown): never {
@@ -57,6 +85,13 @@ function fail(op: string, cause: unknown): never {
 }
 
 /** The most recent invoice of this kind for a quote, if there is one. */
+/**
+ * The most recent invoice of this kind for a quote, if there is one.
+ *
+ * The caller must check that it still matches the quote before reusing it —
+ * see `matchesQuote`. Reusing a stale one produced an invoice that mixed
+ * currencies: NGN line items beside a deposit still denominated in pence.
+ */
 export async function findInvoice(
   quoteId: string,
   kind: InvoiceRecord['kind']
@@ -81,13 +116,69 @@ export async function findInvoice(
  * collide. `WHS-<year>-<0000>` — the year is for humans reading a filing
  * cabinet; uniqueness comes entirely from the sequence.
  */
+/**
+ * Rewrites an UNPAID invoice to match the quote as it stands.
+ *
+ * The number is kept. An unpaid invoice is a bill that has not been settled, so
+ * regenerating its contents costs nothing and is what the operator expects:
+ * they edit a quote, download the invoice, and see the edit. Issuing a fresh
+ * number on every wording change would burn the sequence and make the ledger
+ * unreadable.
+ *
+ * A PAID invoice is never touched. That is a record of money that moved, and
+ * rewriting it after the fact is the one thing an invoice must not do — the
+ * caller checks and issues a new one instead.
+ */
+export async function refreshInvoice(
+  id: string,
+  input: {
+    amountMinor: number
+    currency: string
+    dueAt: string | null
+    snapshot: InvoiceSnapshot
+  }
+): Promise<InvoiceRecord> {
+  const { data, error } = await serviceClient()
+    .from('invoices')
+    .update({
+      amount_minor: input.amountMinor,
+      currency: input.currency,
+      due_at: input.dueAt,
+      snapshot: input.snapshot,
+      issued_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .select(SELECT)
+    .single()
+
+  if (error) fail('REFRESH', error)
+  return toInvoice(data as Row)
+}
+
+/** Whether any payment has settled this invoice's kind on its quote. */
+export async function isInvoiceSettled(
+  quoteId: string,
+  kind: InvoiceRecord['kind']
+): Promise<boolean> {
+  const { data, error } = await serviceClient()
+    .from('quote_payments')
+    .select('id')
+    .eq('quote_id', quoteId)
+    .eq('kind', kind)
+    .eq('status', 'paid')
+    .limit(1)
+
+  if (error) fail('SETTLED_CHECK', error)
+  return (data as Array<{ id: string }>).length > 0
+}
+
 export async function createInvoice(input: {
   quoteId: string
   amountMinor: number
   currency: string
   kind: InvoiceRecord['kind']
   dueAt: string | null
-  snapshot: Record<string, unknown>
+  snapshot: InvoiceSnapshot
 }): Promise<InvoiceRecord> {
   const db = serviceClient()
 
@@ -119,42 +210,46 @@ export interface InvoiceListRow extends InvoiceRecord {
   clientName: string
   clientCompany: string | null
   projectTitle: string
-  /** Settled, whether by card or marked off by hand. */
-  paid: boolean
-  paidAt: string | null
-  paidVia: string | null
+  /** Everything settled against this quote, by card or marked off by hand. */
+  paidMinor: number
+  /** What is still owed. Never negative: an overpayment reads as zero owed. */
+  outstandingMinor: number
+  settledInFull: boolean
+  lastPaidAt: string | null
 }
 
 /**
- * Every invoice, with whether it has actually been paid.
+ * Every invoice, with what has been paid against it and what is still owed.
  *
- * Paid state comes from `quote_payments`, not from a column on the invoice: a
- * payment is the event, and duplicating its outcome onto the invoice would give
- * two places to disagree about whether money arrived.
+ * An invoice is for the quote total, and payments reduce a balance. It is not
+ * one document per instalment: a client who pays a 40% deposit has not settled
+ * a separate deposit invoice, they have paid 40% of one bill and owe the rest.
+ * That is what an invoice ledger has to be able to say.
+ *
+ * Paid amounts come from `quote_payments` rather than a column here, so a card
+ * payment and a bank transfer marked off by hand are counted the same way and
+ * there is only one place that knows whether money arrived.
  */
 export async function listInvoices(): Promise<InvoiceListRow[]> {
   const { data, error } = await serviceClient()
     .from('invoices')
     .select(
-      `${SELECT}, quotes ( slug, client_name, client_company, project_title, quote_payments ( status, paid_at, channel, kind ) )`
+      `${SELECT}, quotes ( slug, client_name, client_company, project_title, status, quote_payments ( status, paid_at, amount_minor ) )`
     )
     .order('issued_at', { ascending: false })
 
   if (error) fail('LIST', error)
 
-  /* PostgREST types an embedded relation as an array even when the foreign key
-     makes it at most one row, so it is read as an array and the first element
-     taken. */
   interface JoinedQuote {
     slug: string
     client_name: string
     client_company: string | null
     project_title: string
+    status: string
     quote_payments: Array<{
       status: string
       paid_at: string | null
-      channel: string | null
-      kind: string
+      amount_minor: number
     }> | null
   }
 
@@ -162,19 +257,30 @@ export async function listInvoices(): Promise<InvoiceListRow[]> {
 
   return (data as unknown as Joined[]).map((row) => {
     const quote = Array.isArray(row.quotes) ? (row.quotes[0] ?? null) : row.quotes
-    const settled = (quote?.quote_payments ?? []).find(
-      (payment) => payment.status === 'paid' && payment.kind === row.kind
+    const settledPayments = (quote?.quote_payments ?? []).filter(
+      (payment) => payment.status === 'paid'
     )
 
+    const paidMinor = settledPayments.reduce((sum, payment) => sum + payment.amount_minor, 0)
+    const invoice = toInvoice(row)
+
+    const lastPaidAt = settledPayments
+      .map((payment) => payment.paid_at)
+      .filter((value): value is string => Boolean(value))
+      .sort()
+      .at(-1)
+
     return {
-      ...toInvoice(row),
+      ...invoice,
       quoteSlug: quote?.slug ?? '',
       clientName: quote?.client_name ?? 'Unknown',
       clientCompany: quote?.client_company ?? null,
       projectTitle: quote?.project_title ?? '',
-      paid: Boolean(settled),
-      paidAt: settled?.paid_at ?? null,
-      paidVia: settled?.channel ?? null,
+      paidMinor,
+      // Clamped: an overpayment should read as nothing owed, not as a negative.
+      outstandingMinor: Math.max(0, invoice.amountMinor - paidMinor),
+      settledInFull: paidMinor >= invoice.amountMinor,
+      lastPaidAt: lastPaidAt ?? null,
     }
   })
 }
@@ -187,7 +293,11 @@ export async function listInvoices(): Promise<InvoiceListRow[]> {
  * `quote_payments` row with channel `manual`, so paid state still has exactly
  * one source.
  */
-export async function markInvoicePaid(invoiceId: string, note: string): Promise<void> {
+export async function markInvoicePaid(
+  invoiceId: string,
+  amountMinor: number,
+  note: string
+): Promise<void> {
   const invoice = await serviceClient()
     .from('invoices')
     .select('id, quote_id, amount_minor, currency, kind')
@@ -203,13 +313,21 @@ export async function markInvoicePaid(invoiceId: string, note: string): Promise<
     kind: string
   }
 
+  if (amountMinor <= 0 || amountMinor > row.amount_minor) {
+    throw new AppError(
+      422,
+      'That amount is not between zero and the invoice total.',
+      'PAYMENT_AMOUNT_OUT_OF_RANGE'
+    )
+  }
+
   const { error } = await serviceClient()
     .from('quote_payments')
     .insert({
       quote_id: row.quote_id,
       reference: `manual_${invoiceId.slice(0, 8)}_${Date.now()}`,
       status: 'paid',
-      amount_minor: row.amount_minor,
+      amount_minor: amountMinor,
       currency: row.currency,
       kind: row.kind,
       paid_at: new Date().toISOString(),

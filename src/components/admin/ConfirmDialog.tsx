@@ -126,9 +126,16 @@ export function ConfirmDialog({
           {body}
         </p>
 
-        {/* Cancel first in the DOM on mobile so the thumb lands on it, not on
-            the destructive action. Order is reversed visually from sm up. */}
-        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        {/*
+          Cancel first in the DOM on mobile so the thumb lands on it, not on the
+          destructive action. Order is reversed visually from sm up.
+
+          `whitespace-nowrap` on the row from sm: side by side in a 28rem
+          dialog, a three or four word label wrapped to two lines and the
+          buttons looked broken. Stacked full width below sm, so nothing is
+          squeezed there.
+        */}
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:[&>*]:whitespace-nowrap">
           <Button tone="secondary" onClick={onCancel}>
             {cancelLabel}
           </Button>

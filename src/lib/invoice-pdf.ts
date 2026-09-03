@@ -55,9 +55,13 @@ export interface InvoiceData {
   taxRateBp: number
   taxMinor: number
   totalMinor: number
-  /** What this invoice is actually asking for now. */
+  /** Already settled against this invoice, by card or transfer. */
+  paidMinor: number
+  /** Total less payments received. What the client actually owes today. */
   amountDueMinor: number
-  kind: 'deposit' | 'balance' | 'full'
+  /** Shown as guidance when nothing has been paid yet. */
+  depositPercent: number
+  depositMinor: number
   paymentTerms: string
   /** The quote's own URL. Always present: the client always gets a way back. */
   quoteUrl: string
@@ -123,7 +127,9 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<Uint8Array> {
 
   let page = doc.addPage([A4.width, A4.height])
   const inner = A4.width - MARGIN * 2
-  const money = (minor: number) => formatMoney(minor, data.currency)
+  /* ISO code, not the symbol: the subset brand fonts have no ₦ glyph and a PDF
+     cannot fall back to another font the way a browser can. */
+  const money = (minor: number) => formatMoney(minor, data.currency, { display: 'code' })
 
   const ctx: Ctx = { page, display, body, bodyMedium, y: A4.height - MARGIN }
 
@@ -277,7 +283,11 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<Uint8Array> {
   totalRow('Subtotal', money(data.subtotalMinor))
   if (data.discountMinor > 0) totalRow('Discount', `- ${money(data.discountMinor)}`)
   if (data.taxRateBp > 0) totalRow(`Tax (${data.taxRateBp / 100}%)`, money(data.taxMinor))
-  totalRow('Quote total', money(data.totalMinor))
+  totalRow('Total', money(data.totalMinor))
+
+  if (data.paidMinor > 0) {
+    totalRow('Payments received', `- ${money(data.paidMinor)}`)
+  }
 
   ctx.y -= 8
   ctx.page.drawLine({
@@ -287,13 +297,24 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<Uint8Array> {
     color: LINE,
   })
 
-  const dueLabel =
-    data.kind === 'deposit'
-      ? 'Due now (deposit)'
-      : data.kind === 'balance'
-        ? 'Balance due'
-        : 'Due now'
-  totalRow(dueLabel, money(data.amountDueMinor), true)
+  totalRow(
+    data.amountDueMinor === 0 ? 'Paid in full' : 'Balance due',
+    money(data.amountDueMinor),
+    true
+  )
+
+  /* When nothing has been paid, say what is needed to start. The full balance
+     is correct but not actionable: the client is not being asked for all of it
+     today, and an invoice that does not say so invites a delay. */
+  if (data.paidMinor === 0 && data.depositPercent > 0 && data.depositPercent < 100) {
+    ctx.y -= 16
+    text(`To begin, ${data.depositPercent}% of this is due now:`, {
+      size: 9,
+      colour: MUTED,
+      x: MARGIN + inner * 0.55,
+    })
+    text(money(data.depositMinor), { size: 9, font: bodyMedium, align: 'right' })
+  }
 
   /* --- Payment ---------------------------------------------------------- */
   {

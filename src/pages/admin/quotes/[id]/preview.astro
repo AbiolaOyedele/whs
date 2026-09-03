@@ -90,7 +90,9 @@ const bare = Astro.url.searchParams.get('bare') === '1'
             ? totals.depositMinor
             : totals.totalMinor,
         kind: quote.depositPercent > 0 && quote.depositPercent < 100 ? 'deposit' : 'full',
-        paid: false,
+        // Preview shows the first-payment state: nothing settled, all outstanding.
+        paidMinor: 0,
+        outstandingMinor: totals.totalMinor,
       }}
     />
   </body>

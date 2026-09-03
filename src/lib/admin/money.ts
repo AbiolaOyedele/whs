@@ -81,16 +81,37 @@ export function computeTotals(input: {
  * the same way, and a German client reading "1.250,00" where we wrote "1,250.00"
  * is a factor-of-a-thousand misunderstanding waiting to happen.
  */
-export function formatMoney(minor: number, code: string, options?: { compact?: boolean }): string {
+export function formatMoney(
+  minor: number,
+  code: string,
+  options?: { compact?: boolean; display?: 'symbol' | 'code' }
+): string {
   const meta = currencyMeta(code)
   const major = minor / 10 ** meta.exponent
 
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: meta.code,
-    minimumFractionDigits: options?.compact && Number.isInteger(major) ? 0 : meta.exponent,
+  /*
+   * The number is formatted by Intl; the prefix comes from our own table.
+   *
+   * Intl's own currency display is wrong for us at both settings. The default
+   * writes "NGN 41,931,125.12", long enough to wrap the summary rail on a
+   * quote. `narrowSymbol` fixes that (₦41,931,125.12) but renders CAD and AUD
+   * as a bare "$", indistinguishable from US dollars on a document quoting a
+   * price. So: Intl for grouping and decimals, our own prefix for the rest.
+   *
+   * `display: 'code'` exists for the PDF. The subset brand fonts have no glyph
+   * for ₦ (U+20A6), so the symbol rendered as an empty box on naira invoices
+   * and vanished entirely in the display face. A PDF cannot fall back to
+   * another font the way a browser can, so it uses the ISO code, which every
+   * font here can draw and which reads correctly on a formal document.
+   */
+  const digits = options?.compact && Number.isInteger(major) ? 0 : meta.exponent
+
+  const formatted = new Intl.NumberFormat('en-GB', {
+    minimumFractionDigits: digits,
     maximumFractionDigits: meta.exponent,
   }).format(major)
+
+  return options?.display === 'code' ? `${meta.code} ${formatted}` : `${meta.symbol}${formatted}`
 }
 
 /** Parses a typed amount ("1,250.50", "£1250.5") into minor units. */

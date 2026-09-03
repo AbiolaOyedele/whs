@@ -18,7 +18,12 @@ import { SITE } from '@/config/site'
 import { AppError, toErrorResponse } from '@/lib/errors'
 import { computeTotals, lineAmount } from '@/lib/admin/money'
 import { getQuoteBySlug } from '@/lib/admin/repositories/quotes'
-import { createInvoice, findInvoice } from '@/lib/admin/repositories/invoices'
+import {
+  createInvoice,
+  findInvoice,
+  isInvoiceSettled,
+  refreshInvoice,
+} from '@/lib/admin/repositories/invoices'
 import { listPaymentsForQuote } from '@/lib/admin/repositories/payments'
 import { hasQuoteAccess } from '@/lib/admin/quote-session'
 import { isPayableCurrency, isPaystackConfigured } from '@/lib/paystack'
@@ -43,8 +48,15 @@ export const GET: APIRoute = async ({ cookies, params }) => {
     const quote = await getQuoteBySlug(slug)
     if (!quote) throw new AppError(404, 'That quote could not be found.', 'QUOTE_NOT_FOUND')
 
-    if (quote.status === 'draft') {
-      throw new AppError(403, 'This quote is not ready yet.', 'QUOTE_NOT_PUBLISHED')
+    /* An invoice before the client has said yes is a bill for work they have
+       not agreed to. The button is hidden until acceptance; this is the check
+       that actually enforces it. */
+    if (quote.status !== 'accepted') {
+      throw new AppError(
+        403,
+        'An invoice is available once the quote has been accepted.',
+        'INVOICE_QUOTE_NOT_ACCEPTED'
+      )
     }
 
     const totals = computeTotals({
@@ -54,13 +66,16 @@ export const GET: APIRoute = async ({ cookies, params }) => {
       depositPercent: quote.depositPercent,
     })
 
-    const takingDeposit = quote.depositPercent > 0 && quote.depositPercent < 100
-    const kind = takingDeposit ? 'deposit' : 'full'
-    const amountMinor = takingDeposit ? totals.depositMinor : totals.totalMinor
-
-    if (amountMinor <= 0) {
-      throw new AppError(422, 'There is nothing to invoice on this quote.', 'INVOICE_ZERO_AMOUNT')
-    }
+    /*
+     * One invoice, for the quote total, with payments reducing a balance.
+     *
+     * Not one document per instalment: a client who pays a 40% deposit has not
+     * settled a separate deposit invoice, they have paid 40% of one bill and
+     * owe the rest. That is what the ledger has to be able to say, and it is
+     * what an invoice normally means.
+     */
+    const kind = 'full' as const
+    const amountMinor = totals.totalMinor
 
     const lines: InvoiceLine[] = quote.lineItems
       .filter((item) => !item.isOptional)
@@ -72,48 +87,96 @@ export const GET: APIRoute = async ({ cookies, params }) => {
         amountMinor: lineAmount(item),
       }))
 
-    // Reuse before issuing: this endpoint is a download button, and clicking it
-    // three times must not produce invoices 0007, 0008 and 0009.
-    const invoice =
-      (await findInvoice(quote.id, kind)) ??
-      (await createInvoice({
-        quoteId: quote.id,
-        amountMinor,
-        currency: quote.currency,
-        kind,
-        dueAt: quote.validUntil,
-        snapshot: {
-          clientName: quote.clientName,
-          clientCompany: quote.clientCompany,
-          projectTitle: quote.projectTitle,
-          lines,
-          totals,
-        },
-      }))
-
-    const paid = (await listPaymentsForQuote(quote.id)).some((p) => p.status === 'paid')
-    const origin = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
-
-    const pdf = await renderInvoicePdf({
-      number: invoice.number,
-      issuedAt: new Date(invoice.issuedAt),
-      dueAt: invoice.dueAt ? new Date(invoice.dueAt) : null,
+    /*
+     * The invoice is regenerated from the quote on every download.
+     *
+     * An unpaid invoice is a bill that has not been settled, so it is rewritten
+     * in place and keeps its number: edit the quote, download, see the edit.
+     * The earlier version reused whatever was issued first, which meant a quote
+     * converted from GBP to NGN produced a document with naira line items and a
+     * deposit still held in pence.
+     *
+     * A settled invoice is never rewritten — that is a record of money that
+     * moved — so a change after payment issues a new number instead.
+     */
+    const snapshot = {
+      currency: quote.currency,
       clientName: quote.clientName,
       clientCompany: quote.clientCompany,
       clientEmail: quote.clientEmail,
       projectTitle: quote.projectTitle,
-      currency: quote.currency,
+      paymentTerms: quote.paymentTerms,
       lines,
       subtotalMinor: totals.subtotalMinor,
       discountMinor: totals.discountMinor,
       taxRateBp: quote.taxRateBp,
       taxMinor: totals.taxMinor,
       totalMinor: totals.totalMinor,
-      amountDueMinor: invoice.amountMinor,
-      kind: invoice.kind,
-      paymentTerms: quote.paymentTerms,
+    }
+
+    const existing = await findInvoice(quote.id, kind)
+    const settled = existing ? await isInvoiceSettled(quote.id, kind) : false
+
+    const invoice =
+      existing && !settled
+        ? await refreshInvoice(existing.id, {
+            amountMinor,
+            currency: quote.currency,
+            dueAt: quote.validUntil,
+            snapshot,
+          })
+        : existing &&
+            settled &&
+            existing.amountMinor === amountMinor &&
+            existing.currency === quote.currency
+          ? existing
+          : await createInvoice({
+              quoteId: quote.id,
+              amountMinor,
+              currency: quote.currency,
+              kind,
+              dueAt: quote.validUntil,
+              snapshot,
+            })
+
+    const settledPayments = (await listPaymentsForQuote(quote.id)).filter(
+      (payment) => payment.status === 'paid'
+    )
+    const paidMinor = settledPayments.reduce((sum, payment) => sum + payment.amountMinor, 0)
+    const balanceMinor = Math.max(0, invoice.amountMinor - paidMinor)
+    const origin = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+
+    /*
+     * Rendered from the SNAPSHOT, not the live quote.
+     *
+     * This is what makes an invoice a document rather than a view. Mixing the
+     * two is exactly how the currency bug happened: some fields moved with the
+     * quote and one did not.
+     */
+    const frozen = invoice.snapshot
+
+    const pdf = await renderInvoicePdf({
+      number: invoice.number,
+      issuedAt: new Date(invoice.issuedAt),
+      dueAt: invoice.dueAt ? new Date(invoice.dueAt) : null,
+      clientName: frozen.clientName,
+      clientCompany: frozen.clientCompany,
+      clientEmail: frozen.clientEmail,
+      projectTitle: frozen.projectTitle,
+      currency: invoice.currency,
+      lines: frozen.lines,
+      subtotalMinor: frozen.subtotalMinor,
+      discountMinor: frozen.discountMinor,
+      taxRateBp: frozen.taxRateBp,
+      taxMinor: frozen.taxMinor,
+      totalMinor: frozen.totalMinor,
+      paidMinor,
+      amountDueMinor: balanceMinor,
+      depositPercent: quote.depositPercent,
+      depositMinor: totals.depositMinor,
+      paymentTerms: frozen.paymentTerms,
       quoteUrl: `${origin}/quote/${quote.slug}`,
-      payable: !paid && isPaystackConfigured() && isPayableCurrency(quote.currency),
+      payable: balanceMinor > 0 && isPaystackConfigured() && isPayableCurrency(invoice.currency),
       studio: {
         name: SITE.name,
         email: SITE.email,

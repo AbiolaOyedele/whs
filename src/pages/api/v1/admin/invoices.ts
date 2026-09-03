@@ -18,7 +18,12 @@ import { readBody } from '@/lib/forms'
 
 export const prerender = false
 
-const bodySchema = z.object({ note: z.string().trim().max(500).default('') })
+const bodySchema = z.object({
+  /* Minor units, so a part payment can be recorded. A client who pays 40% has
+     not settled a separate deposit invoice, they have paid 40% of this one. */
+  amountMinor: z.number().int().positive(),
+  note: z.string().trim().max(500).default(''),
+})
 
 export const POST: APIRoute = async ({ request, cookies, url }) => {
   try {
@@ -29,9 +34,12 @@ export const POST: APIRoute = async ({ request, cookies, url }) => {
     if (!id) throw new AppError(404, 'That invoice no longer exists.', 'INVOICE_NOT_FOUND')
 
     const parsed = bodySchema.safeParse(await readBody(request))
-    await markInvoicePaid(id, parsed.success ? parsed.data.note : '')
+    if (!parsed.success) {
+      throw new AppError(422, 'Enter the amount that was paid.', 'PAYMENT_AMOUNT_MISSING')
+    }
 
-    return toSuccessResponse('Marked as paid.')
+    await markInvoicePaid(id, parsed.data.amountMinor, parsed.data.note)
+    return toSuccessResponse('Payment recorded.')
   } catch (error) {
     return toErrorResponse(error)
   }

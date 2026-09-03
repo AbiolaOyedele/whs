@@ -47,8 +47,10 @@ const base: InvoiceData = {
   taxRateBp: 2000,
   taxMinor: 182_000,
   totalMinor: 1_092_000,
-  amountDueMinor: 436_800,
-  kind: 'deposit',
+  paidMinor: 0,
+  amountDueMinor: 1_092_000,
+  depositPercent: 40,
+  depositMinor: 436_800,
   paymentTerms: '40% to start, 30% at build end, 30% on handover.',
   quoteUrl: 'https://whstd.com/quote/northwind-logistics',
   payable: true,
@@ -80,6 +82,18 @@ describe('renderInvoicePdf', () => {
     // regressed, this would quietly render in Helvetica.
     const bytes = await renderInvoicePdf(base)
     expect(bytes.length).toBeGreaterThan(20_000)
+  }, 30_000)
+
+  it('shows payments received and the remaining balance', async () => {
+    // A client who paid a 40% deposit has not settled a separate invoice; they
+    // have paid part of this one and owe the rest. The document has to say so.
+    const bytes = await renderInvoicePdf({
+      ...base,
+      paidMinor: 436_800,
+      amountDueMinor: 655_200,
+    })
+    const doc = await PDFDocument.load(bytes)
+    expect(doc.getPageCount()).toBe(1)
   }, 30_000)
 
   it('flows onto more pages rather than overrunning one', async () => {

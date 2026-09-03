@@ -33,7 +33,15 @@ interface Props {
    * paid. Offering a pay button that fails after the click is worse than not
    * offering one.
    */
-  payment?: { enabled: boolean; amountMinor: number; kind: string; paid: boolean } | undefined
+  payment?:
+    | {
+        enabled: boolean
+        amountMinor: number
+        kind: string
+        paidMinor: number
+        outstandingMinor: number
+      }
+    | undefined
 }
 
 const { quote, totals, mode = 'client', payment } = Astro.props
@@ -81,7 +89,7 @@ const optionalItems = quote.lineItems.filter((item) => item.isOptional)
 -->
 <main class="mx-auto max-w-6xl px-5 py-10 lg:px-10 lg:py-16">
   <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-12">
-    <div class="min-w-0">
+    <div class="min-w-0 lg:col-start-1 lg:row-start-1">
       {
         expired && !decided && (
           <div class="mb-8 rounded-2xl border border-border bg-muted p-5">
@@ -297,7 +305,174 @@ const optionalItems = quote.lineItems.filter((item) => item.isOptional)
           </section>
         )
       }
+    </div>
 
+    <!-- The commercial summary. Ordered first on mobile so the price is not
+         buried below the whole narrative. -->
+    <!--
+      The commercial summary.
+
+      Placed by explicit grid coordinates rather than DOM order, because the
+      two layouts want opposite things. On a phone it reads AFTER the whole
+      narrative: a client should understand what they are buying before they
+      meet the number, and a seven-figure total as the first thing on screen
+      reads as a demand rather than a proposal. On a desktop it pins beside
+      the narrative from the top, where it is reference rather than reveal.
+    -->
+    <aside class="lg:sticky lg:top-8 lg:col-start-2 lg:row-start-1">
+      <div class="rounded-3xl border border-border bg-card p-6">
+        <p class="text-sm text-muted-foreground">Total</p>
+        {
+          /* Steps down with magnitude: a seven-figure naira total at 3xl runs
+            past the edge of the card. */
+        }
+        <p
+          class:list={[
+            'mb-5 font-mono leading-none',
+            totals.totalMinor >= 100_000_000 ? 'text-xl' : 'text-3xl',
+          ]}
+        >
+          {money(totals.totalMinor)}
+        </p>
+
+        {
+          /* `min-w-0` on the label and `whitespace-nowrap` on the value: without
+            it a long amount squeezed "To start (40%)" and "On delivery" onto
+            two lines each. */
+        }
+        <dl
+          class="flex flex-col gap-2 border-t border-border pt-4 text-base [&_dd]:shrink-0 [&_dd]:whitespace-nowrap [&_dt]:min-w-0"
+        >
+          <div class="flex justify-between gap-4">
+            <dt class="text-muted-foreground">Subtotal</dt>
+            <dd class="font-mono">{money(totals.subtotalMinor)}</dd>
+          </div>
+          {
+            totals.discountMinor > 0 && (
+              <div class="flex justify-between gap-4">
+                <dt class="text-muted-foreground">Discount</dt>
+                <dd class="font-mono">− {money(totals.discountMinor)}</dd>
+              </div>
+            )
+          }
+          {
+            quote.taxRateBp > 0 && (
+              <div class="flex justify-between gap-4">
+                <dt class="text-muted-foreground">Tax ({quote.taxRateBp / 100}%)</dt>
+                <dd class="font-mono">{money(totals.taxMinor)}</dd>
+              </div>
+            )
+          }
+          {
+            quote.depositPercent > 0 && quote.depositPercent < 100 && (
+              <>
+                <div class="mt-2 flex justify-between gap-4 border-t border-border pt-3">
+                  <dt class="text-muted-foreground">To start ({quote.depositPercent}%)</dt>
+                  <dd class="font-mono">{money(totals.depositMinor)}</dd>
+                </div>
+                <div class="flex justify-between gap-4">
+                  <dt class="text-muted-foreground">On delivery</dt>
+                  <dd class="font-mono">{money(totals.balanceMinor)}</dd>
+                </div>
+              </>
+            )
+          }
+          {
+            quote.validUntil && (
+              <div class="mt-2 flex justify-between gap-4 border-t border-border pt-3">
+                <dt class="text-muted-foreground">Valid until</dt>
+                <dd>{dateFormat.format(new Date(quote.validUntil))}</dd>
+              </div>
+            )
+          }
+        </dl>
+
+        {
+          payment && payment.paidMinor > 0 && payment.outstandingMinor > 0 && (
+            <div class="mt-5 rounded-xl border border-border bg-muted px-4 py-3 text-base">
+              <p>
+                Paid so far <span class="font-mono">{money(payment.paidMinor)}</span>
+              </p>
+              <p class="text-muted-foreground">
+                Still to pay <span class="font-mono">{money(payment.outstandingMinor)}</span>
+              </p>
+            </div>
+          )
+        }
+
+        {
+          payment?.outstandingMinor === 0 && (
+            <p class="mt-5 flex min-h-12 items-center justify-center rounded-full border border-accent bg-accent/10 px-4 text-base">
+              Paid. Thank you.
+            </p>
+          )
+        }
+
+        {
+          !decided && payment?.outstandingMinor !== 0 && (
+            <a
+              href="#decision"
+              class="mt-5 flex min-h-12 items-center justify-center rounded-full bg-primary px-6 text-base text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+            >
+              Respond to this quote
+            </a>
+          )
+        }
+
+        {
+          /* Only once they have said yes: an invoice for work a client has not
+            agreed to is a bill, not a document. The endpoint enforces the same
+            rule, so hiding the button is presentation rather than the control. */
+        }
+        {
+          quote.status === 'accepted' && (
+            <a
+              href={`/api/v1/quote/${quote.slug}/invoice`}
+              class="mt-2 flex min-h-12 items-center justify-center gap-2 rounded-full border border-border px-6 text-base transition-colors hover:border-foreground"
+              aria-disabled={isPreview ? 'true' : undefined}
+            >
+              <svg viewBox="0 0 24 24" class="size-4" aria-hidden="true">
+                <path
+                  d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              Download invoice
+            </a>
+          )
+        }
+
+        {
+          payment?.enabled && (
+            <>
+              {/* Just the action. The amount is already on the "To start" row
+                  directly above, and repeating a seven-figure naira total on a
+                  button wrapped it onto two lines. */}
+              <button
+                type="button"
+                data-pay-button
+                data-slug={quote.slug}
+                disabled={isPreview}
+                class="mt-2 flex min-h-12 w-full items-center justify-center rounded-full bg-accent px-6 text-base whitespace-nowrap text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
+              >
+                {payment.kind === 'deposit' ? 'Pay the deposit' : 'Pay the balance'}
+              </button>
+              <p data-pay-error class="mt-2 hidden text-sm text-destructive" role="alert" />
+              <p class="mt-2 text-sm text-muted-foreground">
+                Card or bank transfer, handled by Paystack. We never see your card details.
+              </p>
+            </>
+          )
+        }
+      </div>
+    </aside>
+
+    <!-- Full width and last on both layouts: the ask comes after the price. -->
+    <div class="min-w-0 lg:col-span-2">
       <section
         id="decision"
         class="rounded-section bg-surface-dark p-6 text-surface-dark-foreground lg:p-10"
@@ -379,116 +554,6 @@ const optionalItems = quote.lineItems.filter((item) => item.isOptional)
         <Logo variant="mark" class="h-5 w-auto opacity-60" label={SITE.name} />
       </footer>
     </div>
-
-    <!-- The commercial summary. Ordered first on mobile so the price is not
-         buried below the whole narrative. -->
-    <aside class="order-first lg:sticky lg:top-8 lg:order-none">
-      <div class="rounded-3xl border border-border bg-card p-6">
-        <p class="text-sm text-muted-foreground">Total</p>
-        <p class="mb-5 font-mono text-3xl leading-none">{money(totals.totalMinor)}</p>
-
-        <dl class="flex flex-col gap-2 border-t border-border pt-4 text-base">
-          <div class="flex justify-between gap-4">
-            <dt class="text-muted-foreground">Subtotal</dt>
-            <dd class="font-mono">{money(totals.subtotalMinor)}</dd>
-          </div>
-          {
-            totals.discountMinor > 0 && (
-              <div class="flex justify-between gap-4">
-                <dt class="text-muted-foreground">Discount</dt>
-                <dd class="font-mono">− {money(totals.discountMinor)}</dd>
-              </div>
-            )
-          }
-          {
-            quote.taxRateBp > 0 && (
-              <div class="flex justify-between gap-4">
-                <dt class="text-muted-foreground">Tax ({quote.taxRateBp / 100}%)</dt>
-                <dd class="font-mono">{money(totals.taxMinor)}</dd>
-              </div>
-            )
-          }
-          {
-            quote.depositPercent > 0 && quote.depositPercent < 100 && (
-              <>
-                <div class="mt-2 flex justify-between gap-4 border-t border-border pt-3">
-                  <dt class="text-muted-foreground">To start ({quote.depositPercent}%)</dt>
-                  <dd class="font-mono">{money(totals.depositMinor)}</dd>
-                </div>
-                <div class="flex justify-between gap-4">
-                  <dt class="text-muted-foreground">On delivery</dt>
-                  <dd class="font-mono">{money(totals.balanceMinor)}</dd>
-                </div>
-              </>
-            )
-          }
-          {
-            quote.validUntil && (
-              <div class="mt-2 flex justify-between gap-4 border-t border-border pt-3">
-                <dt class="text-muted-foreground">Valid until</dt>
-                <dd>{dateFormat.format(new Date(quote.validUntil))}</dd>
-              </div>
-            )
-          }
-        </dl>
-
-        {
-          payment?.paid && (
-            <p class="mt-5 rounded-xl border border-accent bg-accent/10 px-4 py-3 text-base">
-              Paid. Thank you.
-            </p>
-          )
-        }
-
-        {
-          !decided && !payment?.paid && (
-            <a
-              href="#decision"
-              class="mt-5 flex min-h-12 items-center justify-center rounded-full bg-primary px-6 text-base text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-            >
-              Respond to this quote
-            </a>
-          )
-        }
-
-        <a
-          href={`/api/v1/quote/${quote.slug}/invoice`}
-          class="mt-2 flex min-h-12 items-center justify-center gap-2 rounded-full border border-border px-6 text-base transition-colors hover:border-foreground"
-          aria-disabled={isPreview ? 'true' : undefined}
-        >
-          <svg viewBox="0 0 24 24" class="size-4" aria-hidden="true">
-            <path
-              d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"></path>
-          </svg>
-          Download invoice
-        </a>
-
-        {
-          payment?.enabled && !payment.paid && (
-            <>
-              <button
-                type="button"
-                data-pay-button
-                data-slug={quote.slug}
-                disabled={isPreview}
-                class="mt-2 flex min-h-12 w-full items-center justify-center rounded-full bg-accent px-6 text-base text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
-              >
-                Pay {money(payment.amountMinor)} {payment.kind === 'deposit' ? 'deposit' : 'now'}
-              </button>
-              <p data-pay-error class="mt-2 hidden text-sm text-destructive" role="alert" />
-              <p class="mt-2 text-sm text-muted-foreground">
-                Card or bank transfer, handled by Paystack. We never see your card details.
-              </p>
-            </>
-          )
-        }
-      </div>
-    </aside>
   </div>
 </main>
 

@@ -57,16 +57,6 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
       )
     }
 
-    // Already settled? Do not let a second charge start.
-    const existing = await listPaymentsForQuote(quote.id)
-    if (existing.some((payment) => payment.status === 'paid')) {
-      throw new AppError(
-        409,
-        'This quote has already been paid. If that looks wrong, please get in touch.',
-        'PAYMENT_ALREADY_PAID'
-      )
-    }
-
     const totals = computeTotals({
       lineItems: quote.lineItems,
       discountMinor: quote.discountMinor,
@@ -74,13 +64,32 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
       depositPercent: quote.depositPercent,
     })
 
-    const takingDeposit = quote.depositPercent > 0 && quote.depositPercent < 100
-    const amountMinor = takingDeposit ? totals.depositMinor : totals.totalMinor
-    const kind = takingDeposit ? 'deposit' : 'full'
+    /*
+     * What is actually owed right now.
+     *
+     * Instalments: the first payment is the deposit, and anything after it
+     * clears the remaining balance. The earlier version charged the deposit and
+     * then refused any further payment once anything had been settled, which
+     * left a client who had paid 40% with no way to pay the other 60% at all.
+     */
+    const settled = (await listPaymentsForQuote(quote.id)).filter(
+      (payment) => payment.status === 'paid'
+    )
+    const paidMinor = settled.reduce((sum, payment) => sum + payment.amountMinor, 0)
+    const outstandingMinor = Math.max(0, totals.totalMinor - paidMinor)
 
-    if (amountMinor <= 0) {
-      throw new AppError(422, 'There is nothing to pay on this quote.', 'PAYMENT_ZERO_AMOUNT')
+    if (outstandingMinor <= 0) {
+      throw new AppError(
+        409,
+        'This quote is fully paid. If that looks wrong, please get in touch.',
+        'PAYMENT_ALREADY_PAID'
+      )
     }
+
+    const takingDeposit = paidMinor === 0 && quote.depositPercent > 0 && quote.depositPercent < 100
+
+    const amountMinor = takingDeposit ? totals.depositMinor : outstandingMinor
+    const kind = takingDeposit ? 'deposit' : paidMinor > 0 ? 'balance' : 'full'
 
     // Our own reference, and the idempotency key for the webhook.
     const reference = `whs_${quote.slug.slice(0, 20)}_${randomBytes(6).toString('hex')}`
