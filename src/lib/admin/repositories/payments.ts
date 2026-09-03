@@ -132,3 +132,33 @@ export async function settlePayment(
   if (error) fail('SETTLE', error)
   return (data as Array<{ id: string }>).length > 0
 }
+
+/**
+ * Pending payments old enough to be worth asking Paystack about.
+ *
+ * `minAgeSeconds` skips clients who are still on the checkout page — a
+ * reference created ten seconds ago is not a lost payment, it is a payment in
+ * progress. `maxAgeDays` stops the sweep re-verifying references that were
+ * abandoned weeks ago and never will be paid.
+ */
+export async function listStalePendingPayments(options?: {
+  minAgeSeconds?: number
+  maxAgeDays?: number
+  limit?: number
+}): Promise<QuotePayment[]> {
+  const minAgeSeconds = options?.minAgeSeconds ?? 120
+  const maxAgeDays = options?.maxAgeDays ?? 7
+  const now = Date.now()
+
+  const { data, error } = await serviceClient()
+    .from('quote_payments')
+    .select(SELECT)
+    .eq('status', 'pending')
+    .lte('created_at', new Date(now - minAgeSeconds * 1000).toISOString())
+    .gte('created_at', new Date(now - maxAgeDays * 86_400_000).toISOString())
+    .order('created_at', { ascending: false })
+    .limit(options?.limit ?? 25)
+
+  if (error) fail('LIST_PENDING', error)
+  return (data as Row[]).map(toPayment)
+}

@@ -2,19 +2,21 @@
 /**
  * Where Paystack returns the client after checkout.
  *
- * This page CONFIRMS rather than decides. The authoritative record is the
- * webhook; a browser arriving here proves only that a browser arrived here.
- * So it verifies with Paystack directly and settles if the webhook has not yet
- * landed — the two race, `settlePayment` is guarded on `status = 'pending'`,
- * and whichever wins, the client sees the truth.
+ * A browser arriving here proves only that a browser arrived here, so this page
+ * decides nothing: it asks Paystack directly and records the answer. With no
+ * webhook delivered to this deployment, this is the path that settles almost
+ * every payment — see `src/lib/admin/payment-reconcile.ts`.
+ *
+ * A client who closes the tab before returning is caught by the sweeps on the
+ * quote page and the invoice ledger instead.
  */
 import '@/styles/global.css'
 import Logo from '@/components/ui/Logo.astro'
 import { SITE } from '@/config/site'
 import { isAdminConfigured } from '@/config/env'
 import { formatMoney } from '@/lib/admin/money'
-import { getPaymentByReference, settlePayment } from '@/lib/admin/repositories/payments'
-import { verifyTransaction } from '@/lib/paystack'
+import { getPaymentByReference } from '@/lib/admin/repositories/payments'
+import { reconcilePayment } from '@/lib/admin/payment-reconcile'
 import { hasQuoteAccess } from '@/lib/admin/quote-session'
 
 export const prerender = false
@@ -34,26 +36,17 @@ if (isAdminConfigured() && reference && (await hasQuoteAccess(slug, Astro.cookie
     if (payment.status === 'paid') {
       state = 'paid'
     } else {
-      try {
-        const verified = await verifyTransaction(reference)
-        if (
-          verified.amountMinor === payment.amountMinor &&
-          verified.currency === payment.currency
-        ) {
-          await settlePayment(reference, {
-            status: verified.status,
-            paidAt: verified.paidAt,
-            channel: verified.channel,
-            feesMinor: verified.feesMinor,
-            raw: verified.raw,
-          })
-        }
-        state =
-          verified.status === 'paid' ? 'paid' : verified.status === 'failed' ? 'failed' : 'pending'
-      } catch {
-        // Verification is down, not the payment. Say so honestly.
-        state = 'pending'
-      }
+      const result = await reconcilePayment(payment)
+
+      /* `unavailable` means Paystack could not be reached — that is our problem,
+         not evidence about their money, so it reads as pending rather than
+         failed. Nothing has been written in that case. */
+      state =
+        result.verifiedStatus === 'paid'
+          ? 'paid'
+          : result.verifiedStatus === 'failed'
+            ? 'failed'
+            : 'pending'
     }
   }
 }

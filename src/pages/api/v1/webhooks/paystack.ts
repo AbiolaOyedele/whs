@@ -4,8 +4,11 @@
  * Auth:     HMAC-SHA512 signature in x-paystack-signature
  * Response: 200 always, once authenticated
  *
- * The authoritative record of whether a payment happened. The browser callback
- * is a convenience for the client; this is what we believe.
+ * ⚠️ NOT CURRENTLY RECEIVING TRAFFIC. A Paystack business has one live webhook
+ * URL, and this account's points at another product. Payments are recorded by
+ * polling instead — see `src/lib/admin/payment-reconcile.ts`. This route is
+ * kept working and correct so that pointing a webhook here later is a one-line
+ * change in the Paystack dashboard and nothing else.
  *
  * Two rules this endpoint lives by:
  *
@@ -17,11 +20,9 @@
  */
 import type { APIRoute } from 'astro'
 import { toErrorResponse } from '@/lib/errors'
-import { isValidWebhook, verifyTransaction } from '@/lib/paystack'
-import { getPaymentByReference, settlePayment } from '@/lib/admin/repositories/payments'
-import { getQuoteById } from '@/lib/admin/repositories/quotes'
-import { sendNotification } from '@/lib/resend'
-import { formatMoney } from '@/lib/admin/money'
+import { isValidWebhook } from '@/lib/paystack'
+import { getPaymentByReference } from '@/lib/admin/repositories/payments'
+import { reconcilePayment } from '@/lib/admin/payment-reconcile'
 
 export const prerender = false
 
@@ -51,48 +52,13 @@ export const POST: APIRoute = async ({ request }) => {
       console.warn('[paystack] webhook for an unknown reference', reference)
       return ok()
     }
-    if (payment.status === 'paid') return ok() // already settled; retries are normal
 
-    // Verified against Paystack rather than trusted from the payload, so a
-    // forged-but-somehow-signed body still cannot invent an amount.
-    const verified = await verifyTransaction(reference)
-
-    if (verified.amountMinor !== payment.amountMinor || verified.currency !== payment.currency) {
-      console.error('[paystack] amount mismatch', {
-        reference,
-        expected: `${payment.amountMinor} ${payment.currency}`,
-        got: `${verified.amountMinor} ${verified.currency}`,
-      })
-      // Not settled: a mismatch is a problem for a person, not a state change.
-      return ok()
-    }
-
-    const settled = await settlePayment(reference, {
-      status: verified.status,
-      paidAt: verified.paidAt,
-      channel: verified.channel,
-      feesMinor: verified.feesMinor,
-      raw: verified.raw,
-    })
-
-    if (settled && verified.status === 'paid') {
-      const quote = await getQuoteById(payment.quoteId)
-      try {
-        await sendNotification({
-          subject: `Payment received: ${quote?.clientName ?? 'a client'} — ${formatMoney(payment.amountMinor, payment.currency)}`,
-          text: [
-            `${quote?.clientName ?? 'A client'} paid the ${payment.kind}.`,
-            `Amount: ${formatMoney(payment.amountMinor, payment.currency)}`,
-            `Project: ${quote?.projectTitle ?? '—'}`,
-            `Reference: ${reference}`,
-          ].join('\n'),
-        })
-      } catch (cause) {
-        // The payment is recorded. A mail failure must not fail the webhook,
-        // or Paystack retries and we notify twice.
-        console.error('[paystack] notify failed', cause)
-      }
-    }
+    /*
+     * The payload is not believed. `reconcilePayment` re-verifies against
+     * Paystack, checks the amount against ours, and is idempotent — which is
+     * what makes retries and the browser callback racing this harmless.
+     */
+    await reconcilePayment(payment)
 
     return ok()
   } catch (error) {
