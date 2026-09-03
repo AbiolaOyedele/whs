@@ -62,8 +62,15 @@ House style:
 Pricing rules, in order of importance:
 1. Never invent a figure the brief does not support. If the brief gives no rate, no budget and no comparable, set unitPrice to 0 and say so in assumptions. A zero the operator must fill in is safe. A plausible guess that reaches a client is not.
 2. Break the work into line items that a client could actually query: a named piece of work, what it includes, what it costs. Avoid a single undifferentiated "development" line.
-3. Mark genuinely optional scope as isOptional rather than padding the total with it.
-4. Prices are in major currency units (e.g. 4200 means 4,200), not minor units.
+3. Prices are in major currency units (e.g. 4200 means 4,200), not minor units.
+
+Packages and add-ons — use these when the brief calls for tiers or genuinely optional scope:
+- A PACKAGE is one of several mutually exclusive scopes the client picks between (Essential / Standard / Premium, or something specific to the job). Mark ONE as isDefault: the one you recommend.
+- An ADD-ON is scope the client ticks independently (a care plan, an SMS layer). Do not mark add-ons as isDefault unless the brief clearly asks for them.
+- Every line item goes SOMEWHERE. Work included on every version of the quote belongs in BASE SCOPE (optionKey: null). Work that only counts if the client picks a particular package or add-on carries that option's key.
+- The option's price is the sum of its items; do not repeat the total in the option itself. Write a one-sentence description covering what makes it different from the others.
+- No packages when the brief is one fixed scope. isOptional (on base-scope items) is for a single menu item, not a whole tier — a tier is a package.
+- Option keys are your own labels ("essential", "care-plan") and must match the key on every line item that belongs to that option. An item pointing at an unknown key falls back to base scope, which is not what you meant.
 
 Timeline rules:
 - Phases should describe what happens, what the client receives at the end of it, and roughly how long it takes.

@@ -152,9 +152,44 @@ export function AiDraftPanel({ quoteId, providers, onApply }: Props) {
               </p>
             </div>
 
+            {result.draft.options.length > 0 && (
+              <div>
+                <h4 className="mb-2 text-sm text-muted-foreground">
+                  Packages and add-ons ({result.draft.options.length})
+                </h4>
+                <ul className="flex flex-col gap-2">
+                  {result.draft.options.map((option) => (
+                    <li
+                      key={option.key}
+                      className="flex items-baseline justify-between gap-4 border-b border-border pb-2 text-base"
+                    >
+                      <span>
+                        {option.title}
+                        <span className="ml-2 text-sm text-muted-foreground">
+                          {option.kind === 'package' ? 'package' : 'add-on'}
+                          {option.isDefault && ' · pre-selected'}
+                        </span>
+                      </span>
+                      <span className="shrink-0 font-mono text-sm">
+                        {
+                          result.draft.lineItems.filter((item) => item.optionKey === option.key)
+                            .length
+                        }{' '}
+                        items
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <div>
               <h4 className="mb-2 text-sm text-muted-foreground">
-                Cost breakdown ({result.draft.lineItems.length})
+                {result.draft.options.length > 0
+                  ? `Base scope (${
+                      result.draft.lineItems.filter((item) => item.optionKey === null).length
+                    } of ${result.draft.lineItems.length})`
+                  : `Cost breakdown (${result.draft.lineItems.length})`}
               </h4>
               <ul className="flex flex-col gap-2">
                 {result.draft.lineItems.map((item, index) => (
@@ -166,6 +201,13 @@ export function AiDraftPanel({ quoteId, providers, onApply }: Props) {
                       {item.title}
                       {item.isOptional && (
                         <span className="ml-2 text-sm text-muted-foreground">optional</span>
+                      )}
+                      {item.optionKey && (
+                        <span className="ml-2 text-sm text-muted-foreground">
+                          in{' '}
+                          {result.draft.options.find((o) => o.key === item.optionKey)?.title ??
+                            item.optionKey}
+                        </span>
                       )}
                     </span>
                     <span className="shrink-0 font-mono">

@@ -43,10 +43,47 @@ export const quoteDraftSchema = z.object({
         quantity: z.number().min(0).max(10_000).default(1),
         unitPrice: z.number().min(0).max(100_000_000),
         isOptional: z.boolean().default(false),
+        /**
+         * Which option this line belongs to, matched by KEY against `options`
+         * below. Null means base scope — charged whatever the client picks.
+         *
+         * A key rather than an id: the editor and the database mint ids after
+         * the fact, so the model refers to its own options by a stable label.
+         * An unknown key is treated as base scope on arrival: safer than
+         * dropping the line, safer than inventing a phantom option.
+         */
+        optionKey: z.string().trim().max(64).nullable().default(null),
       })
     )
     .min(1)
     .max(40),
+  /**
+   * Packages the client picks between, and add-ons they tick.
+   *
+   * Empty when the brief is one fixed scope. When present, each option's price
+   * is the sum of the line items whose `optionKey` matches — the model does
+   * not write prices here directly, so there is one place for money and no way
+   * for the card and the invoice to disagree.
+   */
+  options: z
+    .array(
+      z.object({
+        key: z.string().trim().min(1).max(64),
+        kind: z.enum(['package', 'addon']),
+        title: z.string().trim().min(1).max(120),
+        description: z.string().trim().max(600).default(''),
+        /** Pre-tick this option for the client. At most one package. */
+        isDefault: z.boolean().default(false),
+      })
+    )
+    .max(8)
+    .default([])
+    /* At most one default package, for the same reason the database refuses
+       two selected packages: both sets of line items would enter the total. */
+    .refine(
+      (options) => options.filter((o) => o.kind === 'package' && o.isDefault).length <= 1,
+      'Only one package can be pre-selected.'
+    ),
   phases: z
     .array(
       z.object({

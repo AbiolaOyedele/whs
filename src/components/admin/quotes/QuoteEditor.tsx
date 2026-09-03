@@ -1174,19 +1174,43 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
                         new Date(Date.now() + draft.suggestedValidityDays * 86_400_000)
                           .toISOString()
                           .slice(0, 10),
-                      lineItems: draft.lineItems.map((item, index) => ({
-                        id: `draft-line-${index}`,
+                      /*
+                        Options first, so line items can point at them by id.
+                        The model refers to its options by a stable key of its
+                        own choosing; the editor holds ids. Build the map here,
+                        remap on the way in — the repository does the same trick
+                        again when it writes, because both layers mint fresh ids.
+                      */
+                      options: draft.options.map((option, index) => ({
+                        id: `draft-option-${index}`,
+                        kind: option.kind,
                         position: index,
-                        title: item.title,
-                        description: item.description,
-                        quantity: item.quantity,
-                        // The model reasons in major units; the quote stores minor.
-                        unitPriceMinor: Math.round(item.unitPrice * 100),
-                        isOptional: item.isOptional,
-                        // A drafted line is base scope. The model is not asked
-                        // to invent packages; the operator builds those.
-                        optionId: null,
+                        title: option.title,
+                        description: option.description,
+                        // isSelected mirrors isDefault at draft time: what we
+                        // recommend is what a client sees pre-ticked.
+                        isSelected: option.isDefault,
+                        isDefault: option.isDefault,
                       })),
+                      lineItems: draft.lineItems.map((item, index) => {
+                        /* An unknown key falls back to base scope on purpose:
+                           the alternative is dropping the line entirely, which
+                           is a silent way to lose priced work. */
+                        const optionIndex = draft.options.findIndex(
+                          (option) => option.key === item.optionKey
+                        )
+                        return {
+                          id: `draft-line-${index}`,
+                          position: index,
+                          title: item.title,
+                          description: item.description,
+                          quantity: item.quantity,
+                          // The model reasons in major units; the quote stores minor.
+                          unitPriceMinor: Math.round(item.unitPrice * 100),
+                          isOptional: item.isOptional,
+                          optionId: optionIndex >= 0 ? `draft-option-${optionIndex}` : null,
+                        }
+                      }),
                       phases: draft.phases.map((phase, index) => ({
                         id: `draft-phase-${index}`,
                         position: index,
