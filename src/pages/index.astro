@@ -4,7 +4,7 @@
  *
  * Copy from docs/site-copy.md (supplied 2026-08-26). Two sections are still
  * waiting on content and are marked in place:
- *   - Proof grid: needs real project content.
+ *   - Recent work: held back until the case studies carry real screenshots.
  *   - Testimonial: needs the actual quote text and attribution.
  * The stat strip was dropped for launch, per that document.
  */
@@ -25,7 +25,18 @@ const [work, services] = await Promise.all([
   getCollection('services', ({ data }) => !data.draft),
 ])
 
-const featured = work.filter((e) => e.data.featured).sort((a, b) => a.data.order - b.data.order)
+/*
+ * Temporary. The case studies are published at /work, but the home page holds
+ * its proof grid back until they carry real screenshots: a card with no image
+ * falls back to a seeded gradient, and four abstract tiles under a heading that
+ * promises work read as an empty section rather than as proof. Flip this to
+ * true to bring the grid back. Nothing else needs changing.
+ */
+const SHOW_FEATURED_WORK = false
+
+const featured = SHOW_FEATURED_WORK
+  ? work.filter((e) => e.data.featured).sort((a, b) => a.data.order - b.data.order)
+  : []
 const pillars = services.sort((a, b) => a.data.order - b.data.order)
 
 /*
@@ -217,13 +228,23 @@ const problems = [0, 1, 2].map((index) => ({
           </div>
         </Fragment>
       ) : (
-        <p class="mt-10 text-muted-foreground">Project content coming soon.</p>
+        <p class="mt-10 text-muted-foreground">Ongoing projects will be published soon.</p>
       )
     }
 
-    <div class="mt-12">
-      <Button href="/work" variant="outline">See all work</Button>
-    </div>
+    {
+      /*      The button goes with the grid. Sending someone to "See all work" directly
+      under a line saying the work is not published yet contradicts itself.*/
+    }
+    {
+      featured.length > 0 && (
+        <div class="mt-12">
+          <Button href="/work" variant="outline">
+            See all work
+          </Button>
+        </div>
+      )
+    }
   </section>
 
   {
