@@ -22,6 +22,7 @@ import {
   TextInput,
 } from '../ui'
 import { ConfirmDialog } from '../ConfirmDialog'
+import { findDashes } from '@/lib/admin/house-style'
 import { MoneyInput } from './MoneyInput'
 import { LineItemList } from './LineItemList'
 import { QuoteTotals } from './QuoteTotals'
@@ -382,6 +383,37 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
     []
   )
 
+  /*
+   * House style, checked live rather than on save.
+   *
+   * Everything here is client-visible prose. It is flagged, never rewritten:
+   * which punctuation a dash was standing in for depends on the sentence, and
+   * guessing wrong in a commercial document is worse than asking. See
+   * src/lib/admin/house-style.ts.
+   */
+  const dashIssues = findDashes({
+    'Opening note': quote.introNote,
+    'The project': quote.projectSummary,
+    'Payment terms': quote.paymentTerms,
+    Terms: quote.terms,
+    'Project title': quote.projectTitle,
+    ...Object.fromEntries(
+      quote.lineItems.flatMap((item, index) => [
+        [`Line ${index + 1} title`, item.title],
+        [`Line ${index + 1} description`, item.description],
+      ])
+    ),
+    ...Object.fromEntries(
+      quote.options.map((option, index) => [`Package ${index + 1} description`, option.description])
+    ),
+    ...Object.fromEntries(
+      quote.phases.flatMap((phase, index) => [
+        [`Phase ${index + 1} duration`, phase.durationLabel],
+        [`Phase ${index + 1} description`, phase.description],
+      ])
+    ),
+  })
+
   return (
     <div className="pb-28">
       {/* Header: identity, status, and the two actions that matter. */}
@@ -410,6 +442,28 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
       {message && (
         <div className="mb-6">
           <StatusLine tone={message.tone}>{message.text}</StatusLine>
+        </div>
+      )}
+
+      {/*
+        A notice, not an error: it never blocks saving. The rule is about what
+        the client reads, and an operator part-way through a sentence should not
+        be stopped from saving their work.
+      */}
+      {dashIssues.length > 0 && (
+        <div className="mb-6 rounded-2xl border border-border bg-muted p-4">
+          <p className="text-base">
+            {dashIssues.length === 1 ? 'One field uses' : `${dashIssues.length} fields use`} a dash.
+            WildHands copy does not: rewrite with a comma, a colon, brackets, or two sentences.
+          </p>
+          <ul className="mt-3 flex flex-col gap-2">
+            {dashIssues.map((issue) => (
+              <li key={issue.field} className="text-sm">
+                <span className="text-muted-foreground">{issue.field}</span>
+                <span className="mt-0.5 block">{issue.excerpt}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

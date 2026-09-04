@@ -23,10 +23,22 @@ const status = QUOTE_STATUSES.includes(statusParam as QuoteStatus)
 
 const quotes = await listQuotes({ status, search: search || undefined })
 
+/*
+ * One tone per status, and no two alike.
+ *
+ * `viewed` and `accepted` both used to be the lime, so the two most
+ * operationally different states in the system rendered identically: a quote
+ * the client had merely opened looked exactly like won work. The accent goes to
+ * `accepted` alone, which is the one thing on this screen worth marking.
+ *
+ * `draft` and `expired` are both "not live", but they are not the same thing:
+ * one has never gone out, the other has run its course. Draft is a hairline,
+ * expired is filled.
+ */
 const STATUS_TONE: Record<QuoteStatus, string> = {
-  draft: 'bg-muted text-muted-foreground',
+  draft: 'border border-border text-muted-foreground',
   sent: 'bg-primary text-primary-foreground',
-  viewed: 'bg-accent text-accent-foreground',
+  viewed: 'border border-foreground text-foreground',
   accepted: 'bg-accent text-accent-foreground',
   declined: 'bg-destructive/15 text-destructive',
   expired: 'bg-muted text-muted-foreground',
@@ -46,8 +58,11 @@ const formatDate = (value: string | null): string =>
     <div>
       <h1 class="wh-h1-compact">Quotes</h1>
       <p class="mt-1 text-muted-foreground">
-        {quotes.length}
-        {quotes.length === 1 ? 'quote' : 'quotes'}
+        {
+          /* One expression, not two: Astro collapses the newline between two
+            adjacent expressions to nothing, which rendered "1quote". */
+        }
+        {`${quotes.length} ${quotes.length === 1 ? 'quote' : 'quotes'}`}
       </p>
     </div>
 

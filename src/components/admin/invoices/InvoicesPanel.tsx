@@ -67,10 +67,28 @@ export default function InvoicesPanel({ invoices }: { invoices: InvoiceListRow[]
     }
   }
 
-  const money = (byCurrency: Record<string, number>) =>
-    Object.entries(byCurrency)
-      .map(([currency, total]) => formatMoney(total, currency))
-      .join(' · ') || 'Nothing yet'
+  /**
+   * Totals per currency, or null when there are none.
+   *
+   * Null rather than a sentence: the tile below sets this at display size next
+   * to a plain `0`, and "Nothing yet" rendered there put a large sentence where
+   * the eye is looking for a figure, in a row where the third tile answered the
+   * same question with a digit.
+   */
+  const money = (byCurrency: Record<string, number>): string | null => {
+    const parts = Object.entries(byCurrency).map(([currency, total]) =>
+      formatMoney(total, currency)
+    )
+    return parts.length > 0 ? parts.join(' · ') : null
+  }
+
+  /** A figure at display size, or a quiet line saying there is not one yet. */
+  const Figure = ({ value }: { value: string | null }) =>
+    value === null ? (
+      <p className="mt-2 text-base text-muted-foreground">Nothing yet</p>
+    ) : (
+      <p className="mt-2 font-sans text-2xl leading-none tabular-nums">{value}</p>
+    )
 
   return (
     <div>
@@ -90,15 +108,11 @@ export default function InvoicesPanel({ invoices }: { invoices: InvoiceListRow[]
       <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <div className="rounded-2xl border border-border bg-card p-5">
           <p className="text-sm text-muted-foreground">Still owed</p>
-          <p className="mt-2 font-sans text-2xl leading-none tabular-nums">
-            {money(totals.outstanding)}
-          </p>
+          <Figure value={money(totals.outstanding)} />
         </div>
         <div className="rounded-2xl border border-border bg-card p-5">
           <p className="text-sm text-muted-foreground">Collected</p>
-          <p className="mt-2 font-sans text-2xl leading-none tabular-nums">
-            {money(totals.collected)}
-          </p>
+          <Figure value={money(totals.collected)} />
         </div>
         <div className="rounded-2xl border border-border bg-card p-5">
           <p className="text-sm text-muted-foreground">Issued</p>

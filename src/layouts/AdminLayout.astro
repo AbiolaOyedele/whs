@@ -101,8 +101,28 @@ const NAV = [
               </form>
             </div>
 
-            <nav aria-label="Admin sections" class="lg:flex-1 lg:px-4">
-              <ul class="flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-col lg:gap-1 lg:overflow-visible lg:px-0 lg:pb-0">
+            {/*
+              Below lg the six sections are a horizontal scroller, and two of
+              them sit past the right edge of a 375px screen. Two things follow
+              from that, and both are load-bearing:
+
+              The current item is scrolled into view on load by the script at
+              the foot of this file. Without it, opening /admin/invoices on a
+              phone showed Overview through Quotes and no "you are here" marker
+              anywhere, because the marked item was 484px off-screen.
+
+              The fade on the trailing edge says the row scrolls. A row that
+              ends flush at the viewport edge reads as a row that has ended.
+            */}
+            <nav aria-label="Admin sections" class="relative lg:flex-1 lg:px-4">
+              <div
+                aria-hidden="true"
+                class="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-surface-dark to-transparent lg:hidden"
+              />
+              <ul
+                data-admin-nav
+                class="flex [scrollbar-width:none] gap-1 overflow-x-auto px-3 pb-3 lg:flex-col lg:gap-1 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden"
+              >
                 {NAV.map((item) => (
                   <li class="shrink-0 lg:shrink">
                     <a
@@ -153,5 +173,34 @@ const NAV = [
         </main>
       )
     }
+    {
+      /*
+      Scrolls the current section into view in the mobile rail. `nearest` rather
+      than `center`, so an item already on screen is left where it is instead of
+      the row jumping on every page load.
+    */
+    }
+    <script>
+      const nav = document.querySelector<HTMLElement>('[data-admin-nav]')
+      const current = nav?.querySelector<HTMLElement>('[aria-current="page"]')
+
+      if (nav && current && nav.scrollWidth > nav.clientWidth) {
+        /*
+         * Scrolled by hand rather than with scrollIntoView, which moves the
+         * minimum distance and so parks the item flush against the edge, half
+         * under the fade. `GUTTER` clears the fade and leaves a sliver of the
+         * neighbouring item showing, which is what tells you the row scrolls.
+         */
+        const GUTTER = 48
+        const item = current.getBoundingClientRect()
+        const rail = nav.getBoundingClientRect()
+
+        if (item.right > rail.right - GUTTER) {
+          nav.scrollLeft += item.right - rail.right + GUTTER
+        } else if (item.left < rail.left + GUTTER) {
+          nav.scrollLeft -= rail.left + GUTTER - item.left
+        }
+      }
+    </script>
   </body>
 </html>
