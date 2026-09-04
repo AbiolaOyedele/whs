@@ -15,6 +15,16 @@ techStack:
   - 'Electron'
   - 'Gemini API'
 timeline: 'Started June 2026, in active development'
+icon: '../../assets/work/auto-flow/icon.png'
+cover: '../../assets/work/auto-flow/cover.webp'
+coverAlt: 'The Auto Flow desktop window. A settings column on the left holds the image folder, Chrome profile, prompt and aspect ratio. The run panel on the right shows the batch counter and the generated, saved and failed totals.'
+gallery:
+  - src: '../../assets/work/auto-flow/settings.png'
+    alt: 'The settings column: an image folder picker, a Chrome profile selector, a toggle for Gemini-written prompts, a fallback prompt box, and aspect ratio and videos-per-image selectors.'
+    caption: 'Everything a batch needs before it starts, set once at the top of the run.'
+  - src: '../../assets/work/auto-flow/run-bar.png'
+    alt: 'The run bar: a status line reading Idle, followed by Open output, Retry failed, Skip, Stop and Start, with a three-step Login, Configure, Generate indicator above it.'
+    caption: 'Retry failed and Skip are the controls that matter once a hundred-image run hits a bad frame.'
 stats:
   - value: '~3×'
     label: 'Faster per batch'

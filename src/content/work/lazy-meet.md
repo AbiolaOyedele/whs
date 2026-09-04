@@ -14,6 +14,13 @@ techStack:
   - 'React'
   - 'Google Calendar API'
 timeline: 'Feature-complete August 2026'
+icon: '../../assets/work/lazy-meet/icon.png'
+cover: '../../assets/work/lazy-meet/cover.webp'
+coverAlt: "The Lazy Meet dashboard. An All clear panel sits above three connected Google accounts, and today's schedule lists a 4:00 PM team meeting with a Join button."
+gallery:
+  - src: '../../assets/work/lazy-meet/settings.webp'
+    alt: 'The settings screen: how many minutes early to join, when to send a reminder, which days to sit out, and a daily calendar check with a run time and a quit-when-empty toggle.'
+    caption: 'The join lead time, the reminder, and the days it should leave alone.'
 stats:
   - value: '3'
     label: 'Google accounts, kept separate'

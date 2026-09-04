@@ -2,20 +2,34 @@
 /**
  * Case-study card.
  *
- * The client name overlays the top-left of the media with `mix-blend-exclusion`
- * so it stays legible on any image, and stat callouts overlay the bottom edge.
+ * Media on top, then a solid plate carrying the client name and the stat
+ * callouts.
+ *
+ * The name and stats used to overlay the media on `mix-blend-exclusion`, which
+ * self-inverts against whatever is beneath it and so appeared to solve
+ * legibility for free. That was safe only while the artwork underneath was a
+ * gradient we controlled. Real product screenshots are near-white: measured on
+ * these two, white text over the image sat between 1.3:1 and 2.4:1, and the
+ * scrim needed to lift the name to 3:1 was about 80% black across the bottom
+ * two fifths, which is not a scrim, it is a plate pretending to be one. So it
+ * is a plate. `surface-dark` is the same pair the hero and the CTA band use,
+ * the contrast is fixed rather than dependent on the image, and the screenshot
+ * is left alone.
  *
  * No tech-stack line: a parenthesised "(Next.js, Supabase, Deepgram)" above
  * every card sold the tooling rather than the outcome, and it sat on its own
  * indent off the page grid. The full stack is on the case-study page.
  *
- * The whole card is one link, so the media is the tap target — no separate
+ * The whole card is one link, so the media is the tap target. No separate
  * stretched-link pseudo-element is needed.
  *
  * The card carries no outer margin. All spacing between cards lives on the grid
- * (`.wh-projects-grid`), so there is one source of truth for the rhythm — a
- * card margin plus a row gap previously produced two different vertical gaps.
+ * (`.wh-projects-grid`), so there is one source of truth for the rhythm. A card
+ * margin plus a row gap previously produced two different vertical gaps.
  */
+import { Image } from 'astro:assets'
+import type { ImageMetadata } from 'astro'
+
 interface Stat {
   value: string
   label: string
@@ -26,20 +40,23 @@ interface Props {
   client: string
   summary: string
   stats?: readonly Stat[]
+  /** Real screenshot. Falls back to the seeded gradient when absent. */
+  cover?: ImageMetadata | undefined
+  /** Describes what the screenshot shows. Required alongside `cover`. */
+  coverAlt?: string | undefined
   /** Extra classes for the card. The grid alternates wide and tall spans. */
   class?: string
 }
 
-const { href, client, summary, stats = [], class: className = '' } = Astro.props
+const { href, client, summary, stats = [], cover, coverAlt, class: className = '' } = Astro.props
 
 /*
- * Placeholder artwork, varied per project.
+ * Placeholder artwork for entries with no screenshot yet, varied per project.
  *
  * Every card previously rendered the identical gradient, so the grid's 7/5
  * column rhythm was doing editorial work on what read as four copies of one
  * tile. Seeded off the client name so a given project keeps its own colour
- * across the home page and the work index. Replace wholesale when real
- * screenshots land.
+ * across the home page and the work index.
  */
 const seed = [...client].reduce((total, char) => total + char.charCodeAt(0), 0)
 const hue = (seed * 47) % 360
@@ -51,49 +68,65 @@ const placeholder =
 ---
 
 <a href={href} class={`group relative flex h-full flex-col rounded-3xl ${className}`}>
-  <span
-    class="pointer-events-none absolute top-5 left-5 z-20 flex text-2xl text-white mix-blend-exclusion md:text-3xl"
-  >
-    {client}
-  </span>
-
   <div
-    class="relative z-10 flex min-h-[22rem] flex-1 flex-col justify-between overflow-clip rounded-3xl bg-neutral-200 transition-transform duration-300 ease-out group-hover:scale-[1.01] md:min-h-[28rem]"
+    class="relative z-10 flex min-h-[24rem] flex-1 flex-col overflow-clip rounded-3xl md:min-h-[32rem]"
   >
     {
-      /*      TODO: no case-study imagery exists yet. This is a seeded placeholder,
-      varied per project so the grid does not read as four copies of one tile.
-      Swap it for <Image> once real screenshots are supplied.*/
+      /*      `object-left-top`, not `object-center`.
+      
+      These are desktop application windows: wide, and mostly quiet space
+      through the middle. Centre-cropping one into a 288x448 tile returns a
+      vertical strip of empty panel. The top-left corner is where an interface
+      puts the things that identify it, the wordmark, the primary heading and
+      the first row of real content, so that is the corner the card keeps.*/
     }
-    <div
-      aria-hidden="true"
-      class="absolute inset-0"
-      style={`background: ${placeholder}; background-blend-mode: screen;`}
-    >
+    <div class="relative min-h-[14rem] flex-1 overflow-clip bg-neutral-200">
+      {
+        cover ? (
+          <Image
+            src={cover}
+            alt={coverAlt ?? ''}
+            widths={[480, 800, 1200, 1600]}
+            sizes="(min-width: 1024px) 55vw, 100vw"
+            class="absolute inset-0 size-full object-cover object-left-top transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+          />
+        ) : (
+          <div
+            aria-hidden="true"
+            class="absolute inset-0 transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+            style={`background: ${placeholder}; background-blend-mode: screen;`}
+          />
+        )
+      }
     </div>
 
-    <div class="absolute right-5 bottom-5 left-5 z-10 flex flex-wrap gap-x-8 gap-y-4">
+    <div class="flex flex-col gap-5 bg-surface-dark px-5 py-6 text-surface-dark-foreground">
+      <span class="text-2xl md:text-3xl">{client}</span>
       {
-        stats.slice(0, 2).map((stat) => (
-          <span class="text-white">
-            <span class="block text-2xl font-medium tracking-tighter tabular-nums md:text-3xl">
-              {stat.value}
-            </span>
-            <span class="block text-xs text-white/70">{stat.label}</span>
-          </span>
-        ))
+        stats.length > 0 && (
+          <div class="flex flex-wrap gap-x-8 gap-y-4">
+            {stats.slice(0, 2).map((stat) => (
+              <span>
+                <span class="block text-2xl font-medium tracking-tighter tabular-nums md:text-3xl">
+                  {stat.value}
+                </span>
+                <span class="block text-xs text-surface-dark-foreground/75">{stat.label}</span>
+              </span>
+            ))}
+          </div>
+        )
       }
     </div>
   </div>
 
   {
     /*    Caption row: indented to the card's inner gutter rather than sitting flush
-    with its edge, and set at reading size rather than as muted supporting text
-    — it is the sentence that explains the project, not a footnote.
+    with its edge, and set at reading size rather than as muted supporting text.
+    It is the sentence that explains the project, not a footnote.
 
     Clamped to two lines. The reserved 3.375/4.5rem min-height and the 66.67%
     max-width are gone: the media has its own min-height, so it was never the
-    caption holding the row square — all the reserve did was leave 36px of dead
+    caption holding the row square. All the reserve did was leave 36px of dead
     space under a one-line summary and 334px of dead width beside every caption.
     The wrapper went with them; it was `flex justify-between` around a single
     child, so it had nothing to justify.*/

@@ -163,28 +163,66 @@ const services = defineCollection({
 
 const work = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/work' }),
-  schema: z.object({
-    ...baseFields,
-    /** Product or client name. Overlays the case-study card. */
-    client: z.string().min(1),
-    /** One-line outcome shown on the card. */
-    summary: z.string().min(1),
-    industry: z.string().min(1),
-    /** Facet values for the /work filter bar. */
-    services: z.array(z.string().min(1)).default([]),
-    techStack: z.array(z.string().min(1)).default([]),
-    timeline: z.string().optional(),
-    /** Public URL, when the project has one. Omitted for tools that are not public. */
-    liveUrl: z.url().optional(),
-    /** Up to two stat callouts render on the card; the rest show on the detail page. */
-    stats: z.array(statSchema).default([]),
-    sections: z.array(numberedItemSchema).default([]),
-    testimonial: testimonialSchema.optional(),
-    outcome: z.string().optional(),
-    /** Surfaces the entry in the home page's featured grid. */
-    featured: z.boolean().default(false),
-    order: z.number().int().default(50),
-  }),
+  /*
+   * `image()` comes from the schema context, so it is only available when the
+   * schema is a function. It resolves a frontmatter path relative to the entry
+   * file into an ImageMetadata object with real dimensions, which is what lets
+   * `<Image>` reserve the right box and avoid layout shift. Files therefore
+   * live in `src/assets/work/<slug>/`, not `public/`: only `src/` is processed.
+   */
+  schema: ({ image }) =>
+    z
+      .object({
+        ...baseFields,
+        /** Product or client name. Overlays the case-study card. */
+        client: z.string().min(1),
+        /** One-line outcome shown on the card. */
+        summary: z.string().min(1),
+        industry: z.string().min(1),
+        /** Facet values for the /work filter bar. */
+        services: z.array(z.string().min(1)).default([]),
+        techStack: z.array(z.string().min(1)).default([]),
+        timeline: z.string().optional(),
+        /** Public URL, when the project has one. Omitted for tools that are not public. */
+        liveUrl: z.url().optional(),
+        /**
+         * Card and detail-page hero. Cropped hard on the card, so the shot has to
+         * survive losing its edges. Entries without one fall back to the seeded
+         * gradient in WorkCard.
+         */
+        cover: image().optional(),
+        /**
+         * Required whenever `cover` is set. A screenshot is not decorative: it is
+         * evidence, and a reader on a screen reader gets nothing from it unless
+         * somebody writes down what it shows.
+         */
+        coverAlt: z.string().min(1).optional(),
+        /** App or product mark. Sits beside the client name on the detail page. */
+        icon: image().optional(),
+        /** Supporting shots, each with its own caption. Rendered one per row. */
+        gallery: z
+          .array(
+            z.object({
+              src: image(),
+              alt: z.string().min(1),
+              caption: z.string().min(1).optional(),
+            })
+          )
+          .default([]),
+        /** Up to two stat callouts render on the card; the rest show on the detail page. */
+        stats: z.array(statSchema).default([]),
+        sections: z.array(numberedItemSchema).default([]),
+        testimonial: testimonialSchema.optional(),
+        outcome: z.string().optional(),
+        /** Surfaces the entry in the home page's featured grid. */
+        featured: z.boolean().default(false),
+        order: z.number().int().default(50),
+      })
+      /* A cover with no alt text is a build failure, not a warning. */
+      .refine((data) => !data.cover || Boolean(data.coverAlt), {
+        message: 'coverAlt is required when cover is set',
+        path: ['coverAlt'],
+      }),
 })
 
 const stack = defineCollection({

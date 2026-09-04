@@ -118,7 +118,7 @@ Two families with distinct jobs.
 place. Change it there, never per-heading. Medium rather than SemiBold because
 Diagramm has wide letterforms and the counters start to close at 64px and above.
 
-`h1`–`h4` pick up the display face automatically from the base layer, along with
+`h1` to `h4` pick up the display face automatically from the base layer, along with
 `text-wrap: balance`. Paragraphs get `text-wrap: pretty`. Neither needs
 restating on the element.
 
@@ -295,6 +295,51 @@ stays.
 
 ---
 
+## 7a. Imagery
+
+Files live in `src/assets/work/<slug>/`, never in `public/`. Only `src/` is
+processed, and processing is the whole point: `<Image>` reads the real
+dimensions, reserves the box before the file arrives, generates a srcset and
+re-encodes to webp. A file in `public/` gets none of that.
+
+**Every image carries real alt text, written by a person.** A product screenshot
+is evidence, not decoration, and a reader who cannot see it gets nothing unless
+somebody writes down what it shows. The work schema enforces this: `coverAlt` is
+required whenever `cover` is set, and the build fails without it. The only
+images that take an empty `alt` are ones sitting next to the text they duplicate,
+such as an app icon beside the app's own name, which also take
+`aria-hidden="true"`.
+
+**Never `max-height` on an image to control its size.** It needs `w-auto` to keep
+the aspect ratio, and `w-auto` throws away the box Astro reserves from the width
+and height attributes: until the file arrives the element measures 0x0 and
+everything below it jumps. Cap the **width** instead, derived per image from its
+own ratio, and keep `w-full h-auto`.
+
+**Never generate a srcset wider than the source.** Upscaling a 796px screenshot
+to 1440 costs bandwidth to deliver a blur. Filter the widths against
+`src.width`.
+
+Screenshots of application windows are wide and quiet through the middle, so a
+card crops to `object-left-top`, never `object-center`: the top-left corner is
+where an interface puts its wordmark, its primary heading and its first row of
+real content. A centre crop into a tall tile returns a strip of empty panel.
+
+**No text over a screenshot.** Overlaid text needs a scrim, a scrim is a guess
+about the image beneath it, and product UI is mostly near-white: measured on the
+first two shots that landed, white text over the image sat between 1.3:1 and
+2.4:1, and the scrim needed to reach even 3:1 was about 80% black across the
+bottom two fifths, which is a plate pretending to be a scrim. So the card puts
+its name and stats on an actual plate, `bg-surface-dark`, where the contrast is
+fixed and measurable and the screenshot is left alone.
+
+Case-study galleries run at full container width, one shot per row, contained on
+a tinted panel rather than cropped to a shared aspect ratio, so a tall settings
+column and a wide toolbar strip can sit in the same sequence without either
+being cut. Captions are visible, never revealed on hover.
+
+---
+
 ## 8. Motion
 
 ### How a page opens
@@ -438,8 +483,11 @@ Three bands are near-black: the hero, the closing CTA, the footer. On them:
 - Borders are `border-white/10` to `border-white/30`.
 - The outline button takes `onDark`, which flips it to a white border and floods
   white on hover.
-- **Never `mix-blend-difference` on text.** It puts the rendered colour beyond the
-  reach of any contrast check, so nobody can tell you whether it passes.
+- **Never `mix-blend-difference` or `mix-blend-exclusion` on text.** Both put the
+  rendered colour beyond the reach of any contrast check, so nobody can tell you
+  whether it passes. Exclusion is the more tempting of the two because it
+  self-inverts and so appears to solve legibility for free. It only ever worked
+  while the artwork underneath was a gradient we controlled.
 
 ---
 
@@ -547,7 +595,7 @@ Non-negotiable, no exceptions, do not propose them.
 3. **Icon libraries.** Inline SVG only.
 4. **Em dashes and en dashes in product copy.**
 5. **`hover:opacity-*` on a button.**
-6. **`mix-blend-difference` on text.**
+6. **`mix-blend-difference` or `mix-blend-exclusion` on text.**
 7. **A client-side router or view transitions.**
 8. **`tailwind.config.js`.**
 9. **Percentage-based page indents.** Use `.wh-container`.
