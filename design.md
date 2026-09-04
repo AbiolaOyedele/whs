@@ -333,10 +333,32 @@ bottom two fifths, which is a plate pretending to be a scrim. So the card puts
 its name and stats on an actual plate, `bg-surface-dark`, where the contrast is
 fixed and measurable and the screenshot is left alone.
 
-Case-study galleries run at full container width, one shot per row, contained on
-a tinted panel rather than cropped to a shared aspect ratio, so a tall settings
-column and a wide toolbar strip can sit in the same sequence without either
-being cut. Captions are visible, never revealed on hover.
+Case-study shots all live in one bento, `BentoGallery`, at full container width.
+It is deliberately provisional: the arrangement is derived from the images
+rather than art-directed, so new shots can be dropped into frontmatter and land
+somewhere sensible without anyone editing a layout. Two rules it holds whatever
+arrives.
+
+**Nothing is cropped.** A bento normally fills its tiles with `object-cover`,
+which on a product screenshot cuts the half of the interface that carries the
+argument. Tiles are contained on a tinted panel instead, and each row is given
+an `aspect-ratio` computed from the shot inside it that needs the most height,
+so the row is exactly as tall as its contents require and the panel shows rather
+than pads.
+
+**Rows are always full.** A tile that cannot fit the space left in its row starts
+a new one, and the last tile of a row stretches over whatever is left, so the
+grid never ends on a hole. A shot's preferred width comes from its own
+proportions: a toolbar strip takes the full six columns, a settings column takes
+two.
+
+Below `md` the whole thing collapses to a single column and the row ratios are
+dropped. Six columns at 375px is six unreadable slivers. Captions are visible,
+never revealed on hover.
+
+Column spans are written out (`md:col-span-4`), never interpolated. Tailwind only
+emits classes it can find in the source, so `col-span-${n}` generates no CSS at
+all.
 
 ---
 

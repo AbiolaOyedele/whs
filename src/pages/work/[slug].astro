@@ -13,7 +13,6 @@
 import type { GetStaticPaths } from 'astro'
 import { getCollection, render } from 'astro:content'
 import { Image } from 'astro:assets'
-import type { ImageMetadata } from 'astro'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import Hero from '@/components/sections/Hero.astro'
 import StatCallout from '@/components/sections/StatCallout.astro'
@@ -23,6 +22,8 @@ import Prose from '@/components/ui/Prose.astro'
 import { breadcrumbSchema, caseStudySchema } from '@/lib/seo'
 import { publicEnv } from '@/config/env'
 import Icon from '@/components/ui/Icon.astro'
+import BentoGallery from '@/components/sections/BentoGallery.astro'
+import type { BentoShot } from '@/components/sections/BentoGallery.astro'
 
 export const getStaticPaths = (async () => {
   const work = (await getCollection('work', ({ data }) => !data.draft)).sort(
@@ -54,27 +55,15 @@ const jsonLd = [
   ]),
 ]
 
-/**
- * Responsive widths for a gallery shot, capped at the source width so a 796px
- * portrait screenshot is never upscaled to 1440 and re-encoded as a blur.
- */
-const srcsetWidths = (width: number) => [640, 1024, 1440].filter((w) => w < width).concat(width)
-
-/** Tallest a gallery shot may stand, in px. Roughly a comfortable screenful. */
-const GALLERY_MAX_HEIGHT = 576
-
 /*
- * Gallery shots are constrained by WIDTH, never by `max-height` on the image.
- *
- * `max-h-*` needs `w-auto` to preserve the aspect ratio, and `w-auto` throws
- * away the box Astro reserves from the width and height attributes: until the
- * file arrives the element measures 0x0 and everything below it jumps. Capping
- * the width instead keeps `w-full h-auto`, so the space is reserved from the
- * intrinsic ratio and nothing moves. The cap is derived per image, so a tall
- * settings column and a wide toolbar strip both land inside the same bound.
+ * Every shot the project has, in one list. The cover leads because it is the
+ * whole window and the rest are details of it; it still does its other jobs on
+ * the cards, so it is listed once here and never rendered twice on this page.
  */
-const widthCap = (src: ImageMetadata) =>
-  Math.round(Math.min(src.width, GALLERY_MAX_HEIGHT * (src.width / src.height)))
+const shots: BentoShot[] = [
+  ...(data.cover ? [{ src: data.cover, alt: data.coverAlt ?? '' }] : []),
+  ...data.gallery,
+]
 
 /** Two-digit running number, rendered as `(04)`. */
 const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
@@ -164,22 +153,18 @@ const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
   </div>
 
   {
-    /*    Full-bleed hero. The screenshot is contained rather than cropped, on a
-    tinted ground sized to its own aspect ratio: these are application windows,
-    and cropping one to a fixed 36rem band cuts off the half of the interface
-    that carries the argument. Entries with no screenshot yet keep the seeded
-    placeholder band.*/
+    /*    Every shot for the project, in one bento. It replaces both the old
+    full-bleed hero panel and the one-per-row gallery that used to sit further
+    down: the arrangement is provisional and derived from the images themselves,
+    so better shots can be dropped into frontmatter without touching a layout.
+
+    Entries with nothing supplied yet keep the seeded placeholder band, so a
+    case study without imagery still has a shape rather than a gap.*/
   }
   <div class="wh-container mt-16 lg:mt-20">
     {
-      data.cover ? (
-        <Image
-          src={data.cover}
-          alt={data.coverAlt ?? ''}
-          widths={[640, 1024, 1440, 2000]}
-          sizes="(min-width: 1280px) 1200px, 100vw"
-          class="w-full rounded-3xl bg-muted"
-        />
+      shots.length > 0 ? (
+        <BentoGallery shots={shots} />
       ) : (
         <div
           aria-hidden="true"
@@ -203,50 +188,6 @@ const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
           </section>
         ))
       }
-    </div>
-  </div>
-
-  {
-    /*    Supporting shots, one per row and full container width rather than inside
-    the 2xl measure: a 796px portrait squeezed into a 672px column is smaller
-    than it was on the machine it was taken from, which defeats the point of
-    showing it.
-
-    Contained, not cropped, on a tinted panel. The panel does the work an
-    arbitrary fixed aspect ratio would otherwise do badly, so a tall settings
-    column and a wide toolbar strip can sit in the same sequence without either
-    being cut. Captions are visible, never revealed on hover.*/
-  }
-  {
-    data.gallery.length > 0 && (
-      <div class="wh-container mt-16 lg:mt-20">
-        <ul class="grid gap-6 lg:gap-10">
-          {data.gallery.map((shot) => (
-            <li>
-              <figure class="rounded-3xl bg-muted/60 p-4 md:p-8">
-                <Image
-                  src={shot.src}
-                  alt={shot.alt}
-                  widths={srcsetWidths(shot.src.width)}
-                  sizes={`(min-width: ${widthCap(shot.src)}px) ${widthCap(shot.src)}px, 100vw`}
-                  style={`max-width:${widthCap(shot.src)}px`}
-                  class="mx-auto h-auto w-full rounded-2xl"
-                />
-                {shot.caption && (
-                  <figcaption class="mt-5 max-w-2xl text-muted-foreground md:mt-8">
-                    {shot.caption}
-                  </figcaption>
-                )}
-              </figure>
-            </li>
-          ))}
-        </ul>
-      </div>
-    )
-  }
-
-  <div class="wh-container">
-    <div class="max-w-2xl lg:ml-[10.35%]">
       {
         data.stats.length > 0 && (
           <section class="mt-16 lg:mt-20">

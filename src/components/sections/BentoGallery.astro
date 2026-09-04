@@ -1,0 +1,142 @@
+---
+/**
+ * Case-study bento.
+ *
+ * Takes every shot a project has and lays them out as a mosaic of full rows.
+ * Provisional by design: the arrangement is derived from the images rather than
+ * art-directed, so new shots can be dropped into frontmatter and land somewhere
+ * sensible without anyone editing a layout.
+ *
+ * Two rules it will not break, whatever arrives:
+ *
+ * 1. Nothing is cropped. A bento normally fills its tiles with `object-cover`,
+ *    which on a product screenshot cuts the half of the interface that carries
+ *    the argument. Tiles are contained on a tinted panel instead, and each row
+ *    is sized to the shot inside it that needs the most height, so the panel
+ *    shows rather than pads.
+ * 2. Rows are always full. A tile that cannot fit the space left in its row
+ *    starts a new one, and the last tile of a row stretches over whatever is
+ *    left, so the grid never ends on a hole.
+ */
+import { Image } from 'astro:assets'
+import type { ImageMetadata } from 'astro'
+
+export interface BentoShot {
+  src: ImageMetadata
+  alt: string
+  caption?: string | undefined
+}
+
+interface Props {
+  shots: readonly BentoShot[]
+}
+
+const { shots } = Astro.props
+
+/** Grid width, in columns. Six divides into halves, thirds and two-thirds. */
+const COLUMNS = 6
+
+/**
+ * How many columns a shot would like, from its own proportions. A toolbar strip
+ * wants the full width; a settings column wants a third of it.
+ */
+function preferredColumns(src: ImageMetadata): number {
+  const ratio = src.width / src.height
+  if (ratio >= 3) return COLUMNS
+  if (ratio >= 1.3) return 4
+  if (ratio >= 0.85) return 3
+  return 2
+}
+
+interface Tile extends BentoShot {
+  columns: number
+}
+
+/** Greedy left-to-right fill. Every row comes out exactly `COLUMNS` wide. */
+function packRows(items: readonly BentoShot[]): Tile[][] {
+  const rows: Tile[][] = []
+  let row: Tile[] = []
+  let used = 0
+
+  const closeRow = () => {
+    const last = row.at(-1)
+    if (last) {
+      last.columns += COLUMNS - used
+      rows.push(row)
+    }
+    row = []
+    used = 0
+  }
+
+  for (const item of items) {
+    const wanted = Math.min(preferredColumns(item.src), COLUMNS)
+    if (wanted > COLUMNS - used) closeRow()
+    row.push({ ...item, columns: wanted })
+    used += wanted
+    if (used >= COLUMNS) closeRow()
+  }
+  closeRow()
+
+  return rows
+}
+
+/**
+ * A row's height as a fraction of its width: the tallest its shots need once
+ * each is contained inside its own share of the columns. Fed to the row as an
+ * `aspect-ratio`, so the height is responsive without a single fixed pixel.
+ */
+function rowRatio(row: readonly Tile[]): number {
+  const tallest = Math.max(
+    ...row.map((tile) => (tile.columns / COLUMNS) * (tile.src.height / tile.src.width))
+  )
+  return Number(tallest.toFixed(4))
+}
+
+/* Written out rather than interpolated: Tailwind only emits classes it can find
+   in the source, so `col-span-${n}` would generate no CSS at all. */
+const COLUMN_SPAN: Record<number, string> = {
+  1: 'md:col-span-1',
+  2: 'md:col-span-2',
+  3: 'md:col-span-3',
+  4: 'md:col-span-4',
+  5: 'md:col-span-5',
+  6: 'md:col-span-6',
+}
+
+/** Never asks for a variant wider than the file, which would upscale a blur. */
+const srcsetWidths = (width: number) =>
+  [480, 800, 1200, 1600].filter((w) => w < width).concat(width)
+
+const rows = packRows(shots)
+---
+
+{
+  rows.length > 0 && (
+    <div class="grid gap-4 lg:gap-6">
+      {rows.map((row) => (
+        <div class="wh-bento-row" style={`--wh-bento-ratio: 1 / ${rowRatio(row)}`}>
+          {row.map((tile) => (
+            <figure
+              class={`relative flex flex-col rounded-2xl bg-muted/60 p-3 md:p-5 ${COLUMN_SPAN[tile.columns]}`}
+            >
+              <div class="relative min-h-0 flex-1">
+                <Image
+                  src={tile.src}
+                  alt={tile.alt}
+                  widths={srcsetWidths(tile.src.width)}
+                  sizes={`(min-width: 768px) ${Math.round((tile.columns / COLUMNS) * 100)}vw, 100vw`}
+                  class="wh-bento-shot rounded-xl"
+                />
+              </div>
+              {tile.caption && (
+                <figcaption class="mt-3 shrink-0 text-sm text-muted-foreground md:mt-4">
+                  {tile.caption}
+                </figcaption>
+              )}
+            </figure>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
