@@ -5,6 +5,22 @@
  * content from the manager. See docs/PROGRESS.md.
  */
 
+/**
+ * Case studies are written and published at /work/<slug>, but nothing that
+ * *lists* them is switched on yet: the cards fall back to a seeded gradient
+ * until each entry carries a real screenshot, and a grid of abstract tiles
+ * under a heading that promises work reads as an empty section rather than as
+ * proof.
+ *
+ * One flag rather than three, because the home grid, the work index and the
+ * navbar's Work panel all list the same projects and must not disagree. Flip it
+ * to true and all three come back. Nothing else needs changing.
+ */
+export const SHOW_PUBLISHED_WORK = false
+
+/** Shown wherever that listing would have been. */
+export const WORK_COMING_SOON = 'Ongoing projects will be published soon.'
+
 export const SITE = {
   name: 'WildHands',
   /** Used in <title> suffixes and Organization JSON-LD. */

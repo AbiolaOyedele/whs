@@ -23,7 +23,7 @@ import Button from '../ui/Button.astro'
 import Logo from '../ui/Logo.astro'
 import AnimatedNav from '@/components/ui/navigation-menu.tsx'
 import type { NavMenu, NavMenuColumn } from '@/components/ui/navigation-menu.tsx'
-import { PLAIN_NAV_LINKS, SITE } from '@/config/site'
+import { PLAIN_NAV_LINKS, SHOW_PUBLISHED_WORK, SITE, WORK_COMING_SOON } from '@/config/site'
 import {
   SERVICE_PILLARS,
   SERVICE_PILLAR_LABELS,
@@ -46,8 +46,17 @@ const [services, work, stack] = await Promise.all([
 ])
 
 const servicesByPillar = services.sort((a, b) => a.data.order - b.data.order)
-/* Four, not three: chunked two per column this fills both columns evenly. */
-const featuredWork = work.filter((entry) => entry.data.featured).slice(0, 4)
+/*
+ * Four, not three: chunked two per column this fills both columns evenly.
+ *
+ * Gated on the same flag as the home grid and the work index. The panel is a
+ * list of project names on every page of the site, so leaving it populated
+ * while /work says the work is not published yet would contradict that page
+ * from the header above it.
+ */
+const featuredWork = SHOW_PUBLISHED_WORK
+  ? work.filter((entry) => entry.data.featured).slice(0, 4)
+  : []
 
 /** Groups the stack entries by category, keeping only the recommended picks. */
 const stackColumns: NavMenuColumn[] = STACK_CATEGORIES.map((category) => ({
@@ -107,9 +116,13 @@ const menus: NavMenu[] = [
     href: '/work',
     label: 'Work',
     columns: workColumns,
+    /* With no columns the card is the whole panel, so it has to carry the
+       status rather than promise a list that is not there. */
     feature: {
       label: 'Selected projects',
-      body: 'Custom websites, apps and internal tools we have built for teams like yours.',
+      body: SHOW_PUBLISHED_WORK
+        ? 'Custom websites, apps and internal tools we have built for teams like yours.'
+        : WORK_COMING_SOON,
       href: '/work',
       ctaLabel: 'Browse the work',
     },

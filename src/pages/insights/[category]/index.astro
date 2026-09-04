@@ -12,7 +12,7 @@ import { publicEnv } from '@/config/env'
 import { INSIGHT_CATEGORIES, INSIGHT_CATEGORY_LABELS } from '@/content.config'
 
 export const getStaticPaths = (async () => {
-  const posts = await getCollection('insights', ({ data }) => !data.draft)
+  const posts = await getCollection('insights', ({ data }) => !data.draft && !data.placeholder)
   return INSIGHT_CATEGORIES.map((category) => ({
     params: { category },
     props: {
@@ -41,6 +41,7 @@ const jsonLd = [
   title={label}
   description={`WildHands writing on ${label.toLowerCase()}.`}
   jsonLd={jsonLd}
+  noindex={posts.length === 0}
   darkHero
 >
   <Hero

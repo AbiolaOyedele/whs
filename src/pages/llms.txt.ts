@@ -22,7 +22,7 @@ export const GET: APIRoute = async () => {
     getCollection('services', ({ data }) => !data.draft),
     getCollection('work', ({ data }) => !data.draft),
     getCollection('stack', ({ data }) => !data.draft),
-    getCollection('insights', ({ data }) => !data.draft),
+    getCollection('insights', ({ data }) => !data.draft && !data.placeholder),
     getCollection('industries', ({ data }) => !data.draft),
   ])
 

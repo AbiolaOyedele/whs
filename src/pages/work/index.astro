@@ -15,10 +15,15 @@ import FilterSelect from '@/components/ui/FilterSelect.astro'
 import CTASection from '@/components/sections/CTASection.astro'
 import { breadcrumbSchema } from '@/lib/seo'
 import { publicEnv } from '@/config/env'
+import { SHOW_PUBLISHED_WORK, WORK_COMING_SOON } from '@/config/site'
 
-const work = (await getCollection('work', ({ data }) => !data.draft)).sort(
-  (a, b) => a.data.order - b.data.order
-)
+/* Held back site-wide until the case studies carry screenshots. See the note on
+   SHOW_PUBLISHED_WORK in src/config/site.ts. */
+const work = SHOW_PUBLISHED_WORK
+  ? (await getCollection('work', ({ data }) => !data.draft)).sort(
+      (a, b) => a.data.order - b.data.order
+    )
+  : []
 
 /** Unique, sorted facet values across every published case study. */
 const facetValues = (pick: (entry: (typeof work)[number]) => readonly string[]) =>
@@ -76,8 +81,16 @@ const jsonLd = [
     subtitle="Products, tools and internal systems we designed and built end to end."
   />
 
+  {
+    /*    The filter bar, the count and the grid go together. Three dropdowns over
+    "Showing 0 projects" is a control panel for nothing, and the empty state
+    then has to explain both that there is no work listed and that filters are
+    not the reason.*/
+  }
   <div class="wh-container wh-section" data-work-index>
-    <div class="flex flex-wrap items-end justify-between gap-4">
+    {work.length === 0 && <p class="text-muted-foreground">{WORK_COMING_SOON}</p>}
+
+    <div class="flex flex-wrap items-end justify-between gap-4" hidden={work.length === 0}>
       <h2 class="text-sm font-medium tracking-widest text-muted-foreground uppercase">Filter</h2>
       <button
         type="button"
@@ -89,7 +102,7 @@ const jsonLd = [
       </button>
     </div>
 
-    <div class="mt-4 grid gap-4 sm:grid-cols-3">
+    <div class="mt-4 grid gap-4 sm:grid-cols-3" hidden={work.length === 0}>
       {
         facets.map((facet) => (
           <FilterSelect
@@ -103,7 +116,12 @@ const jsonLd = [
       }
     </div>
 
-    <p class="mt-6 text-sm text-muted-foreground" data-filter-count aria-live="polite">
+    <p
+      class="mt-6 text-sm text-muted-foreground"
+      data-filter-count
+      aria-live="polite"
+      hidden={work.length === 0}
+    >
       {countLabel(work.length)}
     </p>
 

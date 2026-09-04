@@ -15,7 +15,7 @@ import WorkCard from '@/components/sections/WorkCard.astro'
 import AnimatedText from '@/components/sections/AnimatedText.astro'
 import CTASection from '@/components/sections/CTASection.astro'
 import Button from '@/components/ui/Button.astro'
-import { SITE } from '@/config/site'
+import { SITE, SHOW_PUBLISHED_WORK, WORK_COMING_SOON } from '@/config/site'
 import { list, text } from '@/lib/admin/content'
 import { SERVICE_PILLARS, SERVICE_PILLAR_LABELS, SERVICE_PILLAR_TAGLINES } from '@/content.config'
 import Icon from '@/components/ui/Icon.astro'
@@ -25,18 +25,10 @@ const [work, services] = await Promise.all([
   getCollection('services', ({ data }) => !data.draft),
 ])
 
-/*
- * Temporary. The case studies are published at /work, but the home page holds
- * its proof grid back until they carry real screenshots: a card with no image
- * falls back to a seeded gradient, and four abstract tiles under a heading that
- * promises work read as an empty section rather than as proof. Flip this to
- * true to bring the grid back. Nothing else needs changing.
- */
-const SHOW_FEATURED_WORK = false
-
-const featured = SHOW_FEATURED_WORK
+const featured = SHOW_PUBLISHED_WORK
   ? work.filter((e) => e.data.featured).sort((a, b) => a.data.order - b.data.order)
   : []
+
 const pillars = services.sort((a, b) => a.data.order - b.data.order)
 
 /*
@@ -228,7 +220,7 @@ const problems = [0, 1, 2].map((index) => ({
           </div>
         </Fragment>
       ) : (
-        <p class="mt-10 text-muted-foreground">Ongoing projects will be published soon.</p>
+        <p class="mt-10 text-muted-foreground">{WORK_COMING_SOON}</p>
       )
     }
 

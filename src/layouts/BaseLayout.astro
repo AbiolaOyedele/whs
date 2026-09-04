@@ -113,15 +113,15 @@ const schemas: JsonLd[] = [organizationSchema(siteUrl), webSiteSchema(siteUrl), 
       import '@/scripts/accordion'
     </script>
 
-    <!--
-      Loaded unconditionally, and gates itself at runtime on ?whpreview=1.
+    {
+      /* Loaded unconditionally, and gates itself at runtime on ?whpreview=1.
 
-      It used to sit behind `{isPreviewFrame && ...}`, which does not work:
-      Astro hoists and bundles `<script>` tags at build time, and one inside a
-      JSX expression is never collected — so the bridge shipped on no page at
-      all, and the live preview silently never updated. Self-gating costs a few
-      hundred bytes and actually runs.
-    -->
+         It used to sit behind `{isPreviewFrame && ...}`, which does not work:
+         Astro hoists and bundles `<script>` tags at build time, and one inside
+         a JSX expression is never collected, so the bridge shipped on no page
+         at all and the live preview silently never updated. Self-gating costs a
+         few hundred bytes and actually runs.*/
+    }
     <script>
       import '@/scripts/preview-bridge'
     </script>
