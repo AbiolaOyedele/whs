@@ -114,7 +114,7 @@ export default function ClientsPanel({ clients }: { clients: ClientWithActivity[
     <div>
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="wh-h3">Clients</h1>
+          <h1 className="wh-h1-compact">Clients</h1>
           <p className="mt-1 text-muted-foreground">
             {clients.length} {clients.length === 1 ? 'client' : 'clients'}. Quoting someone new adds
             them here automatically.

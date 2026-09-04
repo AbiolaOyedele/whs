@@ -7,6 +7,7 @@
  */
 import { useRef, useState } from 'react'
 import { Button, Panel, TextInput } from '../ui'
+import { Icon } from '@/components/ui/icons'
 import type { QuoteImage } from '@/types/quote'
 
 interface Props {
@@ -134,7 +135,7 @@ export function ImageUploader({ images, enabled, onAdd, onUpdate, onRemove, onMo
 
               <div className="flex flex-wrap items-center gap-1">
                 <Button tone="ghost" onClick={() => onMove(image.id, -1)} disabled={index === 0}>
-                  <span aria-hidden="true">←</span>
+                  <Icon name="arrowLeft" />
                   <span className="sr-only">Move earlier</span>
                 </Button>
                 <Button
@@ -142,7 +143,7 @@ export function ImageUploader({ images, enabled, onAdd, onUpdate, onRemove, onMo
                   onClick={() => onMove(image.id, 1)}
                   disabled={index === images.length - 1}
                 >
-                  <span aria-hidden="true">→</span>
+                  <Icon name="arrowRight" />
                   <span className="sr-only">Move later</span>
                 </Button>
                 <Button tone="danger" onClick={() => onRemove(image.id)}>

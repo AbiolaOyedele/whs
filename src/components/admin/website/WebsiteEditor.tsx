@@ -221,7 +221,7 @@ export default function WebsiteEditor({
     <div>
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="wh-h3">Website</h1>
+          <h1 className="wh-h1-compact">Website</h1>
           <p className="mt-1 text-muted-foreground">
             Edit the copy and the brand. Save stores it; publish puts it live.
           </p>

@@ -144,11 +144,11 @@ async function notifyPaid(payment: QuotePayment): Promise<void> {
   try {
     const quote = await getQuoteById(payment.quoteId)
     await sendNotification({
-      subject: `Payment received: ${quote?.clientName ?? 'a client'} — ${formatMoney(payment.amountMinor, payment.currency)}`,
+      subject: `Payment received: ${quote?.clientName ?? 'a client'}, ${formatMoney(payment.amountMinor, payment.currency)}`,
       text: [
         `${quote?.clientName ?? 'A client'} paid the ${payment.kind}.`,
         `Amount: ${formatMoney(payment.amountMinor, payment.currency)}`,
-        `Project: ${quote?.projectTitle ?? '—'}`,
+        `Project: ${quote?.projectTitle ?? 'not recorded'}`,
         `Reference: ${payment.reference}`,
       ].join('\n'),
     })

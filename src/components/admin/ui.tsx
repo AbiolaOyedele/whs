@@ -10,8 +10,9 @@
  * Every control clears 44px regardless of density — the mobile-first floor is
  * not something an internal tool gets to opt out of.
  */
-import type { ChangeEvent, ReactNode } from 'react'
+import type { ChangeEvent, ReactNode, Ref } from 'react'
 import { useId, useState } from 'react'
+import { Icon } from '@/components/ui/icons'
 import { cn } from '@/lib/utils'
 
 const CONTROL =
@@ -169,13 +170,28 @@ export function Checkbox({
   )
 }
 
-type ButtonTone = 'primary' | 'secondary' | 'ghost' | 'danger'
+/*
+ * Four tones, and only these four.
+ *
+ * `danger` is the quiet one: an outline, for a destructive action sitting in a
+ * list beside non-destructive ones, where a row of solid red reads as an alarm.
+ * `dangerSolid` is the loud one, for the confirm button of a dialog that has
+ * already asked "are you sure?" and needs the answer to look like a decision.
+ * The dialog used to hand-roll it inline, which left two different solid reds
+ * in one product.
+ */
+type ButtonTone = 'primary' | 'secondary' | 'ghost' | 'danger' | 'dangerSolid'
 
 const TONES: Record<ButtonTone, string> = {
   primary: 'bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground',
   secondary: 'border border-border bg-card text-foreground hover:border-foreground',
   ghost: 'text-muted-foreground hover:text-foreground',
   danger: 'border border-destructive/40 text-destructive hover:bg-destructive/10',
+  /* Darkens the fill on hover and never the label: fading a button dims its
+     text along with its background, which drops contrast at the exact moment
+     the user is committing to the action. */
+  dangerSolid:
+    'border border-destructive bg-destructive text-destructive-foreground hover:bg-destructive/90',
 }
 
 export function Button({
@@ -185,6 +201,7 @@ export function Button({
   type = 'button',
   disabled,
   className,
+  ref,
 }: {
   children: ReactNode
   onClick?: () => void
@@ -192,9 +209,12 @@ export function Button({
   type?: 'button' | 'submit'
   disabled?: boolean
   className?: string
+  /** For dialogs, which must move focus to their own confirm button on open. */
+  ref?: Ref<HTMLButtonElement>
 }) {
   return (
     <button
+      ref={ref}
       type={type}
       onClick={onClick}
       disabled={disabled}
@@ -302,15 +322,13 @@ export function CollapsibleRow({
           aria-controls={id}
           className="flex min-h-14 flex-1 items-center gap-3 text-left outline-none focus-visible:underline"
         >
-          <span
+          <Icon
+            name="chevronDown"
             className={cn(
-              'shrink-0 text-muted-foreground transition-transform',
+              'size-3 shrink-0 text-muted-foreground transition-transform',
               open && 'rotate-180'
             )}
-            aria-hidden="true"
-          >
-            ▾
-          </span>
+          />
           <span className="shrink-0 font-mono text-sm text-muted-foreground">{label}</span>
           <span
             className={cn('min-w-0 flex-1 truncate', !title && 'text-muted-foreground/60 italic')}

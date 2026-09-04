@@ -2,9 +2,10 @@
 /**
  * Site footer.
  *
- * Dark surface: the logo renders in white, which holds up against the
- * disappears against a light background. On black the wordmark renders white
- * (via `currentColor`) and the lime line reads properly.
+ * Dark surface. The wordmark is drawn in `currentColor`, so on black it renders
+ * white and the lime underline reads properly. On a light ground the same
+ * artwork would disappear, which is why the footer band is dark rather than the
+ * logo having a second colourway.
  *
  * Link hover is the underline sweep — a 1px gradient line growing from 0% to
  * 100% width. The animated layer is a child span so the sweep tracks the text
@@ -17,13 +18,13 @@ import { FOOTER_COLUMNS, SITE } from '@/config/site'
 const year = new Date().getFullYear()
 ---
 
-<footer class="relative isolate mt-8 overflow-hidden rounded-t-section bg-[#131314] text-white">
+<footer class="relative isolate mt-8 overflow-hidden rounded-t-section bg-surface-dark text-white">
   <AnimatedGradient client:idle preset="footer" className="-z-10" />
-  <!--
-    Scrim keeps the link columns legible whatever the gradient is doing. It
+  {
+    /*    Scrim keeps the link columns legible whatever the gradient is doing. It
     opened at 0.55, which let a lighter pass of the animated gradient through
-    and moved the measured contrast of the column headings around under it.
-  -->
+    and moved the measured contrast of the column headings around under it.*/
+  }
   <div
     aria-hidden="true"
     class="pointer-events-none absolute inset-0 -z-10"

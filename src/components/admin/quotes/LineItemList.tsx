@@ -152,7 +152,7 @@ export function LineItemList({
                 label="Applies to"
                 value={item.optionId ?? BASE_SCOPE}
                 options={[
-                  { value: BASE_SCOPE, label: 'Base scope — always charged' },
+                  { value: BASE_SCOPE, label: 'Base scope (always charged)' },
                   ...options.map((option) => ({
                     value: option.id,
                     label: `${option.title || 'Untitled'} (${

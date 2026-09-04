@@ -33,10 +33,12 @@ const VALUES = ['Clarity', 'Craft', 'Commitment', 'Candour']
   description="WildHands builds custom websites, apps, and internal tools for teams done doing repetitive work by hand."
   jsonLd={jsonLd}
 >
-  <!-- Mission -->
+  {/* Mission*/}
   <section class="relative isolate overflow-hidden">
-    <!-- TODO: a large abstract render belongs behind this. No WildHands asset
-         exists yet, so this is a soft tonal wash in its place. -->
+    {
+      /* TODO: a large abstract render belongs behind this. No WildHands asset
+         exists yet, so this is a soft tonal wash in its place.*/
+    }
     <div
       aria-hidden="true"
       class="pointer-events-none absolute inset-0 -z-10"
@@ -56,7 +58,7 @@ const VALUES = ['Clarity', 'Craft', 'Commitment', 'Candour']
     </div>
   </section>
 
-  <!-- Origin -->
+  {/* Origin*/}
   <section class="wh-container my-10 lg:my-20">
     <div class="max-w-[46rem] md:ml-[10%]">
       <p class="text-sm text-muted-foreground">Who is behind it</p>
@@ -75,13 +77,13 @@ const VALUES = ['Clarity', 'Craft', 'Commitment', 'Candour']
     </div>
   </section>
 
-  <!-- Founder quote over the logo watermark -->
-  <!--
-    On mobile the mark is proportionally far larger than the quote set over it,
+  {/* Founder quote over the logo watermark*/}
+  {
+    /*    On mobile the mark is proportionally far larger than the quote set over it,
     so the glyph strokes land across the first lines and cost real legibility.
     Below md it is scaled down and the section is padded enough for the quote to
-    start clear of it; from md up the quote sits over the mark as designed.
-  -->
+    start clear of it; from md up the quote sits over the mark as designed.*/
+  }
   <section class="relative isolate overflow-hidden pt-40 pb-16 md:py-28">
     <Logo
       variant="mark"
@@ -102,7 +104,7 @@ const VALUES = ['Clarity', 'Craft', 'Commitment', 'Candour']
     </div>
   </section>
 
-  <!-- Values -->
+  {/* Values*/}
   <section class="wh-container my-10 lg:my-20">
     <h2 class="wh-h2 text-center">Values</h2>
     <ul class="mx-auto mt-10 max-w-3xl border-t border-border">
@@ -116,7 +118,7 @@ const VALUES = ['Clarity', 'Craft', 'Commitment', 'Candour']
     </ul>
   </section>
 
-  <!-- Closing CTA -->
+  {/* Closing CTA*/}
   <section class="wh-container my-16 text-center lg:my-24">
     <p class="text-sm text-muted-foreground">Your hours should go into the work only you can do.</p>
     <AnimatedText>

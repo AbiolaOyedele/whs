@@ -96,7 +96,7 @@ export function labelForPath(path: string): string {
     const index = Number(parts[1])
     const leaf = parts[2] ?? ''
     const position = Number.isFinite(index) ? index + 1 : ''
-    return `${COLLECTION_LABEL[root]} ${position} — ${LABEL_BY_FIELD[leaf] ?? leaf}`
+    return `${COLLECTION_LABEL[root]} ${position}: ${LABEL_BY_FIELD[leaf] ?? leaf}`
   }
 
   return LABEL_BY_FIELD[root] ?? root

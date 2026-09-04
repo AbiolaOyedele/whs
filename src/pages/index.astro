@@ -72,16 +72,16 @@ const problems = [0, 1, 2].map((index) => ({
     </Fragment>
   </Hero>
 
-  <!--
-    The problem.
+  {
+    /*    The problem.
 
     Full-bleed band, but the copy lives inside `.wh-container` so it lands on
     the same left edge as every other section. It previously carried its own
     `px-5 md:px-8` gutters, which held 32px at 768px while the container around
     it held 20px, and 32px at 1920px while the container held 153px.
 
-    The section carries no eyebrow label — the heading says what it is.
-  -->
+    The section carries no eyebrow label — the heading says what it is.*/
+  }
   <section
     class="relative overflow-clip rounded-section bg-background text-foreground"
     aria-labelledby="homepage-problem-title"
@@ -92,9 +92,11 @@ const problems = [0, 1, 2].map((index) => ({
           class="lg:grid lg:min-h-[57.1875rem] lg:grid-cols-[42.7%_57.3%] lg:border-t lg:border-border"
         >
           <div class="border-b border-border py-10 lg:border-r lg:border-b-0 lg:py-0 lg:pr-10">
-            <!-- gap-10 below lg: `gap-32` fired at every breakpoint, dropping
+            {
+              /* gap-10 below lg: `gap-32` fired at every breakpoint, dropping
                  128px of nothing between the heading and the paragraph that
-                 explains it on a phone. -->
+                 explains it on a phone.*/
+            }
             <div
               class="flex flex-col justify-between gap-10 lg:sticky lg:top-24 lg:h-[min(calc(100dvh-6rem),100%)] lg:gap-32 lg:py-10"
             >
@@ -142,7 +144,7 @@ const problems = [0, 1, 2].map((index) => ({
     </div>
   </section>
 
-  <!-- What we build -->
+  {/* What we build*/}
   <section class="wh-container my-10 lg:my-20">
     <div class="relative border-t border-border pt-10 lg:pt-20">
       <h2 id="services-title" class="wh-h2 mt-5 mb-5 lg:absolute lg:left-0 lg:mb-10">
@@ -193,7 +195,7 @@ const problems = [0, 1, 2].map((index) => ({
     </div>
   </section>
 
-  <!-- Recent work -->
+  {/* Recent work*/}
   <section class="wh-container">
     <h2 id="featured-projects-title" class="wh-h2 mt-20 mb-5 inline-block">Recent work</h2>
 
@@ -221,15 +223,17 @@ const problems = [0, 1, 2].map((index) => ({
     </div>
   </section>
 
-  <!--
-    TODO: testimonial section. Two client quotes exist but the text and
+  {
+    /*    TODO: testimonial section. Two client quotes exist but the text and
     attribution have not been supplied — deliberately not invented. Drop a
     <Testimonial /> here once the real quotes land.
-    The stat strip was dropped for launch, per docs/site-copy.md.
-  -->
+    The stat strip was dropped for launch, per docs/site-copy.md.*/
+  }
 
-  <!-- Closing CTA. Was a hand-rolled copy of CTASection with its own radius,
-       padding and heading scale; now the shared component at `lg`. -->
+  {
+    /* Closing CTA. Was a hand-rolled copy of CTASection with its own radius,
+       padding and heading scale; now the shared component at `lg`.*/
+  }
   <CTASection
     size="lg"
     heading="Ready to get some time back?"

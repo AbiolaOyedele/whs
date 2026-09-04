@@ -68,7 +68,7 @@ function resolveSiteUrl(): string {
 
   console.warn(
     '⚠️  PUBLIC_SITE_URL is not set and no deployment host was found.\n' +
-      '   Falling back to http://localhost:4321 — do not ship this build.'
+      '   Falling back to http://localhost:4321. Do not ship this build.'
   )
   return 'http://localhost:4321'
 }

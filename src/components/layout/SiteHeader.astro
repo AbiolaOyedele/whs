@@ -146,13 +146,13 @@ const menus: NavMenu[] = [
   data-over-hero={overDarkHero ? 'true' : undefined}
   class="site-header fixed inset-x-0 top-0 z-50"
 >
-  <!--
-    Progressive blur: five stacked layers inside a 10rem band anchored to the
+  {
+    /*    Progressive blur: five stacked layers inside a 10rem band anchored to the
     header. Each layer blurs a little more and is masked to a different slice,
     so the blur ramps smoothly instead of ending on a hard edge. Negative z
     keeps it behind the nav pill and the mobile panel while staying above the
-    page, since the z-50 header is its own stacking context.
-  -->
+    page, since the z-50 header is its own stacking context.*/
+  }
   <div
     aria-hidden="true"
     class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-40 overflow-hidden"
@@ -207,7 +207,7 @@ const menus: NavMenu[] = [
     </div>
   </div>
 
-  <!-- Mobile panel -->
+  {/* Mobile panel*/}
   <div id="mobile-menu" data-mobile-panel class="wh-mobile-panel lg:hidden">
     <nav aria-label="Mobile" class="wh-container max-h-[calc(100dvh-4rem)] overflow-y-auto pb-8">
       <ul class="divide-y divide-white/10 border-t border-white/10">

@@ -150,7 +150,7 @@ if (unlocked) {
         // not tell the client their response did not register.
         try {
           await sendNotification({
-            subject: `Quote ${choice}: ${quote.clientName} — ${quote.projectTitle}`,
+            subject: `Quote ${choice}: ${quote.clientName}, ${quote.projectTitle}`,
             ...(quote.clientEmail ? { replyTo: quote.clientEmail } : {}),
             text: [
               `${quote.clientName} ${choice} the quote.`,
@@ -249,7 +249,7 @@ if (quote && totalsReady) {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#131314" />
-    <!-- A client's pricing has no business in a search index. -->
+    {/* A client's pricing has no business in a search index.*/}
     <meta name="robots" content="noindex, nofollow" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link
@@ -277,7 +277,7 @@ if (quote && totalsReady) {
           <div class="w-full max-w-md">
             <Logo variant="mark" class="mb-8 h-7 w-auto" label={SITE.name} />
 
-            <h1 class="wh-h3 mb-2">Your quote</h1>
+            <h1 class="wh-h1-compact mb-2">Your quote</h1>
             <p class="mb-8 text-lg text-muted-foreground">
               {configured
                 ? 'Enter the six-digit code we sent you.'

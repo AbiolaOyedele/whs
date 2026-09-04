@@ -60,11 +60,11 @@ const placeholder =
   <div
     class="relative z-10 flex min-h-[22rem] flex-1 flex-col justify-between overflow-clip rounded-3xl bg-neutral-200 transition-transform duration-300 ease-out group-hover:scale-[1.01] md:min-h-[28rem]"
   >
-    <!--
-      TODO: no case-study imagery exists yet. This is a seeded placeholder,
+    {
+      /*      TODO: no case-study imagery exists yet. This is a seeded placeholder,
       varied per project so the grid does not read as four copies of one tile.
-      Swap it for <Image> once real screenshots are supplied.
-    -->
+      Swap it for <Image> once real screenshots are supplied.*/
+    }
     <div
       aria-hidden="true"
       class="absolute inset-0"
@@ -86,8 +86,8 @@ const placeholder =
     </div>
   </div>
 
-  <!--
-    Caption row: indented to the card's inner gutter rather than sitting flush
+  {
+    /*    Caption row: indented to the card's inner gutter rather than sitting flush
     with its edge, and set at reading size rather than as muted supporting text
     — it is the sentence that explains the project, not a footnote.
 
@@ -96,8 +96,8 @@ const placeholder =
     caption holding the row square — all the reserve did was leave 36px of dead
     space under a one-line summary and 334px of dead width beside every caption.
     The wrapper went with them; it was `flex justify-between` around a single
-    child, so it had nothing to justify.
-  -->
+    child, so it had nothing to justify.*/
+  }
   <span class="line-clamp-2 w-full px-5 pt-5 text-lg text-balance md:text-2xl">
     {summary}
   </span>

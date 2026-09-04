@@ -14,6 +14,7 @@
  *             layout is honest, but inert and visibly labelled, because a
  *             stray click here would record a decision on the client's behalf.
  */
+import Icon from '@/components/ui/Icon.astro'
 import Logo from '@/components/ui/Logo.astro'
 import BentoGallery from '@/components/ui/BentoGallery'
 import { SITE } from '@/config/site'
@@ -95,8 +96,8 @@ const chooserLocked = !isPreview && selection?.locked === true
   </div>
 </header>
 
-<!--
-  Two columns from lg, with the commercial summary pinned in the right rail.
+{
+  /*  Two columns from lg, with the commercial summary pinned in the right rail.
 
   The previous single centred column left most of a desktop screen empty while
   the document ran on for screens: the prose sat in a readable measure and the
@@ -105,8 +106,8 @@ const chooserLocked = !isPreview && selection?.locked === true
   view, and shortens the page by lifting them out of the flow.
 
   Below lg it collapses to one column with the summary near the top, because on
-  a phone a pinned panel is just a thing covering the document.
--->
+  a phone a pinned panel is just a thing covering the document.*/
+}
 <main class="mx-auto max-w-6xl px-5 py-10 lg:px-10 lg:py-16">
   <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-12">
     <div class="min-w-0 lg:col-start-1 lg:row-start-1">
@@ -262,9 +263,10 @@ const chooserLocked = !isPreview && selection?.locked === true
                   {itemsFor(option.id).length > 0 && (
                     <details class="group mt-4 border-t border-border pt-3" data-option-details>
                       <summary class="flex min-h-11 cursor-pointer list-none items-center gap-2 text-base text-muted-foreground">
-                        <span class="transition-transform group-open:rotate-180" aria-hidden="true">
-                          ▾
-                        </span>
+                        <Icon
+                          name="chevronDown"
+                          class="size-3 shrink-0 transition-transform group-open:rotate-180"
+                        />
                         What&#39;s included
                         <span class="ml-auto font-mono text-sm">{itemsFor(option.id).length}</span>
                       </summary>
@@ -328,14 +330,14 @@ const chooserLocked = !isPreview && selection?.locked === true
                       ]}
                       aria-hidden="true"
                     >
-                      <span
+                      <Icon
+                        name="check"
+                        strokeWidth={3}
                         class:list={[
-                          'font-mono text-xs text-background transition-opacity',
+                          'size-3 text-background transition-opacity',
                           option.isSelected ? 'opacity-100' : 'opacity-0',
                         ]}
-                      >
-                        ✓
-                      </span>
+                      />
                     </span>
 
                     <span class="flex min-w-0 flex-1 flex-col">
@@ -501,12 +503,10 @@ const chooserLocked = !isPreview && selection?.locked === true
                 <details class="group rounded-2xl border border-border bg-card" open>
                   <summary class="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 font-display text-lg">
                     Payment
-                    <span
-                      class="text-muted-foreground transition-transform group-open:rotate-180"
-                      aria-hidden="true"
-                    >
-                      ▾
-                    </span>
+                    <Icon
+                      name="chevronDown"
+                      class="size-3 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+                    />
                   </summary>
                   <p class="max-w-prose px-5 pb-5 text-base whitespace-pre-line text-muted-foreground">
                     {quote.paymentTerms}
@@ -518,12 +518,10 @@ const chooserLocked = !isPreview && selection?.locked === true
                 <details class="group rounded-2xl border border-border bg-card">
                   <summary class="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 font-display text-lg">
                     Terms
-                    <span
-                      class="text-muted-foreground transition-transform group-open:rotate-180"
-                      aria-hidden="true"
-                    >
-                      ▾
-                    </span>
+                    <Icon
+                      name="chevronDown"
+                      class="size-3 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+                    />
                   </summary>
                   <p class="max-w-prose px-5 pb-5 text-base whitespace-pre-line text-muted-foreground">
                     {quote.terms}
@@ -536,18 +534,20 @@ const chooserLocked = !isPreview && selection?.locked === true
       }
     </div>
 
-    <!-- The commercial summary. Ordered first on mobile so the price is not
-         buried below the whole narrative. -->
-    <!--
-      The commercial summary.
+    {
+      /* The commercial summary. Ordered first on mobile so the price is not
+         buried below the whole narrative.*/
+    }
+    {
+      /*      The commercial summary.
 
       Placed by explicit grid coordinates rather than DOM order, because the
       two layouts want opposite things. On a phone it reads AFTER the whole
       narrative: a client should understand what they are buying before they
       meet the number, and a seven-figure total as the first thing on screen
       reads as a demand rather than a proposal. On a desktop it pins beside
-      the narrative from the top, where it is reference rather than reveal.
-    -->
+      the narrative from the top, where it is reference rather than reveal.*/
+    }
     <aside class="lg:sticky lg:top-8 lg:col-start-2 lg:row-start-1">
       <div class="rounded-3xl border border-border bg-card p-6">
         <p class="text-sm text-muted-foreground">Total</p>
@@ -695,7 +695,7 @@ const chooserLocked = !isPreview && selection?.locked === true
                 data-pay-button
                 data-slug={quote.slug}
                 disabled={isPreview}
-                class="mt-2 flex min-h-12 w-full items-center justify-center rounded-full bg-accent px-6 text-base whitespace-nowrap text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
+                class="mt-2 flex min-h-12 w-full items-center justify-center rounded-full bg-accent px-6 text-base whitespace-nowrap text-accent-foreground transition-colors hover:bg-foreground hover:text-background disabled:opacity-60"
               >
                 {payment.kind === 'deposit' ? 'Pay the deposit' : 'Pay the balance'}
               </button>
@@ -709,7 +709,7 @@ const chooserLocked = !isPreview && selection?.locked === true
       </div>
     </aside>
 
-    <!-- Full width and last on both layouts: the ask comes after the price. -->
+    {/* Full width and last on both layouts: the ask comes after the price.*/}
     <div class="min-w-0 lg:col-span-2">
       <section
         id="decision"
@@ -754,7 +754,7 @@ const chooserLocked = !isPreview && selection?.locked === true
                     name="decision"
                     value="accepted"
                     disabled={isPreview}
-                    class="min-h-14 rounded-full bg-accent px-8 text-lg text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
+                    class="min-h-14 rounded-full bg-accent px-8 text-lg text-accent-foreground transition-colors hover:bg-white hover:text-foreground disabled:opacity-60"
                   >
                     Let's do it
                   </button>
@@ -795,14 +795,14 @@ const chooserLocked = !isPreview && selection?.locked === true
   </div>
 </main>
 
-<!--
-  The only JavaScript on this page besides the gallery island.
+{
+  /*  The only JavaScript on this page besides the gallery island.
 
   Deliberately not a framework component: it is one fetch and one redirect, and
   the button must still be visible (and the copy honest) if the script never
   runs, which is why the fallback is an explanatory error rather than a dead
-  button.
--->
+  button.*/
+}
 <script>
   document.querySelectorAll<HTMLButtonElement>('[data-pay-button]').forEach((button) => {
     const error = document.querySelector<HTMLElement>('[data-pay-error]')

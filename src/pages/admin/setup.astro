@@ -7,6 +7,7 @@
  * this page is effectively public on a fresh deployment.
  */
 import AdminLayout from '@/layouts/AdminLayout.astro'
+import Logo from '@/components/ui/Logo.astro'
 import { adminConfigIssues, isAdminConfigured } from '@/config/env'
 
 export const prerender = false
@@ -30,7 +31,9 @@ const GUIDE: Record<string, string> = {
 
 <AdminLayout title="Setup" chrome={false}>
   <div class="w-full max-w-2xl">
-    <h1 class="wh-h3 mb-2">Finish setting up the admin</h1>
+    <Logo variant="mark" class="mb-8 h-7 w-auto" label="WildHands" />
+
+    <h1 class="wh-h1-compact mb-2">Finish setting up the admin</h1>
     <p class="mb-8 text-muted-foreground">
       The marketing site is running normally: every page is live and all four forms still send. Only
       the admin needs the settings below.

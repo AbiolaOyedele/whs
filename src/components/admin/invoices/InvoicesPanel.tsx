@@ -70,12 +70,12 @@ export default function InvoicesPanel({ invoices }: { invoices: InvoiceListRow[]
   const money = (byCurrency: Record<string, number>) =>
     Object.entries(byCurrency)
       .map(([currency, total]) => formatMoney(total, currency))
-      .join(' · ') || '—'
+      .join(' · ') || 'Nothing yet'
 
   return (
     <div>
       <div className="mb-6">
-        <h1 className="wh-h3">Invoices</h1>
+        <h1 className="wh-h1-compact">Invoices</h1>
         <p className="mt-1 text-muted-foreground">
           Issued when a client downloads one from their quote. Numbers never change.
         </p>

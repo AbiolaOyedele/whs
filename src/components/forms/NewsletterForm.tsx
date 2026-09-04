@@ -42,7 +42,7 @@ export default function NewsletterForm() {
         <button
           type="submit"
           disabled={state.status === 'submitting'}
-          className="wh-tap inline-flex items-center justify-center rounded-full bg-primary px-6 text-base font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:pointer-events-none disabled:opacity-50"
+          className="wh-tap inline-flex items-center justify-center rounded-full bg-primary px-6 text-base font-medium text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50"
         >
           {state.status === 'submitting' ? 'Sending…' : 'Subscribe'}
         </button>

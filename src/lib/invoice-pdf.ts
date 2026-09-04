@@ -120,7 +120,7 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<Uint8Array> {
     brandFont(doc, 'IBMPlexSans-500.woff2'),
   ])
 
-  doc.setTitle(`Invoice ${data.number} — ${data.studio.name}`)
+  doc.setTitle(`Invoice ${data.number} from ${data.studio.name}`)
   doc.setAuthor(data.studio.name)
   doc.setSubject(data.projectTitle)
   doc.setCreator(data.studio.name)

@@ -60,10 +60,12 @@ const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
 
   <div class="wh-container">
     <div class="max-w-2xl pt-14 lg:ml-[10.35%] lg:pt-24">
-      <!-- Both sides sit at display scale because the right-hand
+      {
+        /* Both sides sit at display scale because the right-hand
            value is a bare year range. Ours are descriptive ("Started June 2026,
            in active development"), which at 48px wraps to three lines and
-           swamps the number, so the date keeps a reading size. -->
+           swamps the number, so the date keeps a reading size.*/
+      }
       <div class="flex items-baseline justify-between gap-6">
         <p class="text-3xl tabular-nums md:text-5xl">{ordinal(index)}</p>
         {
@@ -116,11 +118,11 @@ const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
     </div>
   </div>
 
-  <!--
-    TODO: no case-study imagery exists yet. A full-bleed
+  {
+    /*    TODO: no case-study imagery exists yet. A full-bleed
     screenshot here. This is the same placeholder treatment the cards use, so
-    the page keeps its rhythm without inventing a fake screenshot.
-  -->
+    the page keeps its rhythm without inventing a fake screenshot.*/
+  }
   <div class="wh-container mt-16 lg:mt-20">
     <div
       aria-hidden="true"
@@ -183,8 +185,10 @@ const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
     </div>
   </div>
 
-  <!-- Next project: label, running number, name, and
-       an accent chevron that slides on hover. -->
+  {
+    /* Next project: label, running number, name, and
+       an accent chevron that slides on hover.*/
+  }
   <div class="wh-container mt-24 lg:mt-36">
     <a
       href={`/work/${next.id}`}

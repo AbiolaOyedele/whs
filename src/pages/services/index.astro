@@ -49,7 +49,7 @@ const blocks = SERVICE_PILLARS.map((pillar: ServicePillar) => ({
   description="WildHands builds custom websites, apps, and internal tools. Three ways we help, all custom, none templated."
   jsonLd={jsonLd}
 >
-  <!-- Centred hero on the light surface -->
+  {/* Centred hero on the light surface*/}
   <section class="wh-container pt-36 pb-16 text-center md:pt-44 md:pb-24">
     <AnimatedText immediate>
       <h1 class="wh-h1 mx-auto max-w-[18ch]">What we build, and how we build it.</h1>
@@ -63,7 +63,7 @@ const blocks = SERVICE_PILLARS.map((pillar: ServicePillar) => ({
     </div>
   </section>
 
-  <!-- Pillar summary row -->
+  {/* Pillar summary row*/}
   <section class="wh-container">
     <ul
       class="grid gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3"
@@ -90,7 +90,7 @@ const blocks = SERVICE_PILLARS.map((pillar: ServicePillar) => ({
     </ul>
   </section>
 
-  <!-- One section per pillar -->
+  {/* One section per pillar*/}
   {
     blocks.map(({ label, tagline, entry }, index) => (
       <section class="wh-container my-10 lg:my-20">
@@ -160,7 +160,7 @@ const blocks = SERVICE_PILLARS.map((pillar: ServicePillar) => ({
     ))
   }
 
-  <!-- Closing CTA. Was a second hand-rolled copy of CTASection. -->
+  {/* Closing CTA. Was a second hand-rolled copy of CTASection.*/}
   <CTASection
     align="center"
     heading="Ready to get some time back?"

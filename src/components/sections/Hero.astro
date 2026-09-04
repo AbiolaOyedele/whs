@@ -67,7 +67,7 @@ const isHome = variant === 'home'
 
 <section
   data-dark-hero
-  class={`relative isolate flex flex-col overflow-hidden rounded-b-section bg-[#131314] text-white ${isHome ? 'wh-hero-home' : ''} ${className}`}
+  class={`relative isolate flex flex-col overflow-hidden rounded-b-section bg-surface-dark text-white ${isHome ? 'wh-hero-home' : ''} ${className}`}
 >
   {
     videoSrc ? (
@@ -114,26 +114,26 @@ const isHome = variant === 'home'
           'gap-10 pt-36 pb-16 lg:pt-44 lg:pb-24'
     }`}
   >
-    <!-- Block A: headline and client wordmarks -->
-    <!--
-      Home: measure set for a three-line headline, widened at xl so it stays
+    {/* Block A: headline and client wordmarks*/}
+    {
+      /*      Home: measure set for a three-line headline, widened at xl so it stays
       three rather than stepping to four as the type grows with the viewport.
       Inner pages keep the wider measure — their titles are full sentences, and
-      the home measure ran them to four and five lines.
-    -->
+      the home measure ran them to four and five lines.*/
+    }
     <div class={isHome ? 'max-w-[35rem] xl:max-w-[46rem]' : 'max-w-[52rem]'}>
       {
         eyebrow && (
           <p class="mb-5 text-sm font-medium tracking-widest text-white/60 uppercase">{eyebrow}</p>
         )
       }
-      <!--
-        No `mix-blend-difference` on the headline. The backdrop is a dark scrim
+      {
+        /*        No `mix-blend-difference` on the headline. The backdrop is a dark scrim
         over a near-black field, so plain white reads fine — and the blend mode
         made the H1 render through the open mega-menu panel and compete with
         the menu labels, as well as putting the site's largest piece of type
-        beyond the reach of any contrast check.
-      -->
+        beyond the reach of any contrast check.*/
+      }
       <AnimatedText immediate>
         <h1
           class={isHome ? 'wh-h1 text-balance' : 'wh-h1-page text-balance'}
@@ -154,11 +154,11 @@ const isHome = variant === 'home'
       </div>
     </div>
 
-    <!--
-      Block B: standfirst and the CTA pair. Two columns at lg so the lower half
+    {
+      /*      Block B: standfirst and the CTA pair. Two columns at lg so the lower half
       of the band carries content across its full width instead of leaving the
-      left side empty.
-    -->
+      left side empty.*/
+    }
     <div
       class={`empty:hidden ${
         isHome

@@ -6,6 +6,7 @@ interface Props {
 }
 const { current, class: className = '' } = Astro.props
 const steps = ['Your details', 'Short video', 'Done']
+import Icon from '@/components/ui/Icon.astro'
 ---
 
 <nav aria-label="Application progress" class={className}>
@@ -30,7 +31,7 @@ const steps = ['Your details', 'Short video', 'Done']
                 active ? 'border-transparent bg-primary text-primary-foreground' : 'border-border',
               ]}
             >
-              {done ? '✓' : number}
+              {done ? <Icon name="check" strokeWidth={3} class="size-3" /> : number}
             </span>
             {step}
           </li>

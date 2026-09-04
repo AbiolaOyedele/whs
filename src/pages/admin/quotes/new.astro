@@ -62,7 +62,7 @@ const shareUrl = created
     {
       created ? (
         <>
-          <h1 class="wh-h3 mb-2">Quote created</h1>
+          <h1 class="wh-h1-compact mb-2">Quote created</h1>
           <p class="mb-8 text-muted-foreground">
             Send the client both of these. The code is stored hashed, so this is the only time it
             can be shown.
@@ -100,7 +100,7 @@ const shareUrl = created
         </>
       ) : (
         <>
-          <h1 class="wh-h3 mb-2">New quote</h1>
+          <h1 class="wh-h1-compact mb-2">New quote</h1>
           <p class="mb-8 text-muted-foreground">
             Just enough to create it. Everything else is edited afterwards.
           </p>
@@ -152,7 +152,7 @@ const shareUrl = created
                 value={currency}
                 options={CURRENCIES.map((entry) => ({
                   value: entry.code,
-                  label: `${entry.code} — ${entry.label}`,
+                  label: `${entry.code} (${entry.label})`,
                 }))}
               />
             </div>

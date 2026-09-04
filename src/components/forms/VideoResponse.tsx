@@ -131,7 +131,7 @@ export default function VideoResponse() {
           <button
             type="button"
             onClick={requestCamera}
-            className={`${buttonClass} bg-primary text-primary-foreground hover:opacity-90`}
+            className={`${buttonClass} bg-primary text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground`}
           >
             Turn on camera
           </button>
@@ -141,7 +141,7 @@ export default function VideoResponse() {
           <button
             type="button"
             onClick={startRecording}
-            className={`${buttonClass} bg-primary text-primary-foreground hover:opacity-90`}
+            className={`${buttonClass} bg-primary text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground`}
           >
             Start recording
           </button>
@@ -188,7 +188,7 @@ export default function VideoResponse() {
       <div className="flex flex-wrap gap-3 border-t border-border pt-6">
         <a
           href="/careers/apply/video/thank-you"
-          className={`${buttonClass} bg-primary text-primary-foreground hover:opacity-90`}
+          className={`${buttonClass} bg-primary text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground`}
         >
           Finish application
         </a>

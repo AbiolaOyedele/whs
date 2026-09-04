@@ -1,0 +1,36 @@
+---
+/**
+ * Inline SVG icon. See `icon-paths.ts` for why there is no icon library.
+ *
+ * Decorative by default: an icon that sits beside its own label has nothing to
+ * add for a screen reader, and announcing it twice is worse than not at all.
+ * Pass `label` on the rare icon that carries meaning alone.
+ */
+import { ICONS, type IconName } from './icon-paths'
+
+interface Props {
+  name: IconName
+  class?: string
+  /** Only when the icon is the sole carrier of meaning. */
+  label?: string
+  strokeWidth?: number
+}
+
+const { name, class: className = 'size-4', label, strokeWidth = 1.8 } = Astro.props
+const icon = ICONS[name]
+---
+
+<svg
+  viewBox={icon.box}
+  class={className}
+  fill="none"
+  stroke="currentColor"
+  stroke-width={strokeWidth}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden={label ? undefined : 'true'}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+>
+  {icon.paths.map((d) => <path d={d} />)}
+</svg>

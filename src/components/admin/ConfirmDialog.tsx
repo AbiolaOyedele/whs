@@ -139,18 +139,13 @@ export function ConfirmDialog({
           <Button tone="secondary" onClick={onCancel}>
             {cancelLabel}
           </Button>
-          <button
+          <Button
             ref={confirmRef}
-            type="button"
+            tone={tone === 'danger' ? 'dangerSolid' : 'primary'}
             onClick={onConfirm}
-            className={
-              tone === 'danger'
-                ? 'inline-flex min-h-11 items-center justify-center rounded-full border border-destructive bg-destructive px-5 text-base text-destructive-foreground transition-opacity hover:opacity-90'
-                : 'inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-5 text-base text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground'
-            }
           >
             {confirmLabel}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

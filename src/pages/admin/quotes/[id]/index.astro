@@ -53,14 +53,16 @@ const EVENT_LABELS: Record<string, string> = {
   declined: 'Declined',
   downloaded: 'Downloaded',
 }
+import Icon from '@/components/ui/Icon.astro'
 ---
 
-<AdminLayout title={`Quote — ${quote.clientName}`} section="quotes" email={session?.email}>
+<AdminLayout title={`Quote for ${quote.clientName}`} section="quotes" email={session?.email}>
   <a
     href="/admin/quotes"
     class="mb-6 inline-flex min-h-11 items-center text-base text-muted-foreground transition-colors hover:text-foreground"
   >
-    ← All quotes
+    <Icon name="arrowLeft" class="mr-2 size-4" />
+    All quotes
   </a>
 
   <QuoteEditor
@@ -86,7 +88,7 @@ const EVENT_LABELS: Record<string, string> = {
               </span>
               <span class="text-sm text-muted-foreground">
                 {entry.count > 1 && entry.firstAt !== entry.lastAt
-                  ? `${eventFormat.format(new Date(entry.firstAt))} – ${eventFormat.format(new Date(entry.lastAt))}`
+                  ? `${eventFormat.format(new Date(entry.firstAt))} to ${eventFormat.format(new Date(entry.lastAt))}`
                   : eventFormat.format(new Date(entry.lastAt))}
               </span>
             </li>

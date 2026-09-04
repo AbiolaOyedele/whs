@@ -228,7 +228,7 @@ export function AiDraftPanel({ quoteId, providers, onApply }: Props) {
                     <li key={`${phase.title}-${index}`}>
                       {phase.title}
                       {phase.durationLabel && (
-                        <span className="text-muted-foreground"> — {phase.durationLabel}</span>
+                        <span className="text-muted-foreground"> ({phase.durationLabel})</span>
                       )}
                     </li>
                   ))}

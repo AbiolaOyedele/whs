@@ -9,6 +9,7 @@
  * server sets an httpOnly cookie.
  */
 import AdminLayout from '@/layouts/AdminLayout.astro'
+import Logo from '@/components/ui/Logo.astro'
 import { publicEnv } from '@/config/env'
 import { assertAdminOrigin, signIn } from '@/lib/admin/auth'
 import { isAppError } from '@/lib/errors'
@@ -54,7 +55,9 @@ if (redirectTo) return Astro.redirect(redirectTo)
 
 <AdminLayout title="Sign in" chrome={false}>
   <div class="w-full max-w-md">
-    <h1 class="wh-h3 mb-2">Sign in</h1>
+    <Logo variant="mark" class="mb-8 h-7 w-auto" label="WildHands" />
+
+    <h1 class="wh-h1-compact mb-2">Sign in</h1>
     <p class="mb-8 text-muted-foreground">The WildHands admin. Staff only.</p>
 
     {

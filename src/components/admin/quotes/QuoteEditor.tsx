@@ -60,8 +60,8 @@ function hostnameOf(url: string): string | undefined {
 }
 
 const OPTION_KINDS = [
-  { value: 'package', label: 'Package — client picks one' },
-  { value: 'addon', label: 'Add-on — client ticks any' },
+  { value: 'package', label: 'Package: client picks one' },
+  { value: 'addon', label: 'Add-on: client ticks any' },
 ] as const
 import { CURRENCIES, QUOTE_STATUSES, QUOTE_STATUS_LABELS, type Quote } from '@/types/quote'
 import type { AiProvider } from '@/lib/ai/types'
@@ -378,7 +378,7 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
 
   const currencyOptions = useMemo(
     () =>
-      CURRENCIES.map((entry) => ({ value: entry.code, label: `${entry.code} — ${entry.label}` })),
+      CURRENCIES.map((entry) => ({ value: entry.code, label: `${entry.code} (${entry.label})` })),
     []
   )
 
@@ -388,7 +388,7 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-sm text-muted-foreground">Quote for</p>
-          <h1 className="wh-h3 break-words">{quote.clientName || 'Untitled client'}</h1>
+          <h1 className="wh-h1-compact break-words">{quote.clientName || 'Untitled client'}</h1>
           <p className="mt-1 truncate text-base text-muted-foreground">{quote.projectTitle}</p>
         </div>
 
@@ -1109,7 +1109,7 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
               >
                 {dirty && (
                   <p className="mb-4 rounded-xl border border-accent bg-accent/10 px-4 py-3 text-base">
-                    You have unsaved changes. The preview shows the last saved version — save to see
+                    You have unsaved changes. The preview shows the last saved version. Save to see
                     them here.
                   </p>
                 )}
@@ -1281,7 +1281,7 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
         open={confirmingReissue}
         tone="danger"
         title="Issue a new access code?"
-        body="The current code stops working immediately. Anyone already holding it — including your client — is locked out until you send them the new one."
+        body="The current code stops working immediately. Anyone already holding it, your client included, is locked out until you send them the new one."
         confirmLabel="Issue a new code"
         onCancel={() => setConfirmingReissue(false)}
         onConfirm={() => {
