@@ -20,10 +20,10 @@ Placeholder article body. The structure exercises the article template (headings
 
 Most headless CMS evaluations compare feature lists. Three operational questions predict satisfaction far better.
 
-## Why it matters
+## The three questions
 
 Placeholder section. Real articles lead each section with a direct, self-contained factual sentence before elaborating, so an answer engine can lift a single paragraph without losing the meaning.
 
-## What to do about it
+## How to run the evaluation
 
 Placeholder section. See [our services](/services) and [the stack we use](/stack).

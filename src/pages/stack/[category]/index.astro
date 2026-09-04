@@ -9,6 +9,7 @@ import Tag from '@/components/ui/Tag.astro'
 import { breadcrumbSchema } from '@/lib/seo'
 import { publicEnv } from '@/config/env'
 import { STACK_CATEGORIES, STACK_CATEGORY_LABELS } from '@/content.config'
+import Icon from '@/components/ui/Icon.astro'
 
 export const getStaticPaths = (async () => {
   const stack = await getCollection('stack', ({ data }) => !data.draft)
@@ -76,7 +77,8 @@ const jsonLd = [
 
     <p class="mt-10">
       <a href="/stack" class="wh-sweep wh-tap inline-flex items-center text-sm">
-        <span class="wh-sweep__label">&larr; All categories</span>
+        <Icon name="arrowLeft" class="mr-2 size-4" />
+        <span class="wh-sweep__label">All categories</span>
       </a>
     </p>
   </div>

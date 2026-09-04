@@ -67,7 +67,7 @@ export const SERVICE_PILLAR_LABELS: Record<ServicePillar, string> = {
 
 /** One-line positioning for each pillar, used on the services index and nav. */
 export const SERVICE_PILLAR_TAGLINES: Record<ServicePillar, string> = {
-  websites: 'Custom-built, not templated.',
+  websites: 'Built from scratch around what you publish.',
   apps: 'Software built around how you actually work.',
   tools: 'Dashboards and internal tools that replace the spreadsheet.',
 }

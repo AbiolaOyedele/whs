@@ -21,7 +21,7 @@ const procurement = [
   },
   {
     title: 'Documented handover',
-    body: 'Architecture notes, runbooks and access inventory delivered as part of the engagement, not on request.',
+    body: 'Architecture notes, runbooks and access inventory delivered as part of the engagement, before you ask for them.',
   },
   {
     title: 'Accessibility commitment',
@@ -44,7 +44,7 @@ const governance = [
   },
   {
     title: 'Dependency policy',
-    body: 'New third-party dependencies are flagged and justified, not added silently.',
+    body: 'Every new third-party dependency is flagged and justified before it goes in.',
   },
 ]
 
@@ -159,10 +159,14 @@ const jsonLd = [
       </table>
     </div>
     <p class="mt-4 text-sm text-muted-foreground">
-      Targets are set against your priorities at contract stage, not taken from a published tier.
+      Targets are set against your priorities at contract stage.
     </p>
   </section>
 
   <FAQAccordion faqs={faqs} heading="Procurement questions" />
-  <CTASection heading="Need us in your vendor process?" ctaLabel="Start the conversation" />
+  <CTASection
+    heading="Need us in your vendor process?"
+    subheading="Send the questionnaire, the NDA, or the RFP. We will confirm receipt with a named contact."
+    ctaLabel="Start the conversation"
+  />
 </BaseLayout>

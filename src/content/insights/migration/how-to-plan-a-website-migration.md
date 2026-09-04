@@ -22,10 +22,10 @@ Placeholder article body. The structure exercises the article template (headings
 
 A migration keeps its rankings when redirects are mapped page by page and verified against a real crawl. Here is the sequence that works.
 
-## Why it matters
+## Where migrations lose traffic
 
 Placeholder section. Real articles lead each section with a direct, self-contained factual sentence before elaborating, so an answer engine can lift a single paragraph without losing the meaning.
 
-## What to do about it
+## The sequence
 
 Placeholder section. See [our services](/services) and [the stack we use](/stack).

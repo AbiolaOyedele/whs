@@ -15,7 +15,7 @@ includes:
 platforms: []
 pricingNote: 'Priced after discovery. We start by working out how many hours the current process costs, because that is what the build is measured against.'
 choosingAPartner: []
-houseView: 'Every system we build gets judged the same way: how much time did it give back? If we cannot answer that, it was not worth building.'
+houseView: 'We judge every system we build by how much time it saves you. If we cannot answer that question, it was not worth building.'
 faqs:
   - question: 'What is workflow automation?'
     answer: 'Connecting the tools you already use so data moves between them without anyone re-keying it. The goal is removing manual steps permanently rather than making them faster.'

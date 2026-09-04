@@ -20,10 +20,10 @@ Placeholder article body. The structure exercises the article template (headings
 
 Most design systems are abandoned around month fourteen. The ones that last share three structural properties.
 
-## Why it matters
+## What kills a system in year two
 
 Placeholder section. Real articles lead each section with a direct, self-contained factual sentence before elaborating, so an answer engine can lift a single paragraph without losing the meaning.
 
-## What to do about it
+## The three properties
 
 Placeholder section. See [our services](/services) and [the stack we use](/stack).

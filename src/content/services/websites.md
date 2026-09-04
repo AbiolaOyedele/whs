@@ -1,9 +1,9 @@
 ---
 title: 'Websites'
-description: 'Custom-built websites, not templates. Marketing sites that convert, and full custom builds for businesses that need the site to do more.'
+description: 'Websites built from scratch around what you publish. Marketing sites that convert, and full custom builds for businesses that need the site to do more.'
 placeholder: false
 eyebrow: 'Websites'
-summary: 'Custom-built, not templated.'
+summary: 'Built from scratch around what you publish.'
 pillar: 'websites'
 order: 10
 definition: 'We build websites from scratch around your business, rather than fitting you into a theme. That means the structure, the content model and the page templates are designed for what you actually publish, not adapted from something built for someone else.'

@@ -111,7 +111,7 @@ export const CONTENT_REGISTRY: readonly ContentEntry[] = [
     section: 'The problem',
     label: 'Point two: body',
     type: 'textarea',
-    defaultValue: 'Every system we build is judged the same way: how much time it saves you.',
+    defaultValue: 'We judge every system we build by how much time it saves you.',
   },
   {
     key: 'home.problems.2.title',
@@ -206,7 +206,7 @@ export const CONTENT_REGISTRY: readonly ContentEntry[] = [
     section: 'How an engagement runs',
     label: 'Step two: body',
     type: 'textarea',
-    defaultValue: 'A plan built around your actual brief, not a template.',
+    defaultValue: 'A written plan for your brief, with what is in scope and what is out.',
   },
   {
     key: 'site.process.2.title',
@@ -222,7 +222,7 @@ export const CONTENT_REGISTRY: readonly ContentEntry[] = [
     section: 'How an engagement runs',
     label: 'Step three: body',
     type: 'textarea',
-    defaultValue: 'Priced for the work in front of us, not a generic package.',
+    defaultValue: 'One price, worked out from that scope.',
   },
 ] as const
 

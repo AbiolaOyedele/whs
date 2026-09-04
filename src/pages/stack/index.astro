@@ -18,6 +18,7 @@ import Button from '@/components/ui/Button.astro'
 import { breadcrumbSchema } from '@/lib/seo'
 import { publicEnv } from '@/config/env'
 import { STACK_CATEGORIES, STACK_CATEGORY_LABELS, type StackCategory } from '@/content.config'
+import Icon from '@/components/ui/Icon.astro'
 
 const stack = await getCollection('stack', ({ data }) => !data.draft)
 const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
@@ -48,7 +49,7 @@ const RECOMMENDATIONS: Record<StackCategory, { title: string; body: string }> = 
   },
   hosting: {
     title: 'Vercel, or your cloud',
-    body: 'Preview deployments and edge delivery suit most builds. Your own AWS, Azure or GCP contract when data residency or procurement says so. That path is first-class, not a compromise.',
+    body: 'Preview deployments and edge delivery suit most builds. Your own AWS, Azure or GCP contract when data residency or procurement says so. We build to the same standard either way.',
   },
   integrations: {
     title: 'Keep what you run',
@@ -63,7 +64,7 @@ const PRINCIPLES = [
     body: 'We hold no vendor partnership that pays us to recommend one platform over another.',
   },
   {
-    title: 'Paid for work, not referrals',
+    title: 'How we get paid',
     body: 'Our revenue is building and running what we ship. The platform choice is your cost, not our income.',
   },
   {
@@ -100,7 +101,7 @@ const groups = STACK_CATEGORIES.map((category) => {
   <Hero
     eyebrow="Introduction"
     title="The stack we build on, and the reasoning behind it."
-    standfirst="A curated, opinionated reference: CMS, framework, hosting, and the integrations that tie it into your business. Not a directory of everything that exists, and vendor-agnostic by design. This is the set we actually evaluate, recommend and ship, grouped by the decision each layer answers."
+    standfirst="A curated, opinionated reference: CMS, framework, hosting, and the integrations that tie it into your business. Vendor-agnostic by design. This is the set we actually evaluate, recommend and ship, grouped by the decision each layer answers."
   />
 
   {/* If we started today*/}
@@ -176,7 +177,7 @@ const groups = STACK_CATEGORIES.map((category) => {
                 aria-hidden="true"
                 class="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground transition-transform duration-300 group-hover:translate-x-0.5"
               >
-                &rarr;
+                <Icon name="arrowRight" class="size-4" />
               </span>
             </div>
 
@@ -216,7 +217,7 @@ const groups = STACK_CATEGORIES.map((category) => {
     <div class="max-w-xl">
       <p class="text-sm text-muted-foreground">Not sure which fits?</p>
       <AnimatedText>
-        <h2 class="wh-h2-display mt-4">Get a reasoned recommendation, not a ranking.</h2>
+        <h2 class="wh-h2-display mt-4">Get a recommendation you can defend internally.</h2>
       </AnimatedText>
       <p class="mt-5 text-muted-foreground">
         On a discovery call we map what you already run, work out what it is costing you in time,

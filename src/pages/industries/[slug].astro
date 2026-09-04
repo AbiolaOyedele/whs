@@ -40,7 +40,13 @@ const jsonLd = [
 ]
 ---
 
-<BaseLayout title={data.title} description={data.description} jsonLd={jsonLd} darkHero>
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  jsonLd={jsonLd}
+  darkHero
+  noindex={data.placeholder}
+>
   <Hero eyebrow="Industries" title={data.headline} subtitle={data.summary} />
 
   {

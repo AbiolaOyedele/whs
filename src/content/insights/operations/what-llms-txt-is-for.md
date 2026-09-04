@@ -22,10 +22,10 @@ Placeholder article body. The structure exercises the article template (headings
 
 llms.txt is a Markdown index of a site’s most useful pages, written for AI answer engines. It is cheap to publish and easy to get wrong.
 
-## Why it matters
+## What it does, and what it does not
 
 Placeholder section. Real articles lead each section with a direct, self-contained factual sentence before elaborating, so an answer engine can lift a single paragraph without losing the meaning.
 
-## What to do about it
+## Whether to publish one
 
 Placeholder section. See [our services](/services) and [the stack we use](/stack).

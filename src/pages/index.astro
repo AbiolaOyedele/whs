@@ -18,6 +18,7 @@ import Button from '@/components/ui/Button.astro'
 import { SITE } from '@/config/site'
 import { list, text } from '@/lib/admin/content'
 import { SERVICE_PILLARS, SERVICE_PILLAR_LABELS, SERVICE_PILLAR_TAGLINES } from '@/content.config'
+import Icon from '@/components/ui/Icon.astro'
 
 const [work, services] = await Promise.all([
   getCollection('work', ({ data }) => !data.draft),
@@ -111,7 +112,9 @@ const problems = [0, 1, 2].map((index) => ({
                   what is actually happening. That is hours gone that should have gone into the work
                   only you can do.
                 </p>
-                <Button href="/services" variant="link">See how we fix this &rarr;</Button>
+                <Button href="/services" variant="link">
+                  See how we fix this <Icon name="arrowRight" class="ml-1 size-4" />
+                </Button>
               </div>
             </div>
           </div>
@@ -176,9 +179,9 @@ const problems = [0, 1, 2].map((index) => ({
                     </span>
                     <span
                       aria-hidden="true"
-                      class="mt-0.5 shrink-0 self-start text-xl transition-transform duration-300 group-hover:translate-x-1"
+                      class="mt-0.5 shrink-0 self-start transition-transform duration-300 group-hover:translate-x-1"
                     >
-                      &rarr;
+                      <Icon name="arrowRight" class="size-5" />
                     </span>
                   </a>
                 </li>
@@ -239,6 +242,6 @@ const problems = [0, 1, 2].map((index) => ({
     heading="Ready to get some time back?"
     subheading="Tell us what is eating your hours. We will show you what a system built for it looks like."
     ctaLabel="Talk to Us"
-    note="A real conversation, not a sales pitch."
+    note="We will tell you if we are not the right fit."
   />
 </BaseLayout>

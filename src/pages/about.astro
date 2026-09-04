@@ -25,7 +25,27 @@ const jsonLd = [
 ]
 
 /** TODO: provisional. Values wording pending the copy doc. */
-const VALUES = ['Clarity', 'Craft', 'Commitment', 'Candour']
+/*
+ * Four abstract nouns, all alliterating, could belong to any studio in any
+ * country. Each one now carries the commitment the site already makes
+ * elsewhere, so the section says what we do rather than what we admire.
+ * The sentences are not new promises: they restate /enterprise and /stack.
+ */
+const VALUES = [
+  {
+    title: 'Clarity',
+    body: 'Scope changes are written, priced and signed before work starts on them.',
+  },
+  { title: 'Craft', body: 'WCAG 2.1 AA is a build gate, checked in CI rather than audited later.' },
+  {
+    title: 'Commitment',
+    body: 'The people in the pitch are the people on the project, named in the statement of work.',
+  },
+  {
+    title: 'Candour',
+    body: 'If the honest answer is that your current stack is fine, that is the answer you get.',
+  },
+]
 ---
 
 <BaseLayout
@@ -69,8 +89,10 @@ const VALUES = ['Clarity', 'Craft', 'Commitment', 'Candour']
         </h2>
       </AnimatedText>
       <p class="mt-8 max-w-[38rem] text-muted-foreground">
-        Every system we build is judged the same way: how much time it gives back. You can see that
-        in <a href="/work" class="underline underline-offset-4">the work we ship</a> and in
+        We judge every system we build by how much time it saves you. You can see that in <a
+          href="/work"
+          class="underline underline-offset-4">the work we ship</a
+        > and in
         <a href="/services" class="underline underline-offset-4">how we scope a project</a>, from
         first call to launch.
       </p>
@@ -106,12 +128,13 @@ const VALUES = ['Clarity', 'Craft', 'Commitment', 'Candour']
 
   {/* Values*/}
   <section class="wh-container my-10 lg:my-20">
-    <h2 class="wh-h2 text-center">Values</h2>
-    <ul class="mx-auto mt-10 max-w-3xl border-t border-border">
+    <h2 class="wh-h2">Values</h2>
+    <ul class="mt-10 max-w-3xl border-t border-border">
       {
         VALUES.map((value) => (
-          <li class="border-b border-border py-6 text-center text-lg md:py-8 md:text-xl">
-            {value}
+          <li class="border-b border-border py-6 md:py-8">
+            <p class="font-display text-lg md:text-xl">{value.title}</p>
+            <p class="mt-2 text-muted-foreground">{value.body}</p>
           </li>
         ))
       }
@@ -122,11 +145,7 @@ const VALUES = ['Clarity', 'Craft', 'Commitment', 'Candour']
   <section class="wh-container my-16 text-center lg:my-24">
     <p class="text-sm text-muted-foreground">Your hours should go into the work only you can do.</p>
     <AnimatedText>
-      <h2
-        class="mx-auto mt-5 max-w-[18ch] text-[clamp(2rem,5vw,3.5rem)] leading-[1.1] tracking-[-0.03em]"
-      >
-        Ready to get some time back?
-      </h2>
+      <h2 class="wh-h2-display mx-auto mt-5 max-w-[18ch]">Ready to get some time back?</h2>
     </AnimatedText>
     <div class="mt-10 flex justify-center">
       <Button href="/get-in-touch" variant="accent" size="lg">Talk to Us</Button>

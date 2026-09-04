@@ -60,11 +60,11 @@ export const PROCESS_STEPS = [
   },
   {
     title: 'Scoped proposal',
-    body: 'A plan built around your actual brief, not a template.',
+    body: 'A written plan for your brief, with what is in scope and what is out.',
   },
   {
     title: 'Custom quote',
-    body: 'Priced for the work in front of us, not a generic package.',
+    body: 'One price, worked out from that scope.',
   },
 ] as const
 

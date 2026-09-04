@@ -18,10 +18,10 @@ Placeholder article body. The structure exercises the article template (headings
 
 Hosting is rarely the expensive part. The real line items are licences, engineering attention, and the delay between wanting a change and getting one.
 
-## Why it matters
+## Where the money actually goes
 
 Placeholder section. Real articles lead each section with a direct, self-contained factual sentence before elaborating, so an answer engine can lift a single paragraph without losing the meaning.
 
-## What to do about it
+## How to budget for it
 
 Placeholder section. See [our services](/services) and [the stack we use](/stack).
