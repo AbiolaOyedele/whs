@@ -54,6 +54,39 @@ export function isCharged(item: QuoteLineItem, options: readonly QuoteOption[]):
 }
 
 /**
+ * Whether this item's own price counts for anything.
+ *
+ * False for every item inside a fixed-price option. There the option carries
+ * the money and the items are inclusions, so their stored unit prices are
+ * inert: kept, so switching back to an itemised breakdown restores it, but
+ * never summed, never displayed, and never sent to an invoice.
+ */
+export function itemCarriesMoney(item: QuoteLineItem, options: readonly QuoteOption[]): boolean {
+  if (item.optionId === null) return true
+  return options.find((option) => option.id === item.optionId)?.pricing !== 'fixed'
+}
+
+/**
+ * What one option adds to the quote, in minor units.
+ *
+ * This is what the client compares across packages, so there is exactly one
+ * function for it: the admin's package list, the client's package cards and the
+ * invoice all call this, and a package cannot show one figure on the quote and
+ * another on the bill.
+ *
+ * It replaced an `optionTotalMinor(optionId, lineItems)` that summed the items
+ * and nothing else. That signature cannot answer the question any more, because
+ * a fixed-price option's answer is not in its items, so it is gone rather than
+ * left around to be called by mistake.
+ */
+export function optionPriceMinor(option: QuoteOption, lineItems: readonly QuoteLineItem[]): number {
+  if (option.pricing === 'fixed') return Math.max(0, option.fixedPriceMinor)
+  return lineItems
+    .filter((item) => item.optionId === option.id)
+    .reduce((sum, item) => sum + lineAmount(item), 0)
+}
+
+/**
  * Computes every derived figure on a quote.
  *
  * Order matters and is fixed: discount comes off before tax, tax applies to the
@@ -77,9 +110,22 @@ export function computeTotals(input: {
   let optionalMinor = 0
 
   for (const item of input.lineItems) {
+    /* Items inside a fixed-price option are inclusions. The option's own price
+       is added below; counting these too would charge the package twice. */
+    if (!itemCarriesMoney(item, input.options)) continue
+
     const amount = lineAmount(item)
     if (isCharged(item, input.options)) subtotalMinor += amount
     else optionalMinor += amount
+  }
+
+  for (const option of input.options) {
+    if (option.pricing !== 'fixed') continue
+    const price = optionPriceMinor(option, input.lineItems)
+    /* Same split as a line item: charged when picked, otherwise part of the
+       menu figure, so `optionalMinor` still describes what is on offer. */
+    if (option.isSelected) subtotalMinor += price
+    else optionalMinor += price
   }
 
   // A discount can never exceed the subtotal, or the total goes negative and
@@ -100,6 +146,73 @@ export function computeTotals(input: {
     depositMinor,
     balanceMinor: totalMinor - depositMinor,
   }
+}
+
+/** One billable row. Shaped for an invoice, derived from the quote. */
+export interface ChargedLine {
+  title: string
+  description: string
+  quantity: number
+  unitPriceMinor: number
+  amountMinor: number
+}
+
+/**
+ * The rows a bill for this quote should carry.
+ *
+ * Exists because a fixed-price package cannot be invoiced as its line items.
+ * Those items have stored unit prices that deliberately do not count, so
+ * listing them would produce a bill whose rows sum to something other than the
+ * amount due. The package becomes ONE row instead, priced at what the client
+ * was shown, with its inclusions named in the description so the bill still
+ * says what was bought.
+ *
+ * Guaranteed by construction: the sum of `amountMinor` here equals
+ * `computeTotals(...).subtotalMinor` for the same quote. There is a test that
+ * says so, because that equality is the entire point of this function.
+ */
+export function chargedLines(
+  lineItems: readonly QuoteLineItem[],
+  options: readonly QuoteOption[]
+): ChargedLine[] {
+  const lines: ChargedLine[] = []
+
+  /* Base scope first, in the operator's order, then each option. Anything
+     inside a fixed option is skipped here and handled with the option. */
+  for (const item of lineItems) {
+    if (!isCharged(item, options)) continue
+    if (!itemCarriesMoney(item, options)) continue
+    lines.push({
+      title: item.title,
+      description: item.description,
+      quantity: item.quantity,
+      unitPriceMinor: item.unitPriceMinor,
+      amountMinor: lineAmount(item),
+    })
+  }
+
+  for (const option of options) {
+    if (option.pricing !== 'fixed' || !option.isSelected) continue
+
+    const inclusions = lineItems
+      .filter((item) => item.optionId === option.id)
+      .map((item) => item.title)
+      .filter((title) => title.length > 0)
+
+    const amountMinor = optionPriceMinor(option, lineItems)
+    lines.push({
+      title: option.title,
+      /* The option's own sentence, then what it covers. A bill for a
+         four-figure package that says only "Standard" is not itemised enough
+         for anyone to check. */
+      description: [option.description, inclusions.join(', ')].filter(Boolean).join('\n'),
+      quantity: 1,
+      unitPriceMinor: amountMinor,
+      amountMinor,
+    })
+  }
+
+  return lines
 }
 
 /**
@@ -160,17 +273,4 @@ export function parseMoney(input: string, code: string): number | null {
 export function formatBasisPoints(bp: number): string {
   const percent = bp / 100
   return `${Number.isInteger(percent) ? percent : percent.toFixed(2).replace(/0$/, '')}%`
-}
-
-/**
- * What one option adds to the quote, in minor units.
- *
- * This is what the client compares across packages, so it is computed from the
- * option's own line items rather than stored — the number on the card and the
- * number on the invoice come from the same arithmetic and cannot drift apart.
- */
-export function optionTotalMinor(optionId: string, lineItems: readonly QuoteLineItem[]): number {
-  return lineItems
-    .filter((item) => item.optionId === optionId)
-    .reduce((sum, item) => sum + lineAmount(item), 0)
 }

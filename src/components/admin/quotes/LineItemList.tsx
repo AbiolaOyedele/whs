@@ -29,6 +29,13 @@ interface Props {
   optionId: string | null
   fieldErrors: Record<string, string>
   emptyMessage: string
+  /**
+   * True inside an option sold at one price. The rows become a list of what is
+   * covered, so quantity and unit price are not asked for and not shown: a
+   * price field on a line that cannot affect any total is a question with no
+   * right answer.
+   */
+  hidePrices?: boolean
   onUpdate: (id: string, patch: Partial<QuoteLineItem>) => void
   onRemove: (id: string) => void
   onReorder: (lineItems: QuoteLineItem[]) => void
@@ -41,6 +48,7 @@ export function LineItemList({
   optionId,
   fieldErrors,
   emptyMessage,
+  hidePrices = false,
   onUpdate,
   onRemove,
   onReorder,
@@ -73,7 +81,7 @@ export function LineItemList({
           key={item.id}
           label={String(position + 1).padStart(2, '0')}
           title={item.title}
-          meta={formatMoney(lineAmount(item), currency)}
+          meta={hidePrices ? undefined : formatMoney(lineAmount(item), currency)}
           defaultOpen={!item.title}
           actions={
             <>
@@ -110,42 +118,44 @@ export function LineItemList({
               value={item.description}
               onChange={(description) => onUpdate(item.id, { description })}
             />
-            <div className="grid gap-4 sm:grid-cols-3">
-              <label className="flex flex-col gap-1.5">
-                <span className="text-sm text-muted-foreground">Quantity</span>
-                <input
-                  type="number"
-                  min={0}
-                  step="0.25"
-                  value={item.quantity}
-                  onChange={(event) =>
-                    onUpdate(item.id, { quantity: Number(event.target.value) || 0 })
-                  }
-                  className="min-h-11 w-full rounded-xl border border-border bg-card px-3 py-2 text-right font-mono text-base outline-none focus-visible:border-foreground"
-                />
-              </label>
-              <MoneyInput
-                label="Unit price"
-                currency={currency}
-                valueMinor={item.unitPriceMinor}
-                onChange={(unitPriceMinor) => onUpdate(item.id, { unitPriceMinor })}
-              />
-              {/*
-                "Optional" only means anything in base scope, where it marks a
-                line as a menu item rather than a charge. Inside an option the
-                client's tick already decides that, and two controls answering
-                the same question is how a line ends up charged for nobody.
-              */}
-              {optionId === null && (
-                <div className="flex items-end">
-                  <Checkbox
-                    label="Optional"
-                    checked={item.isOptional}
-                    onChange={(isOptional) => onUpdate(item.id, { isOptional })}
+            {!hidePrices && (
+              <div className="grid gap-4 sm:grid-cols-3">
+                <label className="flex flex-col gap-1.5">
+                  <span className="text-sm text-muted-foreground">Quantity</span>
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.25"
+                    value={item.quantity}
+                    onChange={(event) =>
+                      onUpdate(item.id, { quantity: Number(event.target.value) || 0 })
+                    }
+                    className="min-h-11 w-full rounded-xl border border-border bg-card px-3 py-2 text-right font-mono text-base outline-none focus-visible:border-foreground"
                   />
-                </div>
-              )}
-            </div>
+                </label>
+                <MoneyInput
+                  label="Unit price"
+                  currency={currency}
+                  valueMinor={item.unitPriceMinor}
+                  onChange={(unitPriceMinor) => onUpdate(item.id, { unitPriceMinor })}
+                />
+                {/*
+                  "Optional" only means anything in base scope, where it marks a
+                  line as a menu item rather than a charge. Inside an option the
+                  client's tick already decides that, and two controls answering
+                  the same question is how a line ends up charged for nobody.
+                */}
+                {optionId === null && (
+                  <div className="flex items-end">
+                    <Checkbox
+                      label="Optional"
+                      checked={item.isOptional}
+                      onChange={(isOptional) => onUpdate(item.id, { isOptional })}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
 
             {options.length > 0 && (
               <Select

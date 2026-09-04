@@ -7,7 +7,7 @@
  * total, and nothing else?
  */
 import { describe, expect, it } from 'vitest'
-import { computeTotals, isCharged, lineAmount, optionTotalMinor } from '@/lib/admin/money'
+import { computeTotals, isCharged, lineAmount, optionPriceMinor } from '@/lib/admin/money'
 import { selectionState } from '@/lib/admin/quote-selection'
 import type { QuotePayment } from '@/lib/admin/repositories/payments'
 import type { Quote, QuoteLineItem, QuoteOption } from '@/types/quote'
@@ -19,6 +19,8 @@ const option = (over: Partial<QuoteOption> & { id: string }): QuoteOption => ({
   description: '',
   isSelected: false,
   isDefault: false,
+  pricing: 'itemised',
+  fixedPriceMinor: 0,
   ...over,
 })
 
@@ -112,19 +114,19 @@ describe('computeTotals with options', () => {
   })
 })
 
-describe('optionTotalMinor', () => {
-  it('prices an option from its own lines', () => {
+describe('optionPriceMinor', () => {
+  it('prices an itemised option from its own lines', () => {
     const items = [
       item({ id: 'a', unitPriceMinor: 200_000, optionId: 'pre' }),
       item({ id: 'b', quantity: 2, unitPriceMinor: 50_000, optionId: 'pre' }),
       item({ id: 'c', unitPriceMinor: 900_000, optionId: 'other' }),
     ]
 
-    expect(optionTotalMinor('pre', items)).toBe(300_000)
+    expect(optionPriceMinor(option({ id: 'pre' }), items)).toBe(300_000)
   })
 
   it('is zero for an option with no lines, not NaN', () => {
-    expect(optionTotalMinor('empty', [])).toBe(0)
+    expect(optionPriceMinor(option({ id: 'empty' }), [])).toBe(0)
   })
 })
 

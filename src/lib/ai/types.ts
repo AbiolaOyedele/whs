@@ -130,6 +130,15 @@ export const quoteDraftSchema = z.object({
         description: z.string().trim().max(600).default(''),
         /** Pre-tick this option for the client. At most one package. */
         isDefault: z.boolean().default(false),
+        /**
+         * One price for the whole option, in major units.
+         *
+         * Zero, the default, means price it from its line items instead. Set
+         * only when the brief asks for a package sold at a single figure, in
+         * which case the items under it are inclusions and their own prices are
+         * ignored.
+         */
+        fixedPrice: z.number().min(0).max(100_000_000).default(0),
       })
     )
     .max(8)

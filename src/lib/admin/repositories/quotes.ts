@@ -21,6 +21,7 @@ import type {
   QuoteLineItem,
   QuoteOption,
   QuoteOptionKind,
+  QuoteOptionPricing,
   QuotePhase,
   QuoteReference,
   QuoteStatus,
@@ -79,6 +80,8 @@ interface OptionRow {
   description: string
   is_selected: boolean
   is_default: boolean
+  pricing_mode: QuoteOptionPricing
+  fixed_price_minor: number
 }
 
 interface PhaseRow {
@@ -112,7 +115,7 @@ interface ImageRow {
 const CHILDREN_SELECT = `
   *,
   quote_line_items ( id, position, title, description, quantity, unit_price_minor, is_optional, option_id ),
-  quote_options ( id, kind, position, title, description, is_selected, is_default ),
+  quote_options ( id, kind, position, title, description, is_selected, is_default, pricing_mode, fixed_price_minor ),
   quote_phases ( id, position, title, description, duration_label, deliverables ),
   quote_references ( id, position, label, url, description ),
   quote_images ( id, position, url, public_id, caption, width, height )
@@ -158,6 +161,14 @@ function toOption(row: OptionRow): QuoteOption {
     description: row.description,
     isSelected: row.is_selected,
     isDefault: row.is_default,
+    pricing: row.pricing_mode,
+    /* bigint arrives as a string from PostgREST once it exceeds the JS safe
+       range, and as a number below it. Coerced here for the same reason
+       `quantity` is: one place, rather than every call site. */
+    fixedPriceMinor:
+      typeof row.fixed_price_minor === 'string'
+        ? Number(row.fixed_price_minor)
+        : row.fixed_price_minor,
   }
 }
 
@@ -655,6 +666,10 @@ async function replaceQuoteOptions(
         description: option.description,
         is_selected: option.isSelected,
         is_default: option.isDefault,
+        pricing_mode: option.pricing,
+        /* Zeroed unless it is actually in use, so a mode switch cannot leave a
+           stale figure behind for someone to read later. */
+        fixed_price_minor: option.pricing === 'fixed' ? option.fixedPriceMinor : 0,
       }))
     )
     .select('id')

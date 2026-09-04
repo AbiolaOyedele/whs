@@ -42,7 +42,7 @@ import {
   tabForPath,
   type FieldErrors,
 } from './field-errors'
-import { formatMoney, optionTotalMinor } from '@/lib/admin/money'
+import { formatMoney, optionPriceMinor } from '@/lib/admin/money'
 import { cn } from '@/lib/utils'
 
 /**
@@ -64,7 +64,18 @@ const OPTION_KINDS = [
   { value: 'package', label: 'Package: client picks one' },
   { value: 'addon', label: 'Add-on: client ticks any' },
 ] as const
-import { CURRENCIES, QUOTE_STATUSES, QUOTE_STATUS_LABELS, type Quote } from '@/types/quote'
+
+const OPTION_PRICING = [
+  { value: 'itemised', label: 'Price each line' },
+  { value: 'fixed', label: 'One price for the whole thing' },
+] as const
+import {
+  CURRENCIES,
+  QUOTE_STATUSES,
+  QUOTE_STATUS_LABELS,
+  type Quote,
+  type QuoteOptionPricing,
+} from '@/types/quote'
 import type { AiModelChoice } from '@/lib/ai/types'
 
 const TABS = [
@@ -106,7 +117,7 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEna
   const optionTotals = useMemo(
     () =>
       new Map(
-        quote.options.map((option) => [option.id, optionTotalMinor(option.id, quote.lineItems)])
+        quote.options.map((option) => [option.id, optionPriceMinor(option, quote.lineItems)])
       ),
     [quote.options, quote.lineItems]
   )
@@ -833,6 +844,44 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEna
                           </div>
 
                           {/*
+                              How this option is priced.
+
+                              Two ways to sell the same package, and which one
+                              is right is a commercial decision, not a technical
+                              one: line by line when the client wants to see
+                              where the money goes, one figure when itemising it
+                              invites a negotiation over each row.
+
+                              Switching modes never touches the line prices, so
+                              moving to one price and back restores the
+                              breakdown rather than zeroing it.
+                            */}
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            <Select
+                              label="Pricing"
+                              value={option.pricing}
+                              options={OPTION_PRICING}
+                              onChange={(pricing) =>
+                                rows.update('options', option.id, {
+                                  pricing: pricing as QuoteOptionPricing,
+                                })
+                              }
+                            />
+                            {option.pricing === 'fixed' && (
+                              <MoneyInput
+                                label={`Price for the whole ${
+                                  option.kind === 'package' ? 'package' : 'add-on'
+                                }`}
+                                valueMinor={option.fixedPriceMinor}
+                                currency={quote.currency}
+                                onChange={(fixedPriceMinor) =>
+                                  rows.update('options', option.id, { fixedPriceMinor })
+                                }
+                              />
+                            )}
+                          </div>
+
+                          {/*
                               The package owns its lines here, rather than the
                               operator adding them to a flat list and then
                               picking this package from a dropdown. Same rows,
@@ -842,10 +891,13 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEna
                           <div className="rounded-2xl border border-border p-4">
                             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                               <div>
-                                <p className="text-base">What's included</p>
+                                <p className="text-base">What&apos;s included</p>
                                 <p className="text-sm text-muted-foreground">
-                                  Charged only while the client has this{' '}
-                                  {option.kind === 'package' ? 'package' : 'add-on'} selected.
+                                  {option.pricing === 'fixed'
+                                    ? 'Listed for the client, with no prices against them. The price above covers all of it.'
+                                    : `Charged only while the client has this ${
+                                        option.kind === 'package' ? 'package' : 'add-on'
+                                      } selected.`}
                                 </p>
                               </div>
                               <Button
@@ -865,6 +917,7 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEna
                               options={quote.options}
                               currency={quote.currency}
                               optionId={option.id}
+                              hidePrices={option.pricing === 'fixed'}
                               fieldErrors={fieldErrors}
                               emptyMessage="Nothing in here yet. Add the work this option covers."
                               onUpdate={(id, patch) => rows.update('lineItems', id, patch)}
@@ -1311,6 +1364,10 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEna
                         // recommend is what a client sees pre-ticked.
                         isSelected: option.isDefault,
                         isDefault: option.isDefault,
+                        pricing: option.fixedPrice > 0 ? ('fixed' as const) : ('itemised' as const),
+                        fixedPriceMinor:
+                          // Major to minor, the same conversion the lines use.
+                          option.fixedPrice > 0 ? Math.round(option.fixedPrice * 100) : 0,
                       })),
                       lineItems: draft.lineItems.map((item, index) => {
                         /* An unknown key falls back to base scope on purpose:

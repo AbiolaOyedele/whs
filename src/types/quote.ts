@@ -57,6 +57,19 @@ export interface QuoteLineItem {
   optionId: string | null
 }
 
+/**
+ * How an option is priced.
+ *
+ *  - `itemised`: the price is the sum of the option's line items.
+ *  - `fixed`: the price is `fixedPriceMinor` and the line items are inclusions,
+ *    listed without money against them.
+ *
+ * One source of truth per option either way. A fixed option ignores its items'
+ * unit prices rather than reconciling against them, so there is never a second
+ * figure to disagree with the first.
+ */
+export type QuoteOptionPricing = 'itemised' | 'fixed'
+
 /** How an option behaves when the client picks. */
 export type QuoteOptionKind =
   /** Mutually exclusive — Essential / Standard / Premium. Exactly one wins. */
@@ -67,9 +80,10 @@ export type QuoteOptionKind =
 /**
  * A choice the client makes on their own quote.
  *
- * Carries a name and an explanation, never a price: the money is in its line
- * items and nowhere else, so the figure the client compares is by construction
- * the figure the invoice will use.
+ * Its price comes from exactly one place, named by `pricing`: either the sum of
+ * its line items, or `fixedPriceMinor`. Never both, and never a reconciliation
+ * between them, so the figure the client compares is by construction the figure
+ * the invoice will use.
  */
 export interface QuoteOption {
   id: string
@@ -80,6 +94,13 @@ export interface QuoteOption {
   isSelected: boolean
   /** Pre-ticked when sent — the one we recommend. A starting point, not a lock. */
   isDefault: boolean
+  pricing: QuoteOptionPricing
+  /**
+   * The whole option's price, in minor units. Read only when `pricing` is
+   * `fixed`; kept at 0 otherwise rather than mirrored from the item sum, so
+   * there is no stale copy to go out of date.
+   */
+  fixedPriceMinor: number
 }
 
 export interface QuotePhase {

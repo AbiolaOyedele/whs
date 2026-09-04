@@ -18,7 +18,7 @@ import Icon from '@/components/ui/Icon.astro'
 import Logo from '@/components/ui/Logo.astro'
 import BentoGallery from '@/components/ui/BentoGallery'
 import { SITE } from '@/config/site'
-import { formatMoney, lineAmount } from '@/lib/admin/money'
+import { formatMoney, lineAmount, optionPriceMinor } from '@/lib/admin/money'
 import type { Quote, QuoteTotals } from '@/types/quote'
 
 interface Props {
@@ -76,6 +76,11 @@ const addons = quote.options.filter((option) => option.kind === 'addon')
 
 const itemsFor = (optionId: string): typeof quote.lineItems =>
   quote.lineItems.filter((item) => item.optionId === optionId)
+
+/* One function for what an option costs, shared with the admin and the invoice,
+   so a package cannot show one figure here and another on the bill. */
+const priceFor = (option: (typeof quote.options)[number]): number =>
+  optionPriceMinor(option, quote.lineItems)
 
 /* The preview pane is a rendering of the document, not a working copy of it —
    clicking a package there would write a selection onto a live client quote. */
@@ -235,13 +240,10 @@ const chooserLocked = !isPreview && selection?.locked === true
                   <span
                     class:list={[
                       'mt-2 font-mono leading-none',
-                      itemsFor(option.id).reduce((sum, item) => sum + lineAmount(item), 0) >=
-                      100_000_000
-                        ? 'text-lg'
-                        : 'text-2xl',
+                      priceFor(option) >= 100_000_000 ? 'text-lg' : 'text-2xl',
                     ]}
                   >
-                    {money(itemsFor(option.id).reduce((sum, item) => sum + lineAmount(item), 0))}
+                    {money(priceFor(option))}
                   </span>
 
                   {option.description && (
@@ -270,13 +272,19 @@ const chooserLocked = !isPreview && selection?.locked === true
                         What&#39;s included
                         <span class="ml-auto font-mono text-sm">{itemsFor(option.id).length}</span>
                       </summary>
+                      {/* A fixed-price package lists what it covers and no
+                          more. Printing the stored unit prices there would show
+                          figures that do not add up to the price above them,
+                          because they are inclusions, not charges. */}
                       <ul class="mt-3 flex flex-col gap-2">
                         {itemsFor(option.id).map((item) => (
                           <li class="flex items-baseline justify-between gap-3 text-base">
                             <span class="min-w-0">{item.title}</span>
-                            <span class="shrink-0 font-mono text-sm text-muted-foreground">
-                              {money(lineAmount(item))}
-                            </span>
+                            {option.pricing === 'itemised' && (
+                              <span class="shrink-0 font-mono text-sm text-muted-foreground">
+                                {money(lineAmount(item))}
+                              </span>
+                            )}
                           </li>
                         ))}
                       </ul>
@@ -343,11 +351,7 @@ const chooserLocked = !isPreview && selection?.locked === true
                     <span class="flex min-w-0 flex-1 flex-col">
                       <span class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                         <span class="font-display text-lg leading-tight">{option.title}</span>
-                        <span class="font-mono text-lg">
-                          {money(
-                            itemsFor(option.id).reduce((sum, item) => sum + lineAmount(item), 0)
-                          )}
-                        </span>
+                        <span class="font-mono text-lg">{money(priceFor(option))}</span>
                       </span>
                       {option.description && (
                         <span class="mt-1 text-base text-muted-foreground">

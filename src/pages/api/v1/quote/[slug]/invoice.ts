@@ -16,7 +16,7 @@ import type { APIRoute } from 'astro'
 import { publicEnv } from '@/config/env'
 import { SITE } from '@/config/site'
 import { AppError, toErrorResponse } from '@/lib/errors'
-import { computeTotals, isCharged, lineAmount } from '@/lib/admin/money'
+import { chargedLines, computeTotals } from '@/lib/admin/money'
 import { getQuoteBySlug } from '@/lib/admin/repositories/quotes'
 import {
   createInvoice,
@@ -78,18 +78,12 @@ export const GET: APIRoute = async ({ cookies, params }) => {
     const kind = 'full' as const
     const amountMinor = totals.totalMinor
 
-    /* The same predicate `computeTotals` used for `amountMinor` above. Filtering
-       on `!isOptional` alone would list every package's lines under a total that
-       only covers the one the client picked. */
-    const lines: InvoiceLine[] = quote.lineItems
-      .filter((item) => isCharged(item, quote.options))
-      .map((item) => ({
-        title: item.title,
-        description: item.description,
-        quantity: item.quantity,
-        unitPriceMinor: item.unitPriceMinor,
-        amountMinor: lineAmount(item),
-      }))
+    /* Built by the same module that produced `amountMinor` above, and tested to
+       sum to it. Doing this here by filtering line items would list every
+       package's lines under a total covering only the one the client picked,
+       and would bill a fixed-price package at its inclusions rather than at its
+       price, which is usually zero. */
+    const lines: InvoiceLine[] = chargedLines(quote.lineItems, quote.options)
 
     /*
      * The invoice is regenerated from the quote on every download.

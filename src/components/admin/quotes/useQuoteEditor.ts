@@ -53,6 +53,10 @@ export const BLANK_OPTION: Omit<QuoteOption, 'id' | 'position'> = {
   description: '',
   isSelected: false,
   isDefault: false,
+  // Itemised by default: it is the behaviour every existing quote already has,
+  // and the one that shows a client what they are paying for line by line.
+  pricing: 'itemised',
+  fixedPriceMinor: 0,
 }
 
 export const BLANK_PHASE: Omit<QuotePhase, 'id' | 'position'> = {

@@ -5,7 +5,7 @@ import { serviceClient } from '@/lib/supabase'
 import { AppError } from '@/lib/errors'
 import { computeTotals } from '@/lib/admin/money'
 import type { Client, ClientWithActivity } from '@/types/client'
-import type { QuoteStatus } from '@/types/quote'
+import type { QuoteOptionPricing, QuoteStatus } from '@/types/quote'
 
 interface Row {
   id: string
@@ -49,7 +49,7 @@ export async function listClients(search?: string): Promise<ClientWithActivity[]
   let query = serviceClient()
     .from('clients')
     .select(
-      `${SELECT}, quotes ( status, currency, discount_minor, tax_rate_bp, deposit_percent, created_at, quote_line_items ( quantity, unit_price_minor, is_optional, option_id ), quote_options ( id, is_selected ) )`
+      `${SELECT}, quotes ( status, currency, discount_minor, tax_rate_bp, deposit_percent, created_at, quote_line_items ( quantity, unit_price_minor, is_optional, option_id ), quote_options ( id, is_selected, pricing_mode, fixed_price_minor ) )`
     )
     .order('updated_at', { ascending: false })
 
@@ -77,7 +77,12 @@ export async function listClients(search?: string): Promise<ClientWithActivity[]
         is_optional: boolean
         option_id: string | null
       }> | null
-      quote_options: Array<{ id: string; is_selected: boolean }> | null
+      quote_options: Array<{
+        id: string
+        is_selected: boolean
+        pricing_mode: QuoteOptionPricing
+        fixed_price_minor: number | string
+      }> | null
     }> | null
   }
 
@@ -102,6 +107,10 @@ export async function listClients(search?: string): Promise<ClientWithActivity[]
         /* Options are joined in for the same reason `computeTotals` demands
            them: without the selection, an accepted quote offering three
            packages would report all three as won revenue. */
+        /* `pricing_mode` and `fixed_price_minor` are not decoration here: a
+           fixed-price package carries the money itself, so omitting them would
+           value every won quote at the sum of its inclusion lines, which is
+           usually zero. */
         options: (quote.quote_options ?? []).map((option) => ({
           id: option.id,
           kind: 'package' as const,
@@ -110,6 +119,11 @@ export async function listClients(search?: string): Promise<ClientWithActivity[]
           description: '',
           isSelected: option.is_selected,
           isDefault: false,
+          pricing: option.pricing_mode,
+          fixedPriceMinor:
+            typeof option.fixed_price_minor === 'string'
+              ? Number(option.fixed_price_minor)
+              : option.fixed_price_minor,
         })),
         discountMinor: quote.discount_minor,
         taxRateBp: quote.tax_rate_bp,

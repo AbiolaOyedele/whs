@@ -72,6 +72,18 @@ export const quoteOptionSchema = z.object({
     .default(''),
   isSelected: z.boolean().default(false),
   isDefault: z.boolean().default(false),
+  /*
+   * Where this option's money lives. `itemised` is the default so an older
+   * client, or a payload written before this field existed, keeps the exact
+   * behaviour it had.
+   */
+  pricing: z.enum(['itemised', 'fixed']).default('itemised'),
+  fixedPriceMinor: z
+    .number()
+    .int('Prices are held in whole pence.')
+    .min(0, 'A price cannot be negative.')
+    .max(1_000_000_000_00, 'That price is too large.')
+    .default(0),
 })
 
 export const phaseSchema = z.object({

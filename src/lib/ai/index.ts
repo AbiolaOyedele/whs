@@ -72,7 +72,8 @@ Packages and add-ons. Use these when the brief calls for tiers or genuinely opti
 - A PACKAGE is one of several mutually exclusive scopes the client picks between (Essential / Standard / Premium, or something specific to the job). Mark ONE as isDefault: the one you recommend.
 - An ADD-ON is scope the client ticks independently (a care plan, an SMS layer). Do not mark add-ons as isDefault unless the brief clearly asks for them.
 - Every line item goes SOMEWHERE. Work included on every version of the quote belongs in BASE SCOPE (optionKey: null). Work that only counts if the client picks a particular package or add-on carries that option's key.
-- The option's price is the sum of its items; do not repeat the total in the option itself. Write a one-sentence description covering what makes it different from the others.
+- By default the option's price is the sum of its items, and you leave fixedPrice at 0. Write a one-sentence description covering what makes it different from the others.
+- If the brief asks for a package sold at ONE price ("a flat 12k", "one figure, don't itemise it"), set that option's fixedPrice to the whole amount in major units. Its line items then become a list of what is included, so give each one a title and description and leave unitPrice at 0. Do not do this unless the brief asks: itemised is the default because it shows the client where the money goes.
 - No packages when the brief is one fixed scope. isOptional (on base-scope items) is for a single menu item, not a whole tier: a tier is a package.
 - Option keys are your own labels ("essential", "care-plan") and must match the key on every line item that belongs to that option. An item pointing at an unknown key falls back to base scope, which is not what you meant.
 
