@@ -11,21 +11,21 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
 import { adminEnv } from '@/config/env'
 import { AppError } from '@/lib/errors'
 import { quoteDraftSchema, type AiClient } from './types'
+import { toProviderError } from './provider-errors'
 
-/*
- * Haiku by default, on the operator's instruction: drafting a quote from a
- * brief is structured extraction and light arithmetic, not hard reasoning, and
- * it is a cost paid on every draft.
+/**
+ * Which model runs is now the operator's choice per draft, made in the editor
+ * and passed in here. It used to be pinned by ANTHROPIC_MODEL, which made
+ * moving between Haiku and Sonnet a redeploy.
  *
- * Overridable with ANTHROPIC_MODEL when a particular engagement is genuinely
- * gnarly and worth a bigger model — `claude-sonnet-5` or `claude-opus-5` drop
- * straight in, no other change needed.
+ * ANTHROPIC_MODEL still overrides the Haiku entry, which is what it overrode
+ * before, so an existing deployment that sets it keeps the behaviour it has.
+ * It does not touch the Sonnet entry: an override that silently pinned both
+ * choices to one model would leave a picker that changes nothing.
  */
-const DEFAULT_MODEL = 'claude-haiku-4-5'
-
-export function claudeClient(): AiClient {
-  const apiKey = adminEnv().ANTHROPIC_API_KEY
-  if (!apiKey) {
+export function claudeClient(model: string): AiClient {
+  const env = adminEnv()
+  if (!env.ANTHROPIC_API_KEY) {
     throw new AppError(
       503,
       'Claude is not connected yet. Add an Anthropic API key, or switch the drafter to Gemini.',
@@ -33,21 +33,29 @@ export function claudeClient(): AiClient {
     )
   }
 
-  const model = adminEnv().ANTHROPIC_MODEL ?? DEFAULT_MODEL
-  const client = new Anthropic({ apiKey })
+  const resolved = model === 'claude-haiku-4-5' ? (env.ANTHROPIC_MODEL ?? model) : model
+  const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY })
 
   return {
     provider: 'claude',
-    model,
+    model: resolved,
 
-    async draftJson(systemPrompt: string, userPrompt: string): Promise<string> {
-      const response = await client.messages.parse({
-        model,
-        max_tokens: 16_000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userPrompt }],
-        output_config: { format: zodOutputFormat(quoteDraftSchema) },
-      })
+    async draftJson(systemPrompt: string, userPrompt: string, signal): Promise<string> {
+      let response
+      try {
+        response = await client.messages.parse(
+          {
+            model: resolved,
+            max_tokens: 16_000,
+            system: systemPrompt,
+            messages: [{ role: 'user', content: userPrompt }],
+            output_config: { format: zodOutputFormat(quoteDraftSchema) },
+          },
+          { signal }
+        )
+      } catch (cause) {
+        throw toProviderError('claude', resolved, cause)
+      }
 
       if (response.stop_reason === 'refusal') {
         throw new AppError(

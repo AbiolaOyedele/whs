@@ -122,7 +122,15 @@ const adminSchema = z.object({
    * as normal and only the "Draft with AI" panel is disabled.
    */
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
-  /** Overrides the Claude model id. Model names move faster than this repo. */
+  /**
+   * Overrides the model id behind the "Claude Haiku 4.5" choice only.
+   *
+   * The operator now picks Haiku or Sonnet per draft in the editor, so this no
+   * longer decides which model runs. It stays because it is what an existing
+   * deployment may already set, and it still overrides the entry it used to
+   * override. It deliberately does not touch the Sonnet choice: pinning both
+   * choices to one model would leave a picker that changes nothing.
+   */
   ANTHROPIC_MODEL: z.string().min(1).optional(),
   GEMINI_API_KEY: z.string().min(1).optional(),
   /** Overrides the Gemini model id. Model names move faster than this repo. */

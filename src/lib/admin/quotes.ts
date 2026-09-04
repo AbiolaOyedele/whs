@@ -4,7 +4,7 @@
  */
 import { AppError } from '@/lib/errors'
 import { STANDARD_PAYMENT_TERMS, STANDARD_TERMS } from '@/config/terms'
-import { draftQuote, type AiProvider, type QuoteDraft } from '@/lib/ai'
+import { draftQuote, type AiModelId, type AiProvider, type QuoteDraft } from '@/lib/ai'
 import { currencyMeta } from './money'
 import {
   decryptPin,
@@ -200,9 +200,15 @@ export async function revealPin(id: string): Promise<string | null> {
 export async function applyDraft(
   quoteId: string,
   brief: string,
-  provider: AiProvider,
+  modelId: AiModelId,
   includeExisting: boolean
-): Promise<{ draft: QuoteDraft; provider: AiProvider; model: string; assumptions: string[] }> {
+): Promise<{
+  draft: QuoteDraft
+  provider: AiProvider
+  model: string
+  label: string
+  assumptions: string[]
+}> {
   const quote = await repo.getQuoteById(quoteId)
   if (!quote) throw new AppError(404, 'That quote no longer exists.', 'QUOTE_NOT_FOUND')
 
@@ -214,13 +220,14 @@ export async function applyDraft(
       brief,
       existing: includeExisting ? summariseForModel(quote) : undefined,
     },
-    provider
+    modelId
   )
 
   return {
     draft: result.draft,
     provider: result.provider,
     model: result.model,
+    label: result.label,
     assumptions: result.draft.assumptions,
   }
 }

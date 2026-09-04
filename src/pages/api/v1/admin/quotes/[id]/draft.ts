@@ -2,7 +2,7 @@
  * Method:   POST
  * Path:     /api/v1/admin/quotes/:id/draft
  * Auth:     admin session cookie
- * Response: 200 { draft, provider, model, assumptions }
+ * Response: 200 { draft, provider, model, label, assumptions }
  *
  * Returns a draft. Does NOT save it — the operator applies it in the editor,
  * field by field or wholesale, and then saves. A model's guess at a price is a
@@ -42,7 +42,7 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
     const result = await applyDraft(
       id,
       parsed.data.brief,
-      parsed.data.provider,
+      parsed.data.model,
       parsed.data.includeExisting
     )
 

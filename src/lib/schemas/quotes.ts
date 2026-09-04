@@ -6,7 +6,7 @@
  * we do not control. Nothing here assumes the client validated first.
  */
 import { z } from 'zod'
-import { AI_PROVIDERS } from '@/lib/ai/types'
+import { AI_MODEL_IDS, DEFAULT_AI_MODEL } from '@/lib/ai/types'
 import { CURRENCIES, QUOTE_STATUSES } from '@/types/quote'
 
 const currencyCodes = CURRENCIES.map((entry) => entry.code) as [string, ...string[]]
@@ -202,7 +202,8 @@ export type SaveQuoteInput = z.infer<typeof saveQuoteSchema>
 export const draftRequestSchema = z.object({
   quoteId: z.uuid(),
   brief: z.string().trim().min(20, 'Tell the drafter a bit more about the project.').max(8000),
-  provider: z.enum(AI_PROVIDERS).default('claude'),
+  /* A model, not a provider: the operator picks Haiku or Sonnet per draft. */
+  model: z.enum(AI_MODEL_IDS).default(DEFAULT_AI_MODEL),
   /** Feed the current quote back in so the model revises rather than restarts. */
   includeExisting: z.boolean().default(true),
 })

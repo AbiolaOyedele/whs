@@ -15,18 +15,7 @@ import { z } from 'zod'
 import { adminEnv } from '@/config/env'
 import { AppError } from '@/lib/errors'
 import { quoteDraftSchema, type AiClient } from './types'
-
-/*
- * Verified against a live key on 2026-09-02: the 2.5 family now returns
- * "no longer available to new users", so a newly-issued key cannot call
- * gemini-2.5-flash or gemini-2.5-pro at all. gemini-3.8-flash is the newest
- * non-preview flash model and answers cleanly.
- *
- * Flash rather than pro deliberately, matching the Claude side: drafting a
- * quote from a brief is structured extraction, not hard reasoning. Override
- * with GEMINI_MODEL if a job needs more.
- */
-const DEFAULT_MODEL = 'gemini-3.8-flash'
+import { toProviderError } from './provider-errors'
 
 /**
  * Keywords Gemini's `responseJsonSchema` accepts.
@@ -75,7 +64,14 @@ function mapValues(value: unknown): unknown {
   )
 }
 
-export function geminiClient(): AiClient {
+/**
+ * The model id comes from the catalogue, with GEMINI_MODEL still overriding it.
+ * That override is worth keeping for this provider specifically: Google's model
+ * names move faster than this codebase will, and the 2.5 family already went
+ * from current to "no longer available to new users" without warning. A stale
+ * default should be an environment change, not a deploy.
+ */
+export function geminiClient(model: string): AiClient {
   const env = adminEnv()
   if (!env.GEMINI_API_KEY) {
     throw new AppError(
@@ -85,23 +81,29 @@ export function geminiClient(): AiClient {
     )
   }
 
-  const model = env.GEMINI_MODEL ?? DEFAULT_MODEL
+  const resolved = env.GEMINI_MODEL ?? model
   const client = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY })
 
   return {
     provider: 'gemini',
-    model,
+    model: resolved,
 
-    async draftJson(systemPrompt: string, userPrompt: string): Promise<string> {
-      const response = await client.models.generateContent({
-        model,
-        contents: userPrompt,
-        config: {
-          systemInstruction: systemPrompt,
-          responseMimeType: 'application/json',
-          responseJsonSchema: toGeminiSchema(z.toJSONSchema(quoteDraftSchema, { io: 'input' })),
-        },
-      })
+    async draftJson(systemPrompt: string, userPrompt: string, signal): Promise<string> {
+      let response
+      try {
+        response = await client.models.generateContent({
+          model: resolved,
+          contents: userPrompt,
+          config: {
+            abortSignal: signal,
+            systemInstruction: systemPrompt,
+            responseMimeType: 'application/json',
+            responseJsonSchema: toGeminiSchema(z.toJSONSchema(quoteDraftSchema, { io: 'input' })),
+          },
+        })
+      } catch (cause) {
+        throw toProviderError('gemini', resolved, cause)
+      }
 
       const text = response.text
       if (!text || text.trim().length === 0) {

@@ -16,24 +16,62 @@
  */
 import { useState } from 'react'
 import { Button, Panel, Select, StatusLine, TextArea } from '../ui'
-import { AI_PROVIDER_LABELS, type AiProvider, type QuoteDraft } from '@/lib/ai/types'
+import {
+  DEFAULT_AI_MODEL,
+  type AiModelChoice,
+  type AiModelId,
+  type QuoteDraft,
+} from '@/lib/ai/types'
+
+/**
+ * Everything the operator has typed or generated here.
+ *
+ * Held by the editor rather than by this panel, because the editor renders one
+ * tab at a time: switching to Scope and back used to unmount the panel and take
+ * a pasted brief, and an unapplied draft, with it. Lifting the state up is the
+ * fix. The editor outlives the tab, so the work does too.
+ */
+export interface AiDraftState {
+  brief: string
+  modelId: AiModelId
+  includeExisting: boolean
+  answers: string
+  result: { draft: QuoteDraft; model: string; label: string } | null
+  error: string | null
+}
+
+export const emptyAiDraftState: AiDraftState = {
+  brief: '',
+  modelId: DEFAULT_AI_MODEL,
+  includeExisting: true,
+  answers: '',
+  result: null,
+  error: null,
+}
 
 interface Props {
   quoteId: string
-  providers: AiProvider[]
+  models: AiModelChoice[]
+  state: AiDraftState
+  onStateChange: (next: AiDraftState) => void
   onApply: (draft: QuoteDraft) => void
 }
 
-export function AiDraftPanel({ quoteId, providers, onApply }: Props) {
-  const [brief, setBrief] = useState('')
-  const [provider, setProvider] = useState<AiProvider>(providers[0] ?? 'claude')
-  const [includeExisting, setIncludeExisting] = useState(true)
+export function AiDraftPanel({ quoteId, models, state, onStateChange, onApply }: Props) {
+  /* `busy` is the one piece that stays local. It describes a request that only
+     exists while this panel is mounted, and a spinner left true by a tab switch
+     would be a lie. */
   const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [result, setResult] = useState<{ draft: QuoteDraft; model: string } | null>(null)
-  const [answers, setAnswers] = useState('')
 
-  if (providers.length === 0) {
+  const patch = (changes: Partial<AiDraftState>) => onStateChange({ ...state, ...changes })
+
+  const { brief, includeExisting, answers, result, error } = state
+  const modelId = models.some((entry) => entry.id === state.modelId)
+    ? state.modelId
+    : (models[0]?.id ?? DEFAULT_AI_MODEL)
+  const selected = models.find((entry) => entry.id === modelId)
+
+  if (models.length === 0) {
     return (
       <Panel title="Draft with AI">
         <p className="text-base text-muted-foreground">
@@ -46,7 +84,7 @@ export function AiDraftPanel({ quoteId, providers, onApply }: Props) {
 
   const generate = async (extraContext = '') => {
     setBusy(true)
-    setError(null)
+    patch({ error: null })
 
     /*
      * Answers are appended to the brief rather than sent as a second turn.
@@ -62,24 +100,28 @@ export function AiDraftPanel({ quoteId, providers, onApply }: Props) {
       const response = await fetch(`/api/v1/admin/quotes/${quoteId}/draft`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ brief: fullBrief, provider, includeExisting }),
+        body: JSON.stringify({ brief: fullBrief, model: modelId, includeExisting }),
       })
 
       const body: unknown = await response.json()
 
       if (!response.ok) {
-        setError(
-          (body as { error?: { message?: string } }).error?.message ??
-            'The drafter could not be reached. Try again.'
-        )
+        patch({
+          error:
+            (body as { error?: { message?: string } }).error?.message ??
+            'The drafter could not be reached. Try again.',
+        })
         return
       }
 
-      const payload = body as { draft: QuoteDraft; model: string }
-      setResult({ draft: payload.draft, model: payload.model })
-      setAnswers('')
+      const payload = body as { draft: QuoteDraft; model: string; label: string }
+      patch({
+        result: { draft: payload.draft, model: payload.model, label: payload.label },
+        answers: '',
+        error: null,
+      })
     } catch {
-      setError('We could not reach the server. Check your connection and try again.')
+      patch({ error: 'We could not reach the server. Check your connection and try again.' })
     } finally {
       setBusy(false)
     }
@@ -101,26 +143,26 @@ export function AiDraftPanel({ quoteId, providers, onApply }: Props) {
             placeholder="Ops team of six spends about two days a week copying order data between a supplier portal and a spreadsheet, then emailing status updates. They want one screen that pulls both together and sends the updates itself. Roughly eight weeks. Our day rate is 650."
             hint="Include anything that affects the price: rates, budget, deadline, how many screens, what already exists."
             value={brief}
-            onChange={setBrief}
+            onChange={(value) => patch({ brief: value })}
           />
 
           <div className="grid gap-5 sm:grid-cols-2">
-            <Select
-              label="Model"
-              value={provider}
-              options={providers.map((entry) => ({
-                value: entry,
-                label: AI_PROVIDER_LABELS[entry],
-              }))}
-              onChange={(value) => setProvider(value as AiProvider)}
-            />
+            <div>
+              <Select
+                label="Model"
+                value={modelId}
+                options={models.map((entry) => ({ value: entry.id, label: entry.label }))}
+                onChange={(value) => patch({ modelId: value as AiModelId })}
+              />
+              {selected && <p className="mt-2 text-sm text-muted-foreground">{selected.blurb}</p>}
+            </div>
 
-            <label className="flex min-h-11 cursor-pointer items-end gap-3 pb-2 text-base">
+            <label className="flex min-h-11 cursor-pointer items-start gap-3 pt-8 text-base sm:items-end sm:pt-0 sm:pb-2">
               <input
                 type="checkbox"
                 checked={includeExisting}
-                onChange={(event) => setIncludeExisting(event.target.checked)}
-                className="mb-1 size-5 shrink-0 accent-[var(--accent)]"
+                onChange={(event) => patch({ includeExisting: event.target.checked })}
+                className="mt-1 size-5 shrink-0 accent-[var(--accent)] sm:mt-0 sm:mb-1"
               />
               Build on what is already in this quote
             </label>
@@ -142,7 +184,7 @@ export function AiDraftPanel({ quoteId, providers, onApply }: Props) {
       {result && (
         <Panel
           title="Proposed draft"
-          description={`From ${result.model}. Nothing is saved until you apply it and save the quote.`}
+          description={`From ${result.label} (${result.model}). Nothing is saved until you apply it and save the quote.`}
         >
           <div className="flex flex-col gap-5">
             <div>
@@ -254,7 +296,7 @@ export function AiDraftPanel({ quoteId, providers, onApply }: Props) {
                   <textarea
                     rows={4}
                     value={answers}
-                    onChange={(event) => setAnswers(event.target.value)}
+                    onChange={(event) => patch({ answers: event.target.value })}
                     placeholder="Day rate is 650. Budget ceiling around 30k. They have a staging environment already."
                     className="w-full rounded-xl border border-border bg-card px-3 py-2 text-base outline-none focus-visible:border-foreground"
                   />

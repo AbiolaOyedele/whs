@@ -26,7 +26,7 @@ import { findDashes } from '@/lib/admin/house-style'
 import { MoneyInput } from './MoneyInput'
 import { LineItemList } from './LineItemList'
 import { QuoteTotals } from './QuoteTotals'
-import { AiDraftPanel } from './AiDraftPanel'
+import { AiDraftPanel, emptyAiDraftState, type AiDraftState } from './AiDraftPanel'
 import { ImageUploader } from './ImageUploader'
 import {
   BLANK_LINE_ITEM,
@@ -65,7 +65,7 @@ const OPTION_KINDS = [
   { value: 'addon', label: 'Add-on: client ticks any' },
 ] as const
 import { CURRENCIES, QUOTE_STATUSES, QUOTE_STATUS_LABELS, type Quote } from '@/types/quote'
-import type { AiProvider } from '@/lib/ai/types'
+import type { AiModelChoice } from '@/lib/ai/types'
 
 const TABS = [
   { id: 'client', label: 'Client' },
@@ -92,11 +92,11 @@ type TabId = (typeof TABS)[number]['id']
 interface Props {
   initialQuote: Quote
   siteUrl: string
-  aiProviders: AiProvider[]
+  aiModels: AiModelChoice[]
   imagesEnabled: boolean
 }
 
-export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, imagesEnabled }: Props) {
+export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEnabled }: Props) {
   const { state, totals, setField, rows, reset, dispatch } = useQuoteEditor(initialQuote)
   const { quote, dirty } = state
 
@@ -128,6 +128,70 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
   const [pendingCurrency, setPendingCurrency] = useState<string | null>(null)
   const [converting, setConverting] = useState(false)
   const [deleting, setDeleting] = useState(false)
+
+  /*
+   * The AI panel's work, held here rather than inside the panel.
+   *
+   * Only one tab is mounted at a time, so a pasted brief and an unapplied draft
+   * died the moment the operator looked at Scope and came back. The editor
+   * outlives the tab, so the work does too.
+   */
+  const [aiDraft, setAiDraft] = useState<AiDraftState>(emptyAiDraftState)
+
+  /*
+   * And survive a reload.
+   *
+   * Lifting the state up handles the tab switch, which is what breaks most
+   * often, but a brief is usually pasted from somewhere else and is the most
+   * expensive thing on the screen to retype. Session storage, not local: it
+   * belongs to this browser tab and goes when the tab does, which is the right
+   * lifetime for a client's brief sitting on an operator's machine.
+   *
+   * The generated draft is deliberately not stored. It is regenerable, it is
+   * large, and a draft reappearing after a reload with no memory of asking for
+   * it invites applying a stale one.
+   *
+   * Read in an effect rather than a lazy initialiser so the first render
+   * matches what the server sent and hydration stays quiet. Every access is
+   * guarded: storage throws outright in some privacy modes.
+   */
+  const aiStorageKey = `wh-ai-draft:${quote.id}`
+
+  useEffect(() => {
+    try {
+      const stored = window.sessionStorage.getItem(aiStorageKey)
+      if (!stored) return
+      const parsed = JSON.parse(stored) as Partial<AiDraftState>
+      setAiDraft((current) => ({
+        ...current,
+        brief: typeof parsed.brief === 'string' ? parsed.brief : current.brief,
+        answers: typeof parsed.answers === 'string' ? parsed.answers : current.answers,
+        modelId: parsed.modelId ?? current.modelId,
+        includeExisting:
+          typeof parsed.includeExisting === 'boolean'
+            ? parsed.includeExisting
+            : current.includeExisting,
+      }))
+    } catch {
+      /* No stored draft, or storage is unavailable. Start empty. */
+    }
+  }, [aiStorageKey])
+
+  useEffect(() => {
+    try {
+      const { brief, answers, modelId, includeExisting } = aiDraft
+      if (!brief && !answers) {
+        window.sessionStorage.removeItem(aiStorageKey)
+        return
+      }
+      window.sessionStorage.setItem(
+        aiStorageKey,
+        JSON.stringify({ brief, answers, modelId, includeExisting })
+      )
+    } catch {
+      /* Storage full or blocked. The in-memory state still works. */
+    }
+  }, [aiDraft, aiStorageKey])
 
   const shareUrl = `${siteUrl.replace(/\/$/, '')}/quote/${quote.slug}`
 
@@ -1209,7 +1273,9 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiProviders, images
             {tab === 'ai' && (
               <AiDraftPanel
                 quoteId={quote.id}
-                providers={aiProviders}
+                models={aiModels}
+                state={aiDraft}
+                onStateChange={setAiDraft}
                 onApply={(draft) => {
                   dispatch({
                     type: 'replaceAll',

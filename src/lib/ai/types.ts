@@ -11,12 +11,68 @@ import { z } from 'zod'
 export const AI_PROVIDERS = ['claude', 'gemini'] as const
 export type AiProvider = (typeof AI_PROVIDERS)[number]
 
-/** Claude unless the operator picks otherwise, per the brief. */
-export const DEFAULT_AI_PROVIDER: AiProvider = 'claude'
-
 export const AI_PROVIDER_LABELS: Record<AiProvider, string> = {
   claude: 'Claude',
   gemini: 'Gemini',
+}
+
+/**
+ * The models the operator can pick between.
+ *
+ * The selectable unit is a MODEL, not a provider. It used to be a provider,
+ * with the actual model pinned by an environment variable, which meant
+ * choosing between Haiku and Sonnet for a particular job took a redeploy. The
+ * choice belongs to whoever is looking at the brief: a two-line job off a known
+ * day rate does not need the same model as a messy brief with no rate in it.
+ *
+ * `blurb` is written for that decision and shows under the picker. It says what
+ * the model is good for, not what it is.
+ */
+export const AI_MODELS = [
+  {
+    id: 'haiku',
+    provider: 'claude',
+    model: 'claude-haiku-4-5',
+    label: 'Claude Haiku 4.5',
+    blurb: 'Fastest and cheapest. Enough for a clear brief with a rate in it.',
+  },
+  {
+    id: 'sonnet',
+    provider: 'claude',
+    model: 'claude-sonnet-5',
+    label: 'Claude Sonnet 5',
+    blurb: 'Slower and dearer. Better at a vague brief, tiers, and judging scope.',
+  },
+  {
+    id: 'gemini',
+    provider: 'gemini',
+    model: 'gemini-3.6-flash',
+    label: 'Gemini 3.6 Flash',
+    blurb: 'A second opinion when a Claude draft reads wrong.',
+  },
+] as const satisfies ReadonlyArray<{
+  id: string
+  provider: AiProvider
+  model: string
+  label: string
+  blurb: string
+}>
+
+export type AiModelId = (typeof AI_MODELS)[number]['id']
+export type AiModelChoice = (typeof AI_MODELS)[number]
+
+export const AI_MODEL_IDS = AI_MODELS.map((entry) => entry.id) as [AiModelId, ...AiModelId[]]
+
+/** Cheapest that does the job, so the expensive choice is always deliberate. */
+export const DEFAULT_AI_MODEL: AiModelId = 'haiku'
+
+export function findModel(id: AiModelId): AiModelChoice {
+  const found = AI_MODELS.find((entry) => entry.id === id)
+  /* Unreachable through the schema, which only accepts catalogue ids. Kept
+     because a bad id must not silently become a different model than asked
+     for: the panel reports which model wrote the draft. */
+  if (!found) throw new Error(`Unknown model id: ${id}`)
+  return found
 }
 
 /**
@@ -131,13 +187,21 @@ export interface DraftContext {
 export interface DraftResult {
   draft: QuoteDraft
   provider: AiProvider
+  /** The model that actually answered, after any environment override. */
   model: string
+  label: string
 }
 
 /** What every provider module must export. */
 export interface AiClient {
   readonly provider: AiProvider
   readonly model: string
-  /** Returns raw JSON text conforming to `quoteDraftSchema`. */
-  draftJson(systemPrompt: string, userPrompt: string): Promise<string>
+  /**
+   * Returns raw JSON text conforming to `quoteDraftSchema`.
+   *
+   * `signal` aborts the call. A provider that never answers would otherwise
+   * hold the request, the serverless function and the operator's screen open
+   * until the platform's own timeout kills it with no message.
+   */
+  draftJson(systemPrompt: string, userPrompt: string, signal: AbortSignal): Promise<string>
 }

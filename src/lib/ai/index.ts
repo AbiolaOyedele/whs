@@ -16,27 +16,31 @@ import { AppError } from '@/lib/errors'
 import { claudeClient } from './claude'
 import { geminiClient } from './gemini'
 import {
-  DEFAULT_AI_PROVIDER,
+  AI_MODELS,
+  DEFAULT_AI_MODEL,
+  findModel,
   quoteDraftSchema,
   type AiClient,
-  type AiProvider,
+  type AiModelChoice,
+  type AiModelId,
   type DraftContext,
   type DraftResult,
 } from './types'
+import { isTransient } from './provider-errors'
 
 export * from './types'
+export { isTransient, toProviderError } from './provider-errors'
 
-/** Which providers currently have a key. Drives the UI's provider picker. */
-export function availableProviders(): AiProvider[] {
+/** Which models are actually callable, given the keys present. Drives the picker. */
+export function availableModels(): AiModelChoice[] {
   const env = adminEnv()
-  const available: AiProvider[] = []
-  if (env.ANTHROPIC_API_KEY) available.push('claude')
-  if (env.GEMINI_API_KEY) available.push('gemini')
-  return available
+  return AI_MODELS.filter((entry) =>
+    entry.provider === 'gemini' ? Boolean(env.GEMINI_API_KEY) : Boolean(env.ANTHROPIC_API_KEY)
+  )
 }
 
-function clientFor(provider: AiProvider): AiClient {
-  return provider === 'gemini' ? geminiClient() : claudeClient()
+function clientFor(choice: AiModelChoice): AiClient {
+  return choice.provider === 'gemini' ? geminiClient(choice.model) : claudeClient(choice.model)
 }
 
 /**
@@ -87,29 +91,52 @@ Two separate lists, and the difference matters:
 Neither list is ever shown to the client.`
 
 /**
- * Retries a provider call once on a transient failure.
+ * How long a single attempt may run before it is abandoned.
  *
- * Observed in testing: Gemini returned 503 "currently experiencing high demand"
- * on one attempt and answered normally seconds later. The Anthropic SDK retries
- * 429s and 5xx itself; the Google one does not, so without this the drafter
- * would surface a temporary capacity blip to the operator as a failed draft.
- *
- * Deliberately one retry rather than a backoff loop: someone is waiting at a
- * screen, and a second failure means something is actually wrong, not busy.
+ * Measured against the live API, a full draft off the real schema takes 6 to 18
+ * seconds. 60 gives a slow one room without leaving the operator watching a
+ * spinner that will never resolve.
  */
-async function withRetry<T>(operation: () => Promise<T>): Promise<T> {
-  try {
-    return await operation()
-  } catch (cause) {
-    const message = cause instanceof Error ? cause.message : String(cause)
-    const transient = /429|503|500|overloaded|high demand|UNAVAILABLE|RESOURCE_EXHAUSTED/i.test(
-      message
-    )
-    if (!transient) throw cause
+const ATTEMPT_TIMEOUT_MS = 60_000
 
-    await new Promise((resolve) => setTimeout(resolve, 1_500))
-    return operation()
+/** Waits before retry N. Short enough that someone can sit through both. */
+const BACKOFF_MS = [1_500, 4_000]
+
+/**
+ * Retries a provider call on a transient failure.
+ *
+ * Gemini answers 503 "currently experiencing high demand" on a meaningful share
+ * of calls: measured 2 failures in 8 against the real schema, across several
+ * models, each recovering on the next attempt seconds later. One retry was not
+ * enough, and when both attempts failed the raw SDK error escaped as a generic
+ * 500, so a temporary capacity blip reached the screen as "Something on our end
+ * stopped this from going through."
+ *
+ * Three attempts with a short backoff, and whatever finally fails is translated
+ * by the provider client into a message naming the model and saying what to do.
+ * Not more than three: someone is waiting at a screen, and a third failure
+ * means the model is genuinely unavailable rather than briefly busy.
+ */
+async function withRetry<T>(operation: (signal: AbortSignal) => Promise<T>): Promise<T> {
+  let lastError: unknown
+
+  for (let attempt = 0; attempt <= BACKOFF_MS.length; attempt += 1) {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), ATTEMPT_TIMEOUT_MS)
+    try {
+      return await operation(controller.signal)
+    } catch (cause) {
+      lastError = cause
+      if (!isTransient(cause) || attempt === BACKOFF_MS.length) throw cause
+      await new Promise((resolve) => setTimeout(resolve, BACKOFF_MS[attempt]))
+    } finally {
+      clearTimeout(timer)
+    }
   }
+
+  /* Unreachable: the loop either returns or throws. Present so the function has
+     a definite return type without a non-null assertion. */
+  throw lastError
 }
 
 function buildUserPrompt(context: DraftContext): string {
@@ -144,7 +171,7 @@ function buildUserPrompt(context: DraftContext): string {
  */
 export async function draftQuote(
   context: DraftContext,
-  provider: AiProvider = DEFAULT_AI_PROVIDER
+  modelId: AiModelId = DEFAULT_AI_MODEL
 ): Promise<DraftResult> {
   if (context.brief.trim().length < 20) {
     throw new AppError(
@@ -154,8 +181,11 @@ export async function draftQuote(
     )
   }
 
-  const client = clientFor(provider)
-  const raw = await withRetry(() => client.draftJson(SYSTEM_PROMPT, buildUserPrompt(context)))
+  const choice = findModel(modelId)
+  const client = clientFor(choice)
+  const raw = await withRetry((signal) =>
+    client.draftJson(SYSTEM_PROMPT, buildUserPrompt(context), signal)
+  )
 
   let parsedJson: unknown
   try {
@@ -179,5 +209,10 @@ export async function draftQuote(
     )
   }
 
-  return { draft: result.data, provider: client.provider, model: client.model }
+  return {
+    draft: result.data,
+    provider: client.provider,
+    model: client.model,
+    label: choice.label,
+  }
 }
