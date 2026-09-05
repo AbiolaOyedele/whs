@@ -20,7 +20,12 @@
 import type { APIRoute } from 'astro'
 import { publicEnv } from '@/config/env'
 import { AppError, toErrorResponse, toSuccessResponse } from '@/lib/errors'
-import { getQuoteBySlug, setClientEmailIfEmpty } from '@/lib/admin/repositories/quotes'
+import {
+  getQuoteBySlug,
+  getQuoteClientId,
+  setClientEmailIfEmpty,
+} from '@/lib/admin/repositories/quotes'
+import { setClientEmailIfEmpty as setClientRecordEmail } from '@/lib/admin/repositories/clients'
 import { hasQuoteAccess } from '@/lib/admin/quote-session'
 import { sendNotification } from '@/lib/resend'
 import { clientEmailSchema } from '@/lib/schemas/quotes'
@@ -67,6 +72,18 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
     if (!saved) {
       return toSuccessResponse('We already have an email address for this quote.')
     }
+
+    /*
+     * And onto the client record, if it has no address of its own.
+     *
+     * Without this the address is on the quote while the Clients page beside it
+     * still reads blank, which is exactly what "the email did not save" looks
+     * like. Best effort: it returns false rather than throwing if another
+     * record already holds the address, and a payment must not fail over a
+     * merge somebody needs to do by hand.
+     */
+    const clientId = await getQuoteClientId(quote.id)
+    if (clientId) await setClientRecordEmail(clientId, parsed.data.email)
 
     /*
      * Best effort, and deliberately after the write.

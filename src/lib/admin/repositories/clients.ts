@@ -217,6 +217,39 @@ export async function updateClient(id: string, input: ClientInput): Promise<void
   }
 }
 
+/**
+ * Fills in a client record's email when it has none.
+ *
+ * Used when a client supplies their address on their own quote. Without this
+ * the address lands on the quote and the client record beside it still reads
+ * blank, which is what "the email did not save" looks like from the Clients
+ * page even though it did.
+ *
+ * Set-once, like the quote's own column, and guarded in the WHERE clause. Best
+ * effort by design: it returns false rather than throwing when the address
+ * already belongs to another record, because this runs inside a client's
+ * payment and must never be the thing that stops it.
+ */
+export async function setClientEmailIfEmpty(clientId: string, email: string): Promise<boolean> {
+  const normalised = normaliseEmail(email)
+  if (!normalised) return false
+
+  const { data, error } = await serviceClient()
+    .from('clients')
+    .update({ email: normalised })
+    .eq('id', clientId)
+    .is('email', null)
+    .select('id')
+
+  /* A unique-violation means another record already holds this address, which
+     is a merge for a person to do, not something to fail a payment over. */
+  if (error) {
+    console.error('[clients] could not fill in email', { clientId, code: error.code })
+    return false
+  }
+  return (data as Array<{ id: string }> | null)?.length === 1
+}
+
 export async function deleteClient(id: string): Promise<void> {
   // Quotes survive: `client_id` is ON DELETE SET NULL and each quote keeps its
   // own copy of the name it was sent under.
@@ -225,15 +258,28 @@ export async function deleteClient(id: string): Promise<void> {
 }
 
 /**
- * Finds a client by email, or creates one.
+ * Finds a client, or creates one.
  *
  * Called whenever a quote is created or its client details are saved, so the
  * client list stays current without anyone maintaining it by hand — which is
  * the only way a list like this stays accurate.
  *
- * Matching is by email only. Matching on name would merge two different people
- * called James at the same company, and that is a worse failure than a
- * duplicate row someone can merge later.
+ * Matching is by email FIRST, because an address identifies a person and a name
+ * does not. Two different people called James at the same company must not be
+ * merged into one record; that is a worse failure than a duplicate somebody can
+ * tidy up.
+ *
+ * But a quote without an email used to skip matching altogether and create a
+ * row every single time it was saved. Nine rows for one client, eight of them
+ * holding no quotes, because the tenth save had repointed the quote at the
+ * newest. "A duplicate row someone can merge later" was the accepted trade;
+ * a new row per keystroke of Save was not.
+ *
+ * So when there is no email, fall back to an exact match on name AND company,
+ * restricted to records that have no email of their own. That cannot merge a
+ * James who has an address with a James who does not, and it cannot silently
+ * absorb a curated record: a client row with an email is only ever reached by
+ * matching that email.
  */
 export async function findOrCreateClient(
   input: ClientInput,
@@ -241,6 +287,34 @@ export async function findOrCreateClient(
 ): Promise<Client | null> {
   const email = normaliseEmail(input.email)
   if (!input.name.trim()) return null
+
+  if (!email) {
+    const name = input.name.trim()
+    const company = input.company?.trim() ?? null
+
+    let query = serviceClient().from('clients').select(SELECT).is('email', null).eq('name', name)
+    query = company ? query.eq('company', company) : query.is('company', null)
+
+    const { data, error } = await query.limit(1)
+    if (error) fail('LOOKUP', error)
+
+    const match = (data as Row[] | null)?.[0]
+    if (match) {
+      const existing = toClient(match)
+      /* Top up the blanks the quote can fill, same as the email path. */
+      const patch: ClientInput = {
+        name: existing.name,
+        company: existing.company ?? company,
+        email: existing.email,
+        phone: existing.phone ?? input.phone ?? null,
+        role: existing.role ?? input.role ?? null,
+        website: existing.website,
+        notes: existing.notes,
+      }
+      await updateClient(existing.id, patch)
+      return { ...existing, ...patch } as Client
+    }
+  }
 
   if (email) {
     const { data, error } = await serviceClient()

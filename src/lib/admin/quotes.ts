@@ -111,18 +111,33 @@ export async function saveQuote(id: string, input: SaveQuoteInput, userId: strin
   const currentPin = slugChanged ? await revealPin(id) : null
 
   /*
+   * An address already on the quote is never cleared by a save.
+   *
+   * A client can now add their own email from the payment dialog. If the editor
+   * was open before they did, its copy of the field is empty, and saving would
+   * write that emptiness back over the address they just gave us: silent, and
+   * discovered only when a receipt has nowhere to go.
+   *
+   * So an empty incoming value means "unchanged", not "delete". Correcting an
+   * address still works, because typing a different one is not empty. The only
+   * thing this forbids is emptying the field, which is not a thing anyone needs
+   * to do: an address is how a paying client is reachable.
+   */
+  const clientEmail = input.clientEmail ?? existing.clientEmail
+
+  /*
    * Every save reconciles the client list.
    *
    * This is what makes "add a client while writing a quote and it appears under
-   * Clients" true without anyone maintaining two places. Matching is by email,
-   * so filling one in on an existing quote links it to the right record rather
-   * than creating a second.
+   * Clients" true without anyone maintaining two places. Matching is by email
+   * where there is one, so filling one in on an existing quote links it to the
+   * right record rather than creating a second.
    */
   const client = await findOrCreateClient(
     {
       name: input.clientName,
       company: input.clientCompany,
-      email: input.clientEmail,
+      email: clientEmail,
       role: input.clientRole,
     },
     userId
@@ -135,7 +150,7 @@ export async function saveQuote(id: string, input: SaveQuoteInput, userId: strin
     status: input.status,
     clientName: input.clientName,
     clientCompany: input.clientCompany,
-    clientEmail: input.clientEmail,
+    clientEmail,
     clientRole: input.clientRole,
     projectTitle: input.projectTitle,
     projectSummary: input.projectSummary,

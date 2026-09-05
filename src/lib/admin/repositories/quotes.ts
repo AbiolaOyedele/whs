@@ -760,6 +760,24 @@ export async function markQuoteViewed(quoteId: string, currentStatus: QuoteStatu
 
 /** Records the client's decision from the quote page. */
 /**
+ * The client record a quote is linked to, if any.
+ *
+ * Its own query rather than a field on `Quote`, deliberately: `ClientQuote` is
+ * derived from `Quote` by omission, so anything added there ships to the
+ * client's browser. An internal record id has no business on a public page.
+ */
+export async function getQuoteClientId(quoteId: string): Promise<string | null> {
+  const { data, error } = await serviceClient()
+    .from('quotes')
+    .select('client_id')
+    .eq('id', quoteId)
+    .maybeSingle()
+
+  if (error) fail('CLIENT_LINK', error)
+  return (data as { client_id: string | null } | null)?.client_id ?? null
+}
+
+/**
  * Records the email a client supplied on their own quote.
  *
  * Set-once, enforced in the WHERE clause rather than by reading first and then

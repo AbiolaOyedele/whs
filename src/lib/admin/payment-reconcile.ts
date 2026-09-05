@@ -71,7 +71,21 @@ export async function reconcilePayment(payment: QuotePayment): Promise<Reconcile
     return { outcome: 'unpaid', verifiedStatus: verified.status }
   }
 
-  if (verified.amountMinor !== payment.amountMinor || verified.currency !== payment.currency) {
+  /*
+   * AT LEAST what we asked for, not exactly.
+   *
+   * Paystack can be told to pass its transaction fee to the customer, and this
+   * account is: a 100,000 kobo deposit was charged at 101,523. Exact equality
+   * then reads a real, completed payment as a mismatch and leaves the row
+   * pending forever, which is how a client paid and nothing anywhere recorded
+   * it: not the quote, not the invoice, not the ledger.
+   *
+   * Under-payment is still refused, which is the case this guard was written
+   * for. Over-payment cannot hurt us and is not something a client can arrange:
+   * the figure is fixed when the transaction is initialised, and the reference
+   * is ours.
+   */
+  if (verified.currency !== payment.currency || verified.amountMinor < payment.amountMinor) {
     console.error('[paystack] amount mismatch', {
       reference: payment.reference,
       expected: `${payment.amountMinor} ${payment.currency}`,
@@ -91,7 +105,13 @@ export async function reconcilePayment(payment: QuotePayment): Promise<Reconcile
   // Lost the race with another surface doing the same sweep. It notified.
   if (!settled) return { outcome: 'already-settled', verifiedStatus: 'paid' }
 
-  await notifyPaid(payment)
+  /*
+   * The stored amount is unchanged, deliberately. What the client owes against
+   * the quote is our figure; the surcharge is Paystack's fee, collected on top
+   * and never ours. Crediting the gross would tell the quote more had been paid
+   * off it than actually was.
+   */
+  await notifyPaid(payment, verified.amountMinor)
   return { outcome: 'settled', verifiedStatus: 'paid' }
 }
 
@@ -140,14 +160,30 @@ export async function sweepStalePayments(): Promise<number> {
  * Never allowed to throw: the payment is already recorded, and a mail failure
  * must not turn a settled payment into an error response.
  */
-async function notifyPaid(payment: QuotePayment): Promise<void> {
+async function notifyPaid(payment: QuotePayment, chargedMinor?: number): Promise<void> {
   try {
     const quote = await getQuoteById(payment.quoteId)
+
+    /* Only when the card was charged more than the quote asked for, which
+       happens when Paystack's fee is passed to the customer. Saying so here
+       stops the figures reading as a discrepancy when they are reconciled
+       against a bank statement later. */
+    const surcharge =
+      chargedMinor !== undefined && chargedMinor > payment.amountMinor
+        ? chargedMinor - payment.amountMinor
+        : 0
+
     await sendNotification({
       subject: `Payment received: ${quote?.clientName ?? 'a client'}, ${formatMoney(payment.amountMinor, payment.currency)}`,
       text: [
         `${quote?.clientName ?? 'A client'} paid the ${payment.kind}.`,
-        `Amount: ${formatMoney(payment.amountMinor, payment.currency)}`,
+        `Amount credited: ${formatMoney(payment.amountMinor, payment.currency)}`,
+        ...(surcharge > 0
+          ? [
+              `Card charged: ${formatMoney(chargedMinor ?? 0, payment.currency)}`,
+              `Paystack fee paid by the client: ${formatMoney(surcharge, payment.currency)}`,
+            ]
+          : []),
         `Project: ${quote?.projectTitle ?? 'not recorded'}`,
         `Reference: ${payment.reference}`,
       ].join('\n'),
