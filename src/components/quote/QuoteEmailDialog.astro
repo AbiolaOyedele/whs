@@ -1,0 +1,69 @@
+---
+/**
+ * Asking a client for their email, at the moment it is actually needed.
+ *
+ * Payment used to stop at "we need an email address on this quote, please get
+ * in touch", which asks somebody holding their card to go and send an email
+ * instead. The address is the only thing missing and they are the person who
+ * has it, so ask them here and say why.
+ *
+ * A real `<dialog>`: focus trapping, Escape and an inert background come free,
+ * and hand-rolling those is how a modal ends up trapping a keyboard user.
+ * Styled entirely here, so it is ours rather than the browser's.
+ *
+ * Rendered only when there is no address on file. A dialog in the DOM that can
+ * never open is a thing to trip over later.
+ *
+ * The script that drives it lives with the pay button in QuoteDocument, because
+ * the two are one flow: ask, save, then continue to checkout.
+ */
+---
+
+<dialog
+  data-email-dialog
+  aria-labelledby="email-dialog-title"
+  class="m-auto w-[min(28rem,calc(100vw-2rem))] rounded-3xl border border-border bg-card p-6 text-foreground backdrop:bg-foreground/40 backdrop:backdrop-blur-sm md:p-8"
+>
+  <h2 id="email-dialog-title" class="font-display text-2xl leading-tight">
+    Where should we send the receipt?
+  </h2>
+  <p class="mt-3 text-base text-muted-foreground">
+    Paystack needs an email address to take the payment. We use it for your receipt, the invoice,
+    and anything we need to ask you about this project. Nothing else, and no marketing.
+  </p>
+
+  <form data-email-form class="mt-5 flex flex-col gap-3" novalidate>
+    <label class="flex flex-col gap-1.5">
+      <span class="text-sm text-muted-foreground">Your email address</span>
+      <input
+        type="email"
+        name="email"
+        required
+        autocomplete="email"
+        inputmode="email"
+        placeholder="you@company.com"
+        data-email-input
+        class="min-h-12 w-full rounded-xl border border-border bg-background px-4 text-base outline-none focus-visible:border-foreground"
+      />
+    </label>
+
+    <p data-email-error class="hidden text-sm text-destructive" role="alert"></p>
+
+    <div class="mt-2 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+      <button
+        type="button"
+        data-email-cancel
+        class="min-h-12 rounded-full border border-border px-6 text-base transition-colors hover:bg-muted"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        data-email-submit
+        class="min-h-12 rounded-full bg-accent px-6 text-base text-accent-foreground transition-colors hover:bg-foreground hover:text-background disabled:opacity-60"
+      >
+        Save and continue
+      </button>
+    </div>
+  </form>
+</dialog>

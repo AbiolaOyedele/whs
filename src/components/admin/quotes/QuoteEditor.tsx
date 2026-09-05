@@ -89,6 +89,7 @@ const TABS = [
   { id: 'sharing', label: 'Sharing' },
   { id: 'ai', label: 'Draft with AI' },
   { id: 'preview', label: 'Preview' },
+  { id: 'invoice', label: 'Invoice' },
 ] as const
 
 /** Widths the preview pane can be pinned to. Mobile first, as everywhere. */
@@ -1261,6 +1262,64 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEna
                   </Button>
                 </Panel>
               </>
+            )}
+
+            {tab === 'invoice' && (
+              <Panel
+                title="Invoice preview"
+                description="The document this quote would produce. Nothing is issued: no number is taken and no invoice is created."
+                action={
+                  <a
+                    href={`/api/v1/admin/quotes/${quote.id}/invoice-preview?v=${previewKey}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex min-h-11 items-center rounded-full border border-border px-5 text-base transition-colors hover:border-foreground"
+                  >
+                    Open full size
+                  </a>
+                }
+              >
+                {dirty && (
+                  <p className="mb-4 rounded-xl border border-accent bg-accent/10 px-4 py-3 text-base">
+                    You have unsaved changes. This shows the last saved version. Save to see them
+                    here.
+                  </p>
+                )}
+
+                {/*
+                  Where the number goes, this reads PREVIEW rather than
+                  WHS-2026-0007. A preview carrying a plausible number is one
+                  forward-of-an-email away from a client holding a document
+                  whose number belongs to nothing.
+                */}
+                <p className="mb-4 text-base text-muted-foreground">
+                  The real invoice takes its number when the client downloads it, after they have
+                  accepted. This one is numbered PREVIEW and is not recorded anywhere.
+                </p>
+
+                <object
+                  key={previewKey}
+                  data={`/api/v1/admin/quotes/${quote.id}/invoice-preview?v=${previewKey}`}
+                  type="application/pdf"
+                  title="Invoice preview"
+                  className="h-[70svh] w-full rounded-xl border border-border bg-background"
+                >
+                  {/* iOS Safari and most mobile browsers will not render a PDF
+                      inline. They get the link instead of an empty grey box. */}
+                  <p className="p-4 text-base text-muted-foreground">
+                    Your browser cannot show a PDF here.{' '}
+                    <a
+                      href={`/api/v1/admin/quotes/${quote.id}/invoice-preview?v=${previewKey}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline underline-offset-4"
+                    >
+                      Open it in a new tab
+                    </a>
+                    .
+                  </p>
+                </object>
+              </Panel>
             )}
 
             {tab === 'preview' && (

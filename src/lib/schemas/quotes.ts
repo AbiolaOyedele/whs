@@ -220,6 +220,27 @@ export const draftRequestSchema = z.object({
   includeExisting: z.boolean().default(true),
 })
 
+/**
+ * The email a client adds to their own quote, from the payment dialog.
+ *
+ * Lives here rather than in the route so the test exercises the same object the
+ * endpoint does. A copy in the test file would pass forever while the endpoint
+ * drifted underneath it.
+ */
+export const clientEmailSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Please enter your email address.')
+    /* 254 is what the column holds. Longer fails here with a sentence rather
+       than at the database with something nobody can act on. */
+    .max(254, 'That email address is too long.')
+    .refine(
+      (value) => z.email().safeParse(value).success,
+      'That email address does not look right.'
+    ),
+})
+
 /** The client-facing PIN gate. */
 export const quoteAccessSchema = z.object({
   pin: z

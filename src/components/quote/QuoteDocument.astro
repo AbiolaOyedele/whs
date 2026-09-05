@@ -19,6 +19,7 @@ import Logo from '@/components/ui/Logo.astro'
 import BentoGallery from '@/components/ui/BentoGallery'
 import { SITE } from '@/config/site'
 import { formatMoney, lineAmount, optionPriceMinor } from '@/lib/admin/money'
+import QuoteEmailDialog from './QuoteEmailDialog.astro'
 import type { Quote, QuoteTotals } from '@/types/quote'
 
 interface Props {
@@ -698,6 +699,7 @@ const chooserLocked = !isPreview && selection?.locked === true
                 type="button"
                 data-pay-button
                 data-slug={quote.slug}
+                data-needs-email={quote.clientEmail ? undefined : 'true'}
                 disabled={isPreview}
                 class="mt-2 flex min-h-12 w-full items-center justify-center rounded-full bg-accent px-6 text-base whitespace-nowrap text-accent-foreground transition-colors hover:bg-foreground hover:text-background disabled:opacity-60"
               >
@@ -800,6 +802,14 @@ const chooserLocked = !isPreview && selection?.locked === true
 </main>
 
 {
+  /*  Asking for an email, at the moment it is actually needed. Only when there
+  is none on file and a payment is actually possible: nothing to ask for
+  otherwise. The script that drives it sits with the pay button below, because
+  the two are one flow.*/
+}
+{payment?.enabled && !quote.clientEmail && !isPreview && <QuoteEmailDialog />}
+
+{
   /*  The only JavaScript on this page besides the gallery island.
 
   Deliberately not a framework component: it is one fetch and one redirect, and
@@ -808,17 +818,131 @@ const chooserLocked = !isPreview && selection?.locked === true
   button.*/
 }
 <script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-email-dialog]')
+  const emailForm = document.querySelector<HTMLFormElement>('[data-email-form]')
+  const emailInput = document.querySelector<HTMLInputElement>('[data-email-input]')
+  const emailError = document.querySelector<HTMLElement>('[data-email-error]')
+  const emailSubmit = document.querySelector<HTMLButtonElement>('[data-email-submit]')
+
+  /*
+   * Resolved when the client has given us an address, rejected if they close
+   * the dialog. Lets the pay handler read as one straight line rather than
+   * splitting into a callback that has to remember where it was going.
+   */
+  let pending: { resolve: () => void; reject: () => void } | null = null
+
+  const askForEmail = (slug: string): Promise<void> =>
+    new Promise((resolve, reject) => {
+      if (!dialog) {
+        /* No dialog on the page. Fall through to the server, which still
+           refuses the payment with an explanation. */
+        resolve()
+        return
+      }
+      pending = { resolve, reject }
+      dialog.dataset['slug'] = slug
+      emailError?.classList.add('hidden')
+      dialog.showModal()
+      emailInput?.focus()
+    })
+
+  /* Escape and the backdrop both fire `close`, so the cancel path lives here
+     once rather than on each way out. */
+  dialog?.addEventListener('close', () => {
+    pending?.reject()
+    pending = null
+  })
+
+  document
+    .querySelector<HTMLButtonElement>('[data-email-cancel]')
+    ?.addEventListener('click', () => {
+      dialog?.close()
+    })
+
+  emailForm?.addEventListener('submit', async (event) => {
+    event.preventDefault()
+    if (!emailInput || !emailSubmit || !dialog) return
+
+    const email = emailInput.value.trim()
+    if (!email) {
+      if (emailError) {
+        emailError.textContent = 'Please enter your email address.'
+        emailError.classList.remove('hidden')
+      }
+      emailInput.focus()
+      return
+    }
+
+    const original = emailSubmit.textContent
+    emailSubmit.disabled = true
+    emailSubmit.textContent = 'Saving…'
+    emailError?.classList.add('hidden')
+
+    try {
+      const response = await fetch(`/api/v1/quote/${dialog.dataset['slug']}/email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const body = await response.json()
+
+      if (!response.ok) {
+        if (emailError) {
+          emailError.textContent =
+            body?.error?.message ?? 'We could not save that. Please try again.'
+          emailError.classList.remove('hidden')
+        }
+        emailInput.focus()
+        return
+      }
+
+      /* Resolve BEFORE closing: `close` rejects whatever is pending, and the
+         order here is the difference between continuing to checkout and
+         silently stopping. */
+      const resolve = pending?.resolve
+      pending = null
+      dialog.close()
+      resolve?.()
+    } catch {
+      if (emailError) {
+        emailError.textContent = 'We could not reach the server. Please try again.'
+        emailError.classList.remove('hidden')
+      }
+    } finally {
+      emailSubmit.disabled = false
+      emailSubmit.textContent = original
+    }
+  })
+
   document.querySelectorAll<HTMLButtonElement>('[data-pay-button]').forEach((button) => {
     const error = document.querySelector<HTMLElement>('[data-pay-error]')
 
     button.addEventListener('click', async () => {
       const original = button.textContent
-      button.disabled = true
-      button.textContent = 'Taking you to checkout…'
+      const slug = button.dataset['slug'] ?? ''
       error?.classList.add('hidden')
 
+      /*
+       * Ask first, rather than letting the server refuse and showing the
+       * refusal. The page already knows whether an address is on file.
+       */
+      if (button.dataset['needsEmail'] === 'true') {
+        try {
+          await askForEmail(slug)
+        } catch {
+          /* They closed the dialog. No error: not answering is a choice, and
+             the button is still there when they change their mind. */
+          return
+        }
+        /* Asked and answered. Do not ask again on a second click. */
+        delete button.dataset['needsEmail']
+      }
+
+      button.disabled = true
+      button.textContent = 'Taking you to checkout…'
+
       try {
-        const response = await fetch(`/api/v1/quote/${button.dataset['slug']}/pay`, {
+        const response = await fetch(`/api/v1/quote/${slug}/pay`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: '{}',

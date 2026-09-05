@@ -759,6 +759,31 @@ export async function markQuoteViewed(quoteId: string, currentStatus: QuoteStatu
 }
 
 /** Records the client's decision from the quote page. */
+/**
+ * Records the email a client supplied on their own quote.
+ *
+ * Set-once, enforced in the WHERE clause rather than by reading first and then
+ * writing. Anyone holding the access code can call this, so an unconditional
+ * update would let a second person with the link redirect the payment receipt
+ * and every future message to an address of their choosing. `is('client_email',
+ * null)` makes that a no-op at the database rather than a race between a check
+ * and a write.
+ *
+ * Returns whether the write landed, so the caller can tell "saved" apart from
+ * "someone got there first" without guessing.
+ */
+export async function setClientEmailIfEmpty(quoteId: string, email: string): Promise<boolean> {
+  const { data, error } = await serviceClient()
+    .from('quotes')
+    .update({ client_email: email })
+    .eq('id', quoteId)
+    .is('client_email', null)
+    .select('id')
+
+  if (error) fail('CLIENT_EMAIL', error)
+  return (data as Array<{ id: string }> | null)?.length === 1
+}
+
 export async function recordQuoteDecision(
   quoteId: string,
   decision: 'accepted' | 'declined',
