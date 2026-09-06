@@ -25,7 +25,14 @@ import { SITE } from '@/config/site'
 interface Props {
   title: string
   /** Nav item to mark current. */
-  section?: 'overview' | 'website' | 'analytics' | 'quotes' | 'clients' | 'invoices'
+  section?:
+    | 'overview'
+    | 'website'
+    | 'analytics'
+    | 'quotes'
+    | 'clients'
+    | 'invoices'
+    | 'rayo'
   /** Sign-in and setup render without the nav rail. */
   chrome?: boolean
   email?: string | undefined
@@ -40,6 +47,9 @@ const NAV = [
   { id: 'quotes', label: 'Quotes', href: '/admin/quotes' },
   { id: 'clients', label: 'Clients', href: '/admin/clients' },
   { id: 'invoices', label: 'Invoices', href: '/admin/invoices' },
+  /* Rayo is a separate product on the same infra. It sits under the studio's
+     admin rather than in its own dashboard so anyone who runs one runs both. */
+  { id: 'rayo', label: 'Rayo', href: '/admin/rayo' },
 ] as const
 ---
 
