@@ -74,6 +74,21 @@ import Icon from '@/components/ui/Icon.astro'
   />
 
   {
+    quote.decisionNote && (
+      <section class="mt-10 rounded-3xl border border-border bg-card p-5 md:p-6">
+        <div class="mb-3 flex flex-wrap items-baseline justify-between gap-3">
+          <h2 class="font-display text-xl">From the client</h2>
+          <span class="text-sm text-muted-foreground">
+            Left when they {quote.status === 'accepted' ? 'accepted' : 'declined'}
+            {quote.decidedAt && ` · ${eventFormat.format(new Date(quote.decidedAt))}`}
+          </span>
+        </div>
+        <p class="text-base whitespace-pre-wrap">{quote.decisionNote}</p>
+      </section>
+    )
+  }
+
+  {
     activity.length > 0 && (
       <section class="mt-10 rounded-3xl border border-border bg-card p-5 md:p-6">
         <h2 class="mb-4 font-display text-xl">Activity</h2>

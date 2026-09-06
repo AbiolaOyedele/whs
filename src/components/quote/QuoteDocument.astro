@@ -90,9 +90,9 @@ const chooserLocked = !isPreview && selection?.locked === true
 ---
 
 <header
-  class="rounded-b-section bg-surface-dark px-5 pt-10 pb-12 text-surface-dark-foreground lg:px-10 lg:pt-14 lg:pb-16"
+  class="rounded-b-section bg-surface-dark px-5 pt-10 pb-12 text-surface-dark-foreground lg:pt-14 lg:pb-16"
 >
-  <div class="mx-auto max-w-6xl">
+  <div class="mx-auto max-w-[90rem]">
     <Logo variant="mark" class="mb-10 h-7 w-auto" label={SITE.name} />
 
     <p class="mb-3 text-base text-white/60">
@@ -114,8 +114,8 @@ const chooserLocked = !isPreview && selection?.locked === true
   Below lg it collapses to one column with the summary near the top, because on
   a phone a pinned panel is just a thing covering the document.*/
 }
-<main class="mx-auto max-w-6xl px-5 py-10 lg:px-10 lg:py-16">
-  <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-12">
+<main class="mx-auto max-w-[90rem] px-5 py-10 lg:py-16">
+  <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start lg:gap-12">
     <div class="min-w-0 lg:col-start-1 lg:row-start-1">
       {
         expired && !decided && (
@@ -715,8 +715,16 @@ const chooserLocked = !isPreview && selection?.locked === true
       </div>
     </aside>
 
-    {/* Full width and last on both layouts: the ask comes after the price.*/}
-    <div class="min-w-0 lg:col-span-2">
+  </div>
+
+  {
+    /*  Outside the grid on purpose: keeping it as a col-span-2 row-2 child made
+    the sticky aside above stay pinned into this section on tall pages, so the
+    price card overlapped the decision box while the client scrolled past. As a
+    sibling of the grid it comes after the aside's sticky boundary — no overlap,
+    same visual order.*/
+  }
+  <div class="mt-10 min-w-0 lg:mt-12">
       <section
         id="decision"
         class="rounded-section bg-surface-dark p-6 text-surface-dark-foreground lg:p-10"
@@ -798,7 +806,6 @@ const chooserLocked = !isPreview && selection?.locked === true
         <Logo variant="mark" class="h-5 w-auto opacity-60" label={SITE.name} />
       </footer>
     </div>
-  </div>
 </main>
 
 {
