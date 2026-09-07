@@ -151,6 +151,14 @@ const services = defineCollection({
     pricingNote: z.string().optional(),
     /** "How to choose a partner" advice section. */
     choosingAPartner: z.array(numberedItemSchema).default([]),
+    /**
+     * What ships with every build in this service, as a flat list of short
+     * lines. Rendered as a card alongside the main narrative — a plain
+     * inventory the client can scan without reading a paragraph. Left
+     * empty (the default) and the card does not render, so a service
+     * without a standard inventory shows nothing rather than an empty box.
+     */
+    shipsWith: z.array(z.string().min(1)).default([]),
     /** House opinion section. */
     houseView: z.string().optional(),
     testimonial: testimonialSchema.optional(),

@@ -15,6 +15,16 @@ includes:
 platforms: []
 pricingNote: 'We quote every site after a short discovery call, once we know exactly what you need. The price follows the scope, not the other way around.'
 choosingAPartner: []
+shipsWith:
+  - 'Custom responsive website'
+  - 'CMS admin panel'
+  - 'AI search visibility setup'
+  - 'Search engine crawl rules'
+  - 'XML sitemap'
+  - 'Invoice generator'
+  - 'Quotes and proposals with Paystack'
+  - 'Client management dashboard'
+  - 'Simple website analytics'
 houseView: 'A template gets you live quickly and then quietly limits every decision you make afterwards. Building custom costs more at the start and less for the next three years.'
 faqs:
   - question: 'How much does a custom website cost?'
