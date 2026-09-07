@@ -159,9 +159,15 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEna
    * belongs to this browser tab and goes when the tab does, which is the right
    * lifetime for a client's brief sitting on an operator's machine.
    *
-   * The generated draft is deliberately not stored. It is regenerable, it is
-   * large, and a draft reappearing after a reload with no memory of asking for
-   * it invites applying a stale one.
+   * The generated draft is persisted alongside the brief. Regenerating costs
+   * real money on every call, so losing the output to a reload turned this
+   * panel into a bill. The staleness worry — "a draft reappearing with no
+   * memory of asking for it" — is answered by the brief coming back too: the
+   * operator sees exactly what they asked for above what the model returned.
+   * The Apply button already warns before it overwrites.
+   *
+   * `error` is deliberately not persisted: a failure from an earlier attempt
+   * is not evidence about the current state of the world.
    *
    * Read in an effect rather than a lazy initialiser so the first render
    * matches what the server sent and hydration stays quiet. Every access is
@@ -183,6 +189,7 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEna
           typeof parsed.includeExisting === 'boolean'
             ? parsed.includeExisting
             : current.includeExisting,
+        result: parsed.result ?? current.result,
       }))
     } catch {
       /* No stored draft, or storage is unavailable. Start empty. */
@@ -191,14 +198,14 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEna
 
   useEffect(() => {
     try {
-      const { brief, answers, modelId, includeExisting } = aiDraft
-      if (!brief && !answers) {
+      const { brief, answers, modelId, includeExisting, result } = aiDraft
+      if (!brief && !answers && !result) {
         window.sessionStorage.removeItem(aiStorageKey)
         return
       }
       window.sessionStorage.setItem(
         aiStorageKey,
-        JSON.stringify({ brief, answers, modelId, includeExisting })
+        JSON.stringify({ brief, answers, modelId, includeExisting, result })
       )
     } catch {
       /* Storage full or blocked. The in-memory state still works. */
