@@ -1,12 +1,12 @@
 ---
-title: 'Websites'
-description: 'Websites built from scratch around what you publish. Marketing sites that convert, and full custom builds for businesses that need the site to do more.'
+title: 'Custom Website Design in Lagos, Nigeria'
+description: 'Websites built from scratch around what you publish. Marketing sites that convert and full custom builds, designed in Lagos for businesses across Nigeria and Africa.'
 placeholder: false
 eyebrow: 'Websites'
 summary: 'Built from scratch around what you publish.'
 pillar: 'websites'
 order: 10
-definition: 'We build websites from scratch around your business, rather than fitting you into a theme. That means the structure, the content model and the page templates are designed for what you actually publish, not adapted from something built for someone else.'
+definition: "We build websites from scratch around your business, rather than fitting you into a theme. That means the structure, the content model and the page templates are designed for what you actually publish, not adapted from something built for someone else. We're based in Lagos and build for businesses across Nigeria, so every site accounts for local hosting, payment and connectivity realities, not just international defaults."
 includes:
   - title: 'Marketing site'
     body: 'A focused site built to represent you and convert visitors. Right fit if you need a strong, simple presence and a clear path to contact.'
@@ -25,6 +25,8 @@ faqs:
     answer: 'A template is faster to launch and then constrains every decision afterwards. If your site only needs to represent you, a template can be enough. If it needs to do anything specific to your business, custom is cheaper over time.'
   - question: 'Can we update the site ourselves after launch?'
     answer: 'Yes. Editing is part of the build, not an add-on. We set up the content model so routine changes never need a developer.'
+  - question: 'Do you build websites for businesses outside Lagos?'
+    answer: "Yes. We're based in Lagos but build for businesses across Nigeria and Africa. Most of the process runs over calls, so location isn't a barrier."
 atAGlance:
   - label: 'What it is'
     value: 'Custom-built websites, from marketing sites to full builds'

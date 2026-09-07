@@ -45,7 +45,7 @@ export const CONTENT_REGISTRY: readonly ContentEntry[] = [
     label: 'Standfirst',
     type: 'textarea',
     defaultValue:
-      'WildHands designs and builds custom websites, apps, and internal tools for teams done doing repetitive work by hand.',
+      'A Lagos-based studio building custom websites, web apps and internal tools for teams done doing repetitive work by hand. We work with businesses across Nigeria and the wider African market.',
   },
   {
     key: 'home.hero.ctaPrimary',
@@ -149,7 +149,7 @@ export const CONTENT_REGISTRY: readonly ContentEntry[] = [
     help: 'The sentence search engines and AI assistants quote. Around 155 characters.',
     type: 'textarea',
     defaultValue:
-      'WildHands designs and builds custom websites, apps, and internal tools for teams done doing repetitive work by hand.',
+      'WildHands builds custom websites, web apps and internal tools for businesses in Lagos, Nigeria and across Africa. Built around how you actually work, not a template.',
   },
   {
     key: 'site.email',
