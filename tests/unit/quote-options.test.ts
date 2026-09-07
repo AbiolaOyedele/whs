@@ -140,6 +140,7 @@ describe('selectionState', () => {
   const payment = (status: QuotePayment['status']): QuotePayment => ({
     id: 'p',
     quoteId: 'q',
+    invoiceId: null,
     reference: 'r',
     status,
     amountMinor: 1,

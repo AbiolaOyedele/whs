@@ -39,7 +39,19 @@ export interface InvoiceSnapshot {
 
 export interface InvoiceRecord {
   id: string
-  quoteId: string
+  /**
+   * Set when this invoice bills for a quote in this system. Standalone
+   * invoices — retainers, one-offs, work quoted over email — have no quote
+   * and this is null.
+   */
+  quoteId: string | null
+  /**
+   * Set when this invoice is tied to a client record. Always set for
+   * standalone invoices (the migration enforces that at least one of
+   * quote_id / client_id is present); optional on quote-backed invoices,
+   * since the client identity lives on the quote itself.
+   */
+  clientId: string | null
   number: string
   amountMinor: number
   currency: string
@@ -51,7 +63,8 @@ export interface InvoiceRecord {
 
 interface Row {
   id: string
-  quote_id: string
+  quote_id: string | null
+  client_id: string | null
   number: string
   amount_minor: number
   currency: string
@@ -61,11 +74,13 @@ interface Row {
   snapshot: InvoiceSnapshot
 }
 
-const SELECT = 'id, quote_id, number, amount_minor, currency, kind, issued_at, due_at, snapshot'
+const SELECT =
+  'id, quote_id, client_id, number, amount_minor, currency, kind, issued_at, due_at, snapshot'
 
 const toInvoice = (row: Row): InvoiceRecord => ({
   id: row.id,
   quoteId: row.quote_id,
+  clientId: row.client_id,
   number: row.number,
   amountMinor: row.amount_minor,
   currency: row.currency,
@@ -205,6 +220,63 @@ export async function createInvoice(input: {
   return toInvoice(data as Row)
 }
 
+/**
+ * Issues a standalone invoice — tied to a client, not to a quote.
+ *
+ * Numbering shares the same sequence as quote-backed invoices, so an
+ * accountant reading a filing cabinet sees one continuous run of numbers
+ * rather than two parallel streams. Standalone invoices are always `full`
+ * — there is no deposit/balance split without a quote to split against.
+ */
+export async function createStandaloneInvoice(input: {
+  clientId: string
+  amountMinor: number
+  currency: string
+  dueAt: string | null
+  snapshot: InvoiceSnapshot
+}): Promise<InvoiceRecord> {
+  const db = serviceClient()
+
+  const { data: nextValue, error: seqError } = await db.rpc('next_invoice_number')
+  if (seqError) fail('SEQUENCE', seqError)
+
+  const number = `WHS-${new Date().getUTCFullYear()}-${String(nextValue).padStart(4, '0')}`
+
+  const { data, error } = await db
+    .from('invoices')
+    .insert({
+      client_id: input.clientId,
+      number,
+      amount_minor: input.amountMinor,
+      currency: input.currency,
+      kind: 'full',
+      due_at: input.dueAt,
+      snapshot: input.snapshot,
+    })
+    .select(SELECT)
+    .single()
+
+  if (error) fail('CREATE_STANDALONE', error)
+  return toInvoice(data as Row)
+}
+
+/**
+ * Fetches one invoice by id — quote-backed or standalone.
+ *
+ * Used by the admin detail page, which does not know in advance which kind
+ * it is looking at, and by the PDF renderer downstream.
+ */
+export async function getInvoiceById(id: string): Promise<InvoiceRecord | null> {
+  const { data, error } = await serviceClient()
+    .from('invoices')
+    .select(SELECT)
+    .eq('id', id)
+    .maybeSingle()
+
+  if (error) fail('GET_BY_ID', error)
+  return data ? toInvoice(data as Row) : null
+}
+
 export interface InvoiceListRow extends InvoiceRecord {
   quoteSlug: string
   clientName: string
@@ -231,10 +303,20 @@ export interface InvoiceListRow extends InvoiceRecord {
  * there is only one place that knows whether money arrived.
  */
 export async function listInvoices(): Promise<InvoiceListRow[]> {
+  /*
+   * One trip, three joins. `quotes(...)` and `clients(...)` each nullable —
+   * a row has one or the other depending on how the invoice was raised —
+   * and `quote_payments` is joined directly on the invoice so a standalone
+   * invoice's payments come back too (they live on the same table but link
+   * by invoice_id rather than quote_id).
+   */
   const { data, error } = await serviceClient()
     .from('invoices')
     .select(
-      `${SELECT}, quotes ( slug, client_name, client_company, project_title, status, quote_payments ( status, paid_at, amount_minor ) )`
+      `${SELECT},
+       quotes ( slug, client_name, client_company, project_title, status ),
+       clients ( name, company, email ),
+       quote_payments ( status, paid_at, amount_minor )`
     )
     .order('issued_at', { ascending: false })
 
@@ -246,21 +328,33 @@ export async function listInvoices(): Promise<InvoiceListRow[]> {
     client_company: string | null
     project_title: string
     status: string
-    quote_payments: Array<{
-      status: string
-      paid_at: string | null
-      amount_minor: number
-    }> | null
   }
 
-  type Joined = Row & { quotes: JoinedQuote[] | JoinedQuote | null }
+  interface JoinedClient {
+    name: string
+    company: string | null
+    email: string | null
+  }
+
+  interface JoinedPayment {
+    status: string
+    paid_at: string | null
+    amount_minor: number
+  }
+
+  type Joined = Row & {
+    quotes: JoinedQuote[] | JoinedQuote | null
+    clients: JoinedClient[] | JoinedClient | null
+    quote_payments: JoinedPayment[] | null
+  }
 
   return (data as unknown as Joined[]).map((row) => {
     const quote = Array.isArray(row.quotes) ? (row.quotes[0] ?? null) : row.quotes
-    const settledPayments = (quote?.quote_payments ?? []).filter(
+    const client = Array.isArray(row.clients) ? (row.clients[0] ?? null) : row.clients
+
+    const settledPayments = (row.quote_payments ?? []).filter(
       (payment) => payment.status === 'paid'
     )
-
     const paidMinor = settledPayments.reduce((sum, payment) => sum + payment.amount_minor, 0)
     const invoice = toInvoice(row)
 
@@ -270,12 +364,20 @@ export async function listInvoices(): Promise<InvoiceListRow[]> {
       .sort()
       .at(-1)
 
+    /*
+     * The snapshot is the source of truth for what was billed — it names
+     * the client and the project as of issue time. The joined rows are a
+     * *current* view (a renamed client, a retitled project) and only fill
+     * in when the snapshot is missing something.
+     */
     return {
       ...invoice,
       quoteSlug: quote?.slug ?? '',
-      clientName: quote?.client_name ?? 'Unknown',
-      clientCompany: quote?.client_company ?? null,
-      projectTitle: quote?.project_title ?? '',
+      clientName:
+        invoice.snapshot.clientName || client?.name || quote?.client_name || 'Unknown',
+      clientCompany:
+        invoice.snapshot.clientCompany ?? client?.company ?? quote?.client_company ?? null,
+      projectTitle: invoice.snapshot.projectTitle || quote?.project_title || 'Standalone invoice',
       paidMinor,
       // Clamped: an overpayment should read as nothing owed, not as a negative.
       outstandingMinor: Math.max(0, invoice.amountMinor - paidMinor),
@@ -307,7 +409,7 @@ export async function markInvoicePaid(
   if (invoice.error || !invoice.data) fail('MARK_PAID_LOOKUP', invoice.error)
 
   const row = invoice.data as {
-    quote_id: string
+    quote_id: string | null
     amount_minor: number
     currency: string
     kind: string
@@ -321,10 +423,20 @@ export async function markInvoicePaid(
     )
   }
 
+  /*
+   * The check constraint enforces exactly one of quote_id / invoice_id.
+   * Quote-backed invoices keep writing quote_id — every existing report
+   * joined that way still works. Standalone invoices write invoice_id, and
+   * the invoice-scoped join in listInvoices picks them up.
+   */
+  const target = row.quote_id
+    ? { quote_id: row.quote_id, invoice_id: null }
+    : { quote_id: null, invoice_id: invoiceId }
+
   const { error } = await serviceClient()
     .from('quote_payments')
     .insert({
-      quote_id: row.quote_id,
+      ...target,
       reference: `manual_${invoiceId.slice(0, 8)}_${Date.now()}`,
       status: 'paid',
       amount_minor: amountMinor,

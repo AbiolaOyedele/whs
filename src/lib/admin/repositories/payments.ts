@@ -8,7 +8,10 @@ export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'abandoned' | 'refun
 
 export interface QuotePayment {
   id: string
-  quoteId: string
+  /** Set when the payment settles a quote-backed invoice, null otherwise. */
+  quoteId: string | null
+  /** Set when the payment settles a standalone invoice, null otherwise. */
+  invoiceId: string | null
   reference: string
   status: PaymentStatus
   amountMinor: number
@@ -21,7 +24,8 @@ export interface QuotePayment {
 
 interface Row {
   id: string
-  quote_id: string
+  quote_id: string | null
+  invoice_id: string | null
   reference: string
   status: PaymentStatus
   amount_minor: number
@@ -33,11 +37,12 @@ interface Row {
 }
 
 const SELECT =
-  'id, quote_id, reference, status, amount_minor, currency, kind, paid_at, channel, created_at'
+  'id, quote_id, invoice_id, reference, status, amount_minor, currency, kind, paid_at, channel, created_at'
 
 const toPayment = (row: Row): QuotePayment => ({
   id: row.id,
   quoteId: row.quote_id,
+  invoiceId: row.invoice_id,
   reference: row.reference,
   status: row.status,
   amountMinor: row.amount_minor,
@@ -93,6 +98,22 @@ export async function listPaymentsForQuote(quoteId: string): Promise<QuotePaymen
     .order('created_at', { ascending: false })
 
   if (error) fail('LIST', error)
+  return (data as Row[]).map(toPayment)
+}
+
+/**
+ * Payments recorded against a standalone invoice — those with no quote
+ * behind them. The same table backs both worlds; this filter is what
+ * distinguishes them.
+ */
+export async function listPaymentsForInvoice(invoiceId: string): Promise<QuotePayment[]> {
+  const { data, error } = await serviceClient()
+    .from('quote_payments')
+    .select(SELECT)
+    .eq('invoice_id', invoiceId)
+    .order('created_at', { ascending: false })
+
+  if (error) fail('LIST_INVOICE', error)
   return (data as Row[]).map(toPayment)
 }
 

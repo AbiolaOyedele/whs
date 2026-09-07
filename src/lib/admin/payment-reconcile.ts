@@ -162,6 +162,11 @@ export async function sweepStalePayments(): Promise<number> {
  */
 async function notifyPaid(payment: QuotePayment, chargedMinor?: number): Promise<void> {
   try {
+    /* Standalone-invoice payments have no quote to look up. Notification
+       for those will land on the standalone-invoice notification path
+       once it exists; for now the payment is already recorded, so a
+       silent return is the honest thing. */
+    if (!payment.quoteId) return
     const quote = await getQuoteById(payment.quoteId)
 
     /* Only when the card was charged more than the quote asked for, which

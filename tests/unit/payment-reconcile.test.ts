@@ -43,6 +43,7 @@ const { pendingWorthChecking, reconcilePayment, reconcilePayments, sweepStalePay
 const payment = (over: Partial<QuotePayment> = {}): QuotePayment => ({
   id: 'p1',
   quoteId: 'q1',
+  invoiceId: null,
   reference: 'whs_acme_abc123',
   status: 'pending',
   amountMinor: 500_000,
