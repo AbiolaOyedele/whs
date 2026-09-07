@@ -68,6 +68,13 @@ export interface InvoiceData {
   /** Whether card payment can actually complete for this currency. */
   payable: boolean
   studio: { name: string; email: string; site: string }
+  /**
+   * Optional custom logo. A URL — typically Cloudinary — pointing at an
+   * image the studio has uploaded. If set, this replaces the built-in
+   * "whs." mark. If null, empty, or fails to fetch, the built-in mark is
+   * used, so an invoice always renders on brand.
+   */
+  logoUrl?: string | null
 }
 
 /** Loads a brand font and decompresses it to something PDF can embed. */
@@ -75,6 +82,45 @@ async function brandFont(doc: PDFDocument, file: string): Promise<PDFFont> {
   const woff2 = await readFile(path.join(process.cwd(), 'public', 'fonts', file))
   const ttf = await decompress(woff2)
   return doc.embedFont(ttf, { subset: true })
+}
+
+/**
+ * Fetch the custom invoice logo and embed it into the PDF.
+ *
+ * PDF can only embed PNG or JPEG. Cloudinary URLs are rewritten to request
+ * PNG output (`f_png`) so a WebP or SVG upload still works: the CDN does
+ * the format conversion once, on the fly. For non-Cloudinary URLs we take
+ * what we get and try the bytes as-is (PNG first, JPEG as fallback), and
+ * a failure at any step returns null — the caller then falls back to the
+ * built-in mark so the invoice still renders.
+ */
+async function tryEmbedLogo(
+  doc: PDFDocument,
+  url: string
+): Promise<{ image: import('pdf-lib').PDFImage; width: number; height: number } | null> {
+  try {
+    const normalised = url.includes('res.cloudinary.com')
+      ? url.replace('/upload/', '/upload/f_png,q_auto/')
+      : url
+
+    const response = await fetch(normalised)
+    if (!response.ok) return null
+    const bytes = new Uint8Array(await response.arrayBuffer())
+
+    /* pdf-lib inspects the bytes rather than trusting the extension, so
+       calling embedPng on JPEG bytes throws — try each and use the one
+       that lands. */
+    try {
+      const image = await doc.embedPng(bytes)
+      return { image, width: image.width, height: image.height }
+    } catch {
+      const image = await doc.embedJpg(bytes)
+      return { image, width: image.width, height: image.height }
+    }
+  } catch (cause) {
+    console.warn('[invoice-pdf] custom logo could not be embedded, falling back', cause)
+    return null
+  }
 }
 
 interface Ctx {
@@ -169,30 +215,44 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<Uint8Array> {
 
   /* --- Header ------------------------------------------------------------
    *
-   * The real "whs." mark, drawn from the same path data the site's Logo
-   * component uses, rather than the studio name set in a typeface. Setting the
-   * name as text was close but it was not the logo, and this is a document
-   * that goes out under the brand.
+   * A logo, either the built-in "whs." mark drawn from the site's own path
+   * data, or a custom image the studio has uploaded (typically Cloudinary,
+   * for a sibling brand). The remote logo is embedded rather than
+   * referenced — the PDF has to render identically forever, and a URL that
+   * moves or expires would leave a client staring at a blank rectangle.
    *
-   * SVG's y-axis points down and PDF's points up, so the artwork is flipped and
-   * translated into place. Scale comes from the mark's own viewBox, so a change
-   * to the artwork does not need a matching change to a magic number here.
+   * If the fetch or embed fails for any reason the built-in mark is used,
+   * so an invoice always ships on brand.
    */
-  const viewBox = MARK_VIEW_BOX.split(' ').map(Number)
-  const vbX = viewBox[0] ?? 0
-  const vbY = viewBox[1] ?? 0
-  const vbH = viewBox[3] ?? 1
-  const logoHeight = 15
-  const logoScale = logoHeight / vbH
+  const LOGO_HEIGHT = 22
+
+  const embeddedLogo = data.logoUrl ? await tryEmbedLogo(doc, data.logoUrl) : null
 
   ctx.y -= 6
-  for (const shape of MARK_PATHS) {
-    ctx.page.drawSvgPath(shape.d, {
-      x: MARGIN - vbX * logoScale,
-      y: ctx.y + logoHeight + vbY * logoScale,
-      scale: logoScale,
-      color: shape.accent ? ACCENT : INK,
+  if (embeddedLogo) {
+    const scale = LOGO_HEIGHT / embeddedLogo.height
+    ctx.page.drawImage(embeddedLogo.image, {
+      x: MARGIN,
+      y: ctx.y + LOGO_HEIGHT - embeddedLogo.height * scale,
+      width: embeddedLogo.width * scale,
+      height: embeddedLogo.height * scale,
     })
+  } else {
+    const viewBox = MARK_VIEW_BOX.split(' ').map(Number)
+    const vbX = viewBox[0] ?? 0
+    const vbY = viewBox[1] ?? 0
+    const vbH = viewBox[3] ?? 1
+    const logoHeight = 15
+    const logoScale = logoHeight / vbH
+
+    for (const shape of MARK_PATHS) {
+      ctx.page.drawSvgPath(shape.d, {
+        x: MARGIN - vbX * logoScale,
+        y: ctx.y + logoHeight + vbY * logoScale,
+        scale: logoScale,
+        color: shape.accent ? ACCENT : INK,
+      })
+    }
   }
 
   text('INVOICE', { size: 10, font: bodyMedium, colour: MUTED, align: 'right' })

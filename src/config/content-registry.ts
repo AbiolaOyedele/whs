@@ -224,6 +224,25 @@ export const CONTENT_REGISTRY: readonly ContentEntry[] = [
     type: 'textarea',
     defaultValue: 'One price, worked out from that scope.',
   },
+
+  /*
+   * The mark printed at the top of every invoice PDF.
+   *
+   * Left empty and the renderer falls back to the built-in "whs." mark
+   * drawn from the site's own logo paths — so a fresh install still ships
+   * an on-brand document. Set to a Cloudinary URL and that image is
+   * embedded instead, which is how a sibling brand's logo gets on an
+   * invoice without editing code.
+   */
+  {
+    key: 'brand.invoiceLogoUrl',
+    page: 'Site-wide',
+    section: 'Invoice branding',
+    label: 'Invoice logo URL',
+    help: 'A Cloudinary image URL (PNG or SVG). Leave blank to use the WildHands mark.',
+    type: 'url',
+    defaultValue: '',
+  },
 ] as const
 
 /** Lookup by key, built once. */

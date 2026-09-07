@@ -22,6 +22,7 @@ import { chargedLines, computeTotals } from '@/lib/admin/money'
 import { listPaymentsForQuote } from '@/lib/admin/repositories/payments'
 import { isPayableCurrency, isPaystackConfigured } from '@/lib/paystack'
 import { renderInvoicePdf } from '@/lib/invoice-pdf'
+import { getInvoiceLogoUrl } from '@/lib/admin/invoice-branding'
 import type { Quote } from '@/types/quote'
 
 /**
@@ -80,5 +81,6 @@ export async function renderInvoicePreview(quote: Quote): Promise<Uint8Array> {
       email: SITE.email,
       site: origin.replace(/^https?:\/\//, ''),
     },
+    logoUrl: await getInvoiceLogoUrl(),
   })
 }

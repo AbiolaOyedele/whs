@@ -28,6 +28,7 @@ import { listPaymentsForQuote } from '@/lib/admin/repositories/payments'
 import { hasQuoteAccess } from '@/lib/admin/quote-session'
 import { isPayableCurrency, isPaystackConfigured } from '@/lib/paystack'
 import { renderInvoicePdf, type InvoiceLine } from '@/lib/invoice-pdf'
+import { getInvoiceLogoUrl } from '@/lib/admin/invoice-branding'
 import { enforceRateLimit } from '@/lib/rate-limit'
 
 export const prerender = false
@@ -180,6 +181,7 @@ export const GET: APIRoute = async ({ cookies, params }) => {
         email: SITE.email,
         site: origin.replace(/^https?:\/\//, ''),
       },
+      logoUrl: await getInvoiceLogoUrl(),
     })
 
     return new Response(pdf as unknown as BodyInit, {
