@@ -90,10 +90,17 @@ export default function SiteCheckDialog({
         {label}
       </button>
 
-      {/* backdrop styling via ::backdrop below; body styling here */}
+      {/*
+        Centering is explicit: the app's global reset zeroes the browser's
+        default `margin: auto` on <dialog>, which is what usually centers a
+        modal dialog. `fixed inset-0 m-auto` restores that centering
+        cleanly — the dialog stays fixed to the viewport (as showModal()
+        does anyway) and margin:auto sizes it to fit-content, centered
+        both axes. Explicit width caps keep it from filling the screen.
+      */}
       <dialog
         ref={dialogRef}
-        className="w-full max-w-lg rounded-3xl border border-border bg-background p-0 text-foreground backdrop:bg-foreground/40 backdrop:backdrop-blur-sm open:animate-[fade-in_120ms_ease-out]"
+        className="fixed inset-0 m-auto h-fit w-[calc(100%-2rem)] max-w-lg rounded-3xl border border-border bg-background p-0 text-foreground backdrop:bg-foreground/40 backdrop:backdrop-blur-sm open:animate-[fade-in_120ms_ease-out]"
         onClose={() => setState({ kind: 'idle' })}
       >
         {state.kind === 'sent' ? (
