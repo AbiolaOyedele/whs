@@ -92,11 +92,20 @@ export default function InvoicesPanel({ invoices }: { invoices: InvoiceListRow[]
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="wh-h1-compact">Invoices</h1>
-        <p className="mt-1 text-muted-foreground">
-          Issued when a client downloads one from their quote. Numbers never change.
-        </p>
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="wh-h1-compact">Invoices</h1>
+          <p className="mt-1 text-muted-foreground">
+            One ledger for both worlds: invoices issued from a quote, and standalone invoices for
+            work quoted outside this system. Numbers never change.
+          </p>
+        </div>
+        <a
+          href="/admin/invoices/new"
+          className="inline-flex min-h-12 items-center rounded-full bg-primary px-6 text-base text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+        >
+          New invoice
+        </a>
       </div>
 
       {message && (
@@ -146,7 +155,7 @@ export default function InvoicesPanel({ invoices }: { invoices: InvoiceListRow[]
           </h2>
           <p className="mx-auto max-w-md text-muted-foreground">
             {invoices.length === 0
-              ? 'An invoice is created the first time a client downloads one from their quote.'
+              ? 'Quote-backed invoices land here when a client downloads one. Create a standalone invoice for work quoted outside this system.'
               : 'Try another filter.'}
           </p>
         </div>
@@ -208,12 +217,21 @@ export default function InvoicesPanel({ invoices }: { invoices: InvoiceListRow[]
               </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
-                <a
-                  href={`/admin/quotes?q=${encodeURIComponent(invoice.quoteSlug)}`}
-                  className="inline-flex min-h-11 items-center rounded-full border border-border px-4 text-base transition-colors hover:border-foreground"
-                >
-                  The quote
-                </a>
+                {invoice.quoteId ? (
+                  <a
+                    href={`/admin/quotes/${invoice.quoteId}`}
+                    className="inline-flex min-h-11 items-center rounded-full border border-border px-4 text-base transition-colors hover:border-foreground"
+                  >
+                    Open the quote
+                  </a>
+                ) : (
+                  <a
+                    href={`/admin/invoices/${invoice.id}`}
+                    className="inline-flex min-h-11 items-center rounded-full border border-border px-4 text-base transition-colors hover:border-foreground"
+                  >
+                    Open invoice
+                  </a>
+                )}
                 {!invoice.settledInFull && (
                   <Button
                     onClick={() => {

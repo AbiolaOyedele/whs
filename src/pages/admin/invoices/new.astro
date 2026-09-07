@@ -1,0 +1,445 @@
+---
+/**
+ * Create a standalone invoice.
+ *
+ * Standalone means "not tied to a quote": retainers, one-off fixes, work
+ * quoted over email. The invoice number, the ledger position and the PDF
+ * output all match a quote-backed invoice — the only difference is that
+ * this one starts from a client and a set of line items rather than from
+ * a document already in the system.
+ *
+ * Server-rendered so the POST that creates the invoice can validate,
+ * write, and 302 straight to the detail page without a client-side round
+ * trip. The one script on the page is a plain "clone this row" for the
+ * line-item table — no framework, no hydration, no dependency.
+ */
+import AdminLayout from '@/layouts/AdminLayout.astro'
+import FormSelect from '@/components/admin/FormSelect.astro'
+import Icon from '@/components/ui/Icon.astro'
+import { publicEnv } from '@/config/env'
+import { assertAdminOrigin } from '@/lib/admin/auth'
+import { listClients } from '@/lib/admin/repositories/clients'
+import { createStandaloneInvoice } from '@/lib/admin/repositories/invoices'
+import { lineAmount } from '@/lib/admin/money'
+import { isAppError } from '@/lib/errors'
+import { CURRENCIES } from '@/types/quote'
+
+export const prerender = false
+
+const session = Astro.locals.adminSession
+
+let error: string | null = null
+
+/*
+ * Sticky form values. On a failed POST the operator should see what they
+ * typed, not an emptied-out form — retyping ten line items because a
+ * client wasn't picked is punishment for a mistake the page could have
+ * remembered.
+ */
+let clientId = ''
+let projectTitle = ''
+let currency = 'NGN'
+let dueAt = ''
+let paymentTerms =
+  'Payment due within 14 days of the issue date. Bank transfer preferred.'
+let taxRateBpStr = '0'
+let discountMinorStr = '0'
+let submittedLines: Array<{ title: string; description: string; qty: string; price: string }> = []
+let createdInvoiceId: string | null = null
+
+if (Astro.request.method === 'POST' && session) {
+  try {
+    assertAdminOrigin(Astro.request, publicEnv.PUBLIC_SITE_URL)
+
+    const form = await Astro.request.formData()
+    clientId = String(form.get('clientId') ?? '').trim()
+    projectTitle = String(form.get('projectTitle') ?? '').trim()
+    currency = String(form.get('currency') ?? 'NGN')
+    dueAt = String(form.get('dueAt') ?? '').trim()
+    paymentTerms = String(form.get('paymentTerms') ?? '').trim()
+    taxRateBpStr = String(form.get('taxRateBp') ?? '0')
+    discountMinorStr = String(form.get('discountMinor') ?? '0')
+
+    /*
+     * Line items arrive as parallel arrays — one entry per row, aligned by
+     * index. Blank rows are dropped rather than raising an error: an
+     * operator who left one spare row empty didn't mean to bill for
+     * nothing.
+     */
+    const titles = form.getAll('lineTitle').map((value) => String(value))
+    const descriptions = form.getAll('lineDescription').map((value) => String(value))
+    const qtys = form.getAll('lineQty').map((value) => String(value))
+    const prices = form.getAll('lineUnitPrice').map((value) => String(value))
+
+    submittedLines = titles.map((title, index) => ({
+      title,
+      description: descriptions[index] ?? '',
+      qty: qtys[index] ?? '',
+      price: prices[index] ?? '',
+    }))
+
+    const parsedLines = submittedLines
+      .filter((row) => row.title.trim().length > 0)
+      .map((row) => {
+        const quantity = Number(row.qty)
+        const unitPriceMajor = Number(row.price)
+        if (!Number.isFinite(quantity) || quantity <= 0) {
+          throw new Error(`Quantity for "${row.title}" is not a positive number.`)
+        }
+        if (!Number.isFinite(unitPriceMajor) || unitPriceMajor < 0) {
+          throw new Error(`Unit price for "${row.title}" is not a valid amount.`)
+        }
+        const unitPriceMinor = Math.round(unitPriceMajor * 100)
+        const amountMinor = lineAmount({ quantity, unitPriceMinor })
+        return {
+          title: row.title.trim(),
+          description: row.description.trim(),
+          quantity,
+          unitPriceMinor,
+          amountMinor,
+        }
+      })
+
+    if (!clientId) throw new Error('Pick a client for this invoice.')
+    if (!projectTitle) throw new Error('Give this invoice a project title.')
+    if (parsedLines.length === 0) throw new Error('Add at least one line item.')
+
+    const subtotalMinor = parsedLines.reduce((sum, line) => sum + line.amountMinor, 0)
+    const discountMinor = Math.max(0, Math.round(Number(discountMinorStr || '0') * 100))
+    const taxRateBp = Math.max(0, Math.min(10_000, Math.round(Number(taxRateBpStr || '0') * 100)))
+    const taxableMinor = Math.max(0, subtotalMinor - discountMinor)
+    const taxMinor = Math.round((taxableMinor * taxRateBp) / 10_000)
+    const totalMinor = taxableMinor + taxMinor
+
+    if (totalMinor <= 0) throw new Error('The invoice total must be greater than zero.')
+
+    /*
+     * The snapshot lives on the invoice row and is what the PDF renders
+     * from — the same discipline the quote-backed path uses, so a client
+     * detail edited tomorrow does not rewrite a document sent today.
+     */
+    const clients = await listClients()
+    const client = clients.find((c) => c.id === clientId)
+    if (!client) throw new Error('That client no longer exists.')
+
+    createdInvoiceId = (
+      await createStandaloneInvoice({
+        clientId,
+        amountMinor: totalMinor,
+        currency,
+        dueAt: dueAt || null,
+        snapshot: {
+          currency,
+          clientName: client.name,
+          clientCompany: client.company ?? null,
+          clientEmail: client.email ?? null,
+          projectTitle,
+          paymentTerms,
+          lines: parsedLines,
+          subtotalMinor,
+          discountMinor,
+          taxRateBp,
+          taxMinor,
+          totalMinor,
+        },
+      })
+    ).id
+  } catch (cause) {
+    error = isAppError(cause)
+      ? cause.message
+      : cause instanceof Error
+        ? cause.message
+        : 'That did not save. Try again.'
+  }
+}
+
+if (createdInvoiceId) return Astro.redirect(`/admin/invoices/${createdInvoiceId}`)
+
+/* Client list for the picker. Ordered by most-recently-updated so the
+   person the operator is thinking about is near the top. */
+const clients = await listClients()
+
+/* Three empty rows on first render — enough to start typing without
+   clicking "add" first, few enough that the form does not sprawl. */
+const initialLines =
+  submittedLines.length > 0
+    ? submittedLines
+    : Array.from({ length: 3 }, () => ({ title: '', description: '', qty: '1', price: '' }))
+---
+
+<AdminLayout title="New invoice" section="invoices" email={session?.email}>
+  <a
+    href="/admin/invoices"
+    class="mb-6 inline-flex min-h-11 items-center text-base text-muted-foreground transition-colors hover:text-foreground"
+  >
+    <Icon name="arrowLeft" class="mr-2 size-4" />
+    All invoices
+  </a>
+
+  <div class="mb-8">
+    <h1 class="wh-h1-compact">New invoice</h1>
+    <p class="mt-1 max-w-2xl text-muted-foreground">
+      Bill a client for work that never had a quote in this system. Retainers, one-off fixes,
+      anything scoped over email.
+    </p>
+  </div>
+
+  {
+    error && (
+      <div
+        role="alert"
+        class="mb-6 rounded-2xl border border-destructive/40 bg-destructive/10 p-4 text-base"
+      >
+        {error}
+      </div>
+    )
+  }
+
+  <form method="post" class="flex flex-col gap-6" novalidate>
+    <section class="rounded-3xl border border-border bg-card p-5 md:p-6">
+      <h2 class="mb-4 font-display text-xl">Who and what</h2>
+      <div class="grid gap-5 md:grid-cols-2">
+        {/* FormSelect renders its own sr-only label, so this outer wrap is a
+            <div>, not a <label>: nesting them would double-label the trigger. */}
+        <div class="flex flex-col gap-1.5">
+          <span class="text-sm text-muted-foreground">Client</span>
+          {
+            clients.length > 0 ? (
+              <FormSelect
+                id="clientId"
+                name="clientId"
+                label="Client"
+                value={clientId}
+                options={[
+                  { value: '', label: 'Pick a client…' },
+                  ...clients.map((c) => ({
+                    value: c.id,
+                    label: c.company ? `${c.name} — ${c.company}` : c.name,
+                  })),
+                ]}
+              />
+            ) : (
+              <a
+                href="/admin/clients"
+                class="rounded-xl border border-border bg-muted px-4 py-3 text-base"
+              >
+                No clients yet — add one first.
+              </a>
+            )
+          }
+        </div>
+
+        <label class="flex flex-col gap-1.5">
+          <span class="text-sm text-muted-foreground">Project title</span>
+          <input
+            id="projectTitle"
+            name="projectTitle"
+            type="text"
+            required
+            maxlength="200"
+            value={projectTitle}
+            placeholder="e.g. Retainer, September"
+            class="min-h-12 rounded-xl border border-border bg-background px-4 text-base outline-none focus-visible:border-foreground"
+          />
+        </label>
+
+        <div class="flex flex-col gap-1.5">
+          <span class="text-sm text-muted-foreground">Currency</span>
+          <FormSelect
+            id="currency"
+            name="currency"
+            label="Currency"
+            value={currency}
+            options={CURRENCIES.map((c) => ({ value: c.code, label: `${c.code} · ${c.label}` }))}
+          />
+        </div>
+
+        <label class="flex flex-col gap-1.5">
+          <span class="text-sm text-muted-foreground">Due date (optional)</span>
+          <input
+            id="dueAt"
+            name="dueAt"
+            type="date"
+            value={dueAt}
+            class="min-h-12 rounded-xl border border-border bg-background px-4 text-base outline-none focus-visible:border-foreground"
+          />
+        </label>
+      </div>
+    </section>
+
+    <section class="rounded-3xl border border-border bg-card p-5 md:p-6">
+      <div class="mb-4 flex items-baseline justify-between gap-3">
+        <h2 class="font-display text-xl">Line items</h2>
+        <p class="text-sm text-muted-foreground">Amounts in the invoice's currency, e.g. 150000.00</p>
+      </div>
+
+      <div data-lines class="flex flex-col gap-3">
+        {
+          initialLines.map((line, index) => (
+            <div
+              data-line-row
+              class="grid gap-3 rounded-2xl border border-border bg-background p-4 md:grid-cols-[1fr_5rem_8rem_2rem] md:items-start md:gap-4"
+            >
+              <div class="flex flex-col gap-1.5">
+                <span class="text-xs text-muted-foreground md:hidden">Title</span>
+                <input
+                  name="lineTitle"
+                  type="text"
+                  maxlength="200"
+                  value={line.title}
+                  placeholder={index === 0 ? 'What was done' : ''}
+                  class="min-h-12 rounded-xl border border-border bg-card px-3 text-base outline-none focus-visible:border-foreground"
+                />
+                <input
+                  name="lineDescription"
+                  type="text"
+                  maxlength="500"
+                  value={line.description}
+                  placeholder="Optional description"
+                  class="min-h-11 rounded-xl border border-border bg-card px-3 text-sm outline-none focus-visible:border-foreground"
+                />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <span class="text-xs text-muted-foreground md:hidden">Qty</span>
+                <input
+                  name="lineQty"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={line.qty}
+                  class="min-h-12 rounded-xl border border-border bg-card px-3 text-base outline-none focus-visible:border-foreground"
+                />
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <span class="text-xs text-muted-foreground md:hidden">Unit price</span>
+                <input
+                  name="lineUnitPrice"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={line.price}
+                  placeholder="0.00"
+                  class="min-h-12 rounded-xl border border-border bg-card px-3 text-base outline-none focus-visible:border-foreground"
+                />
+              </div>
+              <button
+                type="button"
+                data-remove-line
+                aria-label="Remove this line"
+                class="mt-1 flex size-9 items-center justify-center self-center rounded-full border border-border text-muted-foreground transition-colors hover:border-destructive hover:text-destructive md:mt-0"
+              >
+                ×
+              </button>
+            </div>
+          ))
+        }
+      </div>
+
+      <button
+        type="button"
+        data-add-line
+        class="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full border border-border px-4 text-base transition-colors hover:border-foreground"
+      >
+        <span>+</span> Add another line
+      </button>
+
+      <div class="mt-6 grid gap-4 border-t border-border pt-4 md:grid-cols-2">
+        <label class="flex flex-col gap-1.5">
+          <span class="text-sm text-muted-foreground">Discount (in this currency)</span>
+          <input
+            id="discountMinor"
+            name="discountMinor"
+            type="number"
+            step="0.01"
+            min="0"
+            value={discountMinorStr}
+            class="min-h-12 rounded-xl border border-border bg-background px-4 text-base outline-none focus-visible:border-foreground"
+          />
+        </label>
+
+        <label class="flex flex-col gap-1.5">
+          <span class="text-sm text-muted-foreground">Tax rate (%)</span>
+          <input
+            id="taxRateBp"
+            name="taxRateBp"
+            type="number"
+            step="0.01"
+            min="0"
+            max="100"
+            value={taxRateBpStr}
+            class="min-h-12 rounded-xl border border-border bg-background px-4 text-base outline-none focus-visible:border-foreground"
+          />
+        </label>
+      </div>
+    </section>
+
+    <section class="rounded-3xl border border-border bg-card p-5 md:p-6">
+      <label class="flex flex-col gap-1.5">
+        <span class="text-sm text-muted-foreground">Payment terms</span>
+        <textarea
+          id="paymentTerms"
+          name="paymentTerms"
+          rows="3"
+          maxlength="1000"
+          class="rounded-xl border border-border bg-background px-4 py-3 text-base outline-none focus-visible:border-foreground"
+        >{paymentTerms}</textarea>
+      </label>
+    </section>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <button
+        type="submit"
+        class="min-h-12 rounded-full bg-primary px-6 text-base text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+      >
+        Create and preview
+      </button>
+      <a
+        href="/admin/invoices"
+        class="min-h-12 rounded-full border border-border px-6 py-3 text-base transition-colors hover:border-foreground"
+      >
+        Cancel
+      </a>
+    </div>
+  </form>
+</AdminLayout>
+
+{/*
+  The one script on the page: cloning a line row.
+
+  Deliberately not a framework component. The form is server-rendered and the
+  operator interacts with it once per invoice; shipping React so a "+" button
+  can add another <input> would be a lot of ceremony for one gesture. The
+  clone strategy is boring: read the last row's markup, replace its values
+  with empty defaults, append.
+*/}
+<script>
+  const list = document.querySelector<HTMLDivElement>('[data-lines]')
+  const addButton = document.querySelector<HTMLButtonElement>('[data-add-line]')
+
+  function bindRemove(row: HTMLElement) {
+    const button = row.querySelector<HTMLButtonElement>('[data-remove-line]')
+    button?.addEventListener('click', () => {
+      const rows = list?.querySelectorAll<HTMLElement>('[data-line-row]')
+      /* Keep at least one row on the page — an invoice with zero rows is
+         a corner case the server would reject anyway, and an empty list
+         looks like the form has broken. */
+      if (rows && rows.length > 1) row.remove()
+    })
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-line-row]').forEach(bindRemove)
+
+  addButton?.addEventListener('click', () => {
+    if (!list) return
+    const last = list.querySelector<HTMLElement>('[data-line-row]:last-child')
+    if (!last) return
+    const clone = last.cloneNode(true) as HTMLElement
+    clone.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
+      if (input.name === 'lineQty') input.value = '1'
+      else input.value = ''
+    })
+    list.appendChild(clone)
+    bindRemove(clone)
+    clone.querySelector<HTMLInputElement>('input[name="lineTitle"]')?.focus()
+  })
+</script>
