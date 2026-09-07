@@ -14,6 +14,7 @@
  */
 import { useRef, useState } from 'react'
 import { HONEYPOT_FIELD } from '@/lib/schemas/form-constants'
+import { FlowButton } from '@/components/ui/flow-button'
 
 type State =
   | { kind: 'idle' }
@@ -82,13 +83,7 @@ export default function SiteCheckDialog({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={open}
-        className="inline-flex min-h-11 items-center rounded-full bg-primary px-5 text-base text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-      >
-        {label}
-      </button>
+      <FlowButton text={label} variant="accent" onClick={open} />
 
       {/*
         Centering is explicit: the app's global reset zeroes the browser's

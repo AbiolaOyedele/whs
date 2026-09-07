@@ -58,6 +58,12 @@ interface FlowButtonProps {
   size?: 'md' | 'lg'
   /** Applies to the <button> form only; a disabled link is not a thing. */
   disabled?: boolean
+  /**
+   * Click handler for the <button> form. Ignored when `href` is set —
+   * a link's own click is what a browser handles, and layering an
+   * onClick on top of it interferes with middle-click and open-in-new-tab.
+   */
+  onClick?: () => void
 }
 
 const SIZES: Record<'md' | 'lg', string> = {
@@ -94,6 +100,7 @@ export function FlowButton({
   type = 'button',
   size = 'md',
   disabled = false,
+  onClick,
 }: FlowButtonProps) {
   const tone = VARIANTS[variant]
 
@@ -157,7 +164,7 @@ export function FlowButton({
       {inner}
     </a>
   ) : (
-    <button type={type} disabled={disabled} className={classes}>
+    <button type={type} disabled={disabled} onClick={onClick} className={classes}>
       {inner}
     </button>
   )

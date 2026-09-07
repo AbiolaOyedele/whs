@@ -169,7 +169,10 @@ export interface ClientInput {
   notes?: string | undefined
 }
 
-export async function createClient(input: ClientInput, userId: string): Promise<Client> {
+export async function createClient(
+  input: ClientInput,
+  userId: string | null
+): Promise<Client> {
   const { data, error } = await serviceClient()
     .from('clients')
     .insert({
@@ -283,7 +286,7 @@ export async function deleteClient(id: string): Promise<void> {
  */
 export async function findOrCreateClient(
   input: ClientInput,
-  userId: string
+  userId: string | null
 ): Promise<Client | null> {
   const email = normaliseEmail(input.email)
   if (!input.name.trim()) return null

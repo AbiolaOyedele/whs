@@ -61,6 +61,31 @@ export const siteCheckSchema = z.object({
 
 export type SiteCheckInput = z.infer<typeof siteCheckSchema>
 
+/**
+ * The Request A Quote wizard. Client and server both validate against
+ * this. `projectType` is free text so the picker can add options
+ * without churning this schema; the wizard's own list narrows what a
+ * user can actually pick.
+ */
+export const quoteRequestSchema = z.object({
+  contactName: requiredText('Your name', 120),
+  contactEmail: z.email('Enter a valid email address.').max(254),
+  contactPhone: z.string().trim().max(40).optional().or(z.literal('')),
+  company: z.string().trim().max(200).optional().or(z.literal('')),
+  projectType: requiredText('Pick what you are building', 60),
+  projectSummary: z
+    .string()
+    .trim()
+    .min(20, 'Tell us a little about the project — two or three sentences is enough.')
+    .max(4_000, 'That is longer than we need — trim it to a paragraph or two.'),
+  budgetRange: z.string().trim().max(120).optional().or(z.literal('')),
+  timeline: z.string().trim().max(120).optional().or(z.literal('')),
+  referralSource: z.string().trim().max(200).optional().or(z.literal('')),
+  [HONEYPOT_FIELD]: honeypot,
+})
+
+export type QuoteRequestInputSchema = z.infer<typeof quoteRequestSchema>
+
 export const freelanceApplicationSchema = z.object({
   firstName: requiredText('First name', 80),
   lastName: requiredText('Last name', 80),

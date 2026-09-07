@@ -430,7 +430,13 @@ export interface CreateQuoteInput {
   clientName: string
   projectTitle: string
   currency: string
-  createdBy: string
+  /**
+   * The operator who created this quote, or null when the row is
+   * spawned by a public submission (a Request A Quote form). The
+   * column is on-delete set null so an operator leaving does not
+   * cascade to their quotes.
+   */
+  createdBy: string | null
 }
 
 export async function createQuote(input: CreateQuoteInput): Promise<string> {

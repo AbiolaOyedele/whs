@@ -294,18 +294,32 @@ const insights = defineCollection({
     readTime: z.number().int().positive().default(5),
     faqs: z.array(faqSchema).default([]),
     /**
-     * An interactive checklist that rides in a sticky sidebar next to the
-     * article body. For pieces that are literally a checklist — the reader
-     * wants to check items off against their own project rather than just
-     * read them. Empty (the default) and no sidebar renders; the article
-     * keeps its usual single-column layout.
+     * A section-aware checklist that rides in a sticky sidebar and
+     * shuffles as the reader scrolls: each entry's `id` matches the
+     * slugified heading of a section in the article body, and only the
+     * section currently in view renders in the card. Every ticked item
+     * is remembered per-article, so cycling through sections does not
+     * lose state.
+     *
+     * Empty (the default) and no sidebar renders; the article keeps its
+     * usual single-column layout.
      */
     checklist: z
       .array(
         z.object({
+          /** Slug of the matching `##` heading in the article body. */
           id: z.string().min(1).max(80),
-          title: z.string().min(1).max(200),
-          description: z.string().max(400).optional(),
+          /** Section label used as the sidebar card's title. */
+          label: z.string().min(1).max(120),
+          items: z
+            .array(
+              z.object({
+                id: z.string().min(1).max(80),
+                title: z.string().min(1).max(200),
+                description: z.string().max(400).optional(),
+              })
+            )
+            .min(1),
         })
       )
       .default([]),
