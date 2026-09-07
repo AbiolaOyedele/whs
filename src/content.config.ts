@@ -21,6 +21,7 @@ export const INSIGHT_CATEGORIES = [
   'migration',
   'operations',
   'platform-choice',
+  'websites',
 ] as const
 
 /** The three things WildHands builds. The site is organised around these. */
@@ -56,6 +57,7 @@ export const INSIGHT_CATEGORY_LABELS: Record<InsightCategory, string> = {
   migration: 'Migration & Replatforming',
   operations: 'Running the Website',
   'platform-choice': 'Platform Decisions',
+  websites: 'Websites',
 }
 
 /** Human-readable labels for each service pillar. */
