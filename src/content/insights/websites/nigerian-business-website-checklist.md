@@ -14,6 +14,48 @@ faqs:
     answer: 'Not essential, but useful. A blog gives you a reason to keep publishing, and each post is another way to be found in search. Skip it if you will not keep it updated; an abandoned blog looks worse than no blog at all.'
   - question: 'Should I list prices on my site?'
     answer: 'If your pricing is straightforward, yes, since it saves you and potential customers time. If pricing genuinely varies project to project, a clear "get a quote" path works better than vague, unhelpful ranges.'
+checklist:
+  - id: 'page-home'
+    title: 'Home page that states what you do'
+    description: 'Immediately, above the fold, no guessing.'
+  - id: 'page-about'
+    title: 'About page with the people behind it'
+  - id: 'page-services'
+    title: 'Services or products, specific enough to act on'
+  - id: 'page-contact'
+    title: 'Contact page with a real phone number and location'
+  - id: 'page-social-proof'
+    title: 'Testimonials or social proof from named clients'
+  - id: 'admin-cms'
+    title: 'A CMS admin panel to update pages yourself'
+  - id: 'trust-address'
+    title: 'A physical address or stated service area'
+  - id: 'trust-phone'
+    title: 'A phone number that is actually answered'
+  - id: 'trust-photos'
+    title: 'Real photos of the team, premises, or work'
+  - id: 'trust-https'
+    title: 'HTTPS on every page'
+  - id: 'payment-local'
+    title: 'Paystack or Flutterwave visible if you sell online'
+  - id: 'payment-transfer'
+    title: 'Bank transfer as an option alongside cards'
+  - id: 'mobile-tested'
+    title: 'Tested on an actual phone, on mobile data'
+  - id: 'seo-location'
+    title: 'City or service area mentioned in titles and copy'
+  - id: 'seo-gbp'
+    title: 'Google Business Profile set up and linked'
+  - id: 'seo-schema'
+    title: 'LocalBusiness schema markup in place'
+  - id: 'seo-sitemap'
+    title: 'XML sitemap and crawl rules configured'
+  - id: 'seo-ai'
+    title: 'Basic setup for AI search visibility'
+  - id: 'cta-clear'
+    title: 'A clear next step on every page'
+  - id: 'analytics-live'
+    title: 'Basic analytics running from day one'
 ---
 
 Here's the checklist, then the reasoning behind each item.
@@ -66,5 +108,3 @@ Set up basic analytics from day one, not after you've already wondered for six m
 ## What most sites are missing
 
 The pattern we see most often isn't bad design. It's a site with no location mentioned anywhere, a contact form as the only way in, and no local payment method visible. Individually small, together they add up to a site that looks fine and quietly underperforms.
-
-Want your site checked against this list? [Send WildHands your URL](/get-in-touch) and we'll tell you what's missing.

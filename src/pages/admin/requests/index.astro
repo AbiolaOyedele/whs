@@ -1,0 +1,146 @@
+---
+/**
+ * The request queue — every ask the public site sent, in one place.
+ *
+ * A single inbox rather than one page per form: the operator's day-to-day
+ * job here is the same regardless of kind ("who wants what, and did I
+ * reply?"), so the list stays flat and the row shows the kind at a
+ * glance. The kind filter narrows when there is a lot to work through.
+ *
+ * Server-rendered because it is a list of links — the actions (mark in
+ * progress, mark closed) live on the detail page.
+ */
+import AdminLayout from '@/layouts/AdminLayout.astro'
+import FormSelect from '@/components/admin/FormSelect.astro'
+import { listPublicRequests } from '@/lib/admin/repositories/public-requests'
+import {
+  REQUEST_KINDS,
+  REQUEST_KIND_LABELS,
+  REQUEST_STATUS_LABELS,
+  type RequestKind,
+  type RequestStatus,
+} from '@/types/public-request'
+
+export const prerender = false
+
+const session = Astro.locals.adminSession
+const kindParam = Astro.url.searchParams.get('kind')
+const kind: RequestKind | undefined = (REQUEST_KINDS as readonly string[]).includes(
+  kindParam ?? ''
+)
+  ? (kindParam as RequestKind)
+  : undefined
+
+const requests = await listPublicRequests(kind)
+
+const dateFormat = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+})
+
+const STATUS_TONE: Record<RequestStatus, string> = {
+  new: 'bg-accent text-accent-foreground',
+  in_progress: 'border border-foreground text-foreground',
+  quoted: 'bg-primary text-primary-foreground',
+  closed: 'bg-muted text-muted-foreground',
+}
+---
+
+<AdminLayout title="Requests" section="requests" email={session?.email}>
+  <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="wh-h1-compact">Requests</h1>
+      <p class="mt-1 text-muted-foreground">
+        Every ask the public site sends — quote requests, site checks, and anything else. Reply
+        from the address on each row.
+      </p>
+    </div>
+  </div>
+
+  <form method="get" class="mb-8 flex flex-wrap gap-3">
+    <FormSelect
+      id="kind"
+      name="kind"
+      label="Filter by kind"
+      value={kind ?? ''}
+      class="w-full sm:w-64"
+      options={[
+        { value: '', label: 'All kinds' },
+        ...REQUEST_KINDS.map((entry) => ({ value: entry, label: REQUEST_KIND_LABELS[entry] })),
+      ]}
+    />
+    <button
+      type="submit"
+      class="min-h-12 rounded-full border border-border bg-card px-6 text-base transition-colors hover:border-foreground"
+    >
+      Filter
+    </button>
+  </form>
+
+  {
+    requests.length === 0 ? (
+      <div class="rounded-3xl border border-border bg-card p-8 text-center">
+        <h2 class="mb-2 font-display text-xl">
+          {kind ? 'Nothing in this filter' : 'No requests yet'}
+        </h2>
+        <p class="mx-auto max-w-md text-muted-foreground">
+          {kind
+            ? 'Try a different kind, or clear the filter.'
+            : 'When a visitor submits a form on the public site, it lands here.'}
+        </p>
+      </div>
+    ) : (
+      <ul class="flex flex-col gap-3">
+        {requests.map((request) => (
+          <li>
+            <a
+              href={`/admin/requests/${request.id}`}
+              class="block rounded-2xl border border-border bg-card p-5 transition-colors hover:border-foreground"
+            >
+              <div class="flex flex-wrap items-start justify-between gap-3">
+                <div class="min-w-0 flex-1">
+                  <div class="mb-2 flex flex-wrap items-center gap-2">
+                    <span class="rounded-full border border-border px-3 py-0.5 text-xs text-muted-foreground">
+                      {REQUEST_KIND_LABELS[request.kind]}
+                    </span>
+                    <span
+                      class:list={[
+                        'rounded-full px-3 py-0.5 text-xs',
+                        STATUS_TONE[request.status],
+                      ]}
+                    >
+                      {REQUEST_STATUS_LABELS[request.status]}
+                    </span>
+                    <span class="text-sm text-muted-foreground">
+                      {dateFormat.format(new Date(request.submittedAt))}
+                    </span>
+                  </div>
+                  <p class="font-display text-lg leading-tight">
+                    {request.contactName || request.contactEmail}
+                  </p>
+                  {request.company && (
+                    <p class="text-sm text-muted-foreground">{request.company}</p>
+                  )}
+                  {request.message && (
+                    <p class="mt-2 line-clamp-2 max-w-3xl text-base text-muted-foreground">
+                      {request.message}
+                    </p>
+                  )}
+                  {request.kind === 'site-check' &&
+                    typeof (request.details as { websiteUrl?: string }).websiteUrl === 'string' && (
+                      <p class="mt-1 font-mono text-sm break-all text-muted-foreground">
+                        {(request.details as { websiteUrl: string }).websiteUrl}
+                      </p>
+                    )}
+                </div>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</AdminLayout>

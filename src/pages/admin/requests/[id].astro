@@ -1,0 +1,208 @@
+---
+/**
+ * Request detail.
+ *
+ * The full record for one submission — contact block, message, kind-
+ * specific fields, and a status control. Status changes go straight
+ * through a form POST rather than a fetch: this page has no other
+ * client-side state to preserve, and a redirect after save keeps the
+ * URL and the rendered state in lock-step.
+ */
+import AdminLayout from '@/layouts/AdminLayout.astro'
+import FormSelect from '@/components/admin/FormSelect.astro'
+import Icon from '@/components/ui/Icon.astro'
+import { publicEnv } from '@/config/env'
+import { assertAdminOrigin } from '@/lib/admin/auth'
+import {
+  getPublicRequestById,
+  updatePublicRequestStatus,
+} from '@/lib/admin/repositories/public-requests'
+import {
+  REQUEST_KIND_LABELS,
+  REQUEST_STATUSES,
+  REQUEST_STATUS_LABELS,
+  type RequestStatus,
+} from '@/types/public-request'
+
+export const prerender = false
+
+const session = Astro.locals.adminSession
+const { id } = Astro.params
+
+let statusUpdated = false
+
+if (Astro.request.method === 'POST' && session && id) {
+  try {
+    assertAdminOrigin(Astro.request, publicEnv.PUBLIC_SITE_URL)
+    const form = await Astro.request.formData()
+    const nextStatus = String(form.get('status') ?? '')
+    if ((REQUEST_STATUSES as readonly string[]).includes(nextStatus)) {
+      await updatePublicRequestStatus(id, nextStatus as RequestStatus)
+      statusUpdated = true
+    }
+  } catch (cause) {
+    console.error('[request-status]', cause)
+  }
+}
+
+const request = id ? await getPublicRequestById(id) : null
+if (!request) return Astro.redirect('/admin/requests')
+
+const dateFormat = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+})
+
+const websiteUrl =
+  request.kind === 'site-check' &&
+  typeof (request.details as { websiteUrl?: string }).websiteUrl === 'string'
+    ? (request.details as { websiteUrl: string }).websiteUrl
+    : null
+
+const detailPairs = Object.entries(request.details as Record<string, unknown>)
+  .filter(([, value]) => typeof value === 'string' && value.length > 0)
+  .filter(([key]) => key !== 'websiteUrl')
+---
+
+<AdminLayout title={`Request from ${request.contactEmail}`} section="requests" email={session?.email}>
+  <a
+    href="/admin/requests"
+    class="mb-6 inline-flex min-h-11 items-center text-base text-muted-foreground transition-colors hover:text-foreground"
+  >
+    <Icon name="arrowLeft" class="mr-2 size-4" />
+    All requests
+  </a>
+
+  <div class="mb-6 flex flex-wrap items-baseline justify-between gap-3">
+    <div>
+      <p class="text-sm text-muted-foreground">
+        {REQUEST_KIND_LABELS[request.kind]} · {dateFormat.format(new Date(request.submittedAt))}
+      </p>
+      <h1 class="wh-h1-compact mt-1">{request.contactName || request.contactEmail}</h1>
+    </div>
+  </div>
+
+  {
+    statusUpdated && (
+      <p class="mb-6 rounded-2xl border border-accent bg-accent/10 p-4 text-base">
+        Status updated.
+      </p>
+    )
+  }
+
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
+    <section class="rounded-3xl border border-border bg-card p-5 md:p-6">
+      {
+        request.message && (
+          <>
+            <h2 class="mb-3 font-display text-xl">What they said</h2>
+            <p class="text-base whitespace-pre-wrap">{request.message}</p>
+          </>
+        )
+      }
+
+      {
+        websiteUrl && (
+          <div class:list={[request.message ? 'mt-6' : '']}>
+            <h2 class="mb-2 font-display text-xl">Their site</h2>
+            <a
+              href={websiteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 rounded-xl border border-border bg-muted px-4 py-3 font-mono text-base transition-colors hover:border-foreground"
+            >
+              {websiteUrl}
+              <Icon name="arrowRight" class="size-4" />
+            </a>
+          </div>
+        )
+      }
+
+      {
+        detailPairs.length > 0 && (
+          <div class="mt-6">
+            <h2 class="mb-3 font-display text-xl">Details</h2>
+            <dl class="grid gap-3 sm:grid-cols-2">
+              {detailPairs.map(([key, value]) => (
+                <div class="rounded-xl border border-border bg-muted/40 p-4">
+                  <dt class="text-xs tracking-widest text-muted-foreground uppercase">{key}</dt>
+                  <dd class="mt-1 text-base">{String(value)}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )
+      }
+
+      {
+        !request.message && !websiteUrl && detailPairs.length === 0 && (
+          <p class="text-base text-muted-foreground">Contact only — no message or details.</p>
+        )
+      }
+    </section>
+
+    <aside class="flex flex-col gap-4">
+      <section class="rounded-3xl border border-border bg-card p-5">
+        <h2 class="mb-3 font-display text-lg">Contact</h2>
+        <p class="text-base">{request.contactName || '—'}</p>
+        <p class="text-sm">
+          <a class="underline underline-offset-2" href={`mailto:${request.contactEmail}`}>
+            {request.contactEmail}
+          </a>
+        </p>
+        {request.contactPhone && (
+          <p class="mt-1 text-sm text-muted-foreground">{request.contactPhone}</p>
+        )}
+        {request.company && (
+          <p class="mt-1 text-sm text-muted-foreground">{request.company}</p>
+        )}
+
+        <a
+          href={`mailto:${request.contactEmail}?subject=Re:%20${encodeURIComponent(REQUEST_KIND_LABELS[request.kind])}`}
+          class="mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-4 text-sm text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+        >
+          Reply by email
+        </a>
+      </section>
+
+      <section class="rounded-3xl border border-border bg-card p-5">
+        <h2 class="mb-3 font-display text-lg">Status</h2>
+        <form method="post" class="flex flex-col gap-3">
+          <FormSelect
+            id="status"
+            name="status"
+            label="Status"
+            value={request.status}
+            options={REQUEST_STATUSES.map((entry) => ({
+              value: entry,
+              label: REQUEST_STATUS_LABELS[entry],
+            }))}
+          />
+          <button
+            type="submit"
+            class="min-h-11 rounded-full bg-primary px-4 text-sm text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+          >
+            Save
+          </button>
+        </form>
+      </section>
+
+      {
+        request.linkedQuoteSlug && (
+          <section class="rounded-3xl border border-border bg-card p-5">
+            <h2 class="mb-3 font-display text-lg">Linked quote</h2>
+            <a
+              href={`/admin/quotes/${request.linkedQuoteId}`}
+              class="inline-flex min-h-11 items-center rounded-full border border-border px-4 text-sm transition-colors hover:border-foreground"
+            >
+              Open the quote
+            </a>
+          </section>
+        )
+      }
+    </aside>
+  </div>
+</AdminLayout>

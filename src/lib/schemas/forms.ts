@@ -38,6 +38,29 @@ export const newsletterSchema = z.object({
 
 export type NewsletterInput = z.infer<typeof newsletterSchema>
 
+/**
+ * "Send us your URL" — the small popup on the checklist article and any
+ * future site-audit ask. Deliberately narrow: a URL, an email to reply
+ * to, and an optional note. Anything longer belongs on the RaQ page.
+ */
+export const siteCheckSchema = z.object({
+  websiteUrl: z
+    .string()
+    .trim()
+    .min(3, 'Enter the URL of the site you want us to check.')
+    .max(400)
+    .refine(
+      (value) => /^https?:\/\/\S+/i.test(value) || /^[a-z0-9][a-z0-9.-]*\.[a-z]{2,}/i.test(value),
+      'That does not look like a website address.'
+    ),
+  contactEmail: z.email('Enter a valid email address so we can reply.').max(254),
+  contactName: z.string().trim().max(120).optional().or(z.literal('')),
+  message: z.string().trim().max(2_000).optional().or(z.literal('')),
+  [HONEYPOT_FIELD]: honeypot,
+})
+
+export type SiteCheckInput = z.infer<typeof siteCheckSchema>
+
 export const freelanceApplicationSchema = z.object({
   firstName: requiredText('First name', 80),
   lastName: requiredText('Last name', 80),

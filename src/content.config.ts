@@ -293,6 +293,22 @@ const insights = defineCollection({
     /** Estimated read time in minutes. */
     readTime: z.number().int().positive().default(5),
     faqs: z.array(faqSchema).default([]),
+    /**
+     * An interactive checklist that rides in a sticky sidebar next to the
+     * article body. For pieces that are literally a checklist — the reader
+     * wants to check items off against their own project rather than just
+     * read them. Empty (the default) and no sidebar renders; the article
+     * keeps its usual single-column layout.
+     */
+    checklist: z
+      .array(
+        z.object({
+          id: z.string().min(1).max(80),
+          title: z.string().min(1).max(200),
+          description: z.string().max(400).optional(),
+        })
+      )
+      .default([]),
   }),
 })
 

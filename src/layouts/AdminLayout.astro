@@ -32,6 +32,7 @@ interface Props {
     | 'quotes'
     | 'clients'
     | 'invoices'
+    | 'requests'
     | 'rayo'
   /** Sign-in and setup render without the nav rail. */
   chrome?: boolean
@@ -47,6 +48,10 @@ const NAV = [
   { id: 'quotes', label: 'Quotes', href: '/admin/quotes' },
   { id: 'clients', label: 'Clients', href: '/admin/clients' },
   { id: 'invoices', label: 'Invoices', href: '/admin/invoices' },
+  /* The unified inbox for every ask the public site submits — quote
+     requests, site checks, whatever ships next. One queue, one place to
+     look. */
+  { id: 'requests', label: 'Requests', href: '/admin/requests' },
   /* Rayo is a separate product on the same infra. It sits under the studio's
      admin rather than in its own dashboard so anyone who runs one runs both. */
   { id: 'rayo', label: 'Rayo', href: '/admin/rayo' },
