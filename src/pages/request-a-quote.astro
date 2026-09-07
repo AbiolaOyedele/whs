@@ -2,14 +2,16 @@
 /**
  * Request A Quote — the public wizard.
  *
- * Server-rendered shell that hosts the React multi-step island. The
- * island is `client:load` because the whole point of the page is
- * interactive: a deferred hydration would leave a stranger staring at
- * a form that ignored their first click.
+ * Deliberately mirrors the /get-in-touch layout: pitch and email
+ * options on the left, the form inside a rounded card on the right.
+ * The form primitives are the same too (Field, underline variants,
+ * SubmitButton, Honeypot) so a visitor moving between the two pages
+ * meets one visual language.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import Hero from '@/components/sections/Hero.astro'
 import RequestQuoteWizard from '@/components/request-quote/RequestQuoteWizard'
+import { SITE } from '@/config/site'
 import { breadcrumbSchema } from '@/lib/seo'
 import { publicEnv } from '@/config/env'
 
@@ -23,18 +25,88 @@ const jsonLd = [
 ---
 
 <BaseLayout
-  title="Request A Quote | WildHands"
-  description="Tell us what you're building and we'll come back with a scoped quote within a working day. Nothing here is binding."
+  title="Request a quote | WildHands"
+  description="Tell us what you're building and we come back with a scoped quote within a working day. Nothing here is binding."
   jsonLd={jsonLd}
   darkHero
 >
   <Hero
     eyebrow="Request a quote"
     title="Tell us what you're trying to build."
-    standfirst="A short conversation, then a real quote. No packages to fit into — we scope the work, then price it."
+    subtitle="A short conversation, then a real quote. No packages to fit into — we scope the work, then price it."
   />
 
-  <section class="wh-container wh-section">
-    <RequestQuoteWizard client:load />
-  </section>
+  {
+    /*    Pitch on the left, wizard on the right. The dark banner above
+    carries the page title, so this column leads with the body copy
+    rather than repeating the headline. Matches /get-in-touch.*/
+  }
+  <div class="wh-container wh-section">
+    <div class="grid gap-12 lg:grid-cols-2 lg:gap-16">
+      <div class="min-w-0">
+        <p class="max-w-[34rem] text-lg leading-relaxed md:text-xl">
+          Four short steps: who you are, what you're building, rough budget and timeline, then a
+          review before you send. We read every request and reply within one working day — either
+          with a scoped quote or a couple of questions we need answered first. If you're still
+          working out what you need, <a href="/services" class="underline underline-offset-4"
+            >what we build</a
+          > is the place to start.
+        </p>
+
+        <div class="mt-10">
+          <h2 class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+            Prefer email?
+          </h2>
+          <ul class="mt-4 space-y-2 text-sm">
+            <li>
+              <a
+                href={`mailto:${SITE.salesEmail}`}
+                class="wh-sweep wh-tap inline-flex items-center"
+              >
+                <span class="wh-sweep__label">{SITE.salesEmail}</span>
+              </a>
+              <span class="text-muted-foreground"> &middot; new projects</span>
+            </li>
+            <li>
+              <a href={`mailto:${SITE.email}`} class="wh-sweep wh-tap inline-flex items-center">
+                <span class="wh-sweep__label">{SITE.email}</span>
+              </a>
+              <span class="text-muted-foreground"> &middot; anything else</span>
+            </li>
+          </ul>
+          <p class="mt-4 max-w-prose text-sm text-muted-foreground">
+            Running a formal RFP or procurement process? Send it to the sales address and we will
+            confirm receipt with a named contact.
+          </p>
+        </div>
+
+        <div class="mt-12 border-t border-border pt-10">
+          <h2 class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+            What happens next
+          </h2>
+          <ol class="mt-4 space-y-4 text-base text-muted-foreground">
+            <li>
+              <span class="font-medium text-foreground">1. We read it.</span> A real person, not an
+              autoresponder.
+            </li>
+            <li>
+              <span class="font-medium text-foreground">2. We reply.</span> Within one working day,
+              with a scoped quote or a couple of questions.
+            </li>
+            <li>
+              <span class="font-medium text-foreground">3. You decide.</span> Nothing here is
+              binding — a quote is a starting point, not a signature.
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="flex min-w-0 flex-col gap-4">
+        <div class="rounded-3xl bg-card p-5 sm:p-8 lg:p-10">
+          <h2 class="sr-only">Request a quote</h2>
+          <RequestQuoteWizard client:load />
+        </div>
+      </div>
+    </div>
+  </div>
 </BaseLayout>

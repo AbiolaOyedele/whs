@@ -3,23 +3,36 @@
  *
  * Four steps: Contact → Project → Scope → Review. Each step validates
  * locally before Next unlocks, so a client cannot skip ahead into a
- * blank submission. Client-side validation is UX only — the server
+ * blank submission. Client-side validation is UX only; the server
  * revalidates the same schema and is the source of truth.
+ *
+ * Deliberately uses the same form primitives (Field, underline
+ * variants, SubmitButton, Honeypot, postForm, FormStatus) as the
+ * contact form, so the two surfaces look and behave the same to the
+ * visitor. The wizard adds a progress bar and the step navigation on
+ * top of that shared foundation.
  *
  * State survives a reload via sessionStorage keyed to this browser tab.
  * Deliberately not localStorage: an operator laptop shared with someone
  * else should not fetch a stranger's half-finished enquiry, and a
  * closed tab is the honest signal that the visitor has walked away.
- *
- * Submission posts to /api/v1/quote-requests, which does the queue
- * write, the draft-quote creation, and the two emails.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { FlowButton } from '@/components/ui/flow-button'
-import { HONEYPOT_FIELD } from '@/lib/schemas/form-constants'
+import {
+  Field,
+  FormStatus,
+  Honeypot,
+  IDLE,
+  SubmitButton,
+  postForm,
+  underlineInputClass,
+  underlineTextareaClass,
+  type SubmitState,
+} from '@/components/forms/form-primitives'
 import { PROJECT_TYPES } from '@/types/public-request'
 
-interface State {
+interface Values {
   contactName: string
   contactEmail: string
   contactPhone: string
@@ -31,7 +44,7 @@ interface State {
   referralSource: string
 }
 
-const empty: State = {
+const EMPTY: Values = {
   contactName: '',
   contactEmail: '',
   contactPhone: '',
@@ -44,22 +57,17 @@ const empty: State = {
 }
 
 type Step = 0 | 1 | 2 | 3
-type Status =
-  | { kind: 'editing'; step: Step }
-  | { kind: 'sending' }
-  | { kind: 'sent' }
-  | { kind: 'error'; message: string; step: Step }
 
 const STORAGE_KEY = 'wh-request-quote'
 const STEPS = ['Contact', 'Project', 'Scope', 'Review'] as const
 
-function readStored(): State {
+function readStored(): Values {
   try {
     const raw = window.sessionStorage.getItem(STORAGE_KEY)
-    if (!raw) return empty
+    if (!raw) return EMPTY
     const parsed = JSON.parse(raw) as unknown
-    if (typeof parsed !== 'object' || parsed === null) return empty
-    const p = parsed as Partial<State>
+    if (typeof parsed !== 'object' || parsed === null) return EMPTY
+    const p = parsed as Partial<Values>
     return {
       contactName: typeof p.contactName === 'string' ? p.contactName : '',
       contactEmail: typeof p.contactEmail === 'string' ? p.contactEmail : '',
@@ -72,11 +80,11 @@ function readStored(): State {
       referralSource: typeof p.referralSource === 'string' ? p.referralSource : '',
     }
   } catch {
-    return empty
+    return EMPTY
   }
 }
 
-function writeStored(state: State): void {
+function writeStored(state: Values): void {
   try {
     window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state))
   } catch {
@@ -92,111 +100,68 @@ function clearStored(): void {
   }
 }
 
-/** Lightweight email check — mirrors the vibe of the server's, not the strictness. */
 function looksLikeEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
 }
 
-/** Per-step rules for the Next button. Full validation happens server-side. */
-function stepIsValid(state: State, step: Step): boolean {
+/** Per-step gates on the Next button. The server owns real validation. */
+function stepIsValid(values: Values, step: Step): boolean {
   switch (step) {
     case 0:
-      return state.contactName.trim().length >= 2 && looksLikeEmail(state.contactEmail)
+      return values.contactName.trim().length >= 2 && looksLikeEmail(values.contactEmail)
     case 1:
-      return state.projectType.trim().length > 0 && state.projectSummary.trim().length >= 20
+      return values.projectType.trim().length > 0 && values.projectSummary.trim().length >= 20
     case 2:
-      /* Optional block. Anything the client wants to add is welcome, and
-         nothing here is required for the studio to reply. */
-      return true
     case 3:
-      /* The review step is always valid — this is where they submit. */
       return true
   }
 }
 
 export default function RequestQuoteWizard() {
-  const [state, setState] = useState<State>(empty)
-  const [status, setStatus] = useState<Status>({ kind: 'editing', step: 0 })
+  const [values, setValues] = useState<Values>(EMPTY)
+  const [step, setStep] = useState<Step>(0)
+  const [state, setState] = useState<SubmitState>(IDLE)
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
-    setState(readStored())
+    setValues(readStored())
     setHydrated(true)
   }, [])
 
   useEffect(() => {
     if (!hydrated) return
-    writeStored(state)
-  }, [state, hydrated])
+    writeStored(values)
+  }, [values, hydrated])
 
-  const patch = (changes: Partial<State>) => setState((prev) => ({ ...prev, ...changes }))
+  const set = (key: keyof Values, value: string) =>
+    setValues((prev) => ({ ...prev, [key]: value }))
 
-  const step: Step = status.kind === 'editing' || status.kind === 'error' ? status.step : 3
-  const canAdvance = stepIsValid(state, step)
+  const canAdvance = stepIsValid(values, step)
   const progressPercent = useMemo(() => Math.round(((step + 1) / STEPS.length) * 100), [step])
 
   const next = () => {
-    if (!canAdvance) return
-    if (step < 3) setStatus({ kind: 'editing', step: (step + 1) as Step })
+    if (!canAdvance || step >= 3) return
+    setStep((step + 1) as Step)
   }
-
   const back = () => {
     if (step === 0) return
-    setStatus({ kind: 'editing', step: (step - 1) as Step })
+    setStep((step - 1) as Step)
   }
 
-  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (status.kind === 'sending') return
-    setStatus({ kind: 'sending' })
-
-    const form = event.currentTarget
-    const trap = (form.elements.namedItem(HONEYPOT_FIELD) as HTMLInputElement | null)?.value ?? ''
-
-    try {
-      const response = await fetch('/api/v1/quote-requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...state,
-          [HONEYPOT_FIELD]: trap,
-        }),
-      })
-      const body = (await response.json()) as {
-        ok?: boolean
-        message?: string
-        error?: { message?: string }
-      }
-      if (!response.ok || !body.ok) {
-        setStatus({
-          kind: 'error',
-          message: body.error?.message ?? 'That did not send. Please try again.',
-          step: 3,
-        })
-        return
-      }
-      clearStored()
-      setStatus({ kind: 'sent' })
-    } catch {
-      setStatus({
-        kind: 'error',
-        message: 'We could not reach the server. Please check your connection and try again.',
-        step: 3,
-      })
-    }
+    if (state.status === 'submitting') return
+    setState({ ...IDLE, status: 'submitting' })
+    const result = await postForm('/api/v1/quote-requests', new FormData(event.currentTarget))
+    setState(result)
+    if (result.status === 'success') clearStored()
   }
 
-  if (status.kind === 'sent') {
+  if (state.status === 'success') {
     return (
-      <div className="mx-auto max-w-2xl rounded-3xl border border-border bg-card p-8 text-center md:p-12">
-        <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
-          Sent
-        </p>
-        <h2 className="mt-3 font-display text-3xl md:text-4xl">Got it.</h2>
-        <p className="mx-auto mt-4 max-w-md text-base text-muted-foreground md:text-lg">
-          Thanks — we have your request and will reply within a working day. We've also sent you a
-          copy for your records.
-        </p>
+      <div>
+        <h2 className="text-xl font-medium">Request sent</h2>
+        <p className="mt-2 text-muted-foreground">{state.message}</p>
         <div className="mt-8">
           <FlowButton text="Back to WildHands" href="/" variant="accent" />
         </div>
@@ -205,8 +170,10 @@ export default function RequestQuoteWizard() {
   }
 
   return (
-    <form onSubmit={submit} className="mx-auto max-w-2xl">
-      {/* Progress bar + step chips */}
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
+      <Honeypot />
+
+      {/* Progress bar + step label */}
       <div>
         <div className="flex items-baseline justify-between gap-3">
           <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
@@ -230,77 +197,76 @@ export default function RequestQuoteWizard() {
       </div>
 
       {/* Step body */}
-      <div className="mt-8 rounded-3xl border border-border bg-card p-6 md:p-10">
+      <div className="flex flex-col gap-5">
         {step === 0 && (
-          <div className="flex flex-col gap-5" key="step-contact">
-            <div>
-              <h2 className="font-display text-2xl md:text-3xl">Who are we replying to?</h2>
-              <p className="mt-2 text-base text-muted-foreground">
-                We reply from a real person, not an autoresponder.
-              </p>
-            </div>
+          <>
+            <Field label="Your name" name="contactName" required variant="underline">
+              <input
+                id="contactName"
+                name="contactName"
+                type="text"
+                required
+                autoComplete="name"
+                placeholder="First and last name"
+                value={values.contactName}
+                onChange={(event) => set('contactName', event.target.value)}
+                className={underlineInputClass}
+              />
+            </Field>
 
-            <label className="flex flex-col gap-1.5">
-              <span className="text-sm text-muted-foreground">Your name</span>
+            <Field label="Email" name="contactEmail" required variant="underline">
               <input
-                required
-                value={state.contactName}
-                onChange={(e) => patch({ contactName: e.target.value })}
-                maxLength={120}
-                className="min-h-12 rounded-xl border border-border bg-background px-4 text-base outline-none focus-visible:border-foreground"
-              />
-            </label>
-            <label className="flex flex-col gap-1.5">
-              <span className="text-sm text-muted-foreground">Email</span>
-              <input
-                required
+                id="contactEmail"
+                name="contactEmail"
                 type="email"
-                value={state.contactEmail}
-                onChange={(e) => patch({ contactEmail: e.target.value })}
-                maxLength={254}
-                className="min-h-12 rounded-xl border border-border bg-background px-4 text-base outline-none focus-visible:border-foreground"
+                required
+                autoComplete="email"
+                placeholder="you@company.com"
+                value={values.contactEmail}
+                onChange={(event) => set('contactEmail', event.target.value)}
+                className={underlineInputClass}
               />
-            </label>
-            <div className="grid gap-5 sm:grid-cols-2">
-              <label className="flex flex-col gap-1.5">
-                <span className="text-sm text-muted-foreground">Phone (optional)</span>
-                <input
-                  type="tel"
-                  value={state.contactPhone}
-                  onChange={(e) => patch({ contactPhone: e.target.value })}
-                  maxLength={40}
-                  className="min-h-12 rounded-xl border border-border bg-background px-4 text-base outline-none focus-visible:border-foreground"
-                />
-              </label>
-              <label className="flex flex-col gap-1.5">
-                <span className="text-sm text-muted-foreground">Company (optional)</span>
-                <input
-                  type="text"
-                  value={state.company}
-                  onChange={(e) => patch({ company: e.target.value })}
-                  maxLength={200}
-                  className="min-h-12 rounded-xl border border-border bg-background px-4 text-base outline-none focus-visible:border-foreground"
-                />
-              </label>
-            </div>
-          </div>
+            </Field>
+
+            <Field label="Phone" name="contactPhone" variant="underline">
+              <input
+                id="contactPhone"
+                name="contactPhone"
+                type="tel"
+                autoComplete="tel"
+                placeholder="With your country code"
+                value={values.contactPhone}
+                onChange={(event) => set('contactPhone', event.target.value)}
+                className={underlineInputClass}
+              />
+            </Field>
+
+            <Field label="Company" name="company" variant="underline">
+              <input
+                id="company"
+                name="company"
+                type="text"
+                autoComplete="organization"
+                placeholder="If you're representing one"
+                value={values.company}
+                onChange={(event) => set('company', event.target.value)}
+                className={underlineInputClass}
+              />
+            </Field>
+          </>
         )}
 
         {step === 1 && (
-          <div className="flex flex-col gap-6" key="step-project">
-            <div>
-              <h2 className="font-display text-2xl md:text-3xl">What are you building?</h2>
-              <p className="mt-2 text-base text-muted-foreground">
-                A sentence or two is enough — the more you can say now, the tighter the quote.
-              </p>
-            </div>
-
-            {/* Project type as radio cards for a bigger tap target than a select. */}
-            <fieldset>
-              <legend className="text-sm text-muted-foreground">Pick what fits closest</legend>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          <>
+            <fieldset className="border-b border-border pb-1">
+              <legend className="block pt-4 text-xl font-medium">
+                What are you building?
+                <span className="text-muted-foreground"> *</span>
+              </legend>
+              <p className="mt-2 text-sm text-muted-foreground">Pick what fits closest.</p>
+              <div className="mt-4 grid gap-2 pb-4 sm:grid-cols-2">
                 {PROJECT_TYPES.map((option) => {
-                  const isSelected = state.projectType === option.value
+                  const isSelected = values.projectType === option.value
                   return (
                     <label
                       key={option.value}
@@ -315,7 +281,7 @@ export default function RequestQuoteWizard() {
                         name="projectType"
                         value={option.value}
                         checked={isSelected}
-                        onChange={() => patch({ projectType: option.value })}
+                        onChange={() => set('projectType', option.value)}
                         className="sr-only"
                       />
                       <span
@@ -328,137 +294,118 @@ export default function RequestQuoteWizard() {
                           <span className="size-2 rounded-full bg-accent-foreground" />
                         )}
                       </span>
-                      {option.label}
+                      <span className="leading-snug">{option.label}</span>
                     </label>
                   )
                 })}
               </div>
             </fieldset>
 
-            <label className="flex flex-col gap-1.5">
-              <span className="text-sm text-muted-foreground">Tell us about it</span>
+            <Field
+              label="Tell us about it"
+              name="projectSummary"
+              required
+              variant="underline"
+              hint="A sentence or two is enough — the more you can say now, the tighter the quote."
+            >
               <textarea
+                id="projectSummary"
+                name="projectSummary"
                 required
-                rows={6}
-                value={state.projectSummary}
-                onChange={(e) => patch({ projectSummary: e.target.value })}
-                minLength={20}
-                maxLength={4000}
                 placeholder="What you're trying to build, who it's for, and anything about it that already exists."
-                className="rounded-xl border border-border bg-background px-4 py-3 text-base outline-none focus-visible:border-foreground"
+                value={values.projectSummary}
+                onChange={(event) => set('projectSummary', event.target.value)}
+                className={underlineTextareaClass}
               />
-              <span className="text-xs text-muted-foreground">
-                {state.projectSummary.trim().length < 20
-                  ? `At least a couple of sentences (${state.projectSummary.trim().length}/20 so far).`
-                  : `${state.projectSummary.trim().length} characters.`}
-              </span>
-            </label>
-          </div>
+            </Field>
+          </>
         )}
 
         {step === 2 && (
-          <div className="flex flex-col gap-5" key="step-scope">
-            <div>
-              <h2 className="font-display text-2xl md:text-3xl">Any budget or timeline in mind?</h2>
-              <p className="mt-2 text-base text-muted-foreground">
-                Both are optional. Even a rough sense — a range, or "no idea yet" — helps us
-                reply usefully.
-              </p>
-            </div>
-            <label className="flex flex-col gap-1.5">
-              <span className="text-sm text-muted-foreground">Budget (optional)</span>
+          <>
+            <Field
+              label="Budget"
+              name="budgetRange"
+              variant="underline"
+              hint='A range, a ceiling, or "no idea yet" — anything helps us reply usefully.'
+            >
               <input
+                id="budgetRange"
+                name="budgetRange"
                 type="text"
-                value={state.budgetRange}
-                onChange={(e) => patch({ budgetRange: e.target.value })}
-                maxLength={120}
-                placeholder="e.g. ₦1–2M, under ₦500k, not sure yet"
-                className="min-h-12 rounded-xl border border-border bg-background px-4 text-base outline-none focus-visible:border-foreground"
+                placeholder="e.g. ₦1–2M, under ₦500k, flexible"
+                value={values.budgetRange}
+                onChange={(event) => set('budgetRange', event.target.value)}
+                className={underlineInputClass}
               />
-            </label>
-            <label className="flex flex-col gap-1.5">
-              <span className="text-sm text-muted-foreground">Timeline (optional)</span>
+            </Field>
+
+            <Field label="Timeline" name="timeline" variant="underline">
               <input
+                id="timeline"
+                name="timeline"
                 type="text"
-                value={state.timeline}
-                onChange={(e) => patch({ timeline: e.target.value })}
-                maxLength={120}
                 placeholder="e.g. ready to start now, launch by December, flexible"
-                className="min-h-12 rounded-xl border border-border bg-background px-4 text-base outline-none focus-visible:border-foreground"
+                value={values.timeline}
+                onChange={(event) => set('timeline', event.target.value)}
+                className={underlineInputClass}
               />
-            </label>
-            <label className="flex flex-col gap-1.5">
-              <span className="text-sm text-muted-foreground">How did you hear about us? (optional)</span>
+            </Field>
+
+            <Field label="How did you hear about us?" name="referralSource" variant="underline">
               <input
+                id="referralSource"
+                name="referralSource"
                 type="text"
-                value={state.referralSource}
-                onChange={(e) => patch({ referralSource: e.target.value })}
-                maxLength={200}
-                placeholder="e.g. a search, a specific person, an article"
-                className="min-h-12 rounded-xl border border-border bg-background px-4 text-base outline-none focus-visible:border-foreground"
+                placeholder="A search, a specific person, an article…"
+                value={values.referralSource}
+                onChange={(event) => set('referralSource', event.target.value)}
+                className={underlineInputClass}
               />
-            </label>
-          </div>
+            </Field>
+          </>
         )}
 
         {step === 3 && (
-          <div className="flex flex-col gap-5" key="step-review">
-            <div>
-              <h2 className="font-display text-2xl md:text-3xl">Send this off?</h2>
-              <p className="mt-2 text-base text-muted-foreground">
-                One quick read before submitting. Nothing here is binding — a quote comes after
-                we've talked properly.
-              </p>
-            </div>
-
-            <dl className="grid gap-3 rounded-2xl border border-border bg-background p-5 text-base">
-              <ReviewRow label="Name" value={state.contactName} />
-              <ReviewRow label="Email" value={state.contactEmail} />
-              {state.contactPhone && <ReviewRow label="Phone" value={state.contactPhone} />}
-              {state.company && <ReviewRow label="Company" value={state.company} />}
+          <div className="flex flex-col gap-5">
+            <p className="text-lg text-muted-foreground">
+              One quick read before submitting. Nothing here is binding — a quote comes after
+              we&apos;ve talked properly.
+            </p>
+            <dl className="grid gap-3 rounded-2xl border border-border bg-muted/30 p-5 text-base">
+              <ReviewRow label="Name" value={values.contactName} />
+              <ReviewRow label="Email" value={values.contactEmail} />
+              {values.contactPhone && <ReviewRow label="Phone" value={values.contactPhone} />}
+              {values.company && <ReviewRow label="Company" value={values.company} />}
               <ReviewRow
                 label="Project"
                 value={
-                  PROJECT_TYPES.find((p) => p.value === state.projectType)?.label ??
-                  state.projectType
+                  PROJECT_TYPES.find((p) => p.value === values.projectType)?.label ??
+                  values.projectType
                 }
               />
-              {state.budgetRange && <ReviewRow label="Budget" value={state.budgetRange} />}
-              {state.timeline && <ReviewRow label="Timeline" value={state.timeline} />}
-              {state.referralSource && (
-                <ReviewRow label="Heard via" value={state.referralSource} />
+              {values.budgetRange && <ReviewRow label="Budget" value={values.budgetRange} />}
+              {values.timeline && <ReviewRow label="Timeline" value={values.timeline} />}
+              {values.referralSource && (
+                <ReviewRow label="Heard via" value={values.referralSource} />
               )}
               <div>
                 <dt className="text-sm text-muted-foreground">Summary</dt>
-                <dd className="mt-1 whitespace-pre-wrap">{state.projectSummary}</dd>
+                <dd className="mt-1 whitespace-pre-wrap">{values.projectSummary}</dd>
               </div>
             </dl>
-
-            {status.kind === 'error' && (
-              <p role="alert" className="text-sm text-destructive">
-                {status.message}
-              </p>
-            )}
           </div>
         )}
-
-        {/* Honeypot — visually hidden, ignored by real users. */}
-        <label
-          aria-hidden="true"
-          className="pointer-events-none absolute -left-[9999px] size-0 opacity-0"
-          tabIndex={-1}
-        >
-          Company fax
-          <input type="text" name={HONEYPOT_FIELD} tabIndex={-1} autoComplete="off" />
-        </label>
       </div>
 
+      <FormStatus state={state} />
+
       {/* Step controls */}
-      <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <button
           type="button"
           onClick={back}
-          disabled={step === 0 || status.kind === 'sending'}
+          disabled={step === 0 || state.status === 'submitting'}
           className="inline-flex min-h-12 items-center rounded-full border border-border bg-card px-5 text-base transition-colors hover:border-foreground disabled:opacity-40"
         >
           Back
@@ -472,12 +419,9 @@ export default function RequestQuoteWizard() {
             disabled={!canAdvance}
           />
         ) : (
-          <FlowButton
-            text={status.kind === 'sending' ? 'Sending…' : 'Send it'}
-            variant="accent"
-            type="submit"
-            disabled={status.kind === 'sending'}
-          />
+          <SubmitButton busy={state.status === 'submitting'} tone="accent">
+            Send it
+          </SubmitButton>
         )}
       </div>
     </form>
@@ -488,7 +432,7 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-border pb-2 last:border-b-0 last:pb-0">
       <dt className="text-sm text-muted-foreground">{label}</dt>
-      <dd className="max-w-xs break-words text-right">{value}</dd>
+      <dd className="max-w-xs text-right break-words">{value}</dd>
     </div>
   )
 }
