@@ -67,11 +67,21 @@ const parentUrl = `${siteUrl}/services/${entry.id}`
  *     engines the intent-match phrase without generating obviously
  *     find-and-replace prose.
  */
-/* `eyebrow` is optional in the schema, so a service without one falls
-   back to the title — "websites", "apps", "tools and systems" already
-   read as a noun. */
-const serviceNoun = (data.eyebrow ?? data.title).toLowerCase()
-const eyebrowLabel = data.eyebrow ?? data.title
+/*
+ * The short, composable name of the service — "Websites", "Apps",
+ * "Tools & Systems". Used as the base for the H1 and breadcrumbs so
+ * the location page reads cleanly. The service's `title` was tuned
+ * for its own SEO ("Custom Website Design in Lagos, Nigeria") and does
+ * not compose here: "Custom Website Design in Lagos, Nigeria in
+ * Lekki, Lagos" is the wrong sentence.
+ *
+ * `eyebrow` is optional in the schema; a service without one gets a
+ * best-guess fallback from the service id (a slug like "apps"
+ * capitalised).
+ */
+const eyebrowLabel =
+  data.eyebrow ?? entry.id.charAt(0).toUpperCase() + entry.id.slice(1).replace(/-/g, ' ')
+const serviceNoun = eyebrowLabel.toLowerCase()
 
 const heroKicker = `${eyebrowLabel} · ${location.longLabel}`
 
@@ -95,7 +105,7 @@ const combinedFaqs = [localFaq, ...data.faqs]
 const jsonLd = [
   localBusinessSchema(siteUrl),
   serviceSchema({
-    name: `${data.title} — ${location.longLabel}`,
+    name: `${eyebrowLabel} — ${location.longLabel}`,
     description: pageDescription,
     url: canonical,
     siteUrl,
@@ -103,7 +113,7 @@ const jsonLd = [
   breadcrumbSchema([
     { name: 'Home', url: `${siteUrl}/` },
     { name: 'Services', url: `${siteUrl}/services` },
-    { name: data.title, url: parentUrl },
+    { name: eyebrowLabel, url: parentUrl },
     { name: location.label, url: canonical },
   ]),
   faqPageSchema(combinedFaqs),
@@ -119,11 +129,11 @@ const siblings = locationsByCountry()
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription} jsonLd={jsonLd} darkHero>
-  <Hero eyebrow={heroKicker} title={`${data.title} in ${location.longLabel}`} subtitle={data.summary}>
+  <Hero eyebrow={heroKicker} title={`${eyebrowLabel} in ${location.longLabel}`} subtitle={data.summary}>
     <div class="mt-8 flex flex-wrap gap-3">
       <Button href="/get-in-touch" variant="accent" size="lg">Talk to Us</Button>
       <Button href={`/services/${entry.id}`} variant="outline" onDark size="lg">
-        More about {data.title.toLowerCase()}
+        More about {eyebrowLabel.toLowerCase()}
       </Button>
     </div>
   </Hero>
@@ -131,12 +141,12 @@ const siblings = locationsByCountry()
   {/* Local context — the paragraph that makes this page different from
       its 28 siblings for the same service. Hand-written per location. */}
   <section class="wh-container wh-section">
-    <SectionHeading level={2}>{data.title} in {location.longLabel}</SectionHeading>
+    <SectionHeading level={2}>{eyebrowLabel} in {location.longLabel}</SectionHeading>
     <p class="mt-5 max-w-[65ch] text-lg text-muted-foreground">{location.localContext}</p>
   </section>
 
   <section class="wh-container wh-section">
-    <SectionHeading level={2}>What {data.title.toLowerCase()} means</SectionHeading>
+    <SectionHeading level={2}>What {eyebrowLabel.toLowerCase()} means</SectionHeading>
     <p class="mt-5 max-w-[65ch] text-lg text-muted-foreground">{data.definition}</p>
   </section>
 
@@ -191,7 +201,7 @@ const siblings = locationsByCountry()
       reader looking for "do you also work in…?" */}
   <section class="wh-container wh-section">
     <SectionHeading level={2}>
-      Also building {data.title.toLowerCase()} in
+      Also building {eyebrowLabel.toLowerCase()} in
     </SectionHeading>
     <div class="mt-10 grid gap-8 md:grid-cols-2 xl:grid-cols-3">
       {
