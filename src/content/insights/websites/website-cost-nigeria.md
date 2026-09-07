@@ -3,9 +3,9 @@ category: 'websites'
 title: 'How Much Does a Website Cost in Nigeria?'
 description: 'A real answer to what drives website cost in Nigeria, the three main scope tiers, and what to check before you accept a quote.'
 author:
-  name: 'Abiola Oyedele'
-  role: 'Founder, WildHands'
-  bio: "Founder of WildHands. Writes about building custom websites, apps and internal tools for businesses in Lagos and across Africa."
+  name: 'WildHands'
+  role: 'Studio'
+  bio: 'WildHands builds custom websites, apps and internal tools for businesses in Lagos and across Africa.'
 publishDate: '2026-09-07'
 readTime: 6
 placeholder: false

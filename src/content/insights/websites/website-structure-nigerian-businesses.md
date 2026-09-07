@@ -3,9 +3,9 @@ category: 'websites'
 title: 'Best Website Structure for Nigerian Businesses'
 description: 'How to structure a business website for Nigerian customers: essential pages, mobile-first design, trust signals, and local payment integration.'
 author:
-  name: 'Abiola Oyedele'
-  role: 'Founder, WildHands'
-  bio: "Founder of WildHands. Writes about building custom websites, apps and internal tools for businesses in Lagos and across Africa."
+  name: 'WildHands'
+  role: 'Studio'
+  bio: 'WildHands builds custom websites, apps and internal tools for businesses in Lagos and across Africa.'
 publishDate: '2026-09-07'
 readTime: 5
 placeholder: false

@@ -3,9 +3,9 @@ category: 'websites'
 title: 'Website vs Web App: What Does Your Business Need?'
 description: 'A clear way to decide whether your business needs a website or a web app, with real examples and what each one costs to build and maintain.'
 author:
-  name: 'Abiola Oyedele'
-  role: 'Founder, WildHands'
-  bio: "Founder of WildHands. Writes about building custom websites, apps and internal tools for businesses in Lagos and across Africa."
+  name: 'WildHands'
+  role: 'Studio'
+  bio: 'WildHands builds custom websites, apps and internal tools for businesses in Lagos and across Africa.'
 publishDate: '2026-09-07'
 readTime: 6
 placeholder: false

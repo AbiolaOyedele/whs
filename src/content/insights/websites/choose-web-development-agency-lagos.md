@@ -3,9 +3,9 @@ category: 'websites'
 title: 'How to Choose a Web Development Agency in Lagos'
 description: 'What to check before hiring a web development agency in Lagos, from portfolio and process to ownership and aftercare.'
 author:
-  name: 'Abiola Oyedele'
-  role: 'Founder, WildHands'
-  bio: "Founder of WildHands. Writes about building custom websites, apps and internal tools for businesses in Lagos and across Africa."
+  name: 'WildHands'
+  role: 'Studio'
+  bio: 'WildHands builds custom websites, apps and internal tools for businesses in Lagos and across Africa.'
 publishDate: '2026-09-07'
 readTime: 6
 placeholder: false

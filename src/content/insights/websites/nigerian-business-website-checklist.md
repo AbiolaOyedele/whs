@@ -3,9 +3,9 @@ category: 'websites'
 title: 'What Should a Nigerian Business Website Include?'
 description: 'A practical checklist of what every Nigerian business website needs, from essential pages to local payment and trust signals.'
 author:
-  name: 'Abiola Oyedele'
-  role: 'Founder, WildHands'
-  bio: "Founder of WildHands. Writes about building custom websites, apps and internal tools for businesses in Lagos and across Africa."
+  name: 'WildHands'
+  role: 'Studio'
+  bio: 'WildHands builds custom websites, apps and internal tools for businesses in Lagos and across Africa.'
 publishDate: '2026-09-07'
 readTime: 5
 placeholder: false

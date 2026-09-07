@@ -3,9 +3,9 @@ category: 'websites'
 title: 'How Much Does E-commerce Development Cost in Nigeria?'
 description: 'What actually drives the cost of an e-commerce site in Nigeria, from platform choice to payment integration and delivery logistics.'
 author:
-  name: 'Abiola Oyedele'
-  role: 'Founder, WildHands'
-  bio: "Founder of WildHands. Writes about building custom websites, apps and internal tools for businesses in Lagos and across Africa."
+  name: 'WildHands'
+  role: 'Studio'
+  bio: 'WildHands builds custom websites, apps and internal tools for businesses in Lagos and across Africa.'
 publishDate: '2026-09-07'
 readTime: 6
 placeholder: false
