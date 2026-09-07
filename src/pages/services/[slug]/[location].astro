@@ -140,7 +140,7 @@ const jsonLd = [
       does not read a paragraph explaining why their own city matters. */}
 
   <section class="wh-container wh-section">
-    <SectionHeading level={2}>What {eyebrowLabel.toLowerCase()} means</SectionHeading>
+    <SectionHeading level={2}>Our approach</SectionHeading>
     <p class="mt-5 max-w-[65ch] text-lg text-muted-foreground">{data.definition}</p>
   </section>
 
@@ -148,17 +148,20 @@ const jsonLd = [
     data.includes.length > 0 && (
       <section class="wh-container wh-section">
         <SectionHeading level={2}>What it includes</SectionHeading>
-        <div class="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+        <div class="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_28rem] lg:items-start">
           <NumberedList items={data.includes} columns={2} />
           {
             data.shipsWith.length > 0 && (
-              <aside class="rounded-3xl border border-border bg-card p-6 lg:sticky lg:top-24">
+              <aside class="rounded-3xl border border-border bg-card p-8 lg:sticky lg:top-24">
                 <p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
                   Every build ships with
                 </p>
-                <ul class="mt-4 flex flex-col gap-3 text-base">
+                {/* Two columns so a list of nine reads as a shape rather
+                    than a scroll. Long items sit on two lines instead of
+                    being clipped by a narrow column. */}
+                <ul class="mt-5 grid grid-cols-2 gap-x-5 gap-y-3 text-base">
                   {data.shipsWith.map((item) => (
-                    <li class="flex items-start gap-3">
+                    <li class="flex items-start gap-2.5">
                       <span
                         aria-hidden="true"
                         class="mt-1 flex size-5 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground"
@@ -167,7 +170,7 @@ const jsonLd = [
                           <path d="M2 6.5L5 9.5L10 3.5" />
                         </svg>
                       </span>
-                      <span>{item}</span>
+                      <span class="leading-snug">{item}</span>
                     </li>
                   ))}
                 </ul>
