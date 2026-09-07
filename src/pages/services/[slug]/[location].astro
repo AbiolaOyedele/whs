@@ -1,0 +1,228 @@
+---
+/**
+ * Service × location — the programmatic SEO pages.
+ *
+ * One route, 3 services × 29 locations = 87 pages. Each carries:
+ *   - A title, meta description and H1 that name both the service and the
+ *     location, so search engines see the intent match on the page they
+ *     will show a searcher.
+ *   - A local-context paragraph hand-written per location, so no two pages
+ *     read the same. Templated find-and-replace is exactly what Google's
+ *     helpful-content system exists to demote.
+ *   - A location-specific FAQ answer ("do you work in <place>?").
+ *   - LocalBusiness JSON-LD stamped with the location's country, and a
+ *     Service node whose `areaServed` is the location itself.
+ *
+ * The service-side copy comes from the same markdown as `/services/<slug>`
+ * — a single source of truth, so a change to what "websites" means
+ * ripples through every location page for websites at once.
+ */
+import type { GetStaticPaths } from 'astro'
+import { getCollection, render } from 'astro:content'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import SectionHeading from '@/components/sections/SectionHeading.astro'
+import NumberedList from '@/components/sections/NumberedList.astro'
+import FAQAccordion from '@/components/sections/FAQAccordion.astro'
+import CTASection from '@/components/sections/CTASection.astro'
+import Prose from '@/components/ui/Prose.astro'
+import Button from '@/components/ui/Button.astro'
+import { breadcrumbSchema, faqPageSchema, localBusinessSchema, serviceSchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
+import { PROCESS_STEPS, SITE } from '@/config/site'
+import {
+  SERVICE_LOCATIONS,
+  locationsByCountry,
+  type ServiceLocation,
+} from '@/config/service-locations'
+
+export const getStaticPaths = (async () => {
+  const services = await getCollection('services', ({ data }) => !data.draft)
+  return services.flatMap((entry) =>
+    SERVICE_LOCATIONS.map((location) => ({
+      params: { slug: entry.id, location: location.slug },
+      props: { entry, location },
+    }))
+  )
+}) satisfies GetStaticPaths
+
+const { entry, location } = Astro.props as {
+  entry: Awaited<ReturnType<typeof getCollection<'services'>>>[number]
+  location: ServiceLocation
+}
+const { data } = entry
+const { Content } = await render(entry)
+
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+const canonical = `${siteUrl}/services/${entry.id}/${location.slug}`
+const parentUrl = `${siteUrl}/services/${entry.id}`
+
+/*
+ * Titles and copy are constructed rather than stored per-combo:
+ *
+ *   - A hand-written string per service × location (87 rows) would drift
+ *     the moment a service name changed. The service copy is authoritative
+ *     in markdown; the location copy is authoritative in the config.
+ *   - The templating is minimal on purpose — just enough to give search
+ *     engines the intent-match phrase without generating obviously
+ *     find-and-replace prose.
+ */
+/* `eyebrow` is optional in the schema, so a service without one falls
+   back to the title — "websites", "apps", "tools and systems" already
+   read as a noun. */
+const serviceNoun = (data.eyebrow ?? data.title).toLowerCase()
+const eyebrowLabel = data.eyebrow ?? data.title
+
+const heroKicker = `${eyebrowLabel} · ${location.longLabel}`
+
+const pageTitle = `Custom ${serviceNoun} in ${location.longLabel} | ${SITE.name}`
+
+const pageDescription = `${SITE.name} builds custom ${serviceNoun} for businesses in ${location.longLabel}. ${data.summary}`
+
+/*
+ * FAQs on this page:
+ *   1. The location-specific "do you work here?" up-front — the question
+ *      a local searcher actually types, answered directly.
+ *   2. The service's own FAQs, so a page landing from search still has
+ *      the pricing and process answers a client will ask next.
+ */
+const localFaq = {
+  question: `Do you build ${serviceNoun} for businesses in ${location.label}?`,
+  answer: location.faqAnswer,
+}
+const combinedFaqs = [localFaq, ...data.faqs]
+
+const jsonLd = [
+  localBusinessSchema(siteUrl),
+  serviceSchema({
+    name: `${data.title} — ${location.longLabel}`,
+    description: pageDescription,
+    url: canonical,
+    siteUrl,
+  }),
+  breadcrumbSchema([
+    { name: 'Home', url: `${siteUrl}/` },
+    { name: 'Services', url: `${siteUrl}/services` },
+    { name: data.title, url: parentUrl },
+    { name: location.label, url: canonical },
+  ]),
+  faqPageSchema(combinedFaqs),
+]
+
+/*
+ * "Also serving" list — a small internal-link block linking sideways to
+ * the sibling location pages for this service, grouped by country. Helps
+ * both search-engine crawl depth (one hop from any location to any
+ * other) and the reader who wants to check if we work where they are.
+ */
+const siblings = locationsByCountry()
+---
+
+<BaseLayout title={pageTitle} description={pageDescription} jsonLd={jsonLd} darkHero>
+  <Hero eyebrow={heroKicker} title={`${data.title} in ${location.longLabel}`} subtitle={data.summary}>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <Button href="/get-in-touch" variant="accent" size="lg">Talk to Us</Button>
+      <Button href={`/services/${entry.id}`} variant="outline" onDark size="lg">
+        More about {data.title.toLowerCase()}
+      </Button>
+    </div>
+  </Hero>
+
+  {/* Local context — the paragraph that makes this page different from
+      its 28 siblings for the same service. Hand-written per location. */}
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>{data.title} in {location.longLabel}</SectionHeading>
+    <p class="mt-5 max-w-[65ch] text-lg text-muted-foreground">{location.localContext}</p>
+  </section>
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>What {data.title.toLowerCase()} means</SectionHeading>
+    <p class="mt-5 max-w-[65ch] text-lg text-muted-foreground">{data.definition}</p>
+  </section>
+
+  {
+    data.includes.length > 0 && (
+      <section class="wh-container wh-section">
+        <SectionHeading level={2}>What it includes</SectionHeading>
+        <NumberedList items={data.includes} columns={2} class="mt-10" />
+      </section>
+    )
+  }
+
+  <section class="wh-container wh-section">
+    <SectionHeading level={2} eyebrow="Process">How it works.</SectionHeading>
+    <ol class="mt-10 grid gap-8 sm:grid-cols-3">
+      {
+        PROCESS_STEPS.map((step, index) => (
+          <li class="border-t border-border pt-5">
+            <span class="text-xs text-muted-foreground tabular-nums">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <h3 class="mt-2 text-lg font-medium">{step.title}</h3>
+            <p class="mt-2 text-muted-foreground">{step.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="wh-container wh-section">
+    <Prose>
+      <Content />
+    </Prose>
+  </section>
+
+  {
+    data.pricingNote && (
+      <section class="wh-container wh-section">
+        <SectionHeading level={2}>What it costs</SectionHeading>
+        <p class="mt-5 max-w-[65ch] text-muted-foreground">{data.pricingNote}</p>
+        <p class="mt-3 max-w-[65ch] text-base text-muted-foreground">
+          Amounts are agreed in {location.currency} where the client prefers to be quoted locally.
+        </p>
+      </section>
+    )
+  }
+
+  <FAQAccordion faqs={combinedFaqs} />
+
+  {/* Sideways navigation to sibling location pages, grouped by country.
+      Serves both crawlers (short paths between related pages) and a
+      reader looking for "do you also work in…?" */}
+  <section class="wh-container wh-section">
+    <SectionHeading level={2}>
+      Also building {data.title.toLowerCase()} in
+    </SectionHeading>
+    <div class="mt-10 grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+      {
+        siblings.map(({ country, locations }) => (
+          <div>
+            <h3 class="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+              {country}
+            </h3>
+            <ul class="mt-3 flex flex-wrap gap-2">
+              {locations.map((sibling) =>
+                sibling.slug === location.slug ? (
+                  <li class="rounded-full border border-accent bg-accent/10 px-3 py-1 text-sm">
+                    {sibling.label}
+                  </li>
+                ) : (
+                  <li>
+                    <a
+                      href={`/services/${entry.id}/${sibling.slug}`}
+                      class="inline-flex rounded-full border border-border bg-card px-3 py-1 text-sm transition-colors hover:border-foreground"
+                    >
+                      {sibling.label}
+                    </a>
+                  </li>
+                )
+              )}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <CTASection />
+</BaseLayout>
