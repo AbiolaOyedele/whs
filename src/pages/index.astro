@@ -15,10 +15,20 @@ import WorkCard from '@/components/sections/WorkCard.astro'
 import AnimatedText from '@/components/sections/AnimatedText.astro'
 import CTASection from '@/components/sections/CTASection.astro'
 import Button from '@/components/ui/Button.astro'
-import { SITE, SHOW_PUBLISHED_WORK, WORK_COMING_SOON } from '@/config/site'
+import { SHOW_PUBLISHED_WORK, WORK_COMING_SOON } from '@/config/site'
 import { list, text } from '@/lib/admin/content'
 import { SERVICE_PILLARS, SERVICE_PILLAR_LABELS, SERVICE_PILLAR_TAGLINES } from '@/content.config'
 import Icon from '@/components/ui/Icon.astro'
+import { localBusinessSchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
+
+/*
+ * A LocalBusiness node on the homepage — the strongest local-search signal
+ * we can send Google without a Google Business Profile. Only here, because
+ * scattering it across every page would compete with itself for the same
+ * entity in the graph.
+ */
+const homepageJsonLd = [localBusinessSchema(publicEnv.PUBLIC_SITE_URL.replace(/\/$/, ''))]
 
 const [work, services] = await Promise.all([
   getCollection('work', ({ data }) => !data.draft),
@@ -45,7 +55,12 @@ const problems = [0, 1, 2].map((index) => ({
 }))
 ---
 
-<BaseLayout title={SITE.name} description={text('site.description')} darkHero>
+<BaseLayout
+  title="WildHands | Website & Web App Development in Lagos, Nigeria"
+  description={text('site.description')}
+  darkHero
+  jsonLd={homepageJsonLd}
+>
   <Hero
     variant="home"
     title={text('home.hero.title')}

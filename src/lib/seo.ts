@@ -113,6 +113,45 @@ export function caseStudySchema(input: {
   }
 }
 
+/**
+ * LocalBusiness node for the homepage.
+ *
+ * A stronger local-search signal than Organization for a studio that trades
+ * to a specific place — Google reads `address`, `areaServed` and `telephone`
+ * from this to place the business in local results. Emitted once, on the
+ * homepage only, so there is one authoritative entity node for the studio
+ * rather than a scatter of duplicates on every page.
+ *
+ * The @id deliberately differs from the Organization node's so the two are
+ * distinct entities in the graph. Address stays a `PostalAddress` even when
+ * no street line is set — Google accepts locality-only for a service area
+ * business, and adding a street later is a one-line change.
+ */
+export function localBusinessSchema(siteUrl: string): JsonLd {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    '@id': `${siteUrl}/#local-business`,
+    name: SITE.legalName,
+    url: siteUrl,
+    email: SITE.email,
+    telephone: SITE.phones[0].e164,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: SITE.location.locality,
+      addressCountry: SITE.location.country,
+    },
+    areaServed: SITE.location.areaServed,
+    contactPoint: SITE.phones.map((phone) => ({
+      '@type': 'ContactPoint',
+      telephone: phone.e164,
+      contactType: 'customer service',
+      areaServed: SITE.location.country,
+      availableLanguage: 'en',
+    })),
+  }
+}
+
 /** FAQPage node. Emit on any page rendering a FAQ accordion. */
 export function faqPageSchema(faqs: ReadonlyArray<{ question: string; answer: string }>): JsonLd {
   return {

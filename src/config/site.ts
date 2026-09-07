@@ -27,7 +27,7 @@ export const SITE = {
   legalName: 'WildHands',
   tagline: 'Custom systems that give you your time back.',
   description:
-    'WildHands designs and builds custom websites, apps, and internal tools for teams done doing repetitive work by hand.',
+    'WildHands builds custom websites, web apps and internal tools for businesses in Lagos, Nigeria and across Africa. Built around how you actually work, not a template.',
   /**
    * Canonical origin. Everything user-facing — canonical tags, sitemap.xml,
    * robots.txt, Open Graph — reads PUBLIC_SITE_URL, not this; this is the value
@@ -48,6 +48,26 @@ export const SITE = {
   email: 'hello@whstd.com',
   salesEmail: 'sales@whstd.com',
   hrEmail: 'hr@whstd.com',
+  /*
+   * Phone numbers, E.164 for structured data, and a human-readable pair for
+   * anywhere they are printed on the page. Two lines because the studio
+   * actually has two — a client who cannot reach the first one still has a
+   * second to try, and Google reads both from LocalBusiness JSON-LD.
+   */
+  phones: [
+    { e164: '+2347038553563', display: '+234 703 855 3563' },
+    { e164: '+2348129796927', display: '+234 812 979 6927' },
+  ],
+  /*
+   * Where the studio is based. Used by LocalBusiness JSON-LD on the
+   * homepage. Address stays empty until there is a registered office to
+   * publish — the schema handles a missing street line cleanly.
+   */
+  location: {
+    locality: 'Lagos',
+    country: 'NG',
+    areaServed: ['Lagos', 'Nigeria', 'Africa'],
+  },
 } as const
 
 /**
