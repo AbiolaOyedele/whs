@@ -9,6 +9,7 @@ import Prose from '@/components/ui/Prose.astro'
 import ShareRow from '@/components/sections/ShareRow.astro'
 import ChecklistCard from '@/components/insights/ChecklistCard'
 import SiteCheckDialog from '@/components/insights/SiteCheckDialog'
+import Button from '@/components/ui/Button.astro'
 import { articleSchema, breadcrumbSchema, faqPageSchema } from '@/lib/seo'
 import { publicEnv } from '@/config/env'
 import { INSIGHT_CATEGORY_LABELS } from '@/content.config'
@@ -94,19 +95,25 @@ const jsonLd = [
                 <Content />
               </Prose>
 
-              {/* When the article ships an interactive checklist, we
-                  offer the reader a one-click way to hand it over to us
-                  rather than only reading. Sits before Share so it does
-                  not compete with the article's own CTA. */}
-              <aside class="mt-14 max-w-[65ch] rounded-2xl border border-accent bg-accent/10 p-6 md:p-7">
-                <h2 class="font-display text-xl">Want us to run this check for you?</h2>
-                <p class="mt-2 text-base text-muted-foreground">
-                  Send us your URL and anything specific to look at. We'll go through the list against your site and reply.
-                </p>
-                <div class="mt-4">
-                  <SiteCheckDialog client:load />
-                </div>
-              </aside>
+              {/* Per-article CTA. Copy and destination come from the
+                  article's own frontmatter so each piece can speak in
+                  the reader's own language. `site-check` opens the URL
+                  dialog; `request-quote` links straight to the wizard. */}
+              {data.articleCta && (
+                <aside class="mt-14 max-w-[65ch] rounded-2xl border border-accent bg-accent/10 p-6 md:p-7">
+                  <h2 class="font-display text-xl">{data.articleCta.heading}</h2>
+                  <p class="mt-2 text-base text-muted-foreground">{data.articleCta.body}</p>
+                  <div class="mt-4">
+                    {data.articleCta.kind === 'site-check' ? (
+                      <SiteCheckDialog client:load label={data.articleCta.buttonLabel} />
+                    ) : (
+                      <Button href="/request-a-quote" variant="accent">
+                        {data.articleCta.buttonLabel}
+                      </Button>
+                    )}
+                  </div>
+                </aside>
+              )}
 
               <ShareRow title={data.title} url={url} class="mt-14 max-w-[65ch]" />
 
@@ -132,6 +139,22 @@ const jsonLd = [
             <Prose>
               <Content />
             </Prose>
+
+            {data.articleCta && (
+              <aside class="mt-14 max-w-[65ch] rounded-2xl border border-accent bg-accent/10 p-6 md:p-7">
+                <h2 class="font-display text-xl">{data.articleCta.heading}</h2>
+                <p class="mt-2 text-base text-muted-foreground">{data.articleCta.body}</p>
+                <div class="mt-4">
+                  {data.articleCta.kind === 'site-check' ? (
+                    <SiteCheckDialog client:load label={data.articleCta.buttonLabel} />
+                  ) : (
+                    <Button href="/request-a-quote" variant="accent">
+                      {data.articleCta.buttonLabel}
+                    </Button>
+                  )}
+                </div>
+              </aside>
+            )}
 
             <ShareRow title={data.title} url={url} class="mt-14 max-w-[65ch]" />
 

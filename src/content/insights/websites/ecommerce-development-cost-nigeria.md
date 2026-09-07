@@ -9,6 +9,11 @@ author:
 publishDate: '2026-09-07'
 readTime: 6
 placeholder: false
+articleCta:
+  kind: 'request-quote'
+  heading: 'Ready to price your store properly?'
+  body: 'Tell us your catalog size, which payment methods matter, and how delivery works for you. We come back with a real quote — no template.'
+  buttonLabel: 'Get a store quote'
 checklist:
   - id: 'what-drives-e-commerce-cost'
     label: 'What drives cost'

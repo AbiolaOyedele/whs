@@ -9,6 +9,11 @@ author:
 publishDate: '2026-09-07'
 readTime: 5
 placeholder: false
+articleCta:
+  kind: 'site-check'
+  heading: 'Want us to run this check for you?'
+  body: 'Send us your URL and anything specific to look at. We will go through the list against your site and reply.'
+  buttonLabel: 'Send us your URL'
 faqs:
   - question: 'Do I need a blog on my business website?'
     answer: 'Not essential, but useful. A blog gives you a reason to keep publishing, and each post is another way to be found in search. Skip it if you will not keep it updated; an abandoned blog looks worse than no blog at all.'

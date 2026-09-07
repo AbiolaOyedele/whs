@@ -323,6 +323,30 @@ const insights = defineCollection({
         })
       )
       .default([]),
+
+    /**
+     * Article-specific call-to-action card, rendered near the foot of
+     * the article body.
+     *
+     *  - `kind: 'site-check'` opens the small dialog that collects a
+     *    URL + email — right for articles where the natural next step
+     *    is "look at my site."
+     *  - `kind: 'request-quote'` links straight to /request-a-quote —
+     *    right for articles where the natural next step is a full
+     *    scoped quote.
+     *
+     * Left off, no card renders. Kept per-article rather than templated
+     * so each piece can speak in the reader's own language instead of
+     * a generic "want us to do this for you?"
+     */
+    articleCta: z
+      .object({
+        kind: z.enum(['site-check', 'request-quote']),
+        heading: z.string().min(1).max(160),
+        body: z.string().min(1).max(400),
+        buttonLabel: z.string().min(1).max(60),
+      })
+      .optional(),
   }),
 })
 

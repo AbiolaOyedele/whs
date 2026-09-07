@@ -9,6 +9,11 @@ author:
 publishDate: '2026-09-07'
 readTime: 5
 placeholder: false
+articleCta:
+  kind: 'site-check'
+  heading: 'Want us to check the structure of your site?'
+  body: 'Send us your URL and we will run through the pages, navigation and trust signals against this list, then tell you what is missing.'
+  buttonLabel: 'Send us your URL'
 checklist:
   - id: 'the-pages-every-business-site-needs'
     label: 'Essential pages'

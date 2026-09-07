@@ -9,6 +9,11 @@ author:
 publishDate: '2026-09-07'
 readTime: 6
 placeholder: false
+articleCta:
+  kind: 'request-quote'
+  heading: 'Still not sure which one you need?'
+  body: 'Tell us what you are trying to build in a couple of sentences. We will come back with the right scope — a website, a web app, or a website with an app-like feature — and a price.'
+  buttonLabel: 'Ask us to scope it'
 checklist:
   - id: 'what-a-website-is'
     label: 'It is a website if'

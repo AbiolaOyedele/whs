@@ -9,6 +9,11 @@ author:
 publishDate: '2026-09-07'
 readTime: 6
 placeholder: false
+articleCta:
+  kind: 'request-quote'
+  heading: 'Want to see how we handle a brief?'
+  body: 'Tell us what you are trying to build. You will see the discovery-first, scope-then-price process this article describes — from the first reply through to a written quote.'
+  buttonLabel: 'Send us a brief'
 checklist:
   - id: 'look-at-their-actual-portfolio'
     label: 'Portfolio'
