@@ -9,6 +9,45 @@ author:
 publishDate: '2026-09-07'
 readTime: 6
 placeholder: false
+checklist:
+  - id: 'what-a-website-is'
+    label: 'It is a website if'
+    items:
+      - id: 'site-static'
+        title: 'Content is mostly static pages'
+      - id: 'site-anon'
+        title: 'Visitors browse anonymously, no login'
+      - id: 'site-same'
+        title: 'Everyone sees the same content'
+  - id: 'what-a-web-app-is'
+    label: 'It is an app if'
+    items:
+      - id: 'app-login'
+        title: 'Users log in to get value from it'
+      - id: 'app-data'
+        title: 'The app stores and acts on user data'
+      - id: 'app-perpage'
+        title: 'Content differs per logged-in user'
+  - id: 'the-questions-that-settle-it'
+    label: 'Deciding questions'
+    items:
+      - id: 'q-login'
+        title: 'Does a visitor need to log in to get value?'
+      - id: 'q-store'
+        title: 'Do you need to store data specific to each user?'
+      - id: 'q-repeatable'
+        title: 'Is there a repeatable action a user performs?'
+      - id: 'q-perview'
+        title: 'Does content change based on who is viewing?'
+  - id: 'what-this-means-for-cost-and-timeline'
+    label: 'Cost & timeline'
+    items:
+      - id: 'cost-website'
+        title: 'A website is usually faster and cheaper to build'
+      - id: 'cost-app'
+        title: 'An app takes longer — auth, database, logic testing'
+      - id: 'cost-ongoing'
+        title: 'Web apps carry more ongoing cost than websites'
 faqs:
   - question: 'Can a website become a web app later?'
     answer: "Yes. It's common to launch a website first, prove the business need, then add accounts, dashboards, or other app functionality once you know exactly what's required."

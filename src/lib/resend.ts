@@ -80,3 +80,52 @@ export async function sendNotification(options: SendNotificationOptions): Promis
     )
   }
 }
+
+export interface SendClientEmailOptions {
+  /** Recipient email address — validated by the caller before it arrives here. */
+  to: string
+  subject: string
+  /** Plain-text body. Text-only for now; HTML template can wrap it later. */
+  text: string
+}
+
+/**
+ * Sends a receipt/reply directly to a client (the visitor who submitted
+ * a form), not to the studio inbox.
+ *
+ * Deliberately separate from `sendNotification` so the two intents cannot
+ * be confused at the call site: notifications go to the studio, receipts
+ * go to a real person. This function refuses to send to
+ * CONTACT_NOTIFICATION_EMAIL (a defensive guard against a bug in the
+ * caller sending an operator address here by mistake).
+ *
+ * From-address is the same verified sender we use everywhere until
+ * whstd.com is verified in Resend (see the note on `sendNotification`).
+ * The display name still reads "WildHands" so the receipt reads
+ * correctly to the client; only the return-path address is off-brand,
+ * and swapping that is a one-line change once DNS is sorted.
+ *
+ * Never throws. A failed receipt is not worth surfacing to the visitor
+ * — the submission is already saved and the studio has been notified.
+ */
+export async function sendClientReceipt(options: SendClientEmailOptions): Promise<void> {
+  const { CONTACT_NOTIFICATION_EMAIL } = serverEnv()
+
+  if (options.to.trim().toLowerCase() === CONTACT_NOTIFICATION_EMAIL.trim().toLowerCase()) {
+    console.warn('[email] receipt to studio address refused; use sendNotification instead')
+    return
+  }
+
+  try {
+    const { error } = await getClient().emails.send({
+      from: 'WildHands <notifications@theruff.agency>',
+      to: [options.to],
+      subject: options.subject,
+      text: options.text,
+      replyTo: CONTACT_NOTIFICATION_EMAIL,
+    })
+    if (error) console.warn('[email] client receipt provider error', error)
+  } catch (cause) {
+    console.warn('[email] client receipt transport error', cause)
+  }
+}
