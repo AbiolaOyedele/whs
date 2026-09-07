@@ -26,6 +26,23 @@ export const REQUEST_STATUS_LABELS: Record<RequestStatus, string> = {
 }
 
 /**
+ * The picker the Request A Quote wizard shows on step 2. `value` is
+ * what the server stores; `label` is what the visitor picks. Free text
+ * on the DB column on purpose — adding an option means editing this
+ * list and shipping, no migration.
+ */
+export const PROJECT_TYPES = [
+  { value: 'website', label: 'A website' },
+  { value: 'ecommerce', label: 'An online store' },
+  { value: 'web-app', label: 'A web app or platform' },
+  { value: 'internal-tool', label: 'An internal tool or dashboard' },
+  { value: 'redesign', label: 'A redesign of something we already have' },
+  { value: 'other', label: 'Something else' },
+] as const
+
+export type ProjectTypeValue = (typeof PROJECT_TYPES)[number]['value']
+
+/**
  * The kind-specific fields, stored in `details` jsonb. Each kind gets a
  * narrow interface so the admin can render the right block without a
  * runtime cast.

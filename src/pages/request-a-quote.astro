@@ -1,0 +1,40 @@
+---
+/**
+ * Request A Quote — the public wizard.
+ *
+ * Server-rendered shell that hosts the React multi-step island. The
+ * island is `client:load` because the whole point of the page is
+ * interactive: a deferred hydration would leave a stranger staring at
+ * a form that ignored their first click.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import Hero from '@/components/sections/Hero.astro'
+import RequestQuoteWizard from '@/components/request-quote/RequestQuoteWizard'
+import { breadcrumbSchema } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
+
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+const jsonLd = [
+  breadcrumbSchema([
+    { name: 'Home', url: `${siteUrl}/` },
+    { name: 'Request a quote', url: `${siteUrl}/request-a-quote` },
+  ]),
+]
+---
+
+<BaseLayout
+  title="Request A Quote | WildHands"
+  description="Tell us what you're building and we'll come back with a scoped quote within a working day. Nothing here is binding."
+  jsonLd={jsonLd}
+  darkHero
+>
+  <Hero
+    eyebrow="Request a quote"
+    title="Tell us what you're trying to build."
+    standfirst="A short conversation, then a real quote. No packages to fit into — we scope the work, then price it."
+  />
+
+  <section class="wh-container wh-section">
+    <RequestQuoteWizard client:load />
+  </section>
+</BaseLayout>
