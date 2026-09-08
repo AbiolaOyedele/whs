@@ -59,7 +59,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     localContext:
       'Lagos is where most of our clients are, so we build with the realities in mind: Paystack for card payments, mobile-first for users who read on the go over patchy connections, and a checkout that survives an intermittent 4G handoff without losing the cart. We are based here, so scoping calls happen over Zoom or in person, and delivery does not carry a ten-hour timezone gap.',
     faqAnswer:
-      'Yes — we are based in Lagos. Most of our discovery calls happen from here and we work with businesses across Lagos, Nigeria and the wider region.',
+      'Yes. We are based in Lagos. Most of our discovery calls happen from here and we work with businesses across Lagos, Nigeria and the wider region.',
   },
   {
     slug: 'lekki',
@@ -72,7 +72,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     localContext:
       'Lekki has become the corridor for founders and product teams, and most of the businesses we build for here are on their second or third iteration of something and want it right this time. Payment rails are Paystack and Flutterwave; connectivity is better than the average for the city but still mobile-first for most users. We meet clients in Admiralty Way or over a call and can be on-site inside the day when that helps.',
     faqAnswer:
-      'Yes. A lot of our clients are on the Lekki–Ajah corridor. We meet in person around Admiralty Way, or over a call if that is easier.',
+      'Yes. A lot of our clients are on the Lekki-Ajah corridor. We meet in person around Admiralty Way, or over a call if that is easier.',
   },
   {
     slug: 'mainland',
@@ -83,7 +83,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'district',
     currency: 'NGN',
     localContext:
-      'Yaba, Ikeja, Surulere — the Mainland is where the customer bases of most of the businesses we work with actually live and buy. Sites we build for Mainland brands lean harder into speed and small payloads: users on modest phones, mixed networks, and a checkout that has to finish on the first attempt because a second one might not happen. Bank transfer is often the payment method a client would choose over card, and we support both by default.',
+      'Yaba, Ikeja, Surulere; the Mainland is where the customer bases of most of the businesses we work with actually live and buy. Sites we build for Mainland brands lean harder into speed and small payloads: users on modest phones, mixed networks, and a checkout that has to finish on the first attempt because a second one might not happen. Bank transfer is often the payment method a client would choose over card, and we support both by default.',
     faqAnswer:
       'Yes. A large share of our audience research is Mainland-based even when the client is not, and we regularly build directly for Mainland businesses.',
   },
@@ -98,7 +98,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     localContext:
       'Victoria Island is head-office country: banks, insurers, oil and consulting. Work here often means talking to a procurement team as well as a product owner, and integrating with existing enterprise systems that were bought a decade ago. We build the front the customer sees and the internal tool the operations desk uses, and we sign the paperwork that lets us do both.',
     faqAnswer:
-      'Yes. We work with a number of Victoria Island businesses — mostly financial services and consulting — including with their internal IT and procurement processes.',
+      'Yes. We work with a number of Victoria Island businesses; mostly financial services and consulting, including with their internal IT and procurement processes.',
   },
   {
     slug: 'ikoyi',
@@ -109,7 +109,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'district',
     currency: 'NGN',
     localContext:
-      'Ikoyi is where we do a lot of our high-touch work — private practices, boutique services, founders whose brand is the business. The pages tend to be smaller and more considered than a Mainland retail build, with a focus on how the site looks and reads to a specific audience rather than how many people it reaches. Discovery calls often start over coffee near Awolowo Road.',
+      'Ikoyi is where we do a lot of our high-touch work: private practices, boutique services, founders whose brand is the business. The pages tend to be smaller and more considered than a Mainland retail build, with a focus on how the site looks and reads to a specific audience rather than how many people it reaches. Discovery calls often start over coffee near Awolowo Road.',
     faqAnswer:
       'Yes. A lot of our smaller, more considered builds are for Ikoyi-based businesses. We can meet in person or over a call.',
   },
@@ -137,7 +137,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'CAD',
     localContext:
-      'Toronto is a fintech and enterprise city, and most of the briefs that reach us from there involve integrations — with a CRM already in place, with a legacy back-office system, with a compliance team that has strong views. We work with those constraints rather than around them. Stripe is the default payment rail; PIPEDA and Ontario-specific consumer law shape the checkout copy from day one.',
+      'Toronto is a fintech and enterprise city, and most of the briefs that reach us from there involve integrations: with a CRM already in place, with a legacy back-office system, with a compliance team that has strong views. We work with those constraints rather than around them. Stripe is the default payment rail; PIPEDA and Ontario-specific consumer law shape the checkout copy from day one.',
     faqAnswer:
       'Yes. We work with Toronto-based businesses regularly, including on procurement-heavy integrations. Calls happen on Eastern time.',
   },
@@ -150,7 +150,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'CAD',
     localContext:
-      'Vancouver clients are frequently building for both Canadian and adjacent US audiences — the border is short and the customer base overlaps. That shapes what a site does out of the box: dual-currency where it matters, taxes worked out per region rather than assumed, and analytics that separate the two audiences instead of averaging them. Calls happen on Pacific time, which suits our early afternoons.',
+      'Vancouver clients are frequently building for both Canadian and adjacent US audiences; the border is short and the customer base overlaps. That shapes what a site does out of the box: dual-currency where it matters, taxes worked out per region rather than assumed, and analytics that separate the two audiences instead of averaging them. Calls happen on Pacific time, which suits our early afternoons.',
     faqAnswer:
       'Yes. We work with Vancouver-based clients, including on dual-market builds that serve both Canada and the US Pacific Northwest.',
   },
@@ -163,7 +163,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'CAD',
     localContext:
-      'Montreal work is French-first for most public-facing surfaces — Quebec\'s Charter of the French Language shapes what appears on a landing page before anything else does. We set the content model up so that switching, mirroring, or fully separating the two locales is a configuration decision, not a rebuild. Bill 25 and its consent requirements are treated as a starting point, not a launch-week discovery.',
+      'Montreal work is French-first for most public-facing surfaces; Quebec\'s Charter of the French Language shapes what appears on a landing page before anything else does. We set the content model up so that switching, mirroring, or fully separating the two locales is a configuration decision, not a rebuild. Bill 25 and its consent requirements are treated as a starting point, not a launch-week discovery.',
     faqAnswer:
       'Yes. We build for Montreal businesses, French-first where appropriate, and we plan Bill 25 compliance in from the start.',
   },
@@ -191,7 +191,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'GBP',
     localContext:
-      'London briefs tend to be more considered — a marketing team, a design partner already involved, a brand book we are asked to work inside. We fit into that stack: build the thing, hand it off in a form the marketing team can update, and stay available for the changes the brief did not anticipate. Enterprise clients get the procurement paperwork they need without us needing to be asked.',
+      'London briefs tend to be more considered; a marketing team, a design partner already involved, a brand book we are asked to work inside. We fit into that stack: build the thing, hand it off in a form the marketing team can update, and stay available for the changes the brief did not anticipate. Enterprise clients get the procurement paperwork they need without us needing to be asked.',
     faqAnswer:
       'Yes. A number of our clients are London-based, including agencies and marketing teams looking for a build partner.',
   },
@@ -204,7 +204,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'GBP',
     localContext:
-      'Manchester\'s tech scene is one of the fastest-growing in the country, and the businesses we hear from there are usually value-conscious in the same breath as they are ambitious. We keep scope honest — the shortest build that gets the job done, priced so a growing business can afford it and grow into the next phase without a rebuild. Calls fit the UK working day.',
+      'Manchester\'s tech scene is one of the fastest-growing in the country, and the businesses we hear from there are usually value-conscious in the same breath as they are ambitious. We keep scope honest; the shortest build that gets the job done, priced so a growing business can afford it and grow into the next phase without a rebuild. Calls fit the UK working day.',
     faqAnswer:
       'Yes. We work with a lot of Manchester businesses. Scope is kept tight so a first build does not become a barrier to a second.',
   },
@@ -217,7 +217,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'GBP',
     localContext:
-      'Edinburgh work often has a public-sector, fintech, or higher-education tilt — organisations for whom "how you handle data" is the first question, not the last. We take that as the point: pick tooling that is auditable, keep the data model boring on purpose, and document what the site actually does with a request. Scottish accessibility guidance is baked in from the start.',
+      'Edinburgh work often has a public-sector, fintech, or higher-education tilt; organisations for whom "how you handle data" is the first question, not the last. We take that as the point: pick tooling that is auditable, keep the data model boring on purpose, and document what the site actually does with a request. Scottish accessibility guidance is baked in from the start.',
     faqAnswer:
       'Yes. Edinburgh clients often bring data-handling or accessibility requirements up-front, which suits how we build by default.',
   },
@@ -232,7 +232,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'country',
     currency: 'USD',
     localContext:
-      'US builds run on Stripe by default, with ACH added when repeat billing lands better in that channel. State-level sales tax is handled via TaxJar or Stripe Tax so a client is not manually reconciling forty-plus jurisdictions. We work across US timezones — most of our US calls sit in the afternoon UK / morning Eastern overlap, but we adjust when a Pacific client needs it.',
+      'US builds run on Stripe by default, with ACH added when repeat billing lands better in that channel. State-level sales tax is handled via TaxJar or Stripe Tax so a client is not manually reconciling forty-plus jurisdictions. We work across US timezones; most of our US calls sit in the afternoon UK / morning Eastern overlap, but we adjust when a Pacific client needs it.',
     faqAnswer:
       'Yes. We work with US-based businesses across the country. Sales tax, ACH and Stripe are set up as defaults, not add-ons.',
   },
@@ -247,7 +247,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     localContext:
       'New York work usually means a brand with an audience already in place and a bar that is set by whatever agency built the site before. We build to that bar, on a schedule an in-house marketing team can plan around, with a content model designed for a copy team that ships new stories weekly rather than quarterly. Financial-services clients get SOC 2-adjacent hosting choices without needing to ask.',
     faqAnswer:
-      'Yes. NYC-based clients — often financial services, media or DTC brands — regularly work with us. Calls happen Eastern time.',
+      'Yes. NYC-based clients; often financial services, media or DTC brands; regularly work with us. Calls happen Eastern time.',
   },
   {
     slug: 'san-francisco',
@@ -258,7 +258,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'USD',
     localContext:
-      'San Francisco briefs are usually product-shaped — a founder who knows exactly what they want to see next, a marketing site that has to keep up with a product changing week to week. We build with that cadence in mind: preview URLs on every branch, a content model the product team can adjust without a code change, and a delivery rhythm that assumes a launch is not the finish line.',
+      'San Francisco briefs are usually product-shaped; a founder who knows exactly what they want to see next, a marketing site that has to keep up with a product changing week to week. We build with that cadence in mind: preview URLs on every branch, a content model the product team can adjust without a code change, and a delivery rhythm that assumes a launch is not the finish line.',
     faqAnswer:
       'Yes. Startup and product clients in the Bay Area work with us regularly. We are available on Pacific time when needed.',
   },
@@ -271,7 +271,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'USD',
     localContext:
-      'Austin has become the address for distributed teams and no-state-income-tax founders, and the sites we build there reflect that mix — often serving a US-wide audience, sometimes with international customers already showing up on day one. We set analytics and payment rails up for that reality: multi-region caching, Stripe with international cards, and a checkout that does not assume US billing.',
+      'Austin has become the address for distributed teams and no-state-income-tax founders, and the sites we build there reflect that mix; often serving a US-wide audience, sometimes with international customers already showing up on day one. We set analytics and payment rails up for that reality: multi-region caching, Stripe with international cards, and a checkout that does not assume US billing.',
     faqAnswer:
       'Yes. We work with Austin-based teams, including distributed startups serving audiences across and beyond the US.',
   },
@@ -286,7 +286,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'country',
     currency: 'RWF',
     localContext:
-      'Rwanda\'s digital push is real, and the businesses we hear from there — from ambitious independents to government-adjacent projects — expect a site that works cleanly on modest devices, integrates with MTN Mobile Money or Airtel Money as the primary payment channel, and reads correctly in English (with Kinyarwanda where the audience calls for it). We build for the actual mix of hardware and networks rather than assuming a fibre-and-flagship-phone baseline.',
+      'Rwanda\'s digital push is real, and the businesses we hear from there; from ambitious independents to government-adjacent projects; expect a site that works cleanly on modest devices, integrates with MTN Mobile Money or Airtel Money as the primary payment channel, and reads correctly in English (with Kinyarwanda where the audience calls for it). We build for the actual mix of hardware and networks rather than assuming a fibre-and-flagship-phone baseline.',
     faqAnswer:
       'Yes. We work with Rwandan clients, with Mobile Money and modest-device performance built in from the start.',
   },
@@ -299,7 +299,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'RWF',
     localContext:
-      'Kigali is where most of the country\'s digital work concentrates — the fintech scene around Norrsken, the government-led ID and payments initiatives, the education-adjacent tech coming out of the university corridor. We work with those environments: build to expected accessibility and language standards, integrate cleanly with existing government-issued digital identity where it makes sense, and treat Mobile Money as the default.',
+      'Kigali is where most of the country\'s digital work concentrates; the fintech scene around Norrsken, the government-led ID and payments initiatives, the education-adjacent tech coming out of the university corridor. We work with those environments: build to expected accessibility and language standards, integrate cleanly with existing government-issued digital identity where it makes sense, and treat Mobile Money as the default.',
     faqAnswer:
       'Yes. Kigali is our main Rwandan point of contact; we work with fintech, education and government-adjacent projects there.',
   },
@@ -312,7 +312,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'RWF',
     localContext:
-      'Butare — administratively Huye — is Rwanda\'s university town, and the briefs we get from there lean towards research groups, small institutions and NGOs. That shapes what we build: content-heavy sites with genuine multilingual support, small budgets treated as constraints rather than excuses, and hosting picked so it survives an unreliable connection on the admin side.',
+      'Butare; administratively Huye; is Rwanda\'s university town, and the briefs we get from there lean towards research groups, small institutions and NGOs. That shapes what we build: content-heavy sites with genuine multilingual support, small budgets treated as constraints rather than excuses, and hosting picked so it survives an unreliable connection on the admin side.',
     faqAnswer:
       'Yes. We work with Butare-based research, education and civic-sector clients, and price accordingly.',
   },
@@ -325,9 +325,9 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'RWF',
     localContext:
-      'Gisenyi — Rubavu on newer maps — sits on the DRC border and its business surface tends to be tourism, hospitality and cross-border trade. Sites we build here are frequently bilingual (English and French) with content aimed at travellers, and payment surfaces that accept both Rwandan Mobile Money and international cards without making the visitor guess which will work.',
+      'Gisenyi; Rubavu on newer maps; sits on the DRC border and its business surface tends to be tourism, hospitality and cross-border trade. Sites we build here are frequently bilingual (English and French) with content aimed at travellers, and payment surfaces that accept both Rwandan Mobile Money and international cards without making the visitor guess which will work.',
     faqAnswer:
-      'Yes. We work with Gisenyi-based clients — mostly tourism and cross-border businesses — and build with a bilingual audience in mind.',
+      'Yes. We work with Gisenyi-based clients; mostly tourism and cross-border businesses; and build with a bilingual audience in mind.',
   },
 
   /* --- Ghana: country + Accra, Kumasi, Takoradi --------------------- */
@@ -340,7 +340,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'country',
     currency: 'GHS',
     localContext:
-      'Ghana is mobile-money-first for most transactions — MTN MoMo, Vodafone Cash, AirtelTigo — with card as the second channel. We build both in from day one, along with a checkout that copes with the Cedi\'s day-to-day volatility by pricing in a stable base currency where the business prefers that. Data-residency preferences shaped by Ghana\'s DPA are planned in rather than papered over.',
+      'Ghana is mobile-money-first for most transactions; MTN MoMo, Vodafone Cash, AirtelTigo; with card as the second channel. We build both in from day one, along with a checkout that copes with the Cedi\'s day-to-day volatility by pricing in a stable base currency where the business prefers that. Data-residency preferences shaped by Ghana\'s DPA are planned in rather than papered over.',
     faqAnswer:
       'Yes. We work with Ghanaian businesses, with MoMo and card both handled as first-class payment channels.',
   },
@@ -353,7 +353,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'GHS',
     localContext:
-      'Accra\'s startup scene has thickened fast, and most of the Accra briefs that reach us are from small teams building something on a considered budget with an ambitious product roadmap. We keep scope honest — ship a first release that earns the second — and default to payment integrations that Ghanaian customers actually reach for, not the ones a US-shaped SaaS assumes.',
+      'Accra\'s startup scene has thickened fast, and most of the Accra briefs that reach us are from small teams building something on a considered budget with an ambitious product roadmap. We keep scope honest; ship a first release that earns the second; and default to payment integrations that Ghanaian customers actually reach for, not the ones a US-shaped SaaS assumes.',
     faqAnswer:
       'Yes. Accra-based startups and small teams work with us regularly, on scoped, phased builds that keep costs in check.',
   },
@@ -379,7 +379,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'GHS',
     localContext:
-      'Takoradi\'s economy leans on the port and the oil sector, and the sites we build there are frequently B2B — logistics, engineering services, industrial supply. That means a content model that carries technical detail cleanly, a lead-capture flow set up for long-cycle enquiries, and language that reads correctly to a specification manager as well as to a marketing director.',
+      'Takoradi\'s economy leans on the port and the oil sector, and the sites we build there are frequently B2B; logistics, engineering services, industrial supply. That means a content model that carries technical detail cleanly, a lead-capture flow set up for long-cycle enquiries, and language that reads correctly to a specification manager as well as to a marketing director.',
     faqAnswer:
       'Yes. We work with Takoradi-based industrial and B2B businesses, including those tied to the port and oil sectors.',
   },
@@ -394,7 +394,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'country',
     currency: 'ZAR',
     localContext:
-      'South African builds have to survive load-shedding on the operator side as well as the customer side — background workers idempotent, admin sessions that come back cleanly after a two-hour outage, notifications queued rather than fired-and-lost. PoPIA compliance is scoped in from day one; payment rails default to Peach, PayFast or Stripe depending on which fits the client\'s existing setup.',
+      'South African builds have to survive load-shedding on the operator side as well as the customer side; background workers idempotent, admin sessions that come back cleanly after a two-hour outage, notifications queued rather than fired-and-lost. PoPIA compliance is scoped in from day one; payment rails default to Peach, PayFast or Stripe depending on which fits the client\'s existing setup.',
     faqAnswer:
       'Yes. We work with South African clients across the country. Load-shedding and PoPIA are treated as build-time inputs, not launch-day surprises.',
   },
@@ -407,7 +407,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'ZAR',
     localContext:
-      'Johannesburg work tilts towards financial services, insurance and the enterprise side of retail — organisations with existing systems, procurement teams, and an internal IT function that already has strong views on hosting. We work with that reality: integrations rather than replacements, security review baked into delivery, and documentation the internal team can read without our help six months later.',
+      'Johannesburg work tilts towards financial services, insurance and the enterprise side of retail; organisations with existing systems, procurement teams, and an internal IT function that already has strong views on hosting. We work with that reality: integrations rather than replacements, security review baked into delivery, and documentation the internal team can read without our help six months later.',
     faqAnswer:
       'Yes. Johannesburg-based enterprise and financial-services clients work with us on integration-heavy builds.',
   },
@@ -420,7 +420,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'ZAR',
     localContext:
-      'Cape Town\'s mix — startups, tourism, creative agencies — shapes what a good build looks like there. Sites need to work for an international audience as often as a domestic one, run cleanly on modest mobile networks in Khayelitsha as reliably as they do on fibre in Sea Point, and handle both local and international payment methods without making the visitor pick between them.',
+      'Cape Town\'s mix; startups, tourism, creative agencies; shapes what a good build looks like there. Sites need to work for an international audience as often as a domestic one, run cleanly on modest mobile networks in Khayelitsha as reliably as they do on fibre in Sea Point, and handle both local and international payment methods without making the visitor pick between them.',
     faqAnswer:
       'Yes. We work with Cape Town startups, tourism operators and creative agencies. Multi-audience, multi-network builds are standard.',
   },
@@ -433,7 +433,7 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
     kind: 'city',
     currency: 'ZAR',
     localContext:
-      'Durban work often has a port, logistics or retail tilt — businesses whose operations are the point and whose website is the calmer face of a much noisier back office. We build the site the customer sees and, where it helps, the internal tool the operations team uses, treating them as one system so a change in one is not a surprise in the other.',
+      'Durban work often has a port, logistics or retail tilt; businesses whose operations are the point and whose website is the calmer face of a much noisier back office. We build the site the customer sees and, where it helps, the internal tool the operations team uses, treating them as one system so a change in one is not a surprise in the other.',
     faqAnswer:
       'Yes. Durban-based logistics, retail and port-adjacent clients work with us on both public sites and internal tooling.',
   },

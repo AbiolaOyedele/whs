@@ -191,9 +191,9 @@ export const POST: APIRoute = async ({ request }) => {
         `A short summary of what you sent:`,
         data.projectSummary.trim(),
         ``,
-        `If you need to add anything, just reply to this email — it reaches us directly.`,
+        `If you need to add anything, just reply to this email. It reaches us directly.`,
         ``,
-        `— The WildHands team`,
+        `The WildHands team`,
         `hello@whstd.com`,
       ].join('\n'),
     })
@@ -201,7 +201,7 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(
       JSON.stringify({
         ok: true,
-        message: 'Thanks — we have your request and will reply within a working day.',
+        message: 'Thanks. We have your request and will reply within a working day.',
         requestId: requestRow.id,
         quoteSlug: quoteSlugValue,
       }),

@@ -88,7 +88,7 @@ export const POST: APIRoute = async ({ request }) => {
       console.error('[site-check-notify]', cause)
     }
 
-    return toSuccessResponse('Thanks — we will take a look and reply.')
+    return toSuccessResponse('Thanks. We will take a look and reply.')
   } catch (error) {
     if (!isAppError(error)) console.error('[site-check]', error)
     return toErrorResponse(error)

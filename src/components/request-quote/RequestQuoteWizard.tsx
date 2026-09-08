@@ -306,7 +306,7 @@ export default function RequestQuoteWizard() {
               name="projectSummary"
               required
               variant="underline"
-              hint="A sentence or two is enough — the more you can say now, the tighter the quote."
+              hint="A sentence or two is enough. The more you can say now, the tighter the quote."
             >
               <textarea
                 id="projectSummary"
@@ -327,7 +327,7 @@ export default function RequestQuoteWizard() {
               label="Budget"
               name="budgetRange"
               variant="underline"
-              hint='A range, a ceiling, or "no idea yet" — anything helps us reply usefully.'
+              hint='A range, a ceiling, or "no idea yet". Anything helps us reply usefully.'
             >
               <input
                 id="budgetRange"
@@ -369,7 +369,7 @@ export default function RequestQuoteWizard() {
         {step === 3 && (
           <div className="flex flex-col gap-5">
             <p className="text-lg text-muted-foreground">
-              One quick read before submitting. Nothing here is binding — a quote comes after
+              One quick read before submitting. Nothing here is binding: a quote comes after
               we&apos;ve talked properly.
             </p>
             <dl className="grid gap-3 rounded-2xl border border-border bg-muted/30 p-5 text-base">

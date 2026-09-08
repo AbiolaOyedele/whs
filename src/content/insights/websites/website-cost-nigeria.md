@@ -12,7 +12,7 @@ placeholder: false
 articleCta:
   kind: 'request-quote'
   heading: 'Want a real price, not a range?'
-  body: 'Tell us what you actually need — a page count, integrations, and roughly when you want to launch. You get a scoped quote back inside a working day.'
+  body: 'Tell us what you actually need: a page count, integrations, and roughly when you want to launch. You get a scoped quote back inside a working day.'
   buttonLabel: 'Get a scoped quote'
 checklist:
   - id: 'what-actually-drives-the-price'
@@ -40,7 +40,7 @@ checklist:
       - id: 'ongoing-maintenance'
         title: 'Maintenance and security updates'
       - id: 'ongoing-updates'
-        title: 'Content updates — your time or a retainer'
+        title: 'Content updates: your time or a retainer'
   - id: 'what-to-ask-before-you-accept-a-quote'
     label: 'Questions to ask'
     items:

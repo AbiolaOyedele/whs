@@ -12,7 +12,7 @@ placeholder: false
 articleCta:
   kind: 'request-quote'
   heading: 'Ready to price your store properly?'
-  body: 'Tell us your catalog size, which payment methods matter, and how delivery works for you. We come back with a real quote — no template.'
+  body: 'Tell us your catalog size, which payment methods matter, and how delivery works for you. We come back with a real quote, not a template.'
   buttonLabel: 'Get a store quote'
 checklist:
   - id: 'what-drives-e-commerce-cost'
@@ -23,7 +23,7 @@ checklist:
       - id: 'drive-catalog'
         title: 'Catalog size and product complexity'
       - id: 'drive-payments'
-        title: 'Payment gateways — card, transfer, USSD'
+        title: 'Payment gateways: card, transfer, USSD'
       - id: 'drive-inventory'
         title: 'Automatic inventory management'
       - id: 'drive-delivery'
@@ -51,7 +51,7 @@ checklist:
       - id: 'ongoing-maintenance'
         title: 'Maintenance and platform updates'
       - id: 'ongoing-catalog'
-        title: 'Catalog upkeep — products, stock, promotions'
+        title: 'Catalog upkeep: products, stock, promotions'
   - id: 'questions-to-ask-before-committing'
     label: 'Questions to ask'
     items:

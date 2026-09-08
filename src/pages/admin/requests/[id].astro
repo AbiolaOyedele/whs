@@ -139,7 +139,7 @@ const detailPairs = Object.entries(request.details as Record<string, unknown>)
 
       {
         !request.message && !websiteUrl && detailPairs.length === 0 && (
-          <p class="text-base text-muted-foreground">Contact only — no message or details.</p>
+          <p class="text-base text-muted-foreground">Contact only. No message or details.</p>
         )
       }
     </section>
@@ -147,7 +147,7 @@ const detailPairs = Object.entries(request.details as Record<string, unknown>)
     <aside class="flex flex-col gap-4">
       <section class="rounded-3xl border border-border bg-card p-5">
         <h2 class="mb-3 font-display text-lg">Contact</h2>
-        <p class="text-base">{request.contactName || '—'}</p>
+        <p class="text-base">{request.contactName || 'No name given'}</p>
         <p class="text-sm">
           <a class="underline underline-offset-2" href={`mailto:${request.contactEmail}`}>
             {request.contactEmail}

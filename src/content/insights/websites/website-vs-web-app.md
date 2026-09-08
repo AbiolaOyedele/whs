@@ -12,7 +12,7 @@ placeholder: false
 articleCta:
   kind: 'request-quote'
   heading: 'Still not sure which one you need?'
-  body: 'Tell us what you are trying to build in a couple of sentences. We will come back with the right scope — a website, a web app, or a website with an app-like feature — and a price.'
+  body: 'Tell us what you are trying to build in a couple of sentences. We will come back with the right scope, whether it is a website, a web app, or a website with an app-like feature, and a price.'
   buttonLabel: 'Ask us to scope it'
 checklist:
   - id: 'what-a-website-is'
@@ -50,7 +50,7 @@ checklist:
       - id: 'cost-website'
         title: 'A website is usually faster and cheaper to build'
       - id: 'cost-app'
-        title: 'An app takes longer — auth, database, logic testing'
+        title: 'An app takes longer: auth, database, logic testing'
       - id: 'cost-ongoing'
         title: 'Web apps carry more ongoing cost than websites'
 faqs:

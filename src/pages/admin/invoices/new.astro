@@ -214,7 +214,7 @@ const initialLines =
                   { value: '', label: 'Pick a client…' },
                   ...clients.map((c) => ({
                     value: c.id,
-                    label: c.company ? `${c.name} — ${c.company}` : c.name,
+                    label: c.company ? `${c.name}, ${c.company}` : c.name,
                   })),
                 ]}
               />
@@ -223,7 +223,7 @@ const initialLines =
                 href="/admin/clients"
                 class="rounded-xl border border-border bg-muted px-4 py-3 text-base"
               >
-                No clients yet — add one first.
+                No clients yet. Add one first.
               </a>
             )
           }

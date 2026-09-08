@@ -12,7 +12,7 @@ placeholder: false
 articleCta:
   kind: 'request-quote'
   heading: 'Want to see how we handle a brief?'
-  body: 'Tell us what you are trying to build. You will see the discovery-first, scope-then-price process this article describes — from the first reply through to a written quote.'
+  body: 'Tell us what you are trying to build. You will see the discovery-first, scope-then-price process this article describes, from the first reply through to a written quote.'
   buttonLabel: 'Send us a brief'
 checklist:
   - id: 'look-at-their-actual-portfolio'
@@ -42,13 +42,13 @@ checklist:
     label: 'What is included'
     items:
       - id: 'inc-hosting'
-        title: 'Hosting setup — included or extra?'
+        title: 'Hosting setup: included or extra?'
       - id: 'inc-revisions'
         title: 'How many rounds of revisions?'
       - id: 'inc-support'
         title: 'Support after launch, for how long?'
       - id: 'inc-small-changes'
-        title: 'A small change in three months — free or billed?'
+        title: 'A small change in three months: free or billed?'
       - id: 'inc-cms-seo'
         title: 'CMS and basic SEO (sitemap, crawl rules) included?'
   - id: 'red-flags-worth-taking-seriously'

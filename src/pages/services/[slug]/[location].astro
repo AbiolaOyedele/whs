@@ -101,7 +101,7 @@ const combinedFaqs = [localFaq, ...data.faqs]
 const jsonLd = [
   localBusinessSchema(siteUrl),
   serviceSchema({
-    name: `${eyebrowLabel} — ${location.longLabel}`,
+    name: `${eyebrowLabel} in ${location.longLabel}`,
     /*
      * The hand-written local context lives here rather than on the
      * page. Google reads Service.description for entity understanding,
@@ -159,7 +159,7 @@ const jsonLd = [
                 {/* Two columns so a list of nine reads as a shape rather
                     than a scroll. Long items sit on two lines instead of
                     being clipped by a narrow column. */}
-                <ul class="mt-5 grid grid-cols-2 gap-x-5 gap-y-3 text-base">
+                <ul class="mt-5 grid grid-cols-1 gap-x-5 gap-y-3 text-base sm:grid-cols-2">
                   {data.shipsWith.map((item) => (
                     <li class="flex items-start gap-2.5">
                       <span
