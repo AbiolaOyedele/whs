@@ -128,9 +128,22 @@ export default function SiteCheckDialog({
                 type="button"
                 onClick={close}
                 aria-label="Close"
-                className="-mr-2 -mt-2 flex size-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="-mr-2 -mt-2 flex size-11 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               >
-                ×
+                {/* Inline SVG per design.md §7 — no text glyphs. */}
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="size-4"
+                >
+                  <path d="M6 6l12 12" />
+                  <path d="M18 6L6 18" />
+                </svg>
               </button>
             </div>
 

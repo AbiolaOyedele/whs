@@ -326,9 +326,24 @@ const initialLines =
                 type="button"
                 data-remove-line
                 aria-label="Remove this line"
-                class="mt-1 flex size-9 items-center justify-center self-center rounded-full border border-border text-muted-foreground transition-colors hover:border-destructive hover:text-destructive md:mt-0"
+                class="mt-1 flex size-11 items-center justify-center self-center rounded-full border border-border text-muted-foreground transition-colors hover:border-destructive hover:text-destructive md:mt-0"
               >
-                ×
+                {/* Inline SVG per design.md §7. Text glyphs like `×`
+                    resolve through the OS font and drift by platform,
+                    which is what this button used to do. */}
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="size-4"
+                >
+                  <path d="M6 6l12 12" />
+                  <path d="M18 6L6 18" />
+                </svg>
               </button>
             </div>
           ))
