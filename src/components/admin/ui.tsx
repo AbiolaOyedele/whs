@@ -158,14 +158,16 @@ export function Checkbox({
 }) {
   return (
     // The label is the hit target, which is what makes a 20px box clear 44px.
-    <label className="flex min-h-11 cursor-pointer items-center gap-3 text-base">
+    // items-start + mt-0.5 on the input aligns the box with the first line
+    // of a wrapped label instead of centring it against the wrapped block.
+    <label className="flex min-h-11 cursor-pointer items-start gap-3 text-base leading-snug">
       <input
         type="checkbox"
         checked={checked}
         onChange={(event) => onChange(event.target.checked)}
-        className="size-5 shrink-0 accent-[var(--accent)]"
+        className="mt-0.5 size-5 shrink-0 accent-[var(--accent)]"
       />
-      {label}
+      <span>{label}</span>
     </label>
   )
 }

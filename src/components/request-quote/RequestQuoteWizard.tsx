@@ -30,6 +30,7 @@ import {
   underlineTextareaClass,
   type SubmitState,
 } from '@/components/forms/form-primitives'
+import { HONEYPOT_FIELD } from '@/lib/schemas/form-constants'
 import { PROJECT_TYPES } from '@/types/public-request'
 
 interface Values {
@@ -152,7 +153,26 @@ export default function RequestQuoteWizard() {
     event.preventDefault()
     if (state.status === 'submitting') return
     setState({ ...IDLE, status: 'submitting' })
-    const result = await postForm('/api/v1/quote-requests', new FormData(event.currentTarget))
+
+    /*
+     * Submit as JSON from state, not FormData from the DOM. The wizard
+     * mounts one step at a time, so a FormData built from the form on
+     * step 4 does not contain any of steps 1 to 3's inputs, and the
+     * server rejects the submission as missing required fields ("expected
+     * string, received undefined"). Reading state gives the operator's
+     * whole answer instead.
+     *
+     * Honeypot still comes from the DOM: the visually-hidden field is
+     * inside the form and rendered on every step, so it is always
+     * available regardless of which step is on screen.
+     */
+    const form = event.currentTarget
+    const trap = (form.elements.namedItem(HONEYPOT_FIELD) as HTMLInputElement | null)?.value ?? ''
+
+    const result = await postForm('/api/v1/quote-requests', {
+      ...values,
+      [HONEYPOT_FIELD]: trap,
+    })
     setState(result)
     if (result.status === 'success') clearStored()
   }
@@ -264,13 +284,19 @@ export default function RequestQuoteWizard() {
                 <span className="text-muted-foreground"> *</span>
               </legend>
               <p className="mt-2 text-sm text-muted-foreground">Pick what fits closest.</p>
-              <div className="mt-4 grid gap-2 pb-4 sm:grid-cols-2">
+              {/* One column on any narrow container. Two columns only from
+                  `lg`, where the wizard sits in the 568px right column and
+                  a label like "A redesign of something we already have" has
+                  the breathing room to sit on one line. Between `sm` and
+                  `lg`, the wizard card is full-width, so one column keeps
+                  the long labels intact. */}
+              <div className="mt-4 grid gap-2 pb-4 lg:grid-cols-2">
                 {PROJECT_TYPES.map((option) => {
                   const isSelected = values.projectType === option.value
                   return (
                     <label
                       key={option.value}
-                      className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border px-4 text-base transition-colors ${
+                      className={`group flex min-h-14 cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 text-base transition-colors ${
                         isSelected
                           ? 'border-accent bg-accent/10'
                           : 'border-border bg-background hover:border-foreground'
@@ -284,9 +310,13 @@ export default function RequestQuoteWizard() {
                         onChange={() => set('projectType', option.value)}
                         className="sr-only"
                       />
+                      {/* items-start on the label + a small top offset on the
+                          indicator aligns the circle with the first line of
+                          text on wrapped labels instead of drifting to the
+                          vertical centre and colliding with line two. */}
                       <span
                         aria-hidden="true"
-                        className={`flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors ${
+                        className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors ${
                           isSelected ? 'border-accent bg-accent' : 'border-border'
                         }`}
                       >
@@ -294,7 +324,7 @@ export default function RequestQuoteWizard() {
                           <span className="size-2 rounded-full bg-accent-foreground" />
                         )}
                       </span>
-                      <span className="leading-snug">{option.label}</span>
+                      <span className="min-w-0 flex-1 leading-snug">{option.label}</span>
                     </label>
                   )
                 })}
