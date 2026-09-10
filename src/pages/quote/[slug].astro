@@ -67,7 +67,14 @@ const isPost = Astro.request.method === 'POST'
 const submitted: FormData | null = isPost ? await Astro.request.formData().catch(() => null) : null
 
 let pinError: string | null = null
-let unlocked = configured ? await hasQuoteAccess(slug, Astro.cookies) : false
+let unlocked = false
+if (configured) {
+  try {
+    unlocked = await hasQuoteAccess(slug, Astro.cookies)
+  } catch {
+    unlocked = false
+  }
+}
 
 /* --- PIN submission ---------------------------------------------------- */
 if (configured && isPost && !unlocked) {
@@ -110,70 +117,75 @@ if (configured && isPost && !unlocked) {
 
 /* --- Load, only once access is established ------------------------------ */
 let quote: Quote | null = null
+let loadError: string | null = null
 
 if (unlocked) {
-  quote = await getQuoteBySlug(slug)
+  try {
+    quote = await getQuoteBySlug(slug)
 
-  /* --- Decision submission ---------------------------------------------
-   * Handled here rather than posted to the JSON API, so the form works with
-   * JavaScript off. Posting a plain form to an API route would land the client
-   * on a page of raw JSON, which is not something to send a paying customer.
-   */
-  /*
-   * Only when this POST was actually a decision. Without the `decision` check,
-   * the POST that unlocks the page would fall straight through into here.
-   */
-  if (
-    quote &&
-    isPost &&
-    submitted?.get('decision') &&
-    quote.status !== 'accepted' &&
-    quote.status !== 'declined'
-  ) {
-    try {
-      assertSameOrigin(Astro.request, publicEnv.PUBLIC_SITE_URL)
-      enforceRateLimit(`quote-decision:${clientIp(Astro.request)}`, 5, 60_000)
+    /* --- Decision submission -------------------------------------------
+     * Handled here rather than posted to the JSON API, so the form works
+     * with JavaScript off. Posting a plain form to an API route would land
+     * the client on a page of raw JSON.
+     */
+    if (
+      quote &&
+      isPost &&
+      submitted?.get('decision') &&
+      quote.status !== 'accepted' &&
+      quote.status !== 'declined'
+    ) {
+      try {
+        assertSameOrigin(Astro.request, publicEnv.PUBLIC_SITE_URL)
+        enforceRateLimit(`quote-decision:${clientIp(Astro.request)}`, 5, 60_000)
 
-      const choice = String(submitted?.get('decision') ?? '')
-      const note = String(submitted?.get('note') ?? '').slice(0, 2000)
+        const choice = String(submitted?.get('decision') ?? '')
+        const note = String(submitted?.get('note') ?? '').slice(0, 2000)
 
-      if (choice === 'accepted' || choice === 'declined') {
-        await recordQuoteDecision(quote.id, choice, note)
-        await recordQuoteEvent(quote.id, choice, {
+        if (choice === 'accepted' || choice === 'declined') {
+          await recordQuoteDecision(quote.id, choice, note)
+          await recordQuoteEvent(quote.id, choice, {
+            ipHash: await hashIp(clientIp(Astro.request)),
+            userAgent: Astro.request.headers.get('user-agent') ?? undefined,
+          })
+
+          quote = { ...quote, status: choice }
+
+          try {
+            await sendNotification({
+              subject: `Quote ${choice}: ${quote.clientName}, ${quote.projectTitle}`,
+              ...(quote.clientEmail ? { replyTo: quote.clientEmail } : {}),
+              text: [
+                `${quote.clientName} ${choice} the quote.`,
+                `Project: ${quote.projectTitle}`,
+                `Link: ${publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')}/quote/${quote.slug}`,
+                note ? `\nTheir note:\n${note}` : '',
+              ].join('\n'),
+            })
+          } catch (cause) {
+            console.error('[quote-decision-notify]', cause)
+          }
+        }
+      } catch (cause) {
+        console.error('[quote-decision]', cause)
+      }
+    }
+
+    if (quote) {
+      try {
+        await markQuoteViewed(quote.id, quote.status)
+        await recordQuoteEvent(quote.id, 'viewed', {
           ipHash: await hashIp(clientIp(Astro.request)),
           userAgent: Astro.request.headers.get('user-agent') ?? undefined,
         })
-
-        quote = { ...quote, status: choice }
-
-        // Best effort. The decision is already recorded, so a mail failure must
-        // not tell the client their response did not register.
-        try {
-          await sendNotification({
-            subject: `Quote ${choice}: ${quote.clientName}, ${quote.projectTitle}`,
-            ...(quote.clientEmail ? { replyTo: quote.clientEmail } : {}),
-            text: [
-              `${quote.clientName} ${choice} the quote.`,
-              `Project: ${quote.projectTitle}`,
-              `Link: ${publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')}/quote/${quote.slug}`,
-              note ? `\nTheir note:\n${note}` : '',
-            ].join('\n'),
-          })
-        } catch (cause) {
-          console.error('[quote-decision-notify]', cause)
-        }
+      } catch (cause) {
+        console.error('[quote-view-event]', cause)
       }
-    } catch (cause) {
-      console.error('[quote-decision]', cause)
     }
-  }
-
-  if (quote) {
-    await markQuoteViewed(quote.id, quote.status)
-    await recordQuoteEvent(quote.id, 'viewed', {
-      ipHash: await hashIp(clientIp(Astro.request)),
-      userAgent: Astro.request.headers.get('user-agent') ?? undefined,
-    })
+  } catch (cause) {
+    console.error('[quote-load]', cause)
+    quote = null
+    loadError = 'We could not load your quote just now. Please refresh the page or try again shortly.'
   }
 }
 
@@ -210,35 +222,30 @@ let payment:
   | undefined
 
 if (quote && totalsReady) {
-  /* With no webhook delivered to this deployment, a client who paid and then
-     closed the tab has a row still sitting at `pending`. Catch it here, on the
-     page they come back to. Normally this list is empty and costs nothing. */
-  let payments = await listPaymentsForQuote(quote.id)
-  const unresolved = pendingWorthChecking(payments)
-  if (unresolved.length > 0 && (await reconcilePayments(unresolved)) > 0) {
-    payments = await listPaymentsForQuote(quote.id)
-  }
+  try {
+    let payments = await listPaymentsForQuote(quote.id)
+    const unresolved = pendingWorthChecking(payments)
+    if (unresolved.length > 0 && (await reconcilePayments(unresolved)) > 0) {
+      payments = await listPaymentsForQuote(quote.id)
+    }
 
-  /* Computed from the payment rows already loaded above rather than a second
-     query: the lock depends on whether anything has been paid, which is the
-     same question the payment block below is asking. */
-  selection = selectionState(quote, payments)
+    selection = selectionState(quote, payments)
 
-  const settled = payments.filter((entry) => entry.status === 'paid')
-  const paidMinor = settled.reduce((sum, entry) => sum + entry.amountMinor, 0)
-  const outstandingMinor = Math.max(0, quoteTotals.totalMinor - paidMinor)
+    const settled = payments.filter((entry) => entry.status === 'paid')
+    const paidMinor = settled.reduce((sum, entry) => sum + entry.amountMinor, 0)
+    const outstandingMinor = Math.max(0, quoteTotals.totalMinor - paidMinor)
 
-  /* Instalments: the deposit first, then whatever is left. The button has to
-     stay available while anything is owed, or a client who paid a deposit has
-     no way to pay the rest. */
-  const takingDeposit = paidMinor === 0 && quote.depositPercent > 0 && quote.depositPercent < 100
+    const takingDeposit = paidMinor === 0 && quote.depositPercent > 0 && quote.depositPercent < 100
 
-  payment = {
-    enabled: outstandingMinor > 0 && isPaystackConfigured() && isPayableCurrency(quote.currency),
-    amountMinor: takingDeposit ? quoteTotals.depositMinor : outstandingMinor,
-    kind: takingDeposit ? 'deposit' : 'balance',
-    paidMinor,
-    outstandingMinor,
+    payment = {
+      enabled: outstandingMinor > 0 && isPaystackConfigured() && isPayableCurrency(quote.currency),
+      amountMinor: takingDeposit ? quoteTotals.depositMinor : outstandingMinor,
+      kind: takingDeposit ? 'deposit' : 'balance',
+      paidMinor,
+      outstandingMinor,
+    }
+  } catch (cause) {
+    console.error('[quote-payments]', cause)
   }
 }
 ---
@@ -279,9 +286,11 @@ if (quote && totalsReady) {
 
             <h1 class="wh-h1-compact mb-2">Your quote</h1>
             <p class="mb-8 text-lg text-muted-foreground">
-              {configured
-                ? 'Enter the six-digit code we sent you.'
-                : 'Quotes are not available at the moment. Please email us and we will send yours across.'}
+              {loadError
+                ? loadError
+                : configured
+                  ? 'Enter the six-digit code we sent you.'
+                  : 'Quotes are not available at the moment. Please email us and we will send yours across.'}
             </p>
 
             {pinError && (
