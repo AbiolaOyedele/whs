@@ -2,10 +2,21 @@
  * Method:   GET
  * Path:     /agent/prompt.md
  * Auth:     none (public)
- * Response: text/markdown — instructions for an AI agent sending us an enquiry
+ * Response: text/plain — markdown instructions for an AI agent sending us an enquiry
  *
- * Prerendered: the document only interpolates the site URL, which is fixed at
- * build time, so this is a static asset rather than a function invocation.
+ * On-demand, not prerendered, and served as text/plain, both deliberately.
+ * Prerendered, Vercel serves this as a static file and derives the type from
+ * the `.md` extension, so the headers set below never applied and agents got
+ * `text/markdown` plus `Content-Disposition: inline; filename=...`. Several
+ * agent fetch tools accept only text/html or text/plain and refused the file
+ * with an unsupported-content-type error. The body is still markdown; only the
+ * label changed. The CDN caches the response, so this is not a function call
+ * per request.
+ *
+ * CORS is open on purpose for this one route: it is a public, read-only
+ * document with no user data, and browser-based agents fetch it cross-origin.
+ * Static hosting sent `*` already; on-demand routes do not, so it is explicit.
+ * Not the same as the write endpoint below, which stays same-origin.
  *
  * The URL is interpolated rather than hard-coded so a preview deployment points
  * at itself instead of production. In production it renders as
@@ -22,6 +33,8 @@
 import type { APIRoute } from 'astro'
 import { publicEnv } from '@/config/env'
 import { INQUIRY_MARKER } from '@/lib/agent-inquiry'
+
+export const prerender = false
 
 const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
 
@@ -137,7 +150,9 @@ ${siteUrl}/get-in-touch
 export const GET: APIRoute = () =>
   new Response(DOCUMENT, {
     headers: {
-      'Content-Type': 'text/markdown; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600',
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+      'Access-Control-Allow-Origin': '*',
+      'X-Content-Type-Options': 'nosniff',
     },
   })
