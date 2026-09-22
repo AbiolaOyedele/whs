@@ -23,10 +23,13 @@ import { createStandaloneInvoice } from '@/lib/admin/repositories/invoices'
 import { lineAmount } from '@/lib/admin/money'
 import { isAppError } from '@/lib/errors'
 import { CURRENCIES } from '@/types/quote'
+import { InvoiceTemplatePicker } from '@/components/admin/templates/InvoiceTemplatePicker'
+import { listTemplateLibrary } from '@/lib/admin/templates'
 
 export const prerender = false
 
 const session = Astro.locals.adminSession
+const library = await listTemplateLibrary()
 
 let error: string | null = null
 
@@ -268,10 +271,20 @@ const initialLines =
     </section>
 
     <section class="rounded-3xl border border-border bg-card p-5 md:p-6">
-      <div class="mb-4 flex items-baseline justify-between gap-3">
-        <h2 class="font-display text-xl">Line items</h2>
-        <p class="text-sm text-muted-foreground">Amounts in the invoice's currency, e.g. 150000.00</p>
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="min-w-0">
+          <h2 class="font-display text-xl">Line items</h2>
+          <p class="text-sm text-muted-foreground">Amounts in the invoice's currency, e.g. 150000.00</p>
+        </div>
+        <InvoiceTemplatePicker
+          client:idle
+          items={library.items}
+          packages={library.packages}
+          currencyInputSelector="input[name='currency']"
+          fallbackCurrency={currency}
+        />
       </div>
+      <p data-template-status role="status" class="mb-4 text-sm" hidden></p>
 
       <div data-lines class="flex flex-col gap-3">
         {
@@ -456,5 +469,52 @@ const initialLines =
     list.appendChild(clone)
     bindRemove(clone)
     clone.querySelector<HTMLInputElement>('input[name="lineTitle"]')?.focus()
+  })
+
+  /*
+   * Lines from templates. The picker island hands over finished rows; this
+   * script owns the DOM, so it clones them the same way "Add another line"
+   * does. Blank rows go first, so saved lines do not arrive under an empty
+   * one, but one row always stays to clone from.
+   */
+  const templateStatus = document.querySelector<HTMLElement>('[data-template-status]')
+
+  window.addEventListener('wh:insert-invoice-lines', (event) => {
+    const detail = (
+      event as CustomEvent<{
+        lines: Array<{ title: string; description: string; quantity: string; rate: string }>
+        message: string
+      }>
+    ).detail
+    if (!list || !detail || detail.lines.length === 0) return
+
+    const template = list.querySelector<HTMLElement>('[data-line-row]')
+    if (!template) return
+    const blueprint = template.cloneNode(true) as HTMLElement
+
+    for (const row of Array.from(list.querySelectorAll<HTMLElement>('[data-line-row]'))) {
+      const value = (name: string) =>
+        (row.querySelector<HTMLInputElement>(`input[name="${name}"]`)?.value ?? '').trim()
+      if (!value('lineTitle') && !value('lineDescription') && !value('lineUnitPrice')) row.remove()
+    }
+
+    for (const line of detail.lines) {
+      const clone = blueprint.cloneNode(true) as HTMLElement
+      const set = (name: string, value: string) => {
+        const input = clone.querySelector<HTMLInputElement>(`input[name="${name}"]`)
+        if (input) input.value = value
+      }
+      set('lineTitle', line.title)
+      set('lineDescription', line.description)
+      set('lineQty', line.quantity)
+      set('lineUnitPrice', line.rate)
+      list.appendChild(clone)
+      bindRemove(clone)
+    }
+
+    if (templateStatus) {
+      templateStatus.textContent = detail.message
+      templateStatus.hidden = false
+    }
   })
 </script>

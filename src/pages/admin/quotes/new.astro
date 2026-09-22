@@ -12,6 +12,8 @@ import FormSelect from '@/components/admin/FormSelect.astro'
 import { publicEnv } from '@/config/env'
 import { assertAdminOrigin } from '@/lib/admin/auth'
 import { createQuote } from '@/lib/admin/quotes'
+import { applyTemplateToSavedQuote, listTemplateLibrary } from '@/lib/admin/templates'
+import { describeTemplate } from '@/lib/admin/template-apply'
 import { isAppError } from '@/lib/errors'
 import { CURRENCIES } from '@/types/quote'
 
@@ -19,11 +21,24 @@ export const prerender = false
 
 const session = Astro.locals.adminSession
 
+const { quoteTemplates } = await listTemplateLibrary()
+
 let error: string | null = null
+/* The quote was made but its template could not be poured in. Said plainly on
+   the success screen, because the quote exists and the code is shown once. */
+let templateError: string | null = null
 let created: { id: string; slug: string; pin: string } | null = null
 let clientName = ''
 let projectTitle = ''
-let currency = 'GBP'
+
+/*
+ * `?template=` arrives from a template's Use button. Starting in the
+ * template's own currency means its prices go in exactly as saved; picking a
+ * different currency here still works, and converts at today's rate.
+ */
+let templateId = Astro.url.searchParams.get('template') ?? ''
+if (!quoteTemplates.some((entry) => entry.id === templateId)) templateId = ''
+let currency: string = quoteTemplates.find((entry) => entry.id === templateId)?.currency ?? 'GBP'
 
 if (Astro.request.method === 'POST' && session) {
   try {
@@ -33,6 +48,7 @@ if (Astro.request.method === 'POST' && session) {
     clientName = String(form.get('clientName') ?? '').trim()
     projectTitle = String(form.get('projectTitle') ?? '').trim()
     currency = String(form.get('currency') ?? 'GBP')
+    templateId = String(form.get('template') ?? '')
     const slug = String(form.get('slug') ?? '')
       .trim()
       .toLowerCase()
@@ -44,6 +60,16 @@ if (Astro.request.method === 'POST' && session) {
         { clientName, projectTitle, currency, slug: slug || undefined },
         session.userId
       )
+
+      if (templateId) {
+        try {
+          await applyTemplateToSavedQuote(created.id, templateId)
+        } catch (cause) {
+          templateError = isAppError(cause)
+            ? `${cause.message} The quote was created without the template. Open it and choose Start from a template to try again.`
+            : 'The quote was created, but the template could not be added. Open it and choose Start from a template to try again.'
+        }
+      }
     }
   } catch (cause) {
     error = isAppError(cause)
@@ -67,6 +93,15 @@ const shareUrl = created
             Send the client both of these. The code is stored hashed, so this is the only time it
             can be shown.
           </p>
+
+          {templateError && (
+            <div
+              role="alert"
+              class="mb-6 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-base"
+            >
+              {templateError}
+            </div>
+          )}
 
           <div class="mb-6 rounded-3xl border border-border bg-card p-6">
             <p class="mb-2 text-sm text-muted-foreground">Their link</p>
@@ -156,6 +191,31 @@ const shareUrl = created
                 }))}
               />
             </div>
+
+            {quoteTemplates.length > 0 && (
+              <div class="flex flex-col gap-2">
+                <span class="text-sm text-muted-foreground">
+                  Start from <span class="text-muted-foreground/60">(optional)</span>
+                </span>
+                <FormSelect
+                  id="template"
+                  name="template"
+                  label="Start from"
+                  value={templateId}
+                  options={[
+                    { value: '', label: 'A blank quote' },
+                    ...quoteTemplates.map((entry) => ({
+                      value: entry.id,
+                      label: `${entry.name} (${describeTemplate(entry.body)})`,
+                    })),
+                  ]}
+                />
+                <p class="text-sm text-muted-foreground">
+                  Fills in the scope, packages, timeline and terms. Prices in another currency are
+                  converted at today's rate.
+                </p>
+              </div>
+            )}
 
             <div class="flex flex-col gap-2">
               <label for="slug" class="text-sm text-muted-foreground">

@@ -27,27 +27,39 @@ const reference = Astro.url.searchParams.get('reference') ?? Astro.url.searchPar
 let state: 'paid' | 'pending' | 'failed' | 'unknown' = 'unknown'
 let amount = ''
 
-if (isAdminConfigured() && reference && (await hasQuoteAccess(slug, Astro.cookies))) {
-  const payment = await getPaymentByReference(reference)
+/*
+ * The client has just paid, so this page must never answer with a server error.
+ * If our database cannot be reached we know nothing about their money either
+ * way: that reads as pending, and the sweeps settle it once the database is back.
+ */
+if (isAdminConfigured() && reference) {
+  try {
+    if (await hasQuoteAccess(slug, Astro.cookies)) {
+      const payment = await getPaymentByReference(reference)
 
-  if (payment) {
-    amount = formatMoney(payment.amountMinor, payment.currency)
+      if (payment) {
+        amount = formatMoney(payment.amountMinor, payment.currency)
 
-    if (payment.status === 'paid') {
-      state = 'paid'
-    } else {
-      const result = await reconcilePayment(payment)
+        if (payment.status === 'paid') {
+          state = 'paid'
+        } else {
+          const result = await reconcilePayment(payment)
 
-      /* `unavailable` means Paystack could not be reached — that is our problem,
-         not evidence about their money, so it reads as pending rather than
-         failed. Nothing has been written in that case. */
-      state =
-        result.verifiedStatus === 'paid'
-          ? 'paid'
-          : result.verifiedStatus === 'failed'
-            ? 'failed'
-            : 'pending'
+          /* `unavailable` means Paystack could not be reached — that is our problem,
+             not evidence about their money, so it reads as pending rather than
+             failed. Nothing has been written in that case. */
+          state =
+            result.verifiedStatus === 'paid'
+              ? 'paid'
+              : result.verifiedStatus === 'failed'
+                ? 'failed'
+                : 'pending'
+        }
+      }
     }
+  } catch (cause) {
+    console.error('[quote-paid]', cause)
+    state = 'pending'
   }
 }
 

@@ -18,6 +18,7 @@ import { isAdminConfigured } from '@/config/env'
 import { readSession } from '@/lib/admin/auth'
 
 const SIGN_IN_PATH = '/admin/sign-in'
+const UNAVAILABLE_PATH = '/admin/unavailable'
 
 /** Paths under /admin that must stay reachable without a session. */
 const PUBLIC_ADMIN_PATHS = new Set([SIGN_IN_PATH, '/admin/setup'])
@@ -50,5 +51,20 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return context.redirect(`${SIGN_IN_PATH}${redirect}`)
   }
 
-  return next()
+  if (pathname === UNAVAILABLE_PATH) return next()
+
+  /*
+   * Admin pages load their data in frontmatter, outside any try/catch. A single
+   * failed query (a dropped connection, a migration not yet run) used to escape
+   * as an uncaught AppError and reach the browser as Vercel's bare HTTP 500.
+   * Catching it once here covers every admin page, present and future, and
+   * keeps the operator inside the admin shell with a way to retry.
+   */
+  try {
+    return await next()
+  } catch (cause) {
+    console.error(`[admin-render] ${pathname}`, cause)
+    const response = await context.rewrite(UNAVAILABLE_PATH)
+    return new Response(response.body, { status: 503, headers: response.headers })
+  }
 })

@@ -14,6 +14,7 @@
  */
 import { Button, Checkbox, CollapsibleRow, Select, TextArea, TextInput } from '../ui'
 import { MoneyInput } from './MoneyInput'
+import { Icon } from '@/components/ui/icons'
 import { formatMoney, lineAmount } from '@/lib/admin/money'
 import type { CurrencyCode, QuoteLineItem, QuoteOption } from '@/types/quote'
 
@@ -39,6 +40,8 @@ interface Props {
   onUpdate: (id: string, patch: Partial<QuoteLineItem>) => void
   onRemove: (id: string) => void
   onReorder: (lineItems: QuoteLineItem[]) => void
+  /** Keeps this line as a saved item. Omitted where saving makes no sense. */
+  onSaveToTemplates?: ((item: QuoteLineItem) => void) | undefined
 }
 
 export function LineItemList({
@@ -52,6 +55,7 @@ export function LineItemList({
   onUpdate,
   onRemove,
   onReorder,
+  onSaveToTemplates,
 }: Props) {
   const group = lineItems
     .map((item, absoluteIndex) => ({ item, absoluteIndex }))
@@ -179,6 +183,19 @@ export function LineItemList({
                   })
                 }
               />
+            )}
+
+            {/* Inside the open row rather than beside Remove: the row's own
+                action strip is already three controls wide on a phone. */}
+            {onSaveToTemplates && (
+              <Button
+                className="self-start"
+                disabled={!item.title.trim()}
+                onClick={() => onSaveToTemplates(item)}
+              >
+                <Icon name="layers" className="size-4" />
+                Save to templates
+              </Button>
             )}
           </div>
         </CollapsibleRow>

@@ -100,12 +100,20 @@ export default function InvoicesPanel({ invoices }: { invoices: InvoiceListRow[]
             work quoted outside this system. Numbers never change.
           </p>
         </div>
-        <a
-          href="/admin/invoices/new"
-          className="inline-flex min-h-12 items-center rounded-full bg-primary px-6 text-base text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-        >
-          New invoice
-        </a>
+        <div className="flex flex-wrap gap-2">
+          <a
+            href="/admin/templates"
+            className="inline-flex min-h-12 items-center rounded-full border border-border bg-card px-6 text-base transition-colors hover:border-foreground"
+          >
+            Templates
+          </a>
+          <a
+            href="/admin/invoices/new"
+            className="inline-flex min-h-12 items-center rounded-full bg-primary px-6 text-base text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+          >
+            New invoice
+          </a>
+        </div>
       </div>
 
       {message && (

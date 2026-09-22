@@ -1,0 +1,45 @@
+---
+/**
+ * Shown in place of an admin page whose data could not be loaded.
+ *
+ * Reached only through the rewrite in `src/middleware.ts`, so the address bar
+ * still shows the page the operator asked for. "Try again" therefore points at
+ * the original path, read from `Astro.originPathname`, not at this route.
+ *
+ * Deliberately touches no database: it must render when the database is the
+ * thing that is down.
+ */
+import AdminLayout from '@/layouts/AdminLayout.astro'
+
+export const prerender = false
+
+const origin = Astro.originPathname
+// Only ever link back into the admin. Anything else falls back to the overview.
+const retry = origin.startsWith('/admin') && origin !== '/admin/unavailable' ? origin : '/admin'
+const email = Astro.locals.adminSession?.email
+---
+
+<AdminLayout title="Page unavailable" email={email}>
+  <div class="w-full max-w-xl">
+    <h1 class="wh-h1-compact mb-3">This page could not load</h1>
+    <p class="mb-8 text-lg text-muted-foreground">
+      We could not reach the database to fetch this page. Nothing has been changed or lost. It is
+      usually brief, so try again in a moment.
+    </p>
+
+    <div class="flex flex-wrap gap-3">
+      <a
+        href={retry}
+        class="inline-flex min-h-12 items-center rounded-full bg-primary px-6 text-base text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+      >
+        Try again
+      </a>
+      <a
+        href="/admin"
+        class="inline-flex min-h-12 items-center rounded-full border border-border px-6 text-base transition-colors hover:border-foreground"
+      >
+        Back to overview
+      </a>
+    </div>
+  </div>
+</AdminLayout>

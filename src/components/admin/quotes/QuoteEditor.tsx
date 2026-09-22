@@ -28,6 +28,16 @@ import { LineItemList } from './LineItemList'
 import { QuoteTotals } from './QuoteTotals'
 import { AiDraftPanel, emptyAiDraftState, type AiDraftState } from './AiDraftPanel'
 import { ImageUploader } from './ImageUploader'
+import { TemplatePicker } from '../templates/TemplatePicker'
+import { QuoteTemplateDialog } from '../templates/QuoteTemplateDialog'
+import { messageFrom } from '../templates/fx-client'
+import { Icon } from '@/components/ui/icons'
+import {
+  applyTemplateToQuote,
+  type NewLine,
+  type PackageAsOption,
+} from '@/lib/admin/template-apply'
+import type { SavedItem, SavedPackage, TemplateLibrary } from '@/types/templates'
 import {
   BLANK_LINE_ITEM,
   BLANK_OPTION,
@@ -75,6 +85,8 @@ import {
   QUOTE_STATUS_LABELS,
   type Quote,
   type QuoteOptionPricing,
+  type QuoteLineItem,
+  type QuoteOption,
 } from '@/types/quote'
 import type { AiModelChoice } from '@/lib/ai/types'
 
@@ -101,16 +113,36 @@ const PREVIEW_WIDTHS = [
 
 type TabId = (typeof TABS)[number]['id']
 
+/** "Converted at 1 GBP = 2,041 NGN." Only when something was converted. */
+const rateSentence = (notes: string[]): string =>
+  notes.length > 0 ? ` Converted at ${notes.join(', ')}. Check the prices, then save.` : ''
+
 interface Props {
   initialQuote: Quote
   siteUrl: string
   aiModels: AiModelChoice[]
   imagesEnabled: boolean
+  /** Saved items, packages and quote templates, for the pickers. */
+  library: TemplateLibrary
 }
 
-export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEnabled }: Props) {
+export default function QuoteEditor({
+  initialQuote,
+  siteUrl,
+  aiModels,
+  imagesEnabled,
+  library,
+}: Props) {
   const { state, totals, setField, rows, reset, dispatch } = useQuoteEditor(initialQuote)
   const { quote, dirty } = state
+
+  /* The library, kept locally so anything saved from this quote shows up in the
+     pickers straight away without reloading the editor out from under it. */
+  const [savedItems, setSavedItems] = useState(library.items)
+  const [savedPackages, setSavedPackages] = useState(library.packages)
+  const [quoteTemplates, setQuoteTemplates] = useState(library.quoteTemplates)
+  const [pickerMode, setPickerMode] = useState<'lines' | 'options' | null>(null)
+  const [templateDialog, setTemplateDialog] = useState<'use' | 'save' | null>(null)
 
   /* What each option adds, for the collapsed row summary. Derived from the
      line items rather than stored, so it cannot disagree with the client's
@@ -497,6 +529,142 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEna
     ),
   })
 
+  /* --- Templates ----------------------------------------------------------- */
+
+  const insertLines = useCallback(
+    (lines: NewLine[], notes: string[]) => {
+      lines.forEach((line) => rows.add('lineItems', line))
+      setMessage({
+        tone: 'success',
+        text: `Added ${lines.length} ${lines.length === 1 ? 'line' : 'lines'}.${rateSentence(notes)}`,
+      })
+    },
+    [rows]
+  )
+
+  const insertOptions = useCallback(
+    (added: PackageAsOption[], notes: string[]) => {
+      /*
+       * Built in one replace rather than row by row: each package's lines must
+       * point at its option, and `rows.add` mints the option's id internally
+       * where nothing here could read it back. Non-uuid ids are remapped to
+       * real ones on save, exactly as for an AI draft.
+       */
+      const stamp = Date.now()
+      const options: QuoteOption[] = []
+      const lines: QuoteLineItem[] = []
+      added.forEach(({ option, lines: optionLines }, index) => {
+        const id = `saved-option-${stamp}-${index}`
+        options.push({ ...option, id, position: quote.options.length + index })
+        optionLines.forEach((line, lineIndex) =>
+          lines.push({
+            ...line,
+            optionId: id,
+            id: `saved-line-${stamp}-${index}-${lineIndex}`,
+            position: quote.lineItems.length + lines.length,
+          })
+        )
+      })
+
+      dispatch({
+        type: 'replaceAll',
+        dirty: true,
+        quote: {
+          ...quote,
+          options: [...quote.options, ...options],
+          lineItems: [...quote.lineItems, ...lines],
+        },
+      })
+      setMessage({
+        tone: 'success',
+        text: `Added ${added.length} ${added.length === 1 ? 'package' : 'packages'}.${rateSentence(notes)}`,
+      })
+    },
+    [dispatch, quote]
+  )
+
+  /** Keeps one line as a saved item, in this quote's currency. */
+  const saveLineToTemplates = useCallback(
+    async (item: QuoteLineItem) => {
+      try {
+        const response = await fetch('/api/v1/admin/templates/items', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: item.title,
+            description: item.description,
+            quantity: item.quantity,
+            unitPriceMinor: item.unitPriceMinor,
+            currency: quote.currency,
+          }),
+        })
+        if (!response.ok) {
+          setMessage({
+            tone: 'error',
+            text: await messageFrom(response, 'That line was not saved.'),
+          })
+          return
+        }
+        const { item: saved } = (await response.json()) as { item: SavedItem }
+        setSavedItems((list) => [...list, saved].sort((a, b) => a.title.localeCompare(b.title)))
+        setMessage({ tone: 'success', text: `${saved.title} saved to templates.` })
+      } catch {
+        setMessage({ tone: 'error', text: 'We could not reach the server. Try again.' })
+      }
+    },
+    [quote.currency]
+  )
+
+  /** Keeps one option, with its lines, as a saved package. */
+  const saveOptionAsPackage = useCallback(
+    async (option: QuoteOption) => {
+      const lines = quote.lineItems
+        .filter((item) => item.optionId === option.id && item.title.trim())
+        .map((item) => ({
+          title: item.title,
+          description: item.description,
+          quantity: item.quantity,
+          unitPriceMinor: item.unitPriceMinor,
+        }))
+
+      if (lines.length === 0) {
+        setMessage({
+          tone: 'error',
+          text: 'Add at least one item to this package before saving it.',
+        })
+        return
+      }
+
+      try {
+        const response = await fetch('/api/v1/admin/templates/packages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: option.title,
+            description: option.description,
+            currency: quote.currency,
+            pricing: option.pricing,
+            fixedPriceMinor: option.fixedPriceMinor,
+            lines,
+          }),
+        })
+        if (!response.ok) {
+          setMessage({
+            tone: 'error',
+            text: await messageFrom(response, 'That package was not saved.'),
+          })
+          return
+        }
+        const { package: saved } = (await response.json()) as { package: SavedPackage }
+        setSavedPackages((list) => [...list, saved].sort((a, b) => a.name.localeCompare(b.name)))
+        setMessage({ tone: 'success', text: `${saved.name} saved to templates.` })
+      } catch {
+        setMessage({ tone: 'error', text: 'We could not reach the server. Try again.' })
+      }
+    },
+    [quote.currency, quote.lineItems]
+  )
+
   return (
     <div className="pb-28">
       {/* Header: identity, status, and the two actions that matter. */}
@@ -655,7 +823,15 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEna
                   title="Cost breakdown"
                   description="Work charged on every version of this quote, whatever the client picks."
                   action={
-                    <Button onClick={() => rows.add('lineItems', BLANK_LINE_ITEM)}>Add line</Button>
+                    <div className="flex flex-wrap gap-2">
+                      <Button onClick={() => setPickerMode('lines')}>
+                        <Icon name="layers" className="size-4" />
+                        From templates
+                      </Button>
+                      <Button onClick={() => rows.add('lineItems', BLANK_LINE_ITEM)}>
+                        Add line
+                      </Button>
+                    </div>
                   }
                 >
                   <LineItemList
@@ -664,10 +840,11 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEna
                     currency={quote.currency}
                     optionId={null}
                     fieldErrors={fieldErrors}
-                    emptyMessage="No lines yet. Add one, or let the AI drafter propose a breakdown."
+                    emptyMessage="No lines yet. Add one, pick from your templates, or let the AI drafter propose a breakdown."
                     onUpdate={(id, patch) => rows.update('lineItems', id, patch)}
                     onRemove={(id) => rows.remove('lineItems', id)}
                     onReorder={(lineItems) => setField({ lineItems })}
+                    onSaveToTemplates={(item) => void saveLineToTemplates(item)}
                   />
                 </Panel>
 
@@ -733,6 +910,10 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEna
                 description="Packages are pick-one. Add-ons are tick-any. Leave this empty for a single fixed scope."
                 action={
                   <div className="flex flex-wrap gap-2">
+                    <Button onClick={() => setPickerMode('options')}>
+                      <Icon name="layers" className="size-4" />
+                      Saved package
+                    </Button>
                     <Button
                       onClick={() => rows.add('options', { ...BLANK_OPTION, kind: 'package' })}
                     >
@@ -931,8 +1112,24 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEna
                               onUpdate={(id, patch) => rows.update('lineItems', id, patch)}
                               onRemove={(id) => rows.remove('lineItems', id)}
                               onReorder={(lineItems) => setField({ lineItems })}
+                              /* Under one price a line has no price of its own
+                                 to save, so it would land in templates at zero. */
+                              onSaveToTemplates={
+                                option.pricing === 'fixed'
+                                  ? undefined
+                                  : (item) => void saveLineToTemplates(item)
+                              }
                             />
                           </div>
+
+                          <Button
+                            className="self-start"
+                            disabled={!option.title.trim()}
+                            onClick={() => void saveOptionAsPackage(option)}
+                          >
+                            <Icon name="layers" className="size-4" />
+                            Save as package
+                          </Button>
                         </div>
                       </CollapsibleRow>
                     ))}
@@ -1476,18 +1673,90 @@ export default function QuoteEditor({ initialQuote, siteUrl, aiModels, imagesEna
         </div>
 
         {/* Totals stay visible while editing anything. */}
-        <aside className="lg:sticky lg:top-6">
+        <aside className="flex flex-col gap-3 lg:sticky lg:top-6">
           <QuoteTotals
             totals={totals}
             currency={quote.currency}
             taxRateBp={quote.taxRateBp}
             depositPercent={quote.depositPercent}
           />
+
+          <section
+            aria-labelledby="quote-templates-heading"
+            className="rounded-3xl border border-border bg-card p-5"
+          >
+            <h2 id="quote-templates-heading" className="mb-1 font-display text-lg">
+              Templates
+            </h2>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Start from a quote you have saved, or keep this one to reuse.
+            </p>
+            <div className="flex flex-col gap-2">
+              <Button onClick={() => setTemplateDialog('use')} className="w-full">
+                Start from a template
+              </Button>
+              <Button onClick={() => setTemplateDialog('save')} className="w-full">
+                Save as template
+              </Button>
+            </div>
+          </section>
         </aside>
       </div>
 
       {/* Save bar. Fixed, because the tab content is long and the button must
           never be a scroll away. */}
+      {pickerMode === 'options' ? (
+        <TemplatePicker
+          mode="options"
+          open
+          onClose={() => setPickerMode(null)}
+          items={savedItems}
+          packages={savedPackages}
+          currency={quote.currency}
+          onInsert={insertOptions}
+        />
+      ) : (
+        <TemplatePicker
+          mode="lines"
+          open={pickerMode === 'lines'}
+          onClose={() => setPickerMode(null)}
+          items={savedItems}
+          packages={savedPackages}
+          currency={quote.currency}
+          onInsert={insertLines}
+        />
+      )}
+
+      <QuoteTemplateDialog
+        mode={templateDialog}
+        quote={quote}
+        templates={quoteTemplates}
+        onClose={() => setTemplateDialog(null)}
+        onUse={(template, rate, notes) => {
+          dispatch({
+            type: 'replaceAll',
+            dirty: true,
+            quote: applyTemplateToQuote(quote, template, rate),
+          })
+          setTab('cost')
+          setMessage({
+            tone: 'success',
+            text: `${template.name} applied. Nothing is saved yet.${rateSentence(notes)}`,
+          })
+        }}
+        onSaved={(template, replaced) => {
+          setQuoteTemplates((list) =>
+            [...list.filter((entry) => entry.id !== template.id), template].sort((a, b) =>
+              a.name.localeCompare(b.name)
+            )
+          )
+          setMessage({
+            tone: 'success',
+            text: replaced ? `${template.name} updated.` : `${template.name} saved as a template.`,
+          })
+        }}
+      />
+
       <ConfirmDialog
         open={pendingCurrency !== null}
         title={`Switching to ${pendingCurrency ?? ''}`}

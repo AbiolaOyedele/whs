@@ -11,6 +11,7 @@ import AdminLayout from '@/layouts/AdminLayout.astro'
 import QuoteEditor from '@/components/admin/quotes/QuoteEditor'
 import { publicEnv } from '@/config/env'
 import { getQuoteById, listQuoteEvents } from '@/lib/admin/quotes'
+import { listTemplateLibrary } from '@/lib/admin/templates'
 import { collapseEvents } from '@/lib/admin/repositories/quotes'
 import { availableModels } from '@/lib/ai'
 import { isCloudinaryConfigured } from '@/lib/cloudinary'
@@ -27,11 +28,11 @@ const { id } = Astro.params
  * awaits were adding a whole second to every page load for no reason: the
  * activity log does not depend on the quote, it only shares its id.
  */
-const [quote, events] = id
-  ? await Promise.all([getQuoteById(id), listQuoteEvents(id, 200)])
-  : [null, []]
+const [quote, events, library] = id
+  ? await Promise.all([getQuoteById(id), listQuoteEvents(id, 200), listTemplateLibrary()])
+  : [null, [], null]
 
-if (!quote) return Astro.redirect('/admin/quotes')
+if (!quote || !library) return Astro.redirect('/admin/quotes')
 
 /* Twenty colleagues opening a quote produced twenty identical rows and buried
    the one that mattered. Runs collapse; order is preserved. */
@@ -71,6 +72,7 @@ import Icon from '@/components/ui/Icon.astro'
     siteUrl={publicEnv.PUBLIC_SITE_URL}
     aiModels={aiModels}
     imagesEnabled={isCloudinaryConfigured()}
+    library={library}
   />
 
   {

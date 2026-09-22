@@ -1,0 +1,21 @@
+---
+/**
+ * Templates: saved items, saved packages and quote templates.
+ *
+ * A shell around one island, like Clients. The whole library is small enough to
+ * render into the page and search in the browser.
+ */
+import AdminLayout from '@/layouts/AdminLayout.astro'
+import { TemplatesPanel } from '@/components/admin/templates/TemplatesPanel'
+import { listTemplateLibrary } from '@/lib/admin/templates'
+
+export const prerender = false
+
+const session = Astro.locals.adminSession
+const library = await listTemplateLibrary()
+---
+
+<AdminLayout title="Templates" section="templates" email={session?.email}>
+  {/* GBP, the same starting currency the new-quote form offers. */}
+  <TemplatesPanel client:load library={library} defaultCurrency="GBP" />
+</AdminLayout>

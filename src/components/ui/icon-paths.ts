@@ -27,6 +27,10 @@ export const ICONS = {
   check: { box: '0 0 24 24', paths: ['M5 13l4 4L19 7'] },
   arrowLeft: { box: '0 0 24 24', paths: ['M19 12H5', 'm12 19-7-7 7-7'] },
   arrowRight: { box: '0 0 24 24', paths: ['M5 12h14', 'm12 5 7 7-7 7'] },
+  /* Stacked sheets: saved templates. */
+  layers: { box: '0 0 24 24', paths: ['m12 3 9 5-9 5-9-5 9-5Z', 'm3 13 9 5 9-5'] },
+  plus: { box: '0 0 24 24', paths: ['M12 5v14', 'M5 12h14'] },
+  x: { box: '0 0 24 24', paths: ['M6 6l12 12', 'M6 18L18 6'] },
 } as const satisfies Record<string, IconSpec>
 
 export type IconName = keyof typeof ICONS
