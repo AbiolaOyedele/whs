@@ -222,7 +222,7 @@ const menus: NavMenu[] = [
 
   {/* Mobile panel*/}
   <div id="mobile-menu" data-mobile-panel class="wh-mobile-panel lg:hidden">
-    <nav aria-label="Mobile" class="wh-container max-h-[calc(100dvh-4rem)] overflow-y-auto pb-8">
+    <nav aria-label="Mobile" class="wh-container h-full overflow-y-auto pb-8">
       <ul class="divide-y divide-white/10 border-t border-white/10">
         {
           [
@@ -277,9 +277,15 @@ const menus: NavMenu[] = [
   }
 
   .wh-mobile-panel {
-    position: absolute;
+    position: fixed;
     inset-inline: 0;
-    top: 100%;
+    /* Matches the mobile header's own h-20 (5rem); the panel is lg:hidden, so
+       it never needs to account for the lg:h-28 header. Fixed, not absolute
+       and top:100%, so its height reaches the viewport bottom regardless of
+       how little content it holds instead of shrinking to fit it and leaving
+       the page behind visible underneath. */
+    top: 5rem;
+    bottom: 0;
     background-color: color-mix(in oklab, var(--primary) 92%, transparent);
     -webkit-backdrop-filter: blur(24px);
     backdrop-filter: blur(24px);

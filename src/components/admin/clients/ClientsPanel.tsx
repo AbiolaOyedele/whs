@@ -237,24 +237,26 @@ export default function ClientsPanel({ clients }: { clients: ClientWithActivity[
                 )}
               </div>
 
-              <dl className="mb-4 flex flex-col gap-1 text-sm">
-                {client.email && (
-                  <div className="flex gap-2">
-                    <dt className="sr-only">Email</dt>
-                    <dd className="truncate">
-                      <a href={`mailto:${client.email}`} className="underline">
-                        {client.email}
-                      </a>
-                    </dd>
-                  </div>
-                )}
-                {client.phone && (
-                  <div className="flex gap-2">
-                    <dt className="sr-only">Phone</dt>
-                    <dd className="text-muted-foreground">{client.phone}</dd>
-                  </div>
-                )}
-              </dl>
+              {(client.email || client.phone) && (
+                <dl className="mb-4 flex flex-col gap-1 text-sm">
+                  {client.email && (
+                    <div className="flex gap-2">
+                      <dt className="sr-only">Email</dt>
+                      <dd className="truncate">
+                        <a href={`mailto:${client.email}`} className="underline">
+                          {client.email}
+                        </a>
+                      </dd>
+                    </div>
+                  )}
+                  {client.phone && (
+                    <div className="flex gap-2">
+                      <dt className="sr-only">Phone</dt>
+                      <dd className="text-muted-foreground">{client.phone}</dd>
+                    </div>
+                  )}
+                </dl>
+              )}
 
               <div className="mb-4 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm text-muted-foreground">
                 <span>
