@@ -135,6 +135,10 @@ export const FOOTER_COLUMNS: ReadonlyArray<FooterColumn> = [
     ],
   },
   {
+    heading: 'Products',
+    links: [{ label: 'Dory', href: 'https://dory.whstd.com' }],
+  },
+  {
     heading: 'Connect',
     links: SOCIAL_LINKS,
   },
