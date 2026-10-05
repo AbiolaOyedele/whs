@@ -136,7 +136,10 @@ export const FOOTER_COLUMNS: ReadonlyArray<FooterColumn> = [
   },
   {
     heading: 'Products',
-    links: [{ label: 'Dory', href: 'https://dory.whstd.com' }],
+    links: [
+      { label: 'Rayo', href: 'https://rayo.whstd.com' },
+      { label: 'Dory', href: 'https://dory.whstd.com' },
+    ],
   },
   {
     heading: 'Connect',
