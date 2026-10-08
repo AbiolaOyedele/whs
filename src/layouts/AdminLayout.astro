@@ -36,6 +36,7 @@ interface Props {
     | 'requests'
     | 'rayo'
     | 'dory'
+    | 'planes'
   /** Sign-in and setup render without the nav rail. */
   chrome?: boolean
   email?: string | undefined
@@ -60,6 +61,8 @@ const NAV = [
   { id: 'rayo', label: 'Rayo', href: '/admin/rayo' },
   /* Dory, the personal-finance product, on the same infra. Counts only. */
   { id: 'dory', label: 'Dory', href: '/admin/dory' },
+  /* Planes, the task-planning product, on the same infra. Counts only. */
+  { id: 'planes', label: 'Planes', href: '/admin/planes' },
 ] as const
 ---
 
