@@ -171,6 +171,16 @@ const adminSchema = z.object({
    * invalidates every existing PIN, which is the intended emergency lever.
    */
   QUOTE_PIN_PEPPER: z.string().min(16),
+  /**
+   * Amber (amber.whstd.com) team accounts. The same 64-hex secret Amber uses to
+   * hash PINs: the admin creates accounts and resets PINs, Amber checks them.
+   * Optional: without it the Amber page shows its numbers but cannot add people
+   * or reset PINs.
+   */
+  AMBER_PIN_SECRET: z
+    .string()
+    .regex(/^[0-9a-f]{64}$/i, 'must be 64 hex characters')
+    .optional(),
 })
 
 /** Formats a Zod error into a readable multi-line message. */
