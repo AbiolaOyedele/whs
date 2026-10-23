@@ -37,6 +37,7 @@ interface Props {
     | 'rayo'
     | 'dory'
     | 'planes'
+    | 'marque'
   /** Sign-in and setup render without the nav rail. */
   chrome?: boolean
   email?: string | undefined
@@ -63,6 +64,8 @@ const NAV = [
   { id: 'dory', label: 'Dory', href: '/admin/dory' },
   /* Planes, the task-planning product, on the same infra. Counts only. */
   { id: 'planes', label: 'Planes', href: '/admin/planes' },
+  /* Marque, the brand-guideline editor. Lives on another Supabase project. Counts only. */
+  { id: 'marque', label: 'Marque', href: '/admin/marque' },
 ] as const
 ---
 
