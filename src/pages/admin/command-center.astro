@@ -3,7 +3,7 @@
  * Command Center.
  *
  * One hub for everything connected to this studio's infrastructure — Rayo,
- * Dory, Planes, Amber — plus the combined, cross-product view. Replaces four
+ * Dory, Planes, Amber, Marque — plus the combined, cross-product view. Replaces five
  * separate nav items: a status card here, a click through to each product's
  * own detailed analytics page (unchanged, still at /admin/rayo etc.), and the
  * combined numbers live on this same page rather than a separate one.
@@ -71,7 +71,7 @@ const NOT_OK_COPY: Record<string, string> = {
   </div>
 
   {/* --- Per-product status -------------------------------------------- */}
-  <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Connected products">
+  <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-label="Connected products">
     {
       data.apps.map((app) => (
         <div class="flex flex-col rounded-3xl border border-border bg-card p-5">
@@ -147,7 +147,7 @@ const NOT_OK_COPY: Record<string, string> = {
   {/* --- Combined -------------------------------------------------------- */}
   <h2 class="mt-10 font-display text-xl">Combined</h2>
   <p class="text-sm text-muted-foreground">
-    Rayo, Dory, Planes and Amber together, in {windowLabel}.
+    Rayo, Dory, Planes, Amber and Marque together, in {windowLabel}.
   </p>
 
   <section class="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -155,12 +155,12 @@ const NOT_OK_COPY: Record<string, string> = {
     <StatTile
       label="Active in the last 30 days"
       value={fmt(data.combined.activeLast30d)}
-      hint="Summed across all four."
+      hint="Summed across all five."
     />
     <StatTile
       label={`New in ${windowLabel}`}
       value={fmt(data.combined.newInRange)}
-      hint="Signups for Rayo, Dory and Planes; banners made for Amber."
+      hint="Signups for Rayo, Dory, Planes and Marque; banners made for Amber."
     />
   </section>
 

@@ -114,6 +114,12 @@ const adminSchema = z.object({
   /** Bypasses RLS. Server-only, never sent to a browser. */
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   /**
+   * Marque (marque.whstd.com) keeps its `marque` schema on a different Supabase project from the
+   * rest of the studio. Both are optional: without them the Marque page says it is not connected.
+   */
+  MARQUE_SUPABASE_URL: z.url().optional(),
+  MARQUE_SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
+  /**
    * Drafting assistance for quotes. Two providers, either or both.
    *
    * Claude is the default. Gemini is selectable per request from the drafting

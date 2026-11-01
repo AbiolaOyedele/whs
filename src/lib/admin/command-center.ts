@@ -5,18 +5,19 @@
  * This is orchestration only — it opens no connection of its own. It just
  * runs each product's existing, already-aggregated, already privacy-safe
  * fetch function in parallel and reshapes the results. Nothing here ever
- * sees a row Rayo, Dory, Planes or Amber didn't already decide was safe to
+ * sees a row Rayo, Dory, Planes, Amber or Marque didn't already decide was safe to
  * surface in their own panel.
  *
- * The shared range is the intersection of what all four products support:
+ * The shared range is the intersection of what all five products support:
  * Amber has no `24h` bucket, so Command Center doesn't offer one either —
  * better that than a window that silently means something different for one
- * card than for the other three.
+ * card than for the other four.
  */
 import { fetchDoryStats } from './dory-stats'
 import { fetchRayoStats } from './rayo-stats'
 import { fetchPlanesStats } from './planes-stats'
 import { loadAmber } from './amber'
+import { fetchMarqueStats } from './marque-stats'
 
 export type CommandCenterRange = '7d' | '30d' | '90d' | 'all'
 
@@ -31,7 +32,7 @@ export function parseCommandCenterRange(value: string | null): CommandCenterRang
   return value === '7d' || value === '30d' || value === '90d' || value === 'all' ? value : '30d'
 }
 
-type AppId = 'rayo' | 'dory' | 'planes' | 'amber'
+type AppId = 'rayo' | 'dory' | 'planes' | 'amber' | 'marque'
 
 export interface AppCard {
   id: AppId
@@ -64,11 +65,12 @@ function ranked(rows: Array<{ label: string; value: number }>): Array<{ label: s
 }
 
 export async function loadCommandCenter(range: CommandCenterRange): Promise<CommandCenterData> {
-  const [rayo, dory, planes, amber] = await Promise.all([
+  const [rayo, dory, planes, amber, marque] = await Promise.all([
     fetchRayoStats(range),
     fetchDoryStats(range),
     fetchPlanesStats(range),
     loadAmber(range),
+    fetchMarqueStats(range),
   ])
 
   const apps: AppCard[] = [
@@ -131,6 +133,21 @@ export async function loadCommandCenter(range: CommandCenterRange): Promise<Comm
             newInRange: amber.data.stats.banners,
           }
         : { ok: false, reason: amber.reason },
+    },
+    {
+      id: 'marque',
+      name: 'Marque',
+      blurb: 'Brand guidelines, edited by people and their AI assistants.',
+      href: '/admin/marque',
+      liveHref: 'https://marque.whstd.com',
+      status: marque.ok
+        ? {
+            ok: true,
+            accountsTotal: marque.data.accounts.total,
+            activeLast30d: marque.data.accounts.activeLast30d,
+            newInRange: marque.data.accounts.newInRange,
+          }
+        : { ok: false, reason: marque.reason },
     },
   ]
 
