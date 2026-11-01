@@ -72,6 +72,10 @@ export interface DoryStats {
   }
   /** Signups per day for the chart. Empty if the range is `all`. */
   signupSeries: Array<{ day: string; count: number }>
+  /** Expenses logged per day — the clearest single read on how much Dory is used. */
+  usageSeries: Array<{ day: string; count: number }>
+  signupsByWeekday: Array<{ label: string; value: number }>
+  usageByWeekday: Array<{ label: string; value: number }>
 }
 
 export type DoryStatsResult =
@@ -107,6 +111,18 @@ function bucketByDay(rows: Array<{ created_at: string }>): Array<{ day: string; 
     .sort((a, b) => a.day.localeCompare(b.day))
 }
 
+/** Monday through Sunday, in that order — a weekly rhythm, not a ranking. */
+const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+function bucketByWeekday(rows: Array<{ created_at: string }>): Array<{ label: string; value: number }> {
+  const counts = new Array(7).fill(0)
+  for (const row of rows) {
+    const jsDay = new Date(row.created_at).getUTCDay() // 0 = Sunday
+    counts[(jsDay + 6) % 7] += 1 // shift so 0 = Monday
+  }
+  return WEEKDAYS.map((label, index) => ({ label, value: counts[index] }))
+}
+
 export async function fetchDoryStats(range: DoryRange): Promise<DoryStatsResult> {
   if (!isAdminConfigured()) return { ok: false, reason: 'not-configured' }
 
@@ -122,6 +138,12 @@ export async function fetchDoryStats(range: DoryRange): Promise<DoryStatsResult>
         : client.from(table).select('id', { count: 'exact', head: true })
     )
 
+  /** Expenses created inside the range, dates only — doubles as the usage trend. */
+  const expenseRowsInRange = () =>
+    from
+      ? client.from('expenses').select('created_at').gte('created_at', from)
+      : client.from('expenses').select('created_at')
+
   try {
     const [
       accountsTotal,
@@ -129,7 +151,7 @@ export async function fetchDoryStats(range: DoryRange): Promise<DoryStatsResult>
       allowed,
       budgetOwners,
       recentSpenders,
-      expenses,
+      expenseRows,
       shoppingTrips,
       loans,
       subscriptions,
@@ -148,7 +170,7 @@ export async function fetchDoryStats(range: DoryRange): Promise<DoryStatsResult>
       // user_id only, to count distinct people. Small at Dory's scale.
       client.from('budget_months').select('user_id'),
       client.from('expenses').select('user_id').gte('created_at', activeSince),
-      createdInRange('expenses'),
+      expenseRowsInRange(),
       createdInRange('shopping_sessions'),
       createdInRange('loans'),
       createdInRange('subscriptions'),
@@ -158,6 +180,8 @@ export async function fetchDoryStats(range: DoryRange): Promise<DoryStatsResult>
     ])
 
     const distinct = (rows: Array<{ user_id: string }>) => new Set(rows.map((r) => r.user_id)).size
+    const expenseCreatedRows = rowsOf(expenseRows as Rows<{ created_at: string }>)
+    const signupCreatedRows = rowsOf(signupRows as Rows<{ created_at: string }>)
 
     return {
       ok: true,
@@ -170,8 +194,11 @@ export async function fetchDoryStats(range: DoryRange): Promise<DoryStatsResult>
           setUp: distinct(rowsOf(budgetOwners as Rows<{ user_id: string }>)),
           activeLast30d: distinct(rowsOf(recentSpenders as Rows<{ user_id: string }>)),
         },
-        usage: { expenses, shoppingTrips, loans, subscriptions },
-        signupSeries: bucketByDay(rowsOf(signupRows as Rows<{ created_at: string }>)),
+        usage: { expenses: expenseCreatedRows.length, shoppingTrips, loans, subscriptions },
+        signupSeries: bucketByDay(signupCreatedRows),
+        usageSeries: bucketByDay(expenseCreatedRows),
+        signupsByWeekday: bucketByWeekday(signupCreatedRows),
+        usageByWeekday: bucketByWeekday(expenseCreatedRows),
       },
     }
   } catch (cause) {

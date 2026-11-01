@@ -2,28 +2,41 @@
 /**
  * Case study detail.
  *
- * A single narrow column — index number and year on one
- * row, then a Services/Stack meta pair, a full-bleed media panel, and the
- * narrative in a `max-w-2xl` measure with small muted section labels rather
- * than large headings. The dark banner above it is ours, kept deliberately.
+ * Read top to bottom:
  *
- * Every case study ends on the next project in the running order, so the page
- * hands the reader somewhere to go rather than dead-ending on a CTA.
+ *   1. The running number on the left and the timeline on the right, both at
+ *      display scale from `lg`, flanking a centred narrow column that holds the
+ *      title, the product mark and name, and the Services and Stack pair.
+ *   2. The running app across the full container, in the laptop layout.
+ *   3. The story in the same narrow column: the first section as the intro,
+ *      then the calls to action.
+ *   4. A two-up of the same app at tablet and phone size, 7 and 5 columns, so
+ *      the reader sees it is one product at every size.
+ *   5. The next section, then the rest as a lettered list that opens one item
+ *      at a time.
+ *   6. Any second preview (a product's website beside its app) and the
+ *      screenshots, at the full container width.
+ *   7. Numbers, testimonial, outcome and the calls to action again, a callout,
+ *      and finally the next project with its own app running.
+ *
+ * There is no dark banner: the page opens on the title itself, and the running
+ * app is the first image.
  */
 import type { GetStaticPaths } from 'astro'
 import { getCollection, render } from 'astro:content'
 import { Image } from 'astro:assets'
 import BaseLayout from '@/layouts/BaseLayout.astro'
-import Hero from '@/components/sections/Hero.astro'
 import StatCallout from '@/components/sections/StatCallout.astro'
 import Testimonial from '@/components/sections/Testimonial.astro'
-import CTASection from '@/components/sections/CTASection.astro'
 import Prose from '@/components/ui/Prose.astro'
+import Button from '@/components/ui/Button.astro'
+import Icon from '@/components/ui/Icon.astro'
 import { breadcrumbSchema, caseStudySchema } from '@/lib/seo'
 import { publicEnv } from '@/config/env'
-import Icon from '@/components/ui/Icon.astro'
 import BentoGallery from '@/components/sections/BentoGallery.astro'
 import type { BentoShot } from '@/components/sections/BentoGallery.astro'
+import LivePreview from '@/components/sections/LivePreview.astro'
+import { LIVE_PREVIEWS } from '@/config/previews'
 
 export const getStaticPaths = (async () => {
   const work = (await getCollection('work', ({ data }) => !data.draft)).sort(
@@ -55,10 +68,15 @@ const jsonLd = [
   ]),
 ]
 
+const [lead, ...morePreviews] = data.previews
+const nextPreview = next.data.previews[0]
+
+/* The intro, the section after it, and the rest as the lettered list. */
+const [intro, second, ...details] = data.sections
+
 /*
- * Every shot the project has, in one list. The cover leads because it is the
- * whole window and the rest are details of it; it still does its other jobs on
- * the cards, so it is listed once here and never rendered twice on this page.
+ * Every screenshot the project has. The cover leads because it is the whole
+ * window and the rest are details of it.
  */
 const shots: BentoShot[] = [
   ...(data.cover ? [{ src: data.cover, alt: data.coverAlt ?? '' }] : []),
@@ -67,36 +85,40 @@ const shots: BentoShot[] = [
 
 /** Two-digit running number, rendered as `(04)`. */
 const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
+const letter = (n: number) => String.fromCharCode(65 + n)
+
+/* The narrow reading column, shared by everything that is text. */
+const column = 'mx-auto max-w-2xl'
+const label = 'mb-6 leading-relaxed text-muted-foreground'
 ---
 
-<BaseLayout title={data.title} description={data.description} jsonLd={jsonLd} darkHero>
-  <Hero eyebrow={data.client} title={data.title} subtitle={data.summary} />
-
-  <div class="wh-container">
-    <div class="max-w-2xl pt-14 lg:ml-[10.35%] lg:pt-24">
+<BaseLayout title={data.title} description={data.description} jsonLd={jsonLd}>
+  <header class="wh-container relative pt-40 md:pt-52">
+    {
+      /*      Below `lg` the number and the timeline share a row above the title. From
+      `lg` they leave the column and pin to the container's two edges, level with
+      the first line of the title. Our timelines are descriptive ("Started June
+      2026, in active development"), so the right-hand one keeps a reading size
+      rather than the number's display size.*/
+    }
+    <div class="mb-10 flex items-baseline justify-between gap-6 lg:absolute lg:inset-x-8 lg:mb-0">
+      <p class="text-4xl tabular-nums md:text-6xl">
+        {ordinal(index)}<span
+          aria-hidden="true"
+          class="ml-1 inline-block size-3 rounded-full bg-foreground md:size-5"></span>
+      </p>
       {
-        /* Both sides sit at display scale because the right-hand
-           value is a bare year range. Ours are descriptive ("Started June 2026,
-           in active development"), which at 48px wraps to three lines and
-           swamps the number, so the date keeps a reading size.*/
+        data.timeline && (
+          <p class="max-w-[14rem] text-right text-base text-balance text-muted-foreground md:text-xl lg:max-w-[16rem]">
+            {data.timeline}
+          </p>
+        )
       }
-      <div class="flex items-baseline justify-between gap-6">
-        <p class="text-3xl tabular-nums md:text-5xl">{ordinal(index)}</p>
-        {
-          data.timeline && (
-            <p class="max-w-[16rem] text-right text-base text-balance text-muted-foreground md:text-xl">
-              {data.timeline}
-            </p>
-          )
-        }
-      </div>
+    </div>
 
-      {
-        /*        The mark sits on the same baseline row as the name rather than above
-        it. These are desktop apps, and the icon is how someone recognises one
-        in a dock; on its own line it reads as a logo lockup for an agency the
-        reader has not heard of.*/
-      }
+    <div class={column}>
+      <h1 class="text-4xl leading-tight tracking-tight text-balance md:text-6xl">{data.title}</h1>
+
       <div class="mt-10 flex items-center gap-4">
         {
           data.icon && (
@@ -106,14 +128,14 @@ const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
               aria-hidden="true"
               width={96}
               densities={[1, 2]}
-              class="size-12 shrink-0 rounded-xl md:size-14"
+              class="size-10 shrink-0 rounded-xl md:size-12"
             />
           )
         }
-        <p class="text-2xl md:text-3xl">{data.client}</p>
+        <p class="text-2xl">{data.client}</p>
       </div>
 
-      <div class="mt-10 gap-10 md:mt-20 md:flex md:justify-between">
+      <div class="mt-10 md:mt-20">
         {
           data.services.length > 0 && (
             <div>
@@ -124,7 +146,7 @@ const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
         }
         {
           data.techStack.length > 0 && (
-            <div class="mt-10 md:mt-0 md:shrink-0">
+            <div class="mt-10">
               <p class="text-muted-foreground">Stack</p>
               <p class="mt-6 flex flex-wrap gap-x-5 gap-y-2 font-medium">
                 {data.techStack.map((tech) => (
@@ -135,110 +157,233 @@ const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
           )
         }
       </div>
-
-      {
-        data.liveUrl && (
-          <a
-            href={data.liveUrl}
-            rel="noopener noreferrer"
-            target="_blank"
-            class="wh-tap mt-10 inline-flex items-center gap-2 underline underline-offset-4 transition-colors hover:text-muted-foreground"
-          >
-            Visit the live site
-            <span aria-hidden="true">&#8599;</span>
-          </a>
-        )
-      }
     </div>
-  </div>
+  </header>
 
   {
-    /*    Every shot for the project, in one bento. It replaces both the old
-    full-bleed hero panel and the one-per-row gallery that used to sit further
-    down: the arrangement is provisional and derived from the images themselves,
-    so better shots can be dropped into frontmatter without touching a layout.
-
-    Entries with nothing supplied yet keep the seeded placeholder band, so a
-    case study without imagery still has a shape rather than a gap.*/
+    lead ? (
+      <div class="wh-container mt-16 lg:mt-20">
+        <LivePreview slug={lead} class="relative aspect-[4/5] w-full rounded-3xl md:aspect-[5/3]" />
+      </div>
+    ) : (
+      shots.length === 0 && (
+        <div class="wh-container mt-16 lg:mt-20">
+          <div
+            aria-hidden="true"
+            class="h-[16rem] rounded-3xl md:h-[28rem] lg:h-[36rem]"
+            style="background:
+              linear-gradient(140deg, #1c1c1f 0%, #2b2b30 46%, #191919 100%),
+              radial-gradient(60% 50% at 70% 20%, color-mix(in oklab, var(--accent) 30%, transparent), transparent 70%);
+              background-blend-mode: screen;"
+          />
+        </div>
+      )
+    )
   }
-  <div class="wh-container mt-16 lg:mt-20">
+
+  <article class="wh-container">
     {
-      shots.length > 0 ? (
-        <BentoGallery shots={shots} />
-      ) : (
-        <div
-          aria-hidden="true"
-          class="h-[16rem] rounded-3xl md:h-[28rem] lg:h-[36rem]"
-          style="background:
-            linear-gradient(140deg, #1c1c1f 0%, #2b2b30 46%, #191919 100%),
-            radial-gradient(60% 50% at 70% 20%, color-mix(in oklab, var(--accent) 30%, transparent), transparent 70%);
-            background-blend-mode: screen;"
-        />
+      intro && (
+        <section class:list={[column, 'mt-20']}>
+          <h2 class={label}>{intro.title}</h2>
+          <p class="text-lg leading-relaxed md:text-xl">{intro.body}</p>
+        </section>
       )
     }
-  </div>
 
-  <div class="wh-container">
-    <div class="max-w-2xl lg:ml-[10.35%]">
+    <div class:list={[column, 'mt-12 flex flex-wrap gap-3']}>
+      <Button href="/request-a-quote" variant="accent" size="sm">Start a project</Button>
       {
-        data.sections.map((section) => (
-          <section class="mt-16 lg:mt-20">
-            <h2 class="mb-6 leading-relaxed text-muted-foreground">{section.title}</h2>
-            <p class="text-lg leading-relaxed md:text-xl">{section.body}</p>
-          </section>
-        ))
-      }
-      {
-        data.stats.length > 0 && (
-          <section class="mt-16 lg:mt-20">
-            <h2 class="mb-6 leading-relaxed text-muted-foreground">By the numbers</h2>
-            <ul class="grid gap-8 sm:grid-cols-2">
-              {data.stats.map((stat) => (
-                <li>
-                  <StatCallout value={stat.value} label={stat.label} size="lg" />
-                </li>
-              ))}
-            </ul>
-          </section>
+        data.liveUrl && (
+          <Button
+            href={data.liveUrl}
+            variant="outline"
+            size="sm"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Visit the live site
+          </Button>
         )
       }
-
-      {
-        data.testimonial && (
-          <section class="mt-16 lg:mt-20">
-            <h2 class="mb-6 leading-relaxed text-muted-foreground">Testimonial</h2>
-            <Testimonial {...data.testimonial} />
-          </section>
-        )
-      }
-
-      {
-        data.outcome && (
-          <section class="mt-16 lg:mt-20">
-            <h2 class="mb-6 leading-relaxed text-muted-foreground">Outcome</h2>
-            <p class="text-2xl leading-tight text-pretty md:text-3xl">{data.outcome}</p>
-          </section>
-        )
-      }
-
-      <Prose class="mt-16 lg:mt-20">
-        <Content />
-      </Prose>
     </div>
-  </div>
+
+    {
+      /*      The same app at tablet and phone size. The phone half is dropped below
+      `md`, where the lead preview above is already the phone layout.*/
+    }
+    {
+      lead && (
+        <div class="my-20 grid gap-1.5 md:grid-cols-12">
+          <LivePreview
+            slug={lead}
+            device="tablet"
+            class="relative aspect-[4/5] w-full rounded-3xl md:col-span-7 md:aspect-[6/5]"
+          />
+          <LivePreview
+            slug={lead}
+            device="phone"
+            class="relative hidden w-full rounded-3xl md:col-span-5 md:block"
+          />
+        </div>
+      )
+    }
+
+    {
+      second && (
+        <section class:list={[column, 'mt-20']}>
+          <h2 class={label}>{second.title}</h2>
+          <p class="text-lg leading-relaxed md:text-xl">{second.body}</p>
+        </section>
+      )
+    }
+
+    {
+      /*      One item open at a time, the first open on arrival. `name` groups the
+      disclosures so opening one closes the others, with the keyboard and screen
+      reader behaviour of the native element.*/
+    }
+    {
+      details.length > 0 && (
+        <div class:list={[column, 'mt-12']}>
+          {details.map((item, n) => (
+            <details
+              name={`case-${entry.id}`}
+              open={n === 0}
+              class="group/item border-b border-border"
+            >
+              <summary class="wh-tap flex cursor-pointer list-none items-start gap-5 py-6 [&::-webkit-details-marker]:hidden">
+                <span
+                  aria-hidden="true"
+                  class="flex size-10 flex-none items-center justify-center rounded-full bg-foreground text-base text-background"
+                >
+                  {letter(n)}
+                </span>
+                <span class="flex-1 pt-1.5 text-lg md:text-2xl">{item.title}</span>
+                <span
+                  aria-hidden="true"
+                  class="mt-1 flex size-8 flex-none items-center justify-center rounded-full border border-border transition-transform duration-300 ease-out group-open/item:rotate-90"
+                >
+                  <Icon name="arrowRight" class="size-4" />
+                </span>
+              </summary>
+              <p class="pb-8 pl-15 text-lg leading-relaxed text-muted-foreground">{item.body}</p>
+            </details>
+          ))}
+        </div>
+      )
+    }
+
+    {
+      morePreviews.map((slug) => (
+        <figure class="mt-20">
+          <figcaption class:list={[column, label]}>{LIVE_PREVIEWS[slug].caption}</figcaption>
+          <LivePreview
+            slug={slug}
+            class="relative aspect-[4/5] w-full rounded-3xl md:aspect-[5/3]"
+          />
+        </figure>
+      ))
+    }
+
+    {
+      shots.length > 0 && (
+        <div class="mt-20">
+          <BentoGallery shots={shots} />
+        </div>
+      )
+    }
+
+    {
+      data.stats.length > 0 && (
+        <section class:list={[column, 'mt-20']}>
+          <h2 class={label}>By the numbers</h2>
+          <ul class="grid gap-8 sm:grid-cols-2">
+            {data.stats.map((stat) => (
+              <li>
+                <StatCallout value={stat.value} label={stat.label} size="lg" />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      data.testimonial && (
+        <section class:list={[column, 'mt-20']}>
+          <h2 class={label}>Testimonial</h2>
+          <Testimonial {...data.testimonial} />
+        </section>
+      )
+    }
+
+    {
+      data.outcome && (
+        <section class:list={[column, 'mt-20']}>
+          <h2 class={label}>Outcome</h2>
+          <p class="text-2xl leading-tight text-pretty md:text-3xl">{data.outcome}</p>
+        </section>
+      )
+    }
+
+    <Prose class:list={[column, 'mt-20']}>
+      <Content />
+    </Prose>
+
+    <div class:list={[column, 'mt-12 flex flex-wrap gap-3']}>
+      <Button href="/request-a-quote" variant="accent" size="sm">Start a project</Button>
+      {
+        data.liveUrl && (
+          <Button
+            href={data.liveUrl}
+            variant="outline"
+            size="sm"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Visit the live site
+          </Button>
+        )
+      }
+    </div>
+
+    {
+      /*      The closing ask, as a quiet panel in the reading flow rather than a full
+      band: the next project below is still the main way off the page.*/
+    }
+    <section
+      class="relative mx-auto mt-36 grid max-w-4xl grid-cols-[2.5rem_minmax(0,1fr)] gap-x-5 rounded-3xl bg-muted p-6 lg:block lg:p-10"
+    >
+      <span
+        aria-hidden="true"
+        class="flex size-10 flex-none items-center justify-center rounded-full bg-foreground text-background lg:absolute lg:top-10 lg:left-10"
+      >
+        <Icon name="arrowRight" class="size-4" />
+      </span>
+      <div class="max-w-2xl min-w-0 text-balance lg:mx-auto lg:px-8">
+        <h2 class="mt-1 text-2xl">Got a job like this one?</h2>
+        <p class="mt-6 text-lg leading-relaxed md:text-xl">
+          Tell us where it hurts and we will tell you what we would do about it.
+        </p>
+        <Button href="/get-in-touch" variant="primary" size="sm" class="mt-8">Talk to us</Button>
+      </div>
+    </section>
+  </article>
 
   {
-    /* Next project: label, running number, name, and
-       an accent chevron that slides on hover.*/
+    /*    Next project: a large panel with the label, the running number, the name
+    and an accent arrow, over the next project's own app.*/
   }
-  <div class="wh-container mt-24 lg:mt-36">
-    <a
-      href={`/work/${next.id}`}
-      class="group block rounded-3xl bg-muted/60 p-6 transition-colors hover:bg-muted lg:p-10"
-    >
+  <a href={`/work/${next.id}`} class="group wh-container mt-20 mb-24 block lg:mb-36">
+    <div class="rounded-3xl bg-card p-5 pt-10 lg:p-8 lg:pt-20">
       <p class="mb-10 text-xl lg:mb-20 lg:text-2xl">Next project</p>
-      <div class="flex flex-wrap items-center gap-x-5 gap-y-4 text-3xl lg:text-5xl">
-        <span class="text-muted-foreground tabular-nums">{ordinal(nextIndex)}</span>
+      <div class="flex flex-wrap items-center gap-x-5 gap-y-4 text-3xl lg:text-6xl">
+        <span class="tabular-nums"
+          >{ordinal(nextIndex)}<span
+            aria-hidden="true"
+            class="ml-1 inline-block size-3 rounded-full bg-foreground lg:size-5"></span></span
+        >
         <span>{next.data.client}</span>
         <span
           aria-hidden="true"
@@ -248,12 +393,13 @@ const ordinal = (n: number) => `(${String(n + 1).padStart(2, '0')})`
         </span>
       </div>
       {
-        next.data.timeline && (
-          <p class="mt-8 text-muted-foreground lg:text-right">{next.data.timeline}</p>
+        nextPreview && (
+          <LivePreview
+            slug={nextPreview}
+            class="relative mt-8 aspect-[4/5] max-h-[30rem] w-full rounded-3xl md:aspect-[16/10]"
+          />
         )
       }
-    </a>
-  </div>
-
-  <CTASection heading="Got a job like this one?" ctaLabel="Talk to Us" />
+    </div>
+  </a>
 </BaseLayout>

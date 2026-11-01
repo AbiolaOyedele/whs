@@ -440,36 +440,84 @@
   }
 
   /*
-   * Featured projects: asymmetric 12-column rhythm. Cards 1, 4 and 5 span 7
-   * columns; 2, 3 and 6 span 5. This alternation is what makes the grid read
-   * as editorial rather than as a uniform card wall.
+   * Project grids.
    *
-   * Gaps are set here rather than per-template so both the home grid and the
-   * work index share one rhythm. The row gap is deliberately much larger than
-   * the column gap: each card carries a caption underneath, so rows need clear
-   * separation to stop a caption reading as a heading for the row below.
-   * 7.5rem, set as one property rather than a row gap plus a card margin, so
-   * there is a single number to change.
+   * `.wh-work-grid` is the editorial grid on the home page and the work index:
+   * twelve columns and a nine-card cycle of spans, read left to right as
+   *
+   *   7 + 5 · a lone 7 pushed right · 7 + 5 · the full width ·
+   *   a lone 7 indented one column · 8 + 4
+   *
+   * so pairs, singles and a banner alternate instead of repeating one row. Each
+   * item carries its place in the cycle as `data-slot` (1 to 9), written when
+   * the page builds and rewritten by the work filter whenever it hides cards,
+   * so a filtered list closes up into the same rhythm rather than leaving holes.
+   *
+   * Columns sit almost flush (a 4px gap) and rows far apart (6rem), because each
+   * card carries its stack line above and its caption below; the space between
+   * rows is what keeps a caption from reading as the heading of the next card.
+   *
+   * `.wh-projects-grid` is the plain two-column list on service and industry
+   * pages. It shares the row rhythm, not the cycle.
+   *
+   * Below `md` both are a single column of near-square cards.
    */
+  .wh-work-grid,
   .wh-projects-grid {
-    column-gap: 1rem;
-    row-gap: 7.5rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    row-gap: 4.5rem;
   }
-  @media (width >= 64rem) {
-    .wh-projects-grid {
-      column-gap: 1.5rem;
-    }
+  .wh-work-media {
+    aspect-ratio: 10 / 11;
   }
   @media (width >= 48rem) {
-    .wh-projects-grid > :nth-child(6n + 1),
-    .wh-projects-grid > :nth-child(6n + 4),
-    .wh-projects-grid > :nth-child(6n + 5) {
+    .wh-work-grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: 0.25rem;
+      row-gap: 6rem;
+    }
+    .wh-projects-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 0.25rem;
+      row-gap: 6rem;
+    }
+
+    .wh-work-grid > [data-slot='1'],
+    .wh-work-grid > [data-slot='4'] {
       grid-column: span 7 / span 7;
     }
-    .wh-projects-grid > :nth-child(6n + 2),
-    .wh-projects-grid > :nth-child(6n + 3),
-    .wh-projects-grid > :nth-child(6n + 6) {
+    .wh-work-grid > [data-slot='2'],
+    .wh-work-grid > [data-slot='5'] {
       grid-column: span 5 / span 5;
+    }
+    .wh-work-grid > [data-slot='3'] {
+      grid-column: 6 / span 7;
+    }
+    .wh-work-grid > [data-slot='6'] {
+      grid-column: span 12 / span 12;
+    }
+    .wh-work-grid > [data-slot='7'] {
+      grid-column: 2 / span 7;
+    }
+    .wh-work-grid > [data-slot='8'] {
+      grid-column: span 8 / span 8;
+    }
+    .wh-work-grid > [data-slot='9'] {
+      grid-column: span 4 / span 4;
+    }
+
+    /* Landscape by default; portrait in the narrow slots; a banner across the
+       full width. Ratios measured off the reference layout at 1280px. */
+    .wh-work-media {
+      aspect-ratio: 6 / 5;
+    }
+    .wh-work-grid > :is([data-slot='2'], [data-slot='5'], [data-slot='9']) .wh-work-media {
+      aspect-ratio: 10 / 11;
+    }
+    .wh-work-grid > [data-slot='6'] .wh-work-media {
+      aspect-ratio: 5 / 3;
     }
   }
 

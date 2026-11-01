@@ -26,4 +26,4 @@ Placeholder section. Real articles lead each section with a direct, self-contain
 
 ## How to run the evaluation
 
-Placeholder section. See [our services](/services) and [the stack we use](/stack).
+Placeholder section. See [our services](/services).

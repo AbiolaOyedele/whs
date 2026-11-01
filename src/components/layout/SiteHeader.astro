@@ -3,7 +3,9 @@
  * Site header.
  *
  * Structure verified live 2026-08-26 (docs/PROGRESS.md § D-1, D-2):
- *  - Work, Services and Stack open mega menus. About and Insights are links.
+ *  - Work and Services open mega menus. About and Insights are links.
+ *    Stack and Enterprise are hidden for now: their pages are not built
+ *    (`src/pages/_stack`, `src/pages/_enterprise.astro`).
  *  - The header is fixed, so the nav is reachable from anywhere on a page that
  *    runs to several thousand pixels. It is taken out of flow rather than made
  *    sticky because every hero already pads itself clear of the header height.
@@ -24,13 +26,7 @@ import Logo from '../ui/Logo.astro'
 import AnimatedNav from '@/components/ui/navigation-menu.tsx'
 import type { NavMenu, NavMenuColumn } from '@/components/ui/navigation-menu.tsx'
 import { PLAIN_NAV_LINKS, SHOW_PUBLISHED_WORK, SITE, WORK_COMING_SOON } from '@/config/site'
-import {
-  SERVICE_PILLARS,
-  SERVICE_PILLAR_LABELS,
-  STACK_CATEGORIES,
-  STACK_CATEGORY_ALL_LABELS,
-  STACK_CATEGORY_LABELS,
-} from '@/content.config'
+import { SERVICE_PILLARS, SERVICE_PILLAR_LABELS } from '@/content.config'
 
 interface Props {
   /** Renders white-on-transparent for pages that open with a dark hero band. */
@@ -39,10 +35,9 @@ interface Props {
 
 const { overDarkHero = false } = Astro.props
 
-const [services, work, stack] = await Promise.all([
+const [services, work] = await Promise.all([
   getCollection('services', ({ data }) => !data.draft),
   getCollection('work', ({ data }) => !data.draft),
-  getCollection('stack', ({ data }) => !data.draft),
 ])
 
 const servicesByPillar = services.sort((a, b) => a.data.order - b.data.order)
@@ -57,23 +52,6 @@ const servicesByPillar = services.sort((a, b) => a.data.order - b.data.order)
 const featuredWork = SHOW_PUBLISHED_WORK
   ? work.filter((entry) => entry.data.featured).slice(0, 4)
   : []
-
-/** Groups the stack entries by category, keeping only the recommended picks. */
-const stackColumns: NavMenuColumn[] = STACK_CATEGORIES.map((category) => ({
-  label: STACK_CATEGORY_LABELS[category],
-  links: stack
-    .filter((entry) => entry.data.category === category)
-    .sort((a, b) => a.data.order - b.data.order)
-    .slice(0, 4)
-    .map((entry) => ({
-      label: entry.data.name,
-      href: `/stack/${category}/${entry.id.split('/').pop()}`,
-    })),
-  allLink: {
-    label: STACK_CATEGORY_ALL_LABELS[category],
-    href: `/stack/${category}`,
-  },
-}))
 
 /*
  * Services, one column per delivery pillar. The index link is attached to the
@@ -137,18 +115,6 @@ const menus: NavMenu[] = [
       body: 'Not sure which one you need? Tell us what you are doing by hand and we will tell you what to build.',
       href: '/get-in-touch',
       ctaLabel: 'Talk to Us',
-    },
-  },
-  {
-    id: 'mega-stack',
-    href: '/stack',
-    label: 'Stack',
-    columns: stackColumns,
-    feature: {
-      label: 'Enterprise stack',
-      body: 'The platforms we build on, and an honest note on when each one is the wrong choice.',
-      href: '/enterprise',
-      ctaLabel: 'Read about',
     },
   },
 ]
@@ -228,7 +194,6 @@ const menus: NavMenu[] = [
           [
             { label: 'Work', href: '/work' },
             { label: 'Services', href: '/services' },
-            { label: 'Stack', href: '/stack' },
             ...PLAIN_NAV_LINKS,
           ].map((link) => (
             <li>

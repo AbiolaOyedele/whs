@@ -5,6 +5,8 @@ order: 20
 title: 'Auto Flow: bulk video generation without the manual loop'
 description: 'A desktop tool that drives Google Flow through a full batch of images: upload, generate, download, without anyone sitting at the keyboard.'
 summary: 'Point it at a folder of images and it generates every video unattended, three at a time.'
+previews:
+  - 'autoflow'
 industry: 'Creative tooling'
 services:
   - 'Apps'

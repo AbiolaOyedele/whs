@@ -5,6 +5,8 @@ order: 30
 title: 'Lazy Meet: joining the call so you do not have to'
 description: 'A desktop app that joins your Google Meet calls at start time, muted and camera off, across up to three Google accounts.'
 summary: 'Joins your calls at start time, muted and camera off, across three accounts.'
+previews:
+  - 'lazy-meet'
 industry: 'Productivity'
 services:
   - 'Apps'

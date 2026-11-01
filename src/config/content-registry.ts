@@ -36,7 +36,7 @@ export const CONTENT_REGISTRY: readonly ContentEntry[] = [
     label: 'Headline',
     help: 'Three lines at most. It sets the width of the whole hero.',
     type: 'textarea',
-    defaultValue: 'Custom systems that give you your time back.',
+    defaultValue: 'Custom solutions that give you your time back.',
   },
   {
     key: 'home.hero.standfirst',
@@ -139,7 +139,7 @@ export const CONTENT_REGISTRY: readonly ContentEntry[] = [
     label: 'Tagline',
     help: 'Used in Organization structured data and social previews.',
     type: 'text',
-    defaultValue: 'Custom systems that give you your time back.',
+    defaultValue: 'Custom solutions that give you your time back.',
   },
   {
     key: 'site.description',

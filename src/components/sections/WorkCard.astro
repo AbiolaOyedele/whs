@@ -2,33 +2,34 @@
 /**
  * Case-study card.
  *
- * Media on top, then a solid plate carrying the client name and the stat
- * callouts.
+ * The stack in muted type above the card, then the media with the client name
+ * in its top-left corner and up to two stat pills along the bottom, then the
+ * summary underneath with an accent arrow that slides in on hover or focus.
  *
- * The name and stats used to overlay the media on `mix-blend-exclusion`, which
- * self-inverts against whatever is beneath it and so appeared to solve
- * legibility for free. That was safe only while the artwork underneath was a
- * gradient we controlled. Real product screenshots are near-white: measured on
- * these two, white text over the image sat between 1.3:1 and 2.4:1, and the
- * scrim needed to lift the name to 3:1 was about 80% black across the bottom
- * two fifths, which is not a scrim, it is a plate pretending to be one. So it
- * is a plate. `surface-dark` is the same pair the hero and the CTA band use,
- * the contrast is fixed rather than dependent on the image, and the screenshot
- * is left alone.
+ * The app sits inset in the media, below a dark band that holds the name, like
+ * a window rising into the card. Laid over the app itself, the name collided
+ * with the app's own wordmark, which lives in the same corner, and white text
+ * vanished on white screens. The band keeps the name's contrast fixed. The
+ * pills carry a hairline edge for the same reason: a white pill on a white
+ * screen otherwise has no outline at all.
  *
- * No tech-stack line: a parenthesised "(Next.js, Supabase, Deepgram)" above
- * every card sold the tooling rather than the outcome, and it sat on its own
- * indent off the page grid. The full stack is on the case-study page.
+ * The media has no height of its own. Its shape comes from the grid slot the
+ * card sits in (`[data-slot]` in global.css): landscape in a wide slot,
+ * portrait in a narrow one, a banner across the full width, and near-square on
+ * a phone. Cards in a row align to the top rather than stretching to match, so
+ * a portrait card beside a landscape one keeps its own proportions.
  *
- * The whole card is one link, so the media is the tap target. No separate
- * stretched-link pseudo-element is needed.
+ * The whole card is one link, so the media is the tap target. The arrow is
+ * decoration on top of that, which is why it can appear on hover alone.
  *
- * The card carries no outer margin. All spacing between cards lives on the grid
- * (`.wh-projects-grid`), so there is one source of truth for the rhythm. A card
- * margin plus a row gap previously produced two different vertical gaps.
+ * The card carries no outer margin. All spacing between cards lives on the
+ * grid, so there is one source of truth for the rhythm.
  */
 import { Image } from 'astro:assets'
 import type { ImageMetadata } from 'astro'
+import LivePreview from '@/components/sections/LivePreview.astro'
+import Icon from '@/components/ui/Icon.astro'
+import type { LivePreviewSlug } from '@/config/previews'
 
 interface Stat {
   value: string
@@ -40,23 +41,36 @@ interface Props {
   client: string
   summary: string
   stats?: readonly Stat[]
+  /** Shown above the card. The first three, so it stays on one line on a phone. */
+  stack?: readonly string[]
   /** Real screenshot. Falls back to the seeded gradient when absent. */
   cover?: ImageMetadata | undefined
   /** Describes what the screenshot shows. Required alongside `cover`. */
   coverAlt?: string | undefined
-  /** Extra classes for the card. The grid alternates wide and tall spans. */
+  /** The running app. Takes the place of `cover` when both are set. */
+  preview?: LivePreviewSlug | undefined
+  /** Position in the grid's nine-card cycle, when the card is a grid item itself. */
+  gridSlot?: number | undefined
   class?: string
 }
 
-const { href, client, summary, stats = [], cover, coverAlt, class: className = '' } = Astro.props
+const {
+  href,
+  client,
+  summary,
+  stats = [],
+  stack = [],
+  cover,
+  coverAlt,
+  preview,
+  gridSlot,
+  class: className = '',
+} = Astro.props
 
 /*
  * Placeholder artwork for entries with no screenshot yet, varied per project.
- *
- * Every card previously rendered the identical gradient, so the grid's 7/5
- * column rhythm was doing editorial work on what read as four copies of one
- * tile. Seeded off the client name so a given project keeps its own colour
- * across the home page and the work index.
+ * Seeded off the client name so a given project keeps its own colour across
+ * the home page and the work index.
  */
 const seed = [...client].reduce((total, char) => total + char.charCodeAt(0), 0)
 const hue = (seed * 47) % 360
@@ -65,73 +79,74 @@ const placeholder =
   `linear-gradient(${angle}deg, #1c1c1f 0%, #2b2b30 46%, #191919 100%), ` +
   `radial-gradient(70% 60% at ${25 + (seed % 5) * 12}% ${18 + (seed % 4) * 14}%, ` +
   `oklch(72% 0.14 ${hue} / 0.5), transparent 70%)`
+
+const motion = 'transition-transform duration-300 ease-out'
+/* The app or screenshot, inset below the name band and open at the bottom. */
+const frame = `absolute inset-x-3 top-16 bottom-0 rounded-t-2xl md:inset-x-5 ${motion} group-hover:-translate-y-1.5`
 ---
 
-<a href={href} class={`group relative flex h-full flex-col rounded-3xl ${className}`}>
-  <div
-    class="relative z-10 flex min-h-[24rem] flex-1 flex-col overflow-clip rounded-3xl md:min-h-[32rem]"
-  >
-    {
-      /*      `object-left-top`, not `object-center`.
-      
-      These are desktop application windows: wide, and mostly quiet space
-      through the middle. Centre-cropping one into a 288x448 tile returns a
-      vertical strip of empty panel. The top-left corner is where an interface
-      puts the things that identify it, the wordmark, the primary heading and
-      the first row of real content, so that is the corner the card keeps.*/
-    }
-    <div class="relative min-h-[14rem] flex-1 overflow-clip bg-neutral-200">
-      {
-        cover ? (
-          <Image
-            src={cover}
-            alt={coverAlt ?? ''}
-            widths={[480, 800, 1200, 1600]}
-            sizes="(min-width: 1024px) 55vw, 100vw"
-            class="absolute inset-0 size-full object-cover object-left-top transition-transform duration-300 ease-out group-hover:scale-[1.03]"
-          />
-        ) : (
-          <div
-            aria-hidden="true"
-            class="absolute inset-0 transition-transform duration-300 ease-out group-hover:scale-[1.03]"
-            style={`background: ${placeholder}; background-blend-mode: screen;`}
-          />
-        )
-      }
-    </div>
+<a href={href} data-slot={gridSlot} class:list={['group relative block rounded-3xl', className]}>
+  {
+    stack.length > 0 && (
+      <span class="absolute -top-8 ml-5 truncate text-muted-foreground">
+        ({stack.slice(0, 3).join(', ')})
+      </span>
+    )
+  }
 
-    <div class="flex flex-col gap-5 bg-surface-dark px-5 py-6 text-surface-dark-foreground">
-      <span class="text-2xl md:text-3xl">{client}</span>
-      {
-        stats.length > 0 && (
-          <div class="flex flex-wrap gap-x-8 gap-y-4">
-            {stats.slice(0, 2).map((stat) => (
-              <span>
-                <span class="block text-2xl font-medium tracking-tighter tabular-nums md:text-3xl">
-                  {stat.value}
-                </span>
-                <span class="block text-xs text-surface-dark-foreground/75">{stat.label}</span>
-              </span>
-            ))}
-          </div>
-        )
-      }
-    </div>
+  <div class="wh-work-media relative overflow-clip rounded-3xl bg-surface-dark">
+    {
+      /*      Screenshots keep their top-left corner: these are application windows,
+      and that corner is where an interface puts what identifies it.*/
+    }
+    {
+      preview ? (
+        <LivePreview slug={preview} class={frame} />
+      ) : cover ? (
+        <Image
+          src={cover}
+          alt={coverAlt ?? ''}
+          widths={[480, 800, 1200, 1600]}
+          sizes="(min-width: 1024px) 60vw, 100vw"
+          class={`${frame} h-[calc(100%-4rem)] w-[calc(100%-1.5rem)] object-cover object-left-top md:w-[calc(100%-2.5rem)]`}
+        />
+      ) : (
+        <div
+          aria-hidden="true"
+          class={`absolute inset-0 ${motion} group-hover:scale-[1.03]`}
+          style={`background: ${placeholder}; background-blend-mode: screen;`}
+        />
+      )
+    }
+
+    <span
+      class="pointer-events-none absolute top-5 left-5 z-20 text-2xl text-surface-dark-foreground"
+    >
+      {client}
+    </span>
+
+    {
+      stats.length > 0 && (
+        <span class="absolute right-5 bottom-5 left-5 z-10 flex flex-col items-start gap-y-1">
+          {stats.slice(0, 2).map((stat) => (
+            <span class="rounded-full bg-card px-4 py-2 text-sm text-card-foreground ring-1 ring-border md:px-6 md:text-base">
+              <span class="font-medium tabular-nums">{stat.value}</span> {stat.label}
+            </span>
+          ))}
+        </span>
+      )
+    }
   </div>
 
-  {
-    /*    Caption row: indented to the card's inner gutter rather than sitting flush
-    with its edge, and set at reading size rather than as muted supporting text.
-    It is the sentence that explains the project, not a footnote.
-
-    Clamped to two lines. The reserved 3.375/4.5rem min-height and the 66.67%
-    max-width are gone: the media has its own min-height, so it was never the
-    caption holding the row square. All the reserve did was leave 36px of dead
-    space under a one-line summary and 334px of dead width beside every caption.
-    The wrapper went with them; it was `flex justify-between` around a single
-    child, so it had nothing to justify.*/
-  }
-  <span class="line-clamp-2 w-full px-5 pt-5 text-lg text-balance md:text-2xl">
-    {summary}
+  <span class="flex w-full items-start justify-between gap-4 px-5">
+    <span class="pt-5 text-lg text-balance md:text-xl lg:max-w-[66%] lg:text-2xl">
+      {summary}
+    </span>
+    <span
+      aria-hidden="true"
+      class="mt-5 hidden h-10 shrink-0 translate-y-2 items-center rounded-full bg-accent px-6 text-accent-foreground opacity-0 transition-[opacity,transform] duration-500 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 lg:inline-flex"
+    >
+      <Icon name="arrowRight" class="size-4" />
+    </span>
   </span>
 </a>

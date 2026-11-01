@@ -10,6 +10,7 @@
 import { defineCollection, reference } from 'astro:content'
 import { z } from 'zod'
 import { glob } from 'astro/loaders'
+import { LIVE_PREVIEW_SLUGS } from '@/config/previews'
 
 /** Stack taxonomy. Mirrors the /stack/[category] route segment. */
 export const STACK_CATEGORIES = ['cms', 'framework', 'hosting', 'integrations'] as const
@@ -207,6 +208,12 @@ const work = defineCollection({
          * somebody writes down what it shows.
          */
         coverAlt: z.string().min(1).optional(),
+        /**
+         * Live previews from `src/config/previews.ts`, running the real app.
+         * The first one is the card's media and takes the place of `cover`
+         * there; all of them lead the case-study page, in this order.
+         */
+        previews: z.array(z.enum(LIVE_PREVIEW_SLUGS)).default([]),
         /** App or product mark. Sits beside the client name on the detail page. */
         icon: image().optional(),
         /** Supporting shots, each with its own caption. Rendered one per row. */

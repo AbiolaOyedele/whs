@@ -6,17 +6,16 @@
  */
 
 /**
- * Case studies are written and published at /work/<slug>, but nothing that
- * *lists* them is switched on yet: the cards fall back to a seeded gradient
- * until each entry carries a real screenshot, and a grid of abstract tiles
- * under a heading that promises work reads as an empty section rather than as
- * proof.
+ * Whether anything *lists* the case studies. It was held off while the cards
+ * fell back to a seeded gradient, since a grid of abstract tiles under a
+ * heading that promises work reads as an empty section rather than as proof.
+ * Every entry now carries a live preview of the running app, so it is on.
  *
  * One flag rather than three, because the home grid, the work index and the
  * navbar's Work panel all list the same projects and must not disagree. Flip it
- * to true and all three come back. Nothing else needs changing.
+ * to false and all three go quiet together. Nothing else needs changing.
  */
-export const SHOW_PUBLISHED_WORK = false
+export const SHOW_PUBLISHED_WORK = true
 
 /** Shown wherever that listing would have been. */
 export const WORK_COMING_SOON = 'Ongoing projects will be published soon.'
@@ -25,7 +24,7 @@ export const SITE = {
   name: 'WildHands',
   /** Used in <title> suffixes and Organization JSON-LD. */
   legalName: 'WildHands',
-  tagline: 'Custom systems that give you your time back.',
+  tagline: 'Custom solutions that give you your time back.',
   description:
     'WildHands builds custom websites, web apps and internal tools for businesses in Lagos, Nigeria and across Africa. Built around how you actually work, not a template.',
   /**
@@ -125,10 +124,8 @@ export const FOOTER_COLUMNS: ReadonlyArray<FooterColumn> = [
     links: [
       { label: 'Services', href: '/services' },
       { label: 'Work', href: '/work' },
-      { label: 'Stack', href: '/stack' },
       { label: 'Insights', href: '/insights' },
       { label: 'About us', href: '/about' },
-      { label: 'Enterprise', href: '/enterprise' },
       { label: 'Careers', href: '/careers' },
       { label: 'Freelance Hub', href: '/freelance-hub' },
       { label: 'Get in touch', href: '/get-in-touch' },

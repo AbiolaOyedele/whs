@@ -11,17 +11,16 @@ import type { APIRoute } from 'astro'
 import { getCollection } from 'astro:content'
 import { publicEnv } from '@/config/env'
 import { SITE } from '@/config/site'
-import { INSIGHT_CATEGORY_LABELS, STACK_CATEGORY_LABELS } from '@/content.config'
+import { INSIGHT_CATEGORY_LABELS } from '@/content.config'
 
 export const prerender = true
 
 export const GET: APIRoute = async () => {
   const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
 
-  const [services, work, stack, insights, industries] = await Promise.all([
+  const [services, work, insights, industries] = await Promise.all([
     getCollection('services', ({ data }) => !data.draft),
     getCollection('work', ({ data }) => !data.draft),
-    getCollection('stack', ({ data }) => !data.draft),
     getCollection('insights', ({ data }) => !data.draft && !data.placeholder),
     getCollection('industries', ({ data }) => !data.draft),
   ])
@@ -43,21 +42,11 @@ export const GET: APIRoute = async () => {
     ),
     line('Work', '/work', 'Selected case studies, filterable by service, technology and industry.'),
     line(
-      'Stack',
-      '/stack',
-      'The platforms we build on, each with a note on when to look elsewhere.'
-    ),
-    line(
       'Insights',
       '/insights',
       'Writing on migrations, platform decisions and running a website.'
     ),
     line('About', '/about', 'Who we are and how we work.'),
-    line(
-      'Enterprise',
-      '/enterprise',
-      'How we work with procurement, security review and governance.'
-    ),
     line('Careers', '/careers', 'Open roles. Remote-only and async-first.'),
     line('Freelance Hub', '/freelance-hub', 'How to freelance with us, and the application form.'),
     line('Get in touch', '/get-in-touch', 'Contact form and direct email addresses.'),
@@ -79,18 +68,6 @@ export const GET: APIRoute = async () => {
     ...industries
       .sort((a, b) => a.data.order - b.data.order)
       .map((entry) => line(entry.data.title, `/industries/${entry.id}`, entry.data.summary)),
-    '',
-    '## Stack',
-    '',
-    ...stack
-      .sort((a, b) => a.data.category.localeCompare(b.data.category) || a.data.order - b.data.order)
-      .map((entry) =>
-        line(
-          `${entry.data.name} (${STACK_CATEGORY_LABELS[entry.data.category]})`,
-          `/stack/${entry.data.category}/${entry.id.split('/').pop()}`,
-          entry.data.positioning
-        )
-      ),
     '',
     '## Insights',
     '',

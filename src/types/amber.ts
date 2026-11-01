@@ -12,7 +12,6 @@ export const AMBER_TEMPLATES = [
   'feature',
   'trio',
   'quad',
-  'ribbon',
 ] as const
 export type AmberTemplate = (typeof AMBER_TEMPLATES)[number]
 
@@ -24,7 +23,6 @@ export const AMBER_TEMPLATE_LABELS: Record<AmberTemplate, string> = {
   feature: 'Feature + Inset',
   trio: 'Trio',
   quad: 'Quad',
-  ribbon: 'Ribbon',
 }
 
 /** A team account as the admin sees it. The PIN hash never leaves the server. */
@@ -56,4 +54,5 @@ export interface AmberStats {
   accounts: number
   byTemplate: Array<{ template: AmberTemplate; count: number }>
   perDay: Array<{ day: string; count: number }>
+  byWeekday: Array<{ label: string; value: number }>
 }

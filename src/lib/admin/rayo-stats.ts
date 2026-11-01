@@ -90,6 +90,10 @@ export interface RayoStats {
   }
   /** Signups per day for the chart. Empty if the range is `all`. */
   signupSeries: Array<{ day: string; count: number }>
+  /** Quotes created per day — the clearest single read on how much Rayo is used. */
+  quotesSeries: Array<{ day: string; count: number }>
+  signupsByWeekday: Array<{ label: string; value: number }>
+  quotesByWeekday: Array<{ label: string; value: number }>
 }
 
 export type RayoStatsResult =
@@ -127,6 +131,18 @@ function bucketByDay(rows: Array<{ created_at: string }>): Array<{ day: string; 
     .sort((a, b) => a.day.localeCompare(b.day))
 }
 
+/** Monday through Sunday, in that order — a weekly rhythm, not a ranking. */
+const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+function bucketByWeekday(rows: Array<{ created_at: string }>): Array<{ label: string; value: number }> {
+  const counts = new Array(7).fill(0)
+  for (const row of rows) {
+    const jsDay = new Date(row.created_at).getUTCDay()
+    counts[(jsDay + 6) % 7] += 1
+  }
+  return WEEKDAYS.map((label, index) => ({ label, value: counts[index] }))
+}
+
 export async function fetchRayoStats(range: RayoRange): Promise<RayoStatsResult> {
   if (!isAdminConfigured()) return { ok: false, reason: 'not-configured' }
 
@@ -142,7 +158,7 @@ export async function fetchRayoStats(range: RayoRange): Promise<RayoStatsResult>
       accountsNew,
       accountsActive30,
       quotesTotal,
-      quotesNew,
+      quotesCreatedRaw,
       quotesByStatusRaw,
       invoicesTotal,
       invoicesNew,
@@ -165,14 +181,10 @@ export async function fetchRayoStats(range: RayoRange): Promise<RayoStatsResult>
           .gte('updated_at', activeSince)
       ),
       safeCount(client.from('quotes').select('*', { count: 'exact', head: true })),
+      // Dates only, doubles as the quote-creation trend below.
       from
-        ? safeCount(
-            client
-              .from('quotes')
-              .select('*', { count: 'exact', head: true })
-              .gte('created_at', from)
-          )
-        : Promise.resolve(0),
+        ? client.from('quotes').select('created_at').gte('created_at', from)
+        : Promise.resolve({ data: [] as Array<{ created_at: string }>, error: null }),
       client.from('quotes').select('status'),
       safeCount(client.from('invoices').select('*', { count: 'exact', head: true })),
       from
@@ -222,6 +234,9 @@ export async function fetchRayoStats(range: RayoRange): Promise<RayoStatsResult>
     const signupRows =
       (signupRowsRaw as Row<{ created_at: string }>).data ??
       ([] as Array<{ created_at: string }>)
+    const quotesCreatedRows =
+      (quotesCreatedRaw as Row<{ created_at: string }>).data ??
+      ([] as Array<{ created_at: string }>)
 
     return {
       ok: true,
@@ -234,7 +249,7 @@ export async function fetchRayoStats(range: RayoRange): Promise<RayoStatsResult>
         },
         quotes: {
           total: quotesTotal,
-          newInRange: quotesNew,
+          newInRange: quotesCreatedRows.length,
           byStatus,
           sent: sent + viewed,
           accepted,
@@ -248,6 +263,9 @@ export async function fetchRayoStats(range: RayoRange): Promise<RayoStatsResult>
           creditsBoughtInRange,
         },
         signupSeries: bucketByDay(signupRows),
+        quotesSeries: bucketByDay(quotesCreatedRows),
+        signupsByWeekday: bucketByWeekday(signupRows),
+        quotesByWeekday: bucketByWeekday(quotesCreatedRows),
       },
     }
   } catch (cause) {

@@ -125,11 +125,12 @@ const jsonLd = [
       {countLabel(work.length)}
     </p>
 
-    <div class="wh-projects-grid mt-16 grid md:grid-cols-12" data-work-grid>
+    <div class="wh-work-grid mt-16" data-work-grid>
       {
-        work.map((entry) => (
+        work.map((entry, index) => (
           <div
             data-work-item
+            data-slot={(index % 9) + 1}
             data-service={entry.data.services.join('|')}
             data-tech={entry.data.techStack.join('|')}
             data-industry={entry.data.industry}
@@ -140,6 +141,8 @@ const jsonLd = [
               summary={entry.data.summary}
               cover={entry.data.cover}
               coverAlt={entry.data.coverAlt}
+              preview={entry.data.previews[0]}
+              stack={entry.data.techStack}
               stats={entry.data.stats}
             />
           </div>
@@ -178,7 +181,11 @@ const jsonLd = [
           (item.dataset[key] ?? '').split('|').includes(value)
         )
         item.hidden = !matches
-        if (matches) visible += 1
+        if (!matches) return
+        /* Renumbered over the visible cards only, so a filtered list closes up
+           into the grid's cycle instead of keeping the gaps of hidden ones. */
+        item.dataset['slot'] = String((visible % 9) + 1)
+        visible += 1
       })
 
       if (count) {

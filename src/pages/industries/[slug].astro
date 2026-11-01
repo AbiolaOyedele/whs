@@ -105,7 +105,7 @@ const jsonLd = [
     relatedWork.length > 0 && (
       <section class="wh-container wh-section">
         <SectionHeading level={2}>Related work</SectionHeading>
-        <div class="wh-projects-grid mt-16 grid md:grid-cols-2">
+        <div class="wh-projects-grid mt-16">
           {relatedWork.map((item) => (
             <WorkCard
               href={`/work/${item.id}`}
@@ -113,6 +113,8 @@ const jsonLd = [
               summary={item.data.summary}
               cover={item.data.cover}
               coverAlt={item.data.coverAlt}
+              preview={item.data.previews[0]}
+              stack={item.data.techStack}
               stats={item.data.stats}
             />
           ))}

@@ -5,6 +5,9 @@ order: 10
 title: 'Dumpty: voice notes that arrive already organised'
 description: 'A mobile-first PWA that records an idea by voice and returns a clean transcript, a title, tags, an action plan and optional AI peer review.'
 summary: 'Talk through an idea and get back a clean transcript, tags and a checklist.'
+previews:
+  - 'dumpty'
+  - 'dumpty-site'
 industry: 'Consumer product'
 services:
   - 'Apps'
@@ -40,7 +43,3 @@ Dumpty is built for the gap between having an idea and doing anything about it. 
 ## Where the data lives
 
 Everything is indexed in Supabase with row-level security, so an idea is readable only by the person who recorded it. Audio goes to Cloudflare R2 and deletes itself after seven days; the transcript and the processed output are what persist.
-
-## Still to come
-
-Typing an idea instead of speaking it is scaffolded on the backend but has no interface yet. Idea validation and media upload are planned and unwritten.

@@ -5,6 +5,8 @@ order: 40
 title: 'The Ruff Agency: one workspace instead of six tools'
 description: 'A multi-tenant agency platform holding clients, contracts, invoices, tasks and a client-facing portal in a single workspace with role-based access.'
 summary: 'Clients, contracts, invoices, tasks and a client portal in one shared workspace.'
+previews:
+  - 'fey'
 industry: 'Agency operations'
 services:
   - 'Apps'
@@ -39,7 +41,3 @@ The Ruff Agency is the platform an agency runs on, built because the alternative
 ## Beyond the core
 
 An admin-only playground generates marketing assets through DALL-E 3 and Gemini, with a reference-image workflow and prompt review before anything is produced. A separate vault holds legal, brand and finance documents with a visibility model that decides which portals can see what, so a contract shared with one client is not quietly readable by another.
-
-## Not built yet
-
-The image pipeline is still beta and admin-gated. The backend and types are done, the model picker for everyone else is not. There is no CRM automation, no SAML or SSO for team members, and no native mobile app. Onboarding is invite-only, by hand.

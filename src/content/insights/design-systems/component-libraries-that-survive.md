@@ -26,4 +26,4 @@ Placeholder section. Real articles lead each section with a direct, self-contain
 
 ## The three properties
 
-Placeholder section. See [our services](/services) and [the stack we use](/stack).
+Placeholder section. See [our services](/services).

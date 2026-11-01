@@ -223,14 +223,17 @@ const problems = [0, 1, 2].map((index) => ({
     {
       featured.length > 0 ? (
         <Fragment>
-          <div class="wh-projects-grid grid pt-16 md:grid-cols-12">
-            {featured.map((entry) => (
+          <div class="wh-work-grid pt-16">
+            {featured.map((entry, index) => (
               <WorkCard
+                gridSlot={(index % 9) + 1}
                 href={`/work/${entry.id}`}
                 client={entry.data.client}
                 summary={entry.data.summary}
                 cover={entry.data.cover}
                 coverAlt={entry.data.coverAlt}
+                preview={entry.data.previews[0]}
+                stack={entry.data.techStack}
                 stats={entry.data.stats}
               />
             ))}

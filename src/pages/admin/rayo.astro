@@ -12,6 +12,8 @@
  */
 import AdminLayout from '@/layouts/AdminLayout.astro'
 import FormSelect from '@/components/admin/FormSelect.astro'
+import { TrendChart } from '@/components/admin/analytics/TrendChart'
+import { BreakdownBars } from '@/components/admin/analytics/BreakdownBars'
 import {
   fetchRayoStats,
   RAYO_RANGE_LABELS,
@@ -49,7 +51,26 @@ const RANGE_STATUS_LABELS: Record<string, string> = {
 }
 ---
 
-<AdminLayout title="Rayo" section="rayo" email={session?.email}>
+<AdminLayout title="Rayo" section="command-center" email={session?.email}>
+  <a
+    href="/admin/command-center"
+    class="mb-4 inline-flex min-h-11 items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+  >
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="size-3.5"
+    >
+      <path d="M15 18l-6-6 6-6"></path>
+    </svg>
+    Command Center
+  </a>
+
   <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
     <div>
       <h1 class="wh-h1-compact">Rayo</h1>
@@ -138,7 +159,9 @@ const RANGE_STATUS_LABELS: Record<string, string> = {
               {fmt(result.data.accounts.activeLast30d)}
             </p>
             <p class="mt-2 text-sm text-muted-foreground">
-              Accounts that saved or opened something.
+              Accounts that saved or opened something
+              {result.data.accounts.total > 0 &&
+                ` — ${Math.round((result.data.accounts.activeLast30d / result.data.accounts.total) * 100)}% of everyone who's signed up.`}
             </p>
           </div>
 
@@ -214,34 +237,17 @@ const RANGE_STATUS_LABELS: Record<string, string> = {
         </section>
 
         {/* --- By status breakdown --------------------------------------- */}
-        {result.data.quotes.byStatus.length > 0 && (
-          <section class="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
-            <table class="w-full text-left text-base">
-              <thead class="border-b border-border">
-                <tr>
-                  <th class="px-5 py-3 font-medium text-muted-foreground">Status</th>
-                  <th class="px-5 py-3 text-right font-medium text-muted-foreground">Count</th>
-                </tr>
-              </thead>
-              <tbody>
-                {result.data.quotes.byStatus.map((row, index) => (
-                  <tr
-                    class:list={[
-                      index === result.data.quotes.byStatus.length - 1
-                        ? ''
-                        : 'border-b border-border',
-                    ]}
-                  >
-                    <td class="px-5 py-3">
-                      {RANGE_STATUS_LABELS[row.status] ?? row.status}
-                    </td>
-                    <td class="px-5 py-3 text-right font-mono tabular-nums">{fmt(row.count)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-        )}
+        <div class="mt-6">
+          <BreakdownBars
+            client:visible
+            title="Quotes by status"
+            rows={result.data.quotes.byStatus.map((row) => ({
+              label: RANGE_STATUS_LABELS[row.status] ?? row.status,
+              value: row.count,
+            }))}
+            emptyMessage="No quotes drafted yet."
+          />
+        </div>
 
         {/* --- Drafter usage --------------------------------------------- */}
         <h2 class="mt-8 font-display text-xl">AI drafter</h2>
@@ -270,51 +276,49 @@ const RANGE_STATUS_LABELS: Record<string, string> = {
           </div>
         </section>
 
-        {/* --- Signups sparkline ---------------------------------------- */}
-        {result.data.signupSeries.length > 0 && (
-          <section class="mt-8 rounded-3xl border border-border bg-card p-5 md:p-6">
-            <h2 class="mb-1 font-display text-xl">Signups</h2>
-            <p class="mb-4 text-sm text-muted-foreground">
-              Each bar is a day. Height is the number of accounts created.
-            </p>
+        {/* --- Trends ------------------------------------------------------- */}
+        <h2 class="mt-8 font-display text-xl">Trends</h2>
+        <p class="mb-3 text-sm text-muted-foreground">
+          Day by day, over {RAYO_RANGE_LABELS[range].toLowerCase()}.
+        </p>
 
-            {/* Bars are inline SVG so they scale without a chart library. The
-                y-axis is not labelled: this is a shape, not a measurement. */}
-            {(() => {
-              const points = result.data.signupSeries
-              const max = Math.max(...points.map((p) => p.count), 1)
-              const width = Math.max(points.length * 12, 200)
-              return (
-                <svg
-                  viewBox={`0 0 ${width} 80`}
-                  class="h-24 w-full"
-                  role="img"
-                  aria-label={`Signups per day for ${RAYO_RANGE_LABELS[range].toLowerCase()}`}
-                >
-                  {points.map((point, index) => {
-                    const barWidth = 8
-                    const gap = 4
-                    const x = index * (barWidth + gap)
-                    const h = Math.max((point.count / max) * 72, 2)
-                    const y = 80 - h
-                    return (
-                      <rect
-                        x={x}
-                        y={y}
-                        width={barWidth}
-                        height={h}
-                        rx={2}
-                        fill="var(--accent)"
-                      >
-                        <title>{`${point.day}: ${point.count}`}</title>
-                      </rect>
-                    )
-                  })}
-                </svg>
-              )
-            })()}
-          </section>
-        )}
+        <div class="grid gap-4 lg:grid-cols-2">
+          <TrendChart
+            client:visible
+            label="Signups"
+            unitLabel="signups"
+            series={result.data.signupSeries.map((p) => ({ date: p.day, value: p.count }))}
+            emptyMessage="No signups recorded in this period yet."
+          />
+          <TrendChart
+            client:visible
+            label="Quotes created"
+            unitLabel="quotes"
+            series={result.data.quotesSeries.map((p) => ({ date: p.day, value: p.count }))}
+            emptyMessage="No quotes created in this period yet."
+          />
+        </div>
+
+        {/* --- Weekly rhythm -------------------------------------------- */}
+        <h2 class="mt-8 font-display text-xl">Weekly rhythm</h2>
+        <p class="mb-3 text-sm text-muted-foreground">
+          Which day of the week it happens on, summed across {RAYO_RANGE_LABELS[range].toLowerCase()}.
+        </p>
+
+        <div class="grid gap-4 lg:grid-cols-2">
+          <BreakdownBars
+            client:visible
+            title="Signups by day of week"
+            rows={result.data.signupsByWeekday}
+            emptyMessage="No signups recorded in this period yet."
+          />
+          <BreakdownBars
+            client:visible
+            title="Quotes by day of week"
+            rows={result.data.quotesByWeekday}
+            emptyMessage="No quotes created in this period yet."
+          />
+        </div>
       </>
     ) : (
       <div class="max-w-2xl rounded-3xl border border-border bg-card p-6 md:p-8">

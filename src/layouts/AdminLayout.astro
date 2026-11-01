@@ -34,10 +34,7 @@ interface Props {
     | 'clients'
     | 'invoices'
     | 'requests'
-    | 'rayo'
-    | 'dory'
-    | 'planes'
-    | 'amber'
+    | 'command-center'
   /** Sign-in and setup render without the nav rail. */
   chrome?: boolean
   email?: string | undefined
@@ -57,15 +54,11 @@ const NAV = [
      requests, site checks, whatever ships next. One queue, one place to
      look. */
   { id: 'requests', label: 'Requests', href: '/admin/requests' },
-  /* Rayo is a separate product on the same infra. It sits under the studio's
-     admin rather than in its own dashboard so anyone who runs one runs both. */
-  { id: 'rayo', label: 'Rayo', href: '/admin/rayo' },
-  /* Dory, the personal-finance product, on the same infra. Counts only. */
-  { id: 'dory', label: 'Dory', href: '/admin/dory' },
-  /* Planes, the task-planning product, on the same infra. Counts only. */
-  { id: 'planes', label: 'Planes', href: '/admin/planes' },
-  /* Amber, the team banner tool. Accounts and headings are managed here. */
-  { id: 'amber', label: 'Amber', href: '/admin/amber' },
+  /* Rayo, Dory, Planes and Amber are separate products on the same infra,
+     each with its own detailed analytics page. Rather than four more rail
+     items, they live behind this one hub — a status card each, plus the
+     combined, cross-product view. */
+  { id: 'command-center', label: 'Command Center', href: '/admin/command-center' },
 ] as const
 ---
 

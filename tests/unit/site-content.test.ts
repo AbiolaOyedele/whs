@@ -33,7 +33,7 @@ beforeEach(async () => {
 
 describe('text', () => {
   it('renders the committed copy when nothing is overridden', () => {
-    expect(text('home.hero.title')).toBe('Custom systems that give you your time back.')
+    expect(text('home.hero.title')).toBe('Custom solutions that give you your time back.')
   })
 
   it('renders the edit when there is one', async () => {
@@ -44,7 +44,7 @@ describe('text', () => {
   it('falls back to the committed copy for a blank override', async () => {
     // This is what makes "clear the field to restore the original" safe.
     await reload({ 'home.hero.title': '   ' })
-    expect(text('home.hero.title')).toBe('Custom systems that give you your time back.')
+    expect(text('home.hero.title')).toBe('Custom solutions that give you your time back.')
   })
 
   it('returns an empty string for an unregistered key rather than throwing', () => {

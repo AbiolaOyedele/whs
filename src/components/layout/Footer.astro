@@ -32,9 +32,17 @@ const year = new Date().getFullYear()
   >
   </div>
   <div class="wh-container py-14 md:py-20">
-    <div class="grid gap-10 md:grid-cols-3 lg:grid-cols-5">
-      <div class="md:col-span-3 lg:col-span-2">
-        <Logo variant="full" class="h-16 w-auto text-white" />
+    {
+      /*      Two columns on a phone: the first group (the long page list) runs down the
+      left across two rows while the shorter groups stack on the right. The last
+      row takes the slack, so the right-hand groups sit together at the top
+      instead of spreading to match the left column's height.*/
+    }
+    <div
+      class="grid grid-cols-2 grid-rows-[auto_auto_1fr] gap-x-6 gap-y-10 md:grid-cols-3 md:grid-rows-none lg:grid-cols-5"
+    >
+      <div class="col-span-2 md:col-span-3 lg:col-span-2">
+        <Logo variant="full" class="h-24 w-auto text-white md:h-28" />
         <p class="mt-6 max-w-xs text-white/70">{SITE.tagline}</p>
         <a
           href={`mailto:${SITE.email}`}
@@ -45,8 +53,8 @@ const year = new Date().getFullYear()
       </div>
 
       {
-        FOOTER_COLUMNS.map((column) => (
-          <nav aria-label={column.heading}>
+        FOOTER_COLUMNS.map((column, index) => (
+          <nav aria-label={column.heading} class:list={[index === 0 && 'row-span-2 md:row-span-1']}>
             <h2 class="text-xs font-medium tracking-widest text-white/70 uppercase">
               {column.heading}
             </h2>

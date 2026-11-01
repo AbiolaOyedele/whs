@@ -1,0 +1,156 @@
+---
+/**
+ * A live product preview: the real app running in an iframe, filling its box.
+ *
+ * The app is laid out at its real width (390 for a phone, 1280 for a laptop,
+ * or a desktop app's own window width) and scaled so that width matches the
+ * box. Its height is whatever the box needs at that scale, so the app's own
+ * responsive CSS fills the box edge to edge: no letterboxing and no bars. This
+ * is how the portfolio shows the same pages.
+ *
+ * The device follows the box, not the viewport: the laptop layout from 600px
+ * wide, the phone layout below. A narrow card beside a wide one at the same
+ * screen size gets the phone layout, which is the one that reads at that size.
+ * `device` pins one layout instead, for showing the same app at several sizes.
+ *
+ * The iframe is mounted only while the preview is near the viewport and
+ * removed again once it is well past it. Thirteen running apps on one page is
+ * thirteen sets of timers; a handful near the reader is not. The pages pause
+ * their own tour off screen and honour `prefers-reduced-motion` by holding the
+ * first screen, so neither needs handling here.
+ *
+ * The frame is decorative to assistive tech and out of the tab order. The
+ * wrapper carries the description as `role="img"`, which is what a screen
+ * reader should get: a sentence about the product, not a nested app.
+ */
+import { LIVE_PREVIEWS, type LivePreviewSlug } from '@/config/previews'
+
+interface Props {
+  slug: LivePreviewSlug
+  /** Pins a layout. Without it the box's width chooses between laptop and phone. */
+  device?: 'laptop' | 'tablet' | 'phone'
+  /** Must position and size the preview; the app fills whatever box it is given. */
+  class?: string
+}
+
+const { slug, device, class: className = '' } = Astro.props
+const preview = LIVE_PREVIEWS[slug]
+---
+
+<div
+  data-live-preview
+  data-slug={slug}
+  data-laptop-width={preview.sizes.laptop.w}
+  data-tablet-width={preview.sizes.tablet.w}
+  data-device={device}
+  role="img"
+  aria-label={preview.label}
+  class:list={['overflow-hidden bg-surface-dark', className]}
+>
+</div>
+
+<script>
+  type Device = 'laptop' | 'tablet' | 'phone'
+
+  /** Narrowest box that gets the laptop layout. */
+  const LAPTOP_MIN_WIDTH = 600
+  const PHONE_WIDTH = 390
+
+  document.querySelectorAll<HTMLElement>('[data-live-preview]').forEach((root) => {
+    const slug = root.dataset['slug'] ?? ''
+    const widths: Record<Device, number> = {
+      laptop: Number(root.dataset['laptopWidth']) || 1280,
+      tablet: Number(root.dataset['tabletWidth']) || 820,
+      phone: PHONE_WIDTH,
+    }
+    const pinned = root.dataset['device']
+    if (!slug) return
+
+    const deviceFor = (): Device =>
+      pinned === 'laptop' || pinned === 'tablet' || pinned === 'phone'
+        ? pinned
+        : root.clientWidth >= LAPTOP_MIN_WIDTH
+          ? 'laptop'
+          : 'phone'
+
+    let device = deviceFor()
+    let near = false
+
+    const frame = () => root.querySelector<HTMLIFrameElement>('iframe')
+
+    const fit = () => {
+      const current = frame()
+      if (!current || root.clientWidth === 0) return
+      const width = widths[device]
+      const scale = root.clientWidth / width
+      current.style.width = `${width}px`
+      current.style.height = `${root.clientHeight / scale}px`
+      current.style.transform = `scale(${scale})`
+    }
+
+    const mount = () => {
+      if (frame()) return
+      const next = document.createElement('iframe')
+      next.src = `/previews/screens/${slug}.html?device=${device}&bare=1`
+      next.title = root.getAttribute('aria-label') ?? slug
+      next.tabIndex = -1
+      next.setAttribute('aria-hidden', 'true')
+      /* Same-origin is needed: under an opaque origin the pages render blank,
+         since they read their own storage on start. They are our own static
+         files from `public/`, never third-party content. */
+      next.setAttribute('sandbox', 'allow-scripts allow-same-origin')
+      next.className = 'wh-live-frame'
+      next.addEventListener('load', () => next.setAttribute('data-loaded', ''), { once: true })
+      root.append(next)
+      fit()
+    }
+
+    const unmount = () => frame()?.remove()
+
+    /* Crossing 600px swaps the layout, which means a fresh page at the new
+       width; anything else is just a rescale. */
+    new ResizeObserver(() => {
+      const next = deviceFor()
+      if (next !== device) {
+        device = next
+        if (near) {
+          unmount()
+          mount()
+        }
+      }
+      fit()
+    }).observe(root)
+
+    /* Mounts a screen's height ahead of time so the app has started by the time
+       it scrolls in, and lets it go once it is a full screen past. */
+    new IntersectionObserver(
+      ([entry]) => {
+        near = entry?.isIntersecting ?? false
+        if (near) mount()
+        else unmount()
+      },
+      { rootMargin: '100% 0px' }
+    ).observe(root)
+  })
+</script>
+
+<style>
+  [data-live-preview] :global(.wh-live-frame) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    border: 0;
+    transform-origin: top left;
+    pointer-events: none;
+    opacity: 0;
+  }
+  [data-live-preview] :global(.wh-live-frame[data-loaded]) {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    [data-live-preview] :global(.wh-live-frame) {
+      transition: opacity 400ms ease-out;
+    }
+  }
+</style>

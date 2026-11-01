@@ -72,6 +72,10 @@ export interface PlanesStats {
   }
   /** Signups per day for the chart. Empty if the range is `all`. */
   signupSeries: Array<{ day: string; count: number }>
+  /** Tasks added per day — the clearest single read on how much Planes is used. */
+  usageSeries: Array<{ day: string; count: number }>
+  signupsByWeekday: Array<{ label: string; value: number }>
+  usageByWeekday: Array<{ label: string; value: number }>
 }
 
 export type PlanesStatsResult =
@@ -107,6 +111,18 @@ function bucketByDay(rows: Array<{ created_at: string }>): Array<{ day: string; 
     .sort((a, b) => a.day.localeCompare(b.day))
 }
 
+/** Monday through Sunday, in that order — a weekly rhythm, not a ranking. */
+const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+function bucketByWeekday(rows: Array<{ created_at: string }>): Array<{ label: string; value: number }> {
+  const counts = new Array(7).fill(0)
+  for (const row of rows) {
+    const jsDay = new Date(row.created_at).getUTCDay()
+    counts[(jsDay + 6) % 7] += 1
+  }
+  return WEEKDAYS.map((label, index) => ({ label, value: counts[index] }))
+}
+
 export async function fetchPlanesStats(range: PlanesRange): Promise<PlanesStatsResult> {
   if (!isAdminConfigured()) return { ok: false, reason: 'not-configured' }
 
@@ -123,14 +139,11 @@ export async function fetchPlanesStats(range: PlanesRange): Promise<PlanesStatsR
     )
 
   // Tasks people added. Carrying an unfinished task to the next day leaves a faded 'moved' copy
-  // behind; that's the app's doing, not the person's, so it isn't counted.
-  const addedTasks = () => {
-    const base = client
-      .from('tasks')
-      .select('id', { count: 'exact', head: true })
-      .neq('status', 'moved')
-      .is('deleted_at', null)
-    return safeCount(from ? base.gte('created_at', from) : base)
+  // behind; that's the app's doing, not the person's, so it isn't counted. Dates only — this
+  // doubles as the usage trend below, so a count-only query would throw away what we need.
+  const addedTaskRows = () => {
+    const base = client.from('tasks').select('created_at').neq('status', 'moved').is('deleted_at', null)
+    return from ? base.gte('created_at', from) : base
   }
 
   const landedTasks = () => {
@@ -149,7 +162,7 @@ export async function fetchPlanesStats(range: PlanesRange): Promise<PlanesStatsR
       recentPlanners,
       subscribers,
       crewLinks,
-      tasksAdded,
+      addedTaskRowsRaw,
       tasksLanded,
       timersStarted,
       tasksPassed,
@@ -173,7 +186,7 @@ export async function fetchPlanesStats(range: PlanesRange): Promise<PlanesStatsR
           .select('id', { count: 'exact', head: true })
           .eq('status', 'accepted')
       ),
-      addedTasks(),
+      addedTaskRows(),
       landedTasks(),
       createdInRange('timers'),
       createdInRange('task_passes'),
@@ -183,6 +196,9 @@ export async function fetchPlanesStats(range: PlanesRange): Promise<PlanesStatsR
     ])
 
     const distinct = (rows: Array<{ user_id: string }>) => new Set(rows.map((r) => r.user_id)).size
+
+    const addedTaskRowsResolved = rowsOf(addedTaskRowsRaw as Rows<{ created_at: string }>)
+    const signupRowsResolved = rowsOf(signupRows as Rows<{ created_at: string }>)
 
     return {
       ok: true,
@@ -195,8 +211,16 @@ export async function fetchPlanesStats(range: PlanesRange): Promise<PlanesStatsR
           notificationsOn: distinct(rowsOf(subscribers as Rows<{ user_id: string }>)),
           crewLinks,
         },
-        usage: { tasksAdded, tasksLanded, timersStarted, tasksPassed },
-        signupSeries: bucketByDay(rowsOf(signupRows as Rows<{ created_at: string }>)),
+        usage: {
+          tasksAdded: addedTaskRowsResolved.length,
+          tasksLanded,
+          timersStarted,
+          tasksPassed,
+        },
+        signupSeries: bucketByDay(signupRowsResolved),
+        usageSeries: bucketByDay(addedTaskRowsResolved),
+        signupsByWeekday: bucketByWeekday(signupRowsResolved),
+        usageByWeekday: bucketByWeekday(addedTaskRowsResolved),
       },
     }
   } catch (cause) {

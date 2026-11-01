@@ -222,12 +222,16 @@ export async function loadAmber(range: AmberRange): Promise<
     ])
     const byTemplate = new Map<AmberTemplate, number>()
     const perDay = new Map<string, number>()
+    const perWeekday = new Array(7).fill(0)
     const people = new Set<string>()
     for (const row of exports) {
       byTemplate.set(row.template, (byTemplate.get(row.template) ?? 0) + 1)
       perDay.set(row.created_at.slice(0, 10), (perDay.get(row.created_at.slice(0, 10)) ?? 0) + 1)
+      const jsDay = new Date(row.created_at).getUTCDay()
+      perWeekday[(jsDay + 6) % 7] += 1
       if (row.user_id) people.add(row.user_id)
     }
+    const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     return {
       ok: true,
       data: {
@@ -246,6 +250,7 @@ export async function loadAmber(range: AmberRange): Promise<
           perDay: [...perDay.entries()]
             .map(([day, count]) => ({ day, count }))
             .sort((a, b) => a.day.localeCompare(b.day)),
+          byWeekday: WEEKDAYS.map((label, index) => ({ label, value: perWeekday[index] })),
         },
       },
     }

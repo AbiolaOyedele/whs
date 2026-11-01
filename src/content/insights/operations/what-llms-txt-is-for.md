@@ -28,4 +28,4 @@ Placeholder section. Real articles lead each section with a direct, self-contain
 
 ## Whether to publish one
 
-Placeholder section. See [our services](/services) and [the stack we use](/stack).
+Placeholder section. See [our services](/services).
