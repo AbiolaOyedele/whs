@@ -1,5 +1,6 @@
 /**
- * Command Center: one hub for every product on the studio's infrastructure,
+ * Command Center: one hub for every product on the studio's infrastructure (the shop platform
+ * included, read from its own summary endpoint),
  * plus the combined, cross-product picture.
  *
  * This is orchestration only — it opens no connection of its own. It just
@@ -18,6 +19,7 @@ import { fetchRayoStats } from './rayo-stats'
 import { fetchPlanesStats } from './planes-stats'
 import { loadAmber } from './amber'
 import { fetchMarqueStats } from './marque-stats'
+import { fetchShopPlatformStats, SHOP_PLATFORM_FALLBACK_NAME } from './shop-platform-stats'
 
 export type CommandCenterRange = '7d' | '30d' | '90d' | 'all'
 
@@ -32,7 +34,7 @@ export function parseCommandCenterRange(value: string | null): CommandCenterRang
   return value === '7d' || value === '30d' || value === '90d' || value === 'all' ? value : '30d'
 }
 
-type AppId = 'rayo' | 'dory' | 'planes' | 'amber' | 'marque'
+type AppId = 'rayo' | 'dory' | 'planes' | 'amber' | 'marque' | 'shops'
 
 export interface AppCard {
   id: AppId
@@ -65,12 +67,13 @@ function ranked(rows: Array<{ label: string; value: number }>): Array<{ label: s
 }
 
 export async function loadCommandCenter(range: CommandCenterRange): Promise<CommandCenterData> {
-  const [rayo, dory, planes, amber, marque] = await Promise.all([
+  const [rayo, dory, planes, amber, marque, shops] = await Promise.all([
     fetchRayoStats(range),
     fetchDoryStats(range),
     fetchPlanesStats(range),
     loadAmber(range),
     fetchMarqueStats(range),
+    fetchShopPlatformStats(range),
   ])
 
   const apps: AppCard[] = [
@@ -148,6 +151,22 @@ export async function loadCommandCenter(range: CommandCenterRange): Promise<Comm
             newInRange: marque.data.accounts.newInRange,
           }
         : { ok: false, reason: marque.reason },
+    },
+    {
+      id: 'shops',
+      // The platform's name is still a placeholder, so it is read from the platform itself.
+      name: shops.ok ? shops.data.product.name : SHOP_PLATFORM_FALLBACK_NAME,
+      blurb: 'Online shops for Nigerian sellers: storefronts, orders and payments.',
+      href: '/admin/shop-platform',
+      liveHref: shops.ok ? shops.data.product.commandCenterUrl : '/admin/shop-platform',
+      status: shops.ok
+        ? {
+            ok: true,
+            accountsTotal: shops.data.accounts.total,
+            activeLast30d: shops.data.accounts.activeLast30d,
+            newInRange: shops.data.accounts.newInRange,
+          }
+        : { ok: false, reason: shops.reason },
     },
   ]
 

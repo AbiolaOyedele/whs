@@ -120,6 +120,14 @@ const adminSchema = z.object({
   MARQUE_SUPABASE_URL: z.url().optional(),
   MARQUE_SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   /**
+   * The shop platform (its own repo, ~/Claude/StoreFront) runs on its own Supabase project and
+   * exposes its headline counts at /api/v1/cc/summary behind a shared token (its CC_SUMMARY_TOKEN).
+   * Both optional: without them the platform's card says it is not connected.
+   * SHOP_PLATFORM_SUMMARY_URL is the full address, e.g. https://app.dooja.shop/api/v1/cc/summary.
+   */
+  SHOP_PLATFORM_SUMMARY_URL: z.url().optional(),
+  SHOP_PLATFORM_SUMMARY_TOKEN: z.string().min(32).optional(),
+  /**
    * Drafting assistance for quotes. Two providers, either or both.
    *
    * Claude is the default. Gemini is selectable per request from the drafting

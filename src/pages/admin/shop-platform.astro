@@ -1,0 +1,196 @@
+---
+/**
+ * The shop platform (its own repo; online shops for Nigerian sellers).
+ *
+ * The headline counts only, read from the platform's own summary endpoint: accounts, shops,
+ * money through the shops and traffic. Never a shop's customers, orders or messages. Everything
+ * deeper — every shop, the support inbox, the feature switches, reports — lives in the platform's
+ * own command center, linked at the top.
+ *
+ * Server-rendered: this is a table of numbers, not an app.
+ */
+import AdminLayout from '@/layouts/AdminLayout.astro'
+import FormSelect from '@/components/admin/FormSelect.astro'
+import { TrendChart } from '@/components/admin/analytics/TrendChart'
+import { BreakdownBars } from '@/components/admin/analytics/BreakdownBars'
+import {
+  fetchShopPlatformStats,
+  SHOP_PLATFORM_FALLBACK_NAME,
+  SHOP_PLATFORM_RANGE_LABELS,
+  type ShopPlatformRange,
+} from '@/lib/admin/shop-platform-stats'
+
+export const prerender = false
+
+const session = Astro.locals.adminSession
+
+const RANGES = ['7d', '30d', '90d', 'all'] as const
+const rangeParam = Astro.url.searchParams.get('range')
+const range: ShopPlatformRange = (RANGES as readonly string[]).includes(rangeParam ?? '')
+  ? (rangeParam as ShopPlatformRange)
+  : '30d'
+
+const result = await fetchShopPlatformStats(range)
+const name = result.ok ? result.data.product.name : SHOP_PLATFORM_FALLBACK_NAME
+
+const numberFormat = new Intl.NumberFormat('en-GB')
+const fmt = (value: number): string => numberFormat.format(value)
+const naira = (kobo: number): string => `₦${numberFormat.format(Math.round(kobo / 100))}`
+const windowLabel = SHOP_PLATFORM_RANGE_LABELS[range].toLowerCase()
+---
+
+<AdminLayout title={name} section="command-center" email={session?.email}>
+  <a
+    href="/admin/command-center"
+    class="mb-4 inline-flex min-h-11 items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+  >
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5">
+      <path d="M15 18l-6-6 6-6"></path>
+    </svg>
+    Command Center
+  </a>
+
+  <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="wh-h1-compact">{name}</h1>
+      <p class="mt-1 text-muted-foreground">How the shop platform is used. Totals only: no shop's customers or orders.</p>
+      {
+        result.ok && (
+          <a
+            href={result.data.product.commandCenterUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-3 inline-flex min-h-11 items-center gap-1 rounded-full border border-border bg-card px-4 py-1.5 text-sm transition-colors hover:border-foreground"
+          >
+            Open its command center
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-3.5">
+              <path d="M7 17 17 7M8 7h9v9"></path>
+            </svg>
+          </a>
+        )
+      }
+    </div>
+
+    <form method="get" class="flex items-end gap-3">
+      <div class="flex flex-col gap-1.5">
+        <span class="text-sm text-muted-foreground">Window</span>
+        <FormSelect
+          id="shop-platform-range"
+          name="range"
+          label="Window"
+          value={range}
+          options={RANGES.map((value) => ({ value, label: SHOP_PLATFORM_RANGE_LABELS[value] }))}
+        />
+      </div>
+      <noscript>
+        <button type="submit" class="min-h-11 rounded-full bg-primary px-5 text-sm text-primary-foreground transition-colors hover:bg-foreground">
+          Apply
+        </button>
+      </noscript>
+    </form>
+  </div>
+
+  {
+    result.ok ? (
+      <>
+        <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Headline counts">
+          <div class="rounded-3xl border border-border bg-card p-5">
+            <p class="text-sm text-muted-foreground">Accounts</p>
+            <p class="mt-2 font-mono text-3xl leading-none tabular-nums">{fmt(result.data.accounts.total)}</p>
+            <p class="mt-2 text-sm text-muted-foreground">
+              {result.data.accounts.newInRange > 0 ? `+${fmt(result.data.accounts.newInRange)} in ${windowLabel}` : 'None new in this window.'}
+            </p>
+          </div>
+          <div class="rounded-3xl border border-border bg-card p-5">
+            <p class="text-sm text-muted-foreground">Shops</p>
+            <p class="mt-2 font-mono text-3xl leading-none tabular-nums">{fmt(result.data.shops.total)}</p>
+            <p class="mt-2 text-sm text-muted-foreground">
+              {fmt(result.data.shops.open)} open · +{fmt(result.data.shops.newInRange)} in {windowLabel}
+            </p>
+          </div>
+          <div class="rounded-3xl border border-border bg-card p-5">
+            <p class="text-sm text-muted-foreground">Sold through shops</p>
+            <p class="mt-2 font-mono text-3xl leading-none tabular-nums">{naira(result.data.money.salesKobo)}</p>
+            <p class="mt-2 text-sm text-muted-foreground">
+              {fmt(result.data.money.orders)} paid orders · {naira(result.data.money.feesKobo)} in fees
+            </p>
+          </div>
+          <div class="rounded-3xl border border-border bg-card p-5">
+            <p class="text-sm text-muted-foreground">Active shops, 30 days</p>
+            <p class="mt-2 font-mono text-3xl leading-none tabular-nums">{fmt(result.data.accounts.activeLast30d)}</p>
+            <p class="mt-2 text-sm text-muted-foreground">Shops that had visitors.</p>
+          </div>
+        </section>
+
+        <h2 class="mt-8 font-display text-xl">Traffic and support</h2>
+        <p class="mb-3 text-sm text-muted-foreground">In {windowLabel}. A visitor is counted once a day.</p>
+        <div class="grid gap-4 lg:grid-cols-2">
+          <BreakdownBars
+            client:visible
+            title="Visitors"
+            rows={[
+              { label: 'Shop visitors', value: result.data.traffic.shopVisitors },
+              { label: 'Landing visitors', value: result.data.traffic.landingVisitors },
+              { label: 'Browsing a shop now', value: result.data.traffic.browsingNow },
+            ]}
+            emptyMessage="No visits in this window yet."
+          />
+          <BreakdownBars
+            client:visible
+            title="Shops"
+            rows={[
+              { label: 'Open', value: result.data.shops.open },
+              { label: 'Made a sale in this window', value: result.data.shops.selling },
+              { label: 'Support chats waiting', value: result.data.support.waiting },
+            ]}
+            emptyMessage="No shops yet."
+          />
+        </div>
+
+        {range !== 'all' && (
+          <>
+            <h2 class="mt-8 font-display text-xl">Trends</h2>
+            <p class="mb-3 text-sm text-muted-foreground">Day by day, over {windowLabel}.</p>
+            <TrendChart
+              client:visible
+              label="Signups"
+              unitLabel="signups"
+              series={result.data.signupSeries.map((p) => ({ date: p.day, value: p.count }))}
+              emptyMessage="No signups recorded in this period yet."
+            />
+          </>
+        )}
+      </>
+    ) : (
+      <div class="max-w-2xl rounded-3xl border border-border bg-card p-6 md:p-8">
+        {result.reason === 'not-configured' && (
+          <>
+            <h2 class="mb-3 font-display text-xl">The shop platform is not connected</h2>
+            <p class="text-base text-muted-foreground">
+              Set SHOP_PLATFORM_SUMMARY_URL and SHOP_PLATFORM_SUMMARY_TOKEN here, and the same token as
+              CC_SUMMARY_TOKEN on the shop platform, then reload.
+            </p>
+          </>
+        )}
+        {result.reason === 'unavailable' && (
+          <>
+            <h2 class="mb-3 font-display text-xl">Could not reach the shop platform</h2>
+            <p class="mb-3 text-base text-muted-foreground">Its summary endpoint did not answer. Check the address and that both sides hold the same token.</p>
+            {result.detail && (
+              <p class="rounded-xl border border-border bg-muted px-3 py-2 font-mono text-sm text-muted-foreground">{result.detail}</p>
+            )}
+          </>
+        )}
+      </div>
+    )
+  }
+</AdminLayout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('form[method="get"]')
+  const select = document.querySelector<HTMLInputElement>('input[name="range"]')
+  if (form && select) {
+    const observer = new MutationObserver(() => form.submit())
+    observer.observe(select, { attributes: true, attributeFilter: ['value'] })
+  }
+</script>
