@@ -179,6 +179,13 @@ const adminSchema = z.object({
    */
   PAYSTACK_SECRET_KEY: z.string().min(1).optional(),
   PAYSTACK_PUBLIC_KEY: z.string().min(1).optional(),
+  /**
+   * Comma-separated webhook URLs of the other products on this Paystack
+   * business (Dumpty, the shop platform). Paystack allows one webhook URL, and
+   * it points here, so events that are not ours are passed on to these.
+   * Optional: unset, nothing is forwarded.
+   */
+  PAYSTACK_FORWARD_URLS: z.string().min(1).optional(),
   ADMIN_ALLOWED_EMAILS: z.string().min(3),
   /**
    * Server-side secret mixed into every client quote PIN hash. Rotating it

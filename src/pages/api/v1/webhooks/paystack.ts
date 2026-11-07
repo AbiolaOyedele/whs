@@ -4,25 +4,30 @@
  * Auth:     HMAC-SHA512 signature in x-paystack-signature
  * Response: 200 always, once authenticated
  *
- * ⚠️ NOT CURRENTLY RECEIVING TRAFFIC. A Paystack business has one live webhook
- * URL, and this account's points at another product. Payments are recorded by
- * polling instead — see `src/lib/admin/payment-reconcile.ts`. This route is
- * kept working and correct so that pointing a webhook here later is a one-line
- * change in the Paystack dashboard and nothing else.
+ * The hub for the whole Paystack business. A Paystack business has one webhook
+ * URL per mode, and since 7 Nov 2026 both live and test point here. The same
+ * business also takes payments for Dumpty and the shop platform, so every
+ * authenticated event that is not one of our own payments is passed on to them
+ * (`PAYSTACK_FORWARD_URLS`, see `src/lib/paystack-forward.ts`). Polling
+ * (`src/lib/admin/payment-reconcile.ts`) still runs as a backstop.
  *
- * Two rules this endpoint lives by:
+ * Three rules this endpoint lives by:
  *
  *  1. The signature is checked against the RAW body before anything is parsed.
  *     An unsigned webhook is an attacker telling us an invoice is paid.
  *  2. It returns 200 for anything it has authenticated, including events it
  *     ignores. Paystack retries non-2xx responses, so a 4xx on an event we
  *     simply do not care about turns into a retry loop.
+ *  3. Only a signed event is ever passed on, with its body and signature
+ *     untouched. A downstream product that is down does not fail the request:
+ *     Paystack would retry the event at us, not at it.
  */
 import type { APIRoute } from 'astro'
 import { toErrorResponse } from '@/lib/errors'
 import { isValidWebhook } from '@/lib/paystack'
 import { getPaymentByReference } from '@/lib/admin/repositories/payments'
 import { reconcilePayment } from '@/lib/admin/payment-reconcile'
+import { forwardUrls, forwardWebhook } from '@/lib/paystack-forward'
 
 export const prerender = false
 
@@ -34,7 +39,8 @@ export const POST: APIRoute = async ({ request }) => {
     // and re-serialising a parsed object will not reproduce them.
     const raw = await request.text()
 
-    if (!isValidWebhook(raw, request.headers.get('x-paystack-signature'))) {
+    const signature = request.headers.get('x-paystack-signature')
+    if (!signature || !isValidWebhook(raw, signature)) {
       // Deliberately terse. An attacker learns nothing about why.
       return new Response('Unauthorised', { status: 401 })
     }
@@ -45,11 +51,12 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const reference = event.data?.reference
-    if (!reference || event.event !== 'charge.success') return ok()
-
-    const payment = await getPaymentByReference(reference)
+    const payment =
+      reference && event.event === 'charge.success' ? await getPaymentByReference(reference) : null
     if (!payment) {
-      console.warn('[paystack] webhook for an unknown reference', reference)
+      // Not one of ours: another product on this Paystack business. Each
+      // checks the signature again and ignores references it does not know.
+      await passOn(raw, signature)
       return ok()
     }
 
@@ -64,5 +71,15 @@ export const POST: APIRoute = async ({ request }) => {
   } catch (error) {
     console.error('[paystack] webhook error', error)
     return toErrorResponse(error)
+  }
+}
+
+async function passOn(raw: string, signature: string): Promise<void> {
+  const results = await forwardWebhook(raw, signature, forwardUrls())
+  for (const result of results) {
+    if (!result.ok) {
+      // The URL and status only: never the body, which holds a customer's details.
+      console.error('[paystack] could not pass the webhook on', result.url, result.status)
+    }
   }
 }
