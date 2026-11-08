@@ -47,7 +47,7 @@ function shortNaira(amount: number): string {
 
 function planLabel(plan: Plan): string {
   const price = plan.monthly === 0 ? '₦0' : `₦${plan.monthly.toLocaleString('en-NG')}`
-  return plan.feePercent > 0 ? `${plan.name} : ${price} + ${plan.feePercent}%` : `${plan.name} : ${price}, no fee`
+  return plan.feePercent > 0 ? `${plan.name} : ${plan.feePercent}% of the price` : `${plan.name} : ${price}`
 }
 
 const PANELS = monthlySales.map((sales) => ({ sales, rows: rowsFor(sales) }))
@@ -151,7 +151,7 @@ export function HomePlanCostCard() {
           panels={PANELS.map(({ sales, rows }, index) => (
             <div key={sales} data-plan-panel={index} className="flex flex-col gap-4 p-6">
               <p className="sr-only">
-                What each plan costs for a month with {shortNaira(sales)} of online sales, before VAT:
+                How the {shortNaira(sales)} website is paid, live in 72 hours:
               </p>
               {rows.map((row) => (
                 <div key={row.plan.name}>

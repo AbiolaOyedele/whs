@@ -1,4 +1,4 @@
-import { PER_MONTH, TRIAL_TAB, type PricingPlan } from '@v2/content/pricing'
+import { PER_MONTH, PRICE_CARD, TRIAL_TAB, type PricingPlan } from '@v2/content/pricing'
 import { formatNaira } from './money'
 import { PlanAction } from './PlanAction'
 import { TickIcon } from './TickIcon'
@@ -6,11 +6,11 @@ import { TrialIcon } from './TrialIcon'
 
 interface PlanCardProps {
   plan: PricingPlan
-  /** The plan new shops try first: gets the pink tab and the pink button. */
+  /** The most popular plan: gets the pink tab and the pink button. */
   featured: boolean
 }
 
-/** One plan: name, who it is for, monthly price, what it includes, and a sign-up button. */
+/** One plan: name, who it is for, its price (or "Quoted"), what it includes, and a button. */
 export function PlanCard({ plan, featured }: PlanCardProps) {
   return (
     <div className={`relative h-auto ${featured ? 'max-sm:mt-13' : ''}`}>
@@ -31,7 +31,7 @@ export function PlanCard({ plan, featured }: PlanCardProps) {
         </div>
         <div>
           <p className="max-md:text-heading-xl md:text-heading-lg">
-            {formatNaira(plan.monthlyKobo)} <span className="text-body-md whitespace-nowrap text-navy-500 lg:mt-1 lg:block">{PER_MONTH}</span>
+            {plan.monthlyKobo > 0 ? formatNaira(plan.monthlyKobo) : PRICE_CARD.noFee} <span className="text-body-md whitespace-nowrap text-navy-500 lg:mt-1 lg:block">{plan.monthlyKobo > 0 ? PER_MONTH : ''}</span>
           </p>
         </div>
         <div>

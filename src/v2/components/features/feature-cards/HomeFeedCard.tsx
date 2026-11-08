@@ -12,7 +12,7 @@ const HOLD_MS = 3500
 /**
  * A charcoal card with a frosted terminal-style window. When it comes on
  * screen the lines of an example dashboard feed appear one after another
- * (paid orders, a delivery booked, stock running low, packing progress),
+ * (an example automation run: uploads, a retry, generation progress),
  * hold, then clear and start again. All lines show at once when motion is
  * reduced.
  */

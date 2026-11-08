@@ -34,7 +34,7 @@ function validate(values: FormValues<DemoField>) {
   })
 }
 
-/** "Talk to us": who you are, what you sell and how you sell today. Same layout as the reference demo form. */
+/** "Request a quote": who you are, what you need and how you heard about us. Same layout as the reference demo form. */
 export function DemoForm() {
   const form = useCheckedForm<DemoField>(
     { firstName: '', lastName: '', email: '', sells: '', channel: '', message: '' },

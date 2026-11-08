@@ -8,7 +8,7 @@ import type { GetStaticPaths } from 'astro'
 import V2Layout from '@/layouts/V2Layout.astro'
 import App from '@v2/App'
 import { allPaths, resolveRoute } from '@v2/routes'
-import { USE_CASE_SLUGS } from '@v2/content/use-cases'
+import { SCENES } from '@v2/components/layout/SiteChrome'
 
 export const getStaticPaths = (() =>
   allPaths().map((path) => ({
@@ -19,10 +19,9 @@ export const getStaticPaths = (() =>
 const { path } = Astro.props
 const route = resolveRoute(path)
 
-// Same mapping as SceneSync in src/v2/components/layout/SiteChrome.tsx, set
-// here too so the first paint already has the right scene.
-const useCase = path.startsWith('/use-cases/') ? path.split('/')[2] : undefined
-const scene = useCase && (USE_CASE_SLUGS as readonly string[]).includes(useCase) ? useCase : 'home'
+// The mapping SceneSync uses on the client, applied here too so the first
+// paint already has the right scene.
+const scene = SCENES[path] ?? 'home'
 const template = path === '/about' ? 'about' : 'default'
 ---
 

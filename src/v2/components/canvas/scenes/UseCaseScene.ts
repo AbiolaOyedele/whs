@@ -6,7 +6,7 @@ import type { Particles } from '../engine/particles'
 import type { BloomSettings, Look } from '../engine/post'
 import type { BackgroundScene, ScrollChannel, StageContext } from '../engine/types'
 
-export const CLEAR_COLOR = new Color(0x050003)
+export const CLEAR_COLOR = new Color(0x030402)
 
 export interface UseCaseOptions {
   fov: number

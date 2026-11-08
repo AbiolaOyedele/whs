@@ -12,11 +12,11 @@ export function ArtPanel({ seed = 0, className = '' }: { seed?: number; classNam
       aria-hidden="true"
       className={`absolute inset-0 ${className}`}
       style={{
-        backgroundColor: '#0b0610',
+        backgroundColor: '#070906',
         backgroundImage: [
-          `radial-gradient(60% 45% at ${glowX}% ${glowY}%, rgb(255 72 139 / 0.55), transparent 70%)`,
-          `repeating-linear-gradient(${angle}deg, transparent 0 14%, rgb(227 58 219 / 0.22) 14% 15%, transparent 15% 24%, rgb(255 255 255 / 0.18) 24% 24.4%, transparent 24.4% 34%)`,
-          `linear-gradient(${angle - 20}deg, #12040f 0%, #4a0d36 45%, #1a0614 70%, #050205 100%)`,
+          `radial-gradient(60% 45% at ${glowX}% ${glowY}%, rgb(190 252 101 / 0.55), transparent 70%)`,
+          `repeating-linear-gradient(${angle}deg, transparent 0 14%, rgb(155 224 58 / 0.22) 14% 15%, transparent 15% 24%, rgb(255 255 255 / 0.18) 24% 24.4%, transparent 24.4% 34%)`,
+          `linear-gradient(${angle - 20}deg, #0b0f07 0%, #2c3d14 45%, #10160a 70%, #040503 100%)`,
         ].join(','),
       }}
     />

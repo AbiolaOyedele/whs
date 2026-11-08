@@ -52,7 +52,7 @@ export function createBackdrop(clearColor: Color, opacity = 1): Mesh<PlaneGeomet
     fog: false,
     uniforms: {
       uColorA: { value: new Color('#000000') },
-      uColorB: { value: new Color('#2d0b23') },
+      uColorB: { value: new Color('#1a2410') },
       uClear: { value: clearColor.clone() },
       uCenter: { value: new Vector2(0.2, 0.77) },
       uOffset: { value: 0.08 },

@@ -5,10 +5,11 @@ import { usePathname } from 'next/navigation'
 import { pageScheme } from '@v2/config/site'
 import { Header } from '@v2/components/layout/Header'
 
-const SCENES: Record<string, string> = {
-  '/use-cases/fashion': 'fashion',
-  '/use-cases/beauty': 'beauty',
-  '/use-cases/home-and-living': 'home-and-living',
+/** Service page → which of the three 3D background scenes it shows. */
+export const SCENES: Record<string, string> = {
+  '/use-cases/websites': 'fashion',
+  '/use-cases/apps': 'beauty',
+  '/use-cases/tools-and-systems': 'home-and-living',
 }
 
 /** Keeps <html data-scene> in step with the route so the background can switch scenes. */

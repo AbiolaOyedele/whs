@@ -17,7 +17,7 @@ interface HeroUseCaseProps {
 }
 
 /**
- * The dark first screen: the kind of shop as a label over a line that draws
+ * The dark first screen: the service as a label over a line that draws
  * in, the big title on the left, the pitch and two buttons on the right, then
  * the page's own animation below. Its scroll progress drives the background.
  */
@@ -54,10 +54,10 @@ export function HeroUseCase({ label, title, intro, visual }: HeroUseCaseProps) {
                 </div>
                 <div className="flex flex-wrap gap-4">
                   <div className="anim-transform-opacity -delay-2">
-                    <Button label="Open your shop" href={site.signUpUrl} />
+                    <Button label="Get in touch" href={site.signUpUrl} />
                   </div>
                   <div className="anim-transform-opacity -delay-3">
-                    <Button label="Talk to us" href="/book-demo" variant="glass" />
+                    <Button label="Request a quote" href="/request-a-quote" variant="glass" />
                   </div>
                 </div>
               </div>

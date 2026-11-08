@@ -1,7 +1,7 @@
 import { Rail } from '@v2/components/ui/Rail'
 import { aboutBackers } from '@v2/content/about'
 
-/** The slate band under the white panel: a heading, a line that draws in and a row of tiles that drifts. */
+/** The slate band under the white panel: a heading, a line that draws in and a drifting row of products we have built. */
 export function AboutBackers() {
   return (
     <div className="slate wrapper relative z-2 -mt-7.5 bg-slate-50 max-md:py-fluid-3xl md:-mt-15 md:py-fluid-4xl">

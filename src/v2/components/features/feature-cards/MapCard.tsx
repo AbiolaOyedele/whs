@@ -25,7 +25,7 @@ export interface MapCardProps {
 const WAVE_MS = 2967
 const WAVES = 3
 /** Dot colour of the land, from the reference. */
-const LAND = '#d5d9e7'
+const LAND = '#dedee2'
 
 /** Splits the points into three waves (fewer if there are only one or two). */
 function toWaves(points: MapPoint[]): MapPoint[][] {

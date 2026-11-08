@@ -19,7 +19,7 @@ const CLONES = 2
 const GAP_RATIO = 0.3
 
 /**
- * A column of square tiles over the art, each holding a demo shop's name.
+ * A column of square tiles over the art, each holding a project's name.
  * Every 2.5 seconds it rolls up one; the middle tile turns white and full
  * size, the rest stay pale and smaller.
  */
@@ -43,7 +43,7 @@ export function WordmarkCarouselCard({ names, artSeed }: WordmarkCarouselCardPro
     const all = nodes.current.slice(0, loop.length)
     const styles = getComputedStyle(document.documentElement)
     const activeBg = styles.getPropertyValue('--color-white').trim() || '#fff'
-    const restBg = styles.getPropertyValue('--color-slate-50').trim() || '#eef2f5'
+    const restBg = styles.getPropertyValue('--color-slate-50').trim() || '#f4f4f5'
 
     if (count <= 1) {
       const only = all[0]

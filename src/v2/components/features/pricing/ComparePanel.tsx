@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { COMPARE_GROUPS, COMPARE_PRICE_LABEL, type PricingPlan } from '@v2/content/pricing'
+import { COMPARE_GROUPS, COMPARE_PRICE_LABEL, PRICE_CARD, type PricingPlan } from '@v2/content/pricing'
 import { CompareCell } from './CompareCell'
 import { formatNaira } from './money'
 import { PlanAction } from './PlanAction'
@@ -16,7 +16,7 @@ export function ComparePanel({ plan, index }: ComparePanelProps) {
     <div className="mt-6 flex flex-col">
       <div className="flex justify-between gap-1">
         <p className="text-heading-xs">{COMPARE_PRICE_LABEL}</p>
-        <p className="text-heading-xs">{formatNaira(plan.monthlyKobo)}</p>
+        <p className="text-heading-xs">{plan.monthlyKobo > 0 ? formatNaira(plan.monthlyKobo) : PRICE_CARD.noFee}</p>
       </div>
       {COMPARE_GROUPS.map((group) => (
         <Fragment key={group.title}>

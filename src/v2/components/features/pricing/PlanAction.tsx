@@ -8,7 +8,7 @@ interface PlanActionProps {
   compact: boolean
 }
 
-/** The sign-up button for a plan: pink for the trial plan, navy for the rest. */
+/** The button for a plan, to the contact page: pink for the most popular plan, navy for the rest. */
 export function PlanAction({ plan, compact }: PlanActionProps) {
   const label = compact ? plan.compareCta : plan.cta
   return plan.id === TRIAL_PLAN ? (

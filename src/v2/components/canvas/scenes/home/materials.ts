@@ -148,7 +148,7 @@ export function createPulseMaterial(color: Color): { material: ShaderMaterial; u
     uDuration: { value: 0.8 },
     uMaxDepth: { value: 7.5 },
     uSweep: { value: -1 },
-    uSweepColor: { value: new Color(1, 0.94, 1).multiplyScalar(5) },
+    uSweepColor: { value: new Color(0.96, 1, 0.92).multiplyScalar(5) },
   }
   const material = new ShaderMaterial({
     vertexShader: PULSE_VERTEX,

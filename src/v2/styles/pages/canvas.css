@@ -1,7 +1,8 @@
 /* Page styles: canvas. Owned by the canvas builder. */
 
 /* Like the reference: hidden until the first frame, and faded out while a page leaves or swaps. */
-.c-background-canvas {
+.c-background-canvas,
+.c-hero-fluid {
   overflow: hidden;
   opacity: 1;
   transition: opacity var(--transition-page-duration) var(--ease-in-out);
@@ -9,13 +10,15 @@
 
 html.is-leaving .c-background-canvas,
 html.is-changing .c-background-canvas,
+html.is-leaving .c-hero-fluid,
+html.is-changing .c-hero-fluid,
 .c-background-canvas:not([data-ready]) {
   opacity: 0;
 }
 
 /* No WebGL: a still glow in the scene's colours. */
 .c-background-canvas[data-fallback] {
-  background-image: radial-gradient(130% 110% at 20% 23%, #000000 0%, #050003 35%, #2d0b23 100%);
+  background-image: radial-gradient(130% 110% at 20% 23%, #000000 0%, #030402 35%, #1a2410 100%);
 }
 
 .c-background-canvas > canvas,

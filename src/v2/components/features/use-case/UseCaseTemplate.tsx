@@ -13,9 +13,9 @@ interface UseCaseTemplateProps {
 }
 
 /**
- * One page per kind of shop: the dark hero with its own animation, a white
+ * One page per service: the dark hero with its own animation, a white
  * panel with the sticky feature list and animated cards, then a slate panel
- * with ways to start and a row of demo shops.
+ * with ways to start and a row of case studies.
  */
 export function UseCaseTemplate({ content }: UseCaseTemplateProps) {
   const { examples, stories } = content

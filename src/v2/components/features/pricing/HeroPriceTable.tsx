@@ -5,24 +5,21 @@ import { SegmentedControls } from '@v2/components/ui/SegmentedControls'
 import { CYCLES, PLANS, PRICE_CARD } from '@v2/content/pricing'
 import { formatNaira, formatPercent, quoteCycle } from './money'
 
-/** Short enough that all four fit a 345px phone track. */
-const CYCLE_TABS = CYCLES.map((cycle) =>
-  cycle.months === 1 ? 'Monthly' : cycle.months === 12 ? 'Yearly' : `${cycle.months} months`,
-)
+/** Short enough to fit a 345px phone track. */
+const CYCLE_TABS = CYCLES.map((cycle) => (cycle.discount === 0 ? 'Full price' : 'Deposit'))
 
 /**
- * The price card beside the pricing hero. The tabs switch how long you pay
- * for at once; each plan's price becomes the total for that stretch, with the
- * discount taken off.
+ * The price card beside the pricing hero. The tabs switch between each plan's
+ * full price and the deposit that starts the work. Quoted builds say so.
  */
 export function HeroPriceTable() {
   const [cycleIndex, setCycleIndex] = useState(0)
   const cycle = CYCLES[cycleIndex] ?? CYCLES[0]
-  const unit = cycle.months === 1 ? '/mo' : `/${cycle.months} mo`
+  const unit = cycle.discount > 0 ? ' to start' : ' one-off'
   const note =
     cycle.discount > 0
-      ? `*${cycle.discount}% off for paying ${cycle.months} months at once. Before 7.5% VAT`
-      : '*Before 7.5% VAT'
+      ? `*Half the price, paid to start the work. You approve the design within 24 hours, before any code is written`
+      : '*One price for the whole build. Starter and Standard go live in 72 hours'
 
   return (
     <div className="relative z-above flex w-full max-w-md grow flex-col justify-between gap-gutter pb-12.5 xl:max-w-lg">
@@ -39,8 +36,12 @@ export function HeroPriceTable() {
                 <li key={plan.id} className="flex justify-between gap-4">
                   <span className="text-body-sm">{plan.name}</span>
                   <span className="text-body-sm text-right tabular-nums">
-                    <span>{formatNaira(quoteCycle(plan, cycle.months, cycle.discount).subtotalKobo)}</span>
-                    <span className="text-navy-900 opacity-60">{unit}</span>
+                    <span>
+                      {plan.monthlyKobo > 0
+                        ? formatNaira(quoteCycle(plan, cycle.months, cycle.discount).subtotalKobo)
+                        : PRICE_CARD.noFee}
+                    </span>
+                    <span className="text-navy-900 opacity-60">{plan.monthlyKobo > 0 ? unit : ''}</span>
                   </span>
                 </li>
               ))}
@@ -61,7 +62,7 @@ export function HeroPriceTable() {
                     {plan.feeBps > 0 ? (
                       <>
                         <span>{formatPercent(plan.feeBps)}</span>
-                        <span className="text-navy-900 opacity-60">/sale</span>
+                        <span className="text-navy-900 opacity-60"> of the price</span>
                       </>
                     ) : (
                       PRICE_CARD.noFee

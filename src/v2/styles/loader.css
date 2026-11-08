@@ -149,3 +149,19 @@ html.is-ready .c-initial-loader_mark {
   }
 }
 }
+
+/* The WildHands mark is wide, not square: keep each slot's height, let the width follow. */
+.c-logo-mark.c-logo-mark--whs {
+  display: block;
+  width: auto;
+  aspect-ratio: 1157.6 / 445;
+}
+.c-header .c-logo-mark.c-logo-mark--whs {
+  height: 26px;
+}
+@media (min-width: 1000px) {
+  .c-header .c-logo-mark.c-logo-mark--whs {
+    height: 30px;
+  }
+}
+

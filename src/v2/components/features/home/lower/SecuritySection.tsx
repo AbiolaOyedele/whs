@@ -1,6 +1,5 @@
 import { Button } from '@v2/components/ui/Button'
 import { Icon } from '@v2/components/ui/Icon'
-import { InteractiveDots } from '@v2/components/ui/InteractiveDots'
 import { Label } from '@v2/components/ui/Label'
 import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { CANVAS_EVENTS } from '@v2/lib/canvas-events'
@@ -53,9 +52,6 @@ export function SecuritySection() {
             </ul>
           </div>
         </div>
-      </div>
-      <div className="container">
-        <InteractiveDots />
       </div>
       <BuiltWithSection />
     </section>

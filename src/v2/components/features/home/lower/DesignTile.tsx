@@ -10,7 +10,7 @@ const FAST = 'duration-(--transition-duration-fast) ease-in-out'
 
 /**
  * A tall slate tile in the designs carousel: tags top left, the design's
- * name large in the middle, a line about it and a link to its demo shop.
+ * name large in the middle, a line about it and a link to its case study.
  * On hover the backing grows 1%, the text nudges toward the corner and an
  * arrow slides in.
  */
@@ -54,7 +54,7 @@ export function DesignTile({ tile }: DesignTileProps) {
       </div>
       <SmartLink href={tile.href} className="absolute inset-0 z-3 rounded-md -outline-offset-2" draggable={false}>
         <span className="sr-only">
-          {tile.wordmark} design: {tile.linkLabel}
+          {tile.wordmark}: {tile.linkLabel}
         </span>
       </SmartLink>
     </div>

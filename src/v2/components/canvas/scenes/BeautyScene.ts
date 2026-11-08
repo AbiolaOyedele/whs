@@ -18,8 +18,8 @@ import { UseCaseScene } from './UseCaseScene'
 
 const DISTANCE = 20
 const RADIUS = 0.75
-const PLUM = new Color(0xba1d90)
-const PLUM_EMISSIVE = new Color(0x18071c)
+const PLUM = new Color(0x6f9a1f)
+const PLUM_EMISSIVE = new Color(0x0d110a)
 
 /** Thin grooves along lines of latitude and longitude. */
 function grooveGlobe(material: MeshStandardMaterial): void {
@@ -135,7 +135,7 @@ export class BeautyScene extends UseCaseScene {
       position: new Vector3(-0.2, 0.05, 6),
       rotation: new Euler(-0.3, -0.1, -0.2),
       boxSize: new Vector3(1.6, 1.0, 26),
-      color: new Color(0xff6fc8),
+      color: new Color(0xc6fd78),
       size: 0.03,
       opacity: 0.35,
       sway: 0.004,

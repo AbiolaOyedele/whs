@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { InteractiveDots } from '@v2/components/ui/InteractiveDots'
 import { Label } from '@v2/components/ui/Label'
 import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { observeInview } from '@v2/lib/inview'
@@ -287,11 +286,6 @@ export function HeroAbout() {
               <div className="c-hero-about_content">
                 <div className="c-hero-about_content_text wysiwyg-navy wysiwyg anim-transform-opacity pointer-events-auto">
                   <p>{aboutHero.intro}</p>
-                </div>
-                <div className="pb-3 max-xl:hidden">
-                  <div className="container">
-                    <InteractiveDots />
-                  </div>
                 </div>
               </div>
             </div>

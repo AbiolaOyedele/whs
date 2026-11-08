@@ -4,13 +4,13 @@ import { SmartLink } from '@v2/components/ui/SmartLink'
 export interface StoryCardProps {
   href: string
   title: string
-  /** The shop's name, set as a plain text wordmark. */
+  /** The name the story is about, set as a plain text wordmark. */
   wordmark: string
   headingLevel?: 'h2' | 'h3'
 }
 
 /**
- * A seller-story card: a pale panel with the shop's wordmark, the title and
+ * A story card: a pale panel with a wordmark, the title and
  * "Read story". On hover the panel swells a touch and the words drift up and
  * left while an arrow slides in.
  */

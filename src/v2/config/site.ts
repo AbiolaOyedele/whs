@@ -1,17 +1,18 @@
 /**
- * The platform's name and the addresses the marketing site links out to.
- * The name is a placeholder that may change: mirror PLATFORM_NAME in the
- * main app's src/config/site.ts and never type it anywhere else.
+ * The studio's name and the two places the header buttons lead. Everything
+ * here mirrors the main site's src/config/site.ts.
  */
-export const PLATFORM_NAME = 'Dooja'
+export const PLATFORM_NAME = 'WildHands'
 
 export const site = {
   name: PLATFORM_NAME,
-  company: { name: 'Wild Hands Studio', url: 'https://whstd.com' },
-  supportEmail: 'dooja@whstd.com',
-  appUrl: 'https://app.dooja.shop',
-  signUpUrl: 'https://app.dooja.shop/sign-up',
-  signInUrl: 'https://app.dooja.shop/dashboard',
+  company: { name: 'WildHands', url: 'https://whstd.com' },
+  supportEmail: 'hello@whstd.com',
+  appUrl: 'https://whstd.com',
+  /** Primary header button: "Get in touch". */
+  signUpUrl: '/contact',
+  /** Secondary header button: "Request a quote". */
+  signInUrl: '/request-a-quote',
 } as const
 
 export type Scheme = 'dark' | 'slate'

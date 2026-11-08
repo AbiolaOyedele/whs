@@ -169,7 +169,7 @@ export function CookieBanner() {
         aria-labelledby="cookie-title"
         aria-describedby="cookie-text"
         aria-hidden={!boxOpen}
-        className={`fixed right-4 bottom-4 left-4 z-(--z-index-modal) max-w-[24rem] rounded-md bg-white text-navy-900 shadow-[0_8px_40px_rgb(16_20_33/0.25)] transition-[opacity,transform,visibility] duration-250 ease-(--ease) sm:left-auto ${
+        className={`fixed right-4 bottom-4 left-4 z-(--z-index-modal) max-w-[24rem] rounded-md bg-white text-navy-900 shadow-[0_8px_40px_rgb(19_19_20/0.25)] transition-[opacity,transform,visibility] duration-250 ease-(--ease) sm:left-auto ${
           boxOpen && !prefsOpen ? 'visible translate-y-0 opacity-100' : 'invisible translate-y-4 opacity-0'
         }`}
       >

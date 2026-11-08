@@ -25,7 +25,7 @@ export function PricingHero() {
             <Button label={HERO.primary} href={site.signUpUrl} variant="pink" />
           </div>
           <div className="anim-transform-opacity -delay-3">
-            <Button label={HERO.secondary} href="/contact" variant="light" />
+            <Button label={HERO.secondary} href="/request-a-quote" variant="light" />
           </div>
         </div>
         <div

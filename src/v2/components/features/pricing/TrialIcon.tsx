@@ -1,4 +1,4 @@
-/** A small clock face, drawn for the trial tab on the Growth card. */
+/** A small clock face, drawn for the tab on the featured plan's card. */
 export function TrialIcon({ className = '-my-4 -mr-4 size-10' }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 41 41" fill="none" aria-hidden="true">

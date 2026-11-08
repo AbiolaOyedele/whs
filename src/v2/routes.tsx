@@ -54,9 +54,9 @@ export interface ResolvedRoute {
   notFound?: boolean
 }
 
-const DEFAULT_TITLE = `${site.name} | Create your online shop in Nigeria`
+const DEFAULT_TITLE = `${site.name} | Website & Web App Development in Lagos, Nigeria`
 const DEFAULT_DESCRIPTION =
-  'Open an online shop with your own address. Take card, transfer and USSD payments through Paystack, then run orders, stock and delivery from your phone.'
+  'WildHands builds custom websites, web apps and internal tools for businesses in Lagos, Nigeria and across Africa. Built around how you actually work, not a template.'
 
 const BLOG_PAGES = Math.max(1, Math.ceil(BLOG_POSTS.length / POSTS_PER_PAGE))
 const HELP_PAGES = Math.max(1, Math.ceil(HELP_GUIDES.length / POSTS_PER_PAGE))
@@ -109,7 +109,7 @@ const STATIC_ROUTES: Record<string, () => ResolvedRoute> = {
   }),
   '/about': () => ({
     title: titled('About'),
-    description: `${site.name} is a shop platform for Nigerian sellers: a website with checkout, orders, stock, delivery and payments to your own bank, run from your phone. Made by ${site.company.name}.`,
+    description: `${site.name} is a Lagos-based studio building custom websites, apps and internal tools for businesses across Nigeria and Africa.`,
     element: (
       <div className="c-about">
         <HeroAbout />
@@ -119,8 +119,8 @@ const STATIC_ROUTES: Record<string, () => ResolvedRoute> = {
     ),
   }),
   '/contact': () => ({
-    title: titled('Contact'),
-    description: 'Questions about your shop, a plan or a payment? Send us a message or email us.',
+    title: titled('Get in touch'),
+    description: 'Tell WildHands about your project. We reply to every enquiry, usually within one working day.',
     element: (
       <FormPage title={CONTACT_PAGE.title} lead={CONTACT_PAGE.lead}>
         <ContactForm />
@@ -128,8 +128,8 @@ const STATIC_ROUTES: Record<string, () => ResolvedRoute> = {
     ),
   }),
   '/book-demo': () => ({
-    title: titled('Talk to us'),
-    description: 'Tell us what you sell and how you sell today, and we can talk through setting up your shop.',
+    title: titled('Request a quote'),
+    description: "Tell us what you're building and we come back with a scoped quote within a working day. Nothing here is binding.",
     element: (
       <FormPage title={DEMO_PAGE.title} lead={DEMO_PAGE.lead}>
         <DemoForm />
@@ -138,7 +138,7 @@ const STATIC_ROUTES: Record<string, () => ResolvedRoute> = {
   }),
   '/brand-assets': () => ({
     title: titled('Brand assets'),
-    description: `How to use the ${site.name} logo in articles, videos and marketing, and how to ask for the files.`,
+    description: `How to use the ${site.name} logo in articles, videos and marketing, and how to ask us for the files.`,
     element: (
       <div className="c-brand-assets slate rounded-b-4xl bg-slate-50 pt-safe-header pb-fluid-3xl">
         <div className="container pt-fluid-lg">
@@ -150,7 +150,7 @@ const STATIC_ROUTES: Record<string, () => ResolvedRoute> = {
   '/pricing': () => ({
     title: titled('Pricing'),
     description:
-      'Start free with 3% on each online sale, or pay ₦3,500, ₦9,000 or ₦20,000 a month for a lower fee or none. Every new shop gets 7 days of Growth.',
+      'A website live in 72 hours: Starter ₦150,000 or Standard ₦250,000, one-off, with half paid to start. Apps and internal tools are quoted after a discovery call.',
     element: <PricingPage />,
   }),
   '/privacy': () => ({
@@ -164,13 +164,13 @@ const STATIC_ROUTES: Record<string, () => ResolvedRoute> = {
     element: <LegalPage document={TERMS_OF_SERVICE} />,
   }),
   '/resources': () => ({
-    title: titled('Help centre'),
-    description: `Short guides to running your shop on ${site.name}: payouts, plans, your own domain, delivery, discounts and more.`,
+    title: titled('Work'),
+    description: `Case studies from ${site.name}: the apps, websites, tools and internal systems we designed and built end to end.`,
     element: <HelpIndex />,
   }),
   '/blog': () => ({
-    title: titled('Blog'),
-    description: `News, guides and seller stories from ${site.name}.`,
+    title: titled('Insights'),
+    description: `${site.name} Insights: what a website costs in Nigeria, how to choose an agency, and what a business website needs.`,
     element: <BlogIndex />,
   }),
 }
@@ -226,10 +226,10 @@ function guide(slug: string): ResolvedRoute | null {
         author={HELP_AUTHOR}
         artSeed={entry.artSeed}
         icon={entry.icon}
-        back={{ label: 'See all guides', href: '/resources' }}
+        back={{ label: 'See all work', href: '/resources' }}
         after={
           <RelatedRow
-            title="More guides"
+            title="More work"
             seeAllHref="/resources"
             cards={relatedGuides(entry).map((related) => ({
               key: related.slug,
@@ -278,15 +278,15 @@ export function resolveRoute(pathname: string): ResolvedRoute {
 
   if (first === 'blog' && second === 'page' && third) {
     const page = parsePage(third, BLOG_PAGES)
-    if (page) return { title: titled(`Blog, page ${page}`), description: DEFAULT_DESCRIPTION, element: <BlogIndex /> }
+    if (page) return { title: titled(`Insights, page ${page}`), description: DEFAULT_DESCRIPTION, element: <BlogIndex /> }
   }
 
   if (first === 'blog' && second === 'category' && third) {
     const category = categoryBySlug(third)
     if (category) {
       return {
-        title: titled(`${category.tab} | Blog`),
-        description: `${category.tab} from the ${site.name} blog.`,
+        title: titled(`${category.tab} | Insights`),
+        description: `${category.tab} articles from ${site.name} Insights.`,
         element: <BlogIndex />,
       }
     }
@@ -301,7 +301,7 @@ export function resolveRoute(pathname: string): ResolvedRoute {
     const page = parsePage(third, HELP_PAGES)
     if (page) {
       return {
-        title: titled(`Help centre, page ${page}`),
+        title: titled(`Work, page ${page}`),
         description: DEFAULT_DESCRIPTION,
         element: <HelpIndex page={page} />,
       }

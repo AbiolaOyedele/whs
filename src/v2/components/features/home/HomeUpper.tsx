@@ -4,7 +4,6 @@ import { HomeLineChartCard } from '@v2/components/features/feature-cards/HomeLin
 import { nigeriaCityPoint, type NigeriaCity } from '@v2/components/features/feature-cards/HomeMapGeometry'
 import { HomePlanCostCard } from '@v2/components/features/feature-cards/HomePlanCostCard'
 import { MapCard } from '@v2/components/features/feature-cards/MapCard'
-import { InteractiveDots } from '@v2/components/ui/InteractiveDots'
 import { site } from '@v2/config/site'
 import { cardCopy, introCopy, mapChips } from '@v2/content/home-upper'
 import { HeroHome } from './upper/HeroHome'
@@ -32,7 +31,7 @@ const CARDS: FeatureCardItem[] = [
 ]
 
 /**
- * The top half of the home page: the click-and-hold hero with the shop rail
+ * The top half of the home page: the click-and-hold hero with the product rail
  * and dot grid, then the white panel with the intro row and the sticky
  * "why" list beside its four animated cards.
  */
@@ -42,11 +41,6 @@ export function HomeUpper() {
       <div data-background-canvas-inview="">
         <HeroHome>
           <HomeShopRail />
-          <div className="overflow-hidden" data-hero-hold-hide="">
-            <div className="container">
-              <InteractiveDots />
-            </div>
-          </div>
         </HeroHome>
       </div>
 

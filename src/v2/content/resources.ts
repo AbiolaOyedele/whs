@@ -1,7 +1,8 @@
 /**
- * The help centre: short guides to using the platform. Every fact comes from
- * the main app (its screens, `src/config/plans.ts`, the help topics in the
- * dashboard and `docs/`). If a detail is not certain, it is left out.
+ * Work: the WildHands case studies, one per project in the main site's
+ * `src/content/work/*.md`, ordered by each entry's `order`. Each body is that
+ * entry's sections, numbers and outcome, then its Markdown body, word for
+ * word. If a detail is not in those files, it is left out.
  */
 import { site } from '@v2/config/site'
 import type { IconName } from '@v2/components/ui/Icon'
@@ -15,635 +16,763 @@ export interface HelpQuestion {
 export interface HelpGuide {
   slug: string
   title: string
-  /** ISO date the guide was last checked against the app. */
+  /** ISO date the case study was last updated on the main site. */
   date: string
   artSeed: number
   icon: IconName
-  /** One or two sentences that answer the guide's question on their own. */
+  /** The project's one-line summary. */
   lede: string
   body: RichBlock[]
   faqs: HelpQuestion[]
 }
 
-const CHECKED = '2026-11-07'
+/** The day every case study was last updated in `src/content/work`. */
+const UPDATED = '2026-11-02'
 
 export const HELP_GUIDES: HelpGuide[] = [
   {
-    slug: 'open-your-shop',
-    title: 'Open your shop in four steps',
-    date: CHECKED,
+    slug: 'dumpty',
+    title: 'Dumpty: voice notes that arrive already organised',
+    date: UPDATED,
     artSeed: 11,
-    icon: 'bag',
-    lede: 'You need an email address, a bank account for your payouts and one product to add. Your shop is live the moment that first product is in.',
-    body: [
-      { type: 'h2', text: 'Step 1: Create your account' },
-      {
-        type: 'p',
-        text: [
-          'Sign up with your name, email address and a password, or with Google or Apple. ',
-          { text: 'Open your account', href: site.signUpUrl },
-          '.',
-        ],
-      },
-      { type: 'h2', text: 'Step 2: Name your shop' },
-      {
-        type: 'p',
-        text: [
-          'Pick your shop’s name and its web address. The address works from the day you open. You can connect a domain you own later: see ',
-          { text: 'use your own domain', href: '/resources/use-your-own-domain' },
-          '.',
-        ],
-      },
-      { type: 'h2', text: 'Step 3: Add your bank' },
-      {
-        type: 'p',
-        text: 'Choose your bank and enter your account number. Paystack checks the name on the account. To change the account later, you enter a 6-digit code we email you. The code works for 10 minutes.',
-      },
-      {
-        type: 'p',
-        text: [
-          'Only the shop owner can add or change the bank account. See ',
-          { text: 'how payouts work', href: '/resources/how-payouts-work' },
-          '.',
-        ],
-      },
-      { type: 'h2', text: 'Step 4: Add products and share' },
-      {
-        type: 'p',
-        text: 'A product needs a name, at least one picture, a price, and at least one size with a stock count. A size at zero still shows, marked sold out.',
-      },
-      {
-        type: 'p',
-        text: 'Once your first product is in, share your shop’s link in your Instagram bio, your WhatsApp status or a chat with a customer.',
-      },
-      { type: 'h3', text: 'Two faster ways to fill your shop' },
-      {
-        type: 'ul',
-        items: [
-          [
-            { text: 'Set up with AI', strong: true },
-            ': copy a prompt into ChatGPT or Claude, answer a few questions and paste the reply back in. It drafts your shop’s description and a starter product list.',
-          ],
-          [
-            { text: 'Import from a website', strong: true },
-            ': paste a link to a shop you already have online and it reads what it can from the page.',
-          ],
-        ],
-      },
-      {
-        type: 'p',
-        text: [
-          'Either way, what it writes stays a draft until you press ',
-          { text: 'Publish your changes', strong: true },
-          '.',
-        ],
-      },
-    ],
-    faqs: [
-      {
-        q: 'Do I need a laptop?',
-        a: 'No. Your shop and your dashboard work on a phone, from adding products to packing orders.',
-      },
-      {
-        q: 'What does it cost to open?',
-        a: 'Nothing. Every new shop gets a 7-day trial of Growth. If you do not choose a plan, your shop moves to Free, where there is no monthly fee and 3% comes off each online sale.',
-      },
-    ],
-  },
-  {
-    slug: 'how-payouts-work',
-    title: 'How payouts work',
-    date: CHECKED,
-    artSeed: 12,
-    icon: 'bank',
-    lede: 'Customers pay by card, bank transfer or USSD through Paystack. Paystack settles each sale to the bank account you added, usually the next working day.',
-    body: [
-      { type: 'h2', text: 'Where the money goes' },
-      {
-        type: 'p',
-        text: 'Paystack takes the payment and pays it to your own bank account. It does not wait in a wallet with us first.',
-      },
-      { type: 'h2', text: 'What comes off each sale' },
-      {
-        type: 'ul',
-        items: [
-          [
-            { text: 'Our fee', strong: true },
-            ', which depends on your plan: 3% on Free, 1% on Starter, and nothing on Growth or Pro.',
-          ],
-          [
-            { text: 'Paystack’s own charge', strong: true },
-            '. Under Settings, then Payments, you choose who pays it: it comes off your share, or the customer pays it at checkout.',
-          ],
-        ],
-      },
-      { type: 'p', text: 'Each order in your dashboard shows the fee taken.' },
-      { type: 'h2', text: 'Your bank details' },
-      {
-        type: 'p',
-        text: 'Only the shop owner can add or change the payout account. Changing an account that is already connected needs a 6-digit code we email you, which works for 10 minutes. The full details go to Paystack to set up your payouts. We keep only the bank name, the account name and the last four digits.',
-      },
-      { type: 'h2', text: 'Refunds' },
-      {
-        type: 'p',
-        text: 'The shop owner can refund an order from its page, in full or in part. A card payment taken through Paystack is refunded through Paystack. A sale paid in cash or by transfer is marked as refunded, and you return the money yourself.',
-      },
-      {
-        type: 'p',
-        text: 'Disputes and chargebacks are between you, your buyer and Paystack.',
-      },
-      { type: 'h2', text: 'Sales away from your website' },
-      {
-        type: 'p',
-        text: [
-          'A customer who scans your QR code pays through Paystack, the same as a website order. See ',
-          { text: 'sell in person with a QR code', href: '/resources/sell-in-person-with-a-qr-code' },
-          '. Cash, or a transfer straight to your account, is already yours: record the sale so your takings stay right.',
-        ],
-      },
-    ],
-    faqs: [
-      {
-        q: 'When do I get my money?',
-        a: 'Paystack settles each sale to the bank account you added, usually the next working day.',
-      },
-      {
-        q: 'Why is a payout less than the order total?',
-        a: 'Our fee for your plan comes off, and so does Paystack’s own charge unless you pass it to the customer. Each order shows the fee taken.',
-      },
-      {
-        q: 'Can my staff change the bank account?',
-        a: 'No. Money settings stay with the shop owner.',
-      },
-    ],
-  },
-  {
-    slug: 'choosing-a-plan',
-    title: 'Choosing a plan',
-    date: CHECKED,
-    artSeed: 13,
-    icon: 'chart',
-    lede: 'Every plan has an online shop and checkout. The paid plans lower or remove the fee on each online sale and raise the limits.',
-    body: [
-      { type: 'h2', text: 'The plans' },
-      {
-        // Mirrors PLANS in the main app's src/config/plans.ts; change both together.
-        type: 'table',
-        caption: 'Prices are for one month, before 7.5% VAT.',
-        head: ['Plan', 'Price a month', 'Fee on each online sale', 'Products', 'Staff', 'Written reports a month'],
-        rows: [
-          ['Free', '₦0', '3%', '25', 'Just you', '1'],
-          ['Starter', '₦3,500', '1%', '300', '2', '1'],
-          ['Growth', '₦9,000', 'None', 'Unlimited', '5', '5'],
-          ['Pro', '₦20,000', 'None', 'Unlimited', 'Unlimited', '15'],
-        ],
-      },
-      {
-        type: 'ul',
-        items: [
-          'Email campaigns and your own domain come with Starter, Growth and Pro.',
-          'The full business report comes with Growth and Pro.',
-          'Priority support comes with Pro.',
-          'Paystack’s own charge applies to card, transfer and USSD payments on every plan.',
-        ],
-      },
-      { type: 'h2', text: 'Your first week' },
-      {
-        type: 'p',
-        text: 'Every new shop gets a 7-day trial of Growth, so you can try everything before you choose.',
-      },
-      { type: 'h2', text: 'Which plan costs less' },
-      {
-        type: 'p',
-        text: 'Starter costs less than Free once your online sales pass ₦175,000 a month, because 2% of ₦175,000 is ₦3,500. Growth costs less than Starter once they pass ₦550,000 a month. These sums leave out VAT and count only the fee on online sales.',
-      },
-      {
-        type: 'p',
-        text: 'Limits matter too. If you sell more than 25 products, or need someone to help run the shop, Free will not be enough.',
-      },
-      { type: 'h2', text: 'Paying for longer' },
-      {
-        type: 'p',
-        text: 'Pay for 1, 3, 6 or 12 months at once. Paying for 3 months takes 5% off, 6 months 10% off and 12 months 20% off. VAT of 7.5% is added after the discount.',
-      },
-      {
-        type: 'p',
-        text: 'Plans are paid in advance and are not refunded for time you do not use.',
-      },
-      { type: 'h2', text: 'When a plan runs out' },
-      {
-        type: 'p',
-        text: 'Your plan keeps working for 7 more days. After that your shop moves to Free. It is never switched off, and nothing is deleted.',
-      },
-    ],
-    faqs: [
-      {
-        q: 'Is VAT included in the prices?',
-        a: 'No. The prices are before 7.5% VAT, which is added when you pay.',
-      },
-      {
-        q: 'Do I keep my shop if I stop paying?',
-        a: 'Yes. Your plan keeps working for 7 more days, then the shop moves to Free. Nothing is deleted.',
-      },
-      {
-        q: 'Will the prices change?',
-        a: 'If we change our fees, we tell you by email at least 30 days before.',
-      },
-    ],
-  },
-  {
-    slug: 'use-your-own-domain',
-    title: 'Use your own domain',
-    date: CHECKED,
-    artSeed: 14,
-    icon: 'globe',
-    lede: 'Every shop gets its own web address to start. On Starter and above you can connect a domain you have bought, like yourshop.com.',
-    body: [
-      { type: 'h2', text: 'Before you start' },
-      {
-        type: 'ul',
-        items: [
-          'You need the Starter, Growth or Pro plan.',
-          'Only the shop owner can connect a domain.',
-          'Buy the domain first, from any domain seller. You will sign in there to change its DNS records.',
-        ],
-      },
-      { type: 'h2', text: 'Connect it' },
-      {
-        type: 'ol',
-        items: [
-          [
-            'In your dashboard, go to ',
-            { text: 'Settings', strong: true },
-            ', then ',
-            { text: 'Your own domain', strong: true },
-            '.',
-          ],
-          'Type the domain, like yourshop.com.',
-          'Copy the two records shown: an A record for the domain itself, and a CNAME record for www.',
-          'At your domain seller, add both records. Remove any other A record for @ and any other record for www.',
-          ['Come back and press ', { text: 'Check now', strong: true }, '.'],
-        ],
-      },
-      { type: 'h2', text: 'How long it takes' },
-      {
-        type: 'p',
-        text: 'DNS changes can take a few minutes to a day to show. Until then, the check says the domain is not pointing here yet. Your shop switches over only when the records are right and the set-up on our side is finished.',
-      },
-      {
-        type: 'p',
-        text: [
-          'When it says ',
-          { text: 'Connected', strong: true },
-          ', your shop opens on your own domain. To go back, press ',
-          { text: 'Stop using this domain', strong: true },
-          '.',
-        ],
-      },
-    ],
-    faqs: [
-      {
-        q: 'Do I have to buy the domain from you?',
-        a: 'No. Buy it from any domain seller, then connect it from your dashboard.',
-      },
-      {
-        q: 'It still says the domain is not pointing here. What now?',
-        a: 'Give it up to a day. Check that both records match what the page shows, and that no other A record for @ or record for www is left.',
-      },
-    ],
-  },
-  {
-    slug: 'sell-in-person-with-a-qr-code',
-    title: 'Sell in person with a QR code',
-    date: CHECKED,
-    artSeed: 15,
-    icon: 'qr',
-    lede: 'Selling at a market, a pop-up or your stall? Make a code for the sale. Your customer scans it and pays on their own phone, and the order lands in your list.',
-    body: [
-      { type: 'h2', text: 'Make the code' },
-      {
-        type: 'ol',
-        items: [
-          [
-            'Open ',
-            { text: 'Sell in person', strong: true },
-            '. It has its own button at the top of every dashboard page.',
-          ],
-          'Find each item by its name, or type the code on its label.',
-          'If you agreed a lower price, take it off. Leave it at zero for the full price.',
-          ['Press ', { text: 'Make the QR code', strong: true }, '.'],
-        ],
-      },
-      { type: 'h2', text: 'Get paid' },
-      {
-        type: 'p',
-        text: 'Show the code to your customer. They scan it and pay through Paystack on their own phone. If the code will not scan, send them the link shown under it instead.',
-      },
-      {
-        type: 'p',
-        text: 'Once they pay, the sale joins your orders as a walk-in sale, and your latest sales show on the same page.',
-      },
-      { type: 'h2', text: 'A code that stays on your stall' },
-      {
-        type: 'p',
-        text: [
-          'For a code to print on a sign or your packaging, use ',
-          { text: 'QR codes', strong: true },
-          ' under Analytics. Make a code, download it, and see how often it is scanned, at what time of day, and on what phones.',
-        ],
-      },
-    ],
-    faqs: [
-      {
-        q: 'The customer paid me cash. Do I still make a code?',
-        a: 'No. The code is for paying through Paystack. For cash or a transfer to your account, record the sale by hand instead.',
-      },
-      {
-        q: 'Do my wholesale prices apply?',
-        a: 'No. When you sell in person, you set the price yourself.',
-      },
-    ],
-  },
-  {
-    slug: 'record-whatsapp-sales',
-    title: 'Record sales from WhatsApp and Instagram',
-    date: CHECKED,
-    artSeed: 16,
     icon: 'phone',
-    lede: 'Orders you take in a chat or over the phone belong in the same list as your website orders. Record each one so your takings and customers stay in one place.',
+    lede: 'Talk through an idea and get back a clean transcript, tags and a checklist.',
     body: [
-      { type: 'h2', text: 'Record a sale' },
       {
-        type: 'ol',
+        type: 'h2',
+        text: 'The problem',
+      },
+      {
+        type: 'p',
+        text: 'Ideas turn up while you are walking, driving or between meetings. A voice memo captures the thought and then buries it: raw, untitled, unsearchable, needing exactly the cleanup work you did not have time for in the first place.',
+      },
+      {
+        type: 'h2',
+        text: 'What we built',
+      },
+      {
+        type: 'p',
+        text: 'One tap records. Deepgram transcribes. Claude then reads the raw transcript and returns a clean version with a one-line title, three to five tags, and content split by topic. The idea lands in the library already searchable, already labelled, with nothing left to file.',
+      },
+      {
+        type: 'h2',
+        text: 'Turning ideas into next steps',
+      },
+      {
+        type: 'p',
+        text: 'Every idea can be expanded into an interactive checklist of next steps, or sent to the Kingsmen Council, a panel of AI agents that critique the idea for feasibility and return a verdict with a confidence rating. Both sit behind a credit system, so the expensive work only runs when it is asked for.',
+      },
+      {
+        type: 'h2',
+        text: 'Reminders from plain speech',
+      },
+      {
+        type: 'p',
+        text: 'Saying “remind me tomorrow evening” has to become an exact instant in UTC. The model reads the intent, but the result is validated before anything is scheduled: it must parse as ISO-8601, it must be in the future, and it is resolved against the timezone and local date of the recording. Say “remind me at 3pm” after 3pm and it schedules for tomorrow.',
+      },
+      {
+        type: 'h2',
+        text: 'Offline first, not offline eventually',
+      },
+      {
+        type: 'p',
+        text: 'Ideas are captured to IndexedDB and synced when the connection returns, because the moment you have an idea is rarely the moment you have signal. Nothing is lost to a dead spot.',
+      },
+      {
+        type: 'h2',
+        text: 'By the numbers',
+      },
+      {
+        type: 'ul',
         items: [
-          ['On your dashboard home, press ', { text: 'Record a sale', strong: true }, '.'],
-          'Pick the customer, or add a new one.',
-          'Add the items they bought.',
-          'Choose where the sale came from, such as WhatsApp, Instagram, phone or walk-in.',
-          'Say how much they have paid: all of it, part of it or nothing yet, and how they paid.',
-          'If the sale happened on an earlier day, change the order date.',
+          [
+            {
+              text: '15 min',
+              strong: true,
+            },
+            ': Longest single capture',
+          ],
+          [
+            {
+              text: 'Offline',
+              strong: true,
+            },
+            ': Captured, queued, synced later',
+          ],
         ],
       },
-      { type: 'h2', text: 'Collect what is still owed' },
       {
-        type: 'p',
-        text: [
-          'Open the order and press ',
-          { text: 'Request payment', strong: true },
-          '. It makes a Paystack link for the balance. Send it in your WhatsApp chat or copy it anywhere, and it is emailed too when the customer has an email address. When they pay, the order is marked paid.',
-        ],
+        type: 'h2',
+        text: 'Outcome',
       },
       {
         type: 'p',
-        text: [
-          { text: 'Copy customer link', strong: true },
-          ' gives you a page for that order to send the customer.',
-        ],
+        text: 'Raw voice goes in. A titled, tagged, segmented idea with a set of next steps comes out, without anyone doing the filing.',
       },
-      { type: 'h2', text: 'Points on recorded sales' },
       {
         type: 'p',
-        text: [
-          'If you give ',
-          { text: 'loyalty points', href: '/resources/loyalty-points' },
-          ' on recorded sales, the customer needs an email address on the sale to earn them.',
-        ],
+        text: 'Dumpty is built for the gap between having an idea and doing anything about it. That is the stretch where most ideas quietly die, because turning them into something usable is work.',
+      },
+      {
+        type: 'h2',
+        text: 'Where the data lives',
+      },
+      {
+        type: 'p',
+        text: 'Everything is indexed in Supabase with row-level security, so an idea is readable only by the person who recorded it. Audio goes to Cloudflare R2 and deletes itself after seven days; the transcript and the processed output are what persist.',
       },
     ],
-    faqs: [
-      {
-        q: 'Can I record a sale I made last week?',
-        a: 'Yes. Change the order date when you record it.',
-      },
-      {
-        q: 'Can the customer pay the rest later?',
-        a: 'Yes. Record what they have paid, then send a payment link for the balance from the order.',
-      },
-    ],
+    faqs: [],
   },
   {
-    slug: 'delivery-with-fez',
-    title: 'Deliver orders with Fez',
-    date: CHECKED,
-    artSeed: 17,
-    icon: 'truck',
-    lede: 'Set your own delivery fees for the areas you cover, or connect Fez. With Fez, each order is priced by weight and the delivery is booked once the order is paid.',
-    body: [
-      { type: 'h2', text: 'Your own delivery fees' },
-      {
-        type: 'p',
-        text: 'On the Delivery page, add a fee and list the areas it covers, separated by commas: Lekki, Ajah, Ikoyi. You set one price for those areas, and shoppers in them see it at checkout.',
-      },
-      {
-        type: 'p',
-        text: 'You can also offer pickup, so a shopper collects the order and does not need to give an address.',
-      },
-      { type: 'h2', text: 'Connect Fez' },
-      {
-        type: 'ol',
-        items: [
-          'You need a Fez account. Only the shop owner can connect it.',
-          'On the Delivery page, enter the details you sign in to Fez with.',
-          'Choose Test while you try it, which collects nothing, or Live for real collections.',
-          'Pick the state Fez collects from, and a weight per item for products with no weight of their own.',
-        ],
-      },
-      {
-        type: 'p',
-        text: [
-          'Give each product its parcel weight, under ',
-          { text: 'More details', strong: true },
-          ' on the product form, so Fez prices orders by their real weight.',
-        ],
-      },
-      { type: 'h2', text: 'Once an order is paid' },
-      {
-        type: 'p',
-        text: 'The delivery is booked with Fez for you. The order page shows the delivery and how to track it, and its status updates as Fez moves the parcel.',
-      },
-      { type: 'h2', text: 'Disconnecting' },
-      {
-        type: 'p',
-        text: 'If you disconnect Fez, areas priced by Fez disappear from checkout until you connect again. Orders already booked are not affected.',
-      },
-    ],
-    faqs: [
-      {
-        q: 'Can I use Fez and my own fees together?',
-        a: 'Yes. Each delivery fee is either a price you set or priced by Fez, so you can deliver nearby yourself and use Fez further away.',
-      },
-      {
-        q: 'Can I use another delivery company?',
-        a: 'Not yet. Fez is the one delivery partner for now. You can still set your own fees and deliver any way you like.',
-      },
-    ],
-  },
-  {
-    slug: 'discount-codes',
-    title: 'Discount codes and automatic discounts',
-    date: CHECKED,
-    artSeed: 18,
+    slug: 'auto-flow',
+    title: 'Auto Flow: bulk video generation without the manual loop',
+    date: UPDATED,
+    artSeed: 12,
     icon: 'sparkle',
-    lede: 'Give shoppers a code to type at checkout, or set a discount that comes off on its own.',
+    lede: 'Point it at a folder of images and it generates every video unattended, three at a time.',
     body: [
-      { type: 'h2', text: 'Make a code' },
+      {
+        type: 'h2',
+        text: 'The problem',
+      },
       {
         type: 'p',
-        text: [
-          'Under ',
-          { text: 'Marketing', strong: true },
-          ', open ',
-          { text: 'Discounts', strong: true },
-          ' and add a code. You choose:',
-        ],
+        text: 'Google Flow asks for the same six steps on every single image: upload, configure, prompt, generate, wait, download. At a dozen images that is tedious. At a hundred it is a full working day of clicking, and one missed step means starting that image again.',
+      },
+      {
+        type: 'h2',
+        text: 'What we built',
+      },
+      {
+        type: 'p',
+        text: 'A cross-platform desktop app that drives the Flow interface directly. It takes a folder of images, a prompt template (or per-image prompts written by Gemini from the image itself), and runs the whole batch. Progress is written to CSV as it goes, so an interrupted run picks up where it stopped instead of reprocessing everything.',
+      },
+      {
+        type: 'h2',
+        text: 'Pipelining, not queueing',
+      },
+      {
+        type: 'p',
+        text: 'The obvious build runs one image at a time and spends most of its life waiting. This one starts uploading the next image once the current generation passes 20%, keeping up to three in flight, and parallelises every download at the end. That is where the time saving actually comes from.',
+      },
+      {
+        type: 'h2',
+        text: 'Knowing when a generation is done',
+      },
+      {
+        type: 'p',
+        text: 'Flow shows a live percentage overlay that simply vanishes on completion. Polling for the absence of an element is fragile: a network stall or a UI flicker reads as success. Completion is confirmed two ways instead: the overlay has to disappear and the finished video has to appear in the media picker with a valid ID. Failed generations are caught and retried once.',
+      },
+      {
+        type: 'h2',
+        text: 'By the numbers',
       },
       {
         type: 'ul',
         items: [
-          'The code shoppers type. Letters and numbers, no spaces.',
-          'A percentage off, or an amount off in naira.',
-          'A smallest order it works on. Leave it at zero for any order.',
-          'The most it can take off. Leave it blank for no cap.',
-          'The day it stops working. Leave it blank to run until you turn it off.',
-          'How many times it can be used. Leave it blank for no limit.',
+          [
+            {
+              text: '~3×',
+              strong: true,
+            },
+            ': Faster per batch',
+          ],
+          [
+            {
+              text: '3',
+              strong: true,
+            },
+            ': Generations in flight at once',
+          ],
         ],
       },
-      { type: 'p', text: 'When you turn a code off, it stops working immediately.' },
-      { type: 'h2', text: 'Automatic discounts' },
+      {
+        type: 'h2',
+        text: 'Outcome',
+      },
       {
         type: 'p',
-        text: 'An automatic discount needs no code. Aim it at chosen products or collections, and limit it to one group of customers if you like. At checkout the best automatic discount comes off, unless the shopper types a code.',
+        text: 'A 24-image batch that took roughly two hours of supervised clicking now runs in about half an hour, unattended.',
       },
-      { type: 'h2', text: 'Getting codes to customers' },
       {
         type: 'p',
-        text: 'Put a code in your WhatsApp status, your newsletter, or an email campaign. Email campaigns come with Starter and above.',
-      },
-    ],
-    faqs: [
-      {
-        q: 'Can a shopper use a code and an automatic discount together?',
-        a: 'No. The best automatic discount comes off unless the shopper types a code. If they do, the code is used instead.',
+        text: 'Auto Flow exists because the interesting part of generating video from images is choosing the images. Everything after that is the same six interactions repeated until the folder is empty.',
       },
       {
-        q: 'Where do shoppers type the code?',
-        a: 'In the discount code box at checkout.',
+        type: 'h2',
+        text: 'Two frontends, one automation core',
+      },
+      {
+        type: 'p',
+        text: 'The same automation logic is wired to two interfaces (a PyWebView app for the Python build and an Electron app for the Node build), so the tool can be packaged for macOS and Windows without maintaining two behaviours. A second mode downloads every video from an existing Flow project link, which turned out to be the feature people reached for most after the first batch.',
+      },
+      {
+        type: 'h2',
+        text: 'The part we chose not to build',
+      },
+      {
+        type: 'p',
+        text: 'The Electron build contains a half-finished engine pointing at Higgsfield, another video platform. It does not work, and it is staying that way. Higgsfield actively detects browser automation and refuses authenticated access; the standard workaround is to strip the automation flag with stealth launch flags, which would breach their terms of service. The selectors were written. The bypass was not.',
       },
     ],
+    faqs: [],
   },
   {
-    slug: 'loyalty-points',
-    title: 'Reward repeat customers with points',
-    date: CHECKED,
-    artSeed: 19,
+    slug: 'lazy-meet',
+    title: 'Lazy Meet: joining the call so you do not have to',
+    date: UPDATED,
+    artSeed: 13,
+    icon: 'globe',
+    lede: 'Joins your calls at start time, muted and camera off, across three accounts.',
+    body: [
+      {
+        type: 'h2',
+        text: 'The problem',
+      },
+      {
+        type: 'p',
+        text: 'Running several Google accounts turns every meeting into a small sequence of chores: find the right session, open the link, mute, turn the camera off, join. Repeat it four times a day and eventually you join a call live and unmuted, or you stay chained to your desk so you do not.',
+      },
+      {
+        type: 'h2',
+        text: 'What we built',
+      },
+      {
+        type: 'p',
+        text: 'A desktop app that connects up to three Google accounts over OAuth, stores each refresh token encrypted in the system keychain, and checks every connected calendar every five minutes for meetings with a Meet link. Each account gets its own isolated browser session, so signing in to one never disturbs another.',
+      },
+      {
+        type: 'h2',
+        text: 'The join sequence',
+      },
+      {
+        type: 'p',
+        text: 'At join time it opens the meeting in that account session, confirms the microphone toggle reads as off, confirms the camera toggle reads as off, clicks Join, then verifies the in-call interface actually appeared. A native notification follows, with a button to bring the window forward.',
+      },
+      {
+        type: 'h2',
+        text: 'Failing safe',
+      },
+      {
+        type: 'p',
+        text: 'Google changes the Meet interface without notice, so every selector lives in one file. If either toggle state cannot be confirmed, the join is abandoned before the button is clicked. The app will occasionally skip a meeting after a Google redesign. It will never join one with your microphone live.',
+      },
+      {
+        type: 'h2',
+        text: 'By the numbers',
+      },
+      {
+        type: 'ul',
+        items: [
+          [
+            {
+              text: '3',
+              strong: true,
+            },
+            ': Google accounts, kept separate',
+          ],
+          [
+            {
+              text: '5 min',
+              strong: true,
+            },
+            ': Calendar poll interval',
+          ],
+        ],
+      },
+      {
+        type: 'h2',
+        text: 'Outcome',
+      },
+      {
+        type: 'p',
+        text: 'Meetings join themselves at the scheduled minute, muted, whether the window is focused, minimised or behind everything else.',
+      },
+      {
+        type: 'p',
+        text: 'The core idea is small: a calendar already knows when your meetings are and where they live. Nothing else should need your attention.',
+      },
+      {
+        type: 'h2',
+        text: 'Beyond the calendar',
+      },
+      {
+        type: 'p',
+        text: 'Not every meeting arrives as a calendar invite, so links can be pasted in directly and either scheduled once or repeated weekly. Out-of-office days are respected, the join lead time is configurable (a minute early or exactly on the hour), and optional reminders fire beforehand for the calls you do want to prepare for.',
+      },
+      {
+        type: 'h2',
+        text: 'Read-only, by design',
+      },
+      {
+        type: 'p',
+        text: [
+          'The Google integration requests ',
+          {
+            text: 'calendar.readonly',
+            code: true,
+          },
+          ' and nothing more. The app never writes to a calendar, never creates events, and never touches anything outside the meeting links it needs to open.',
+        ],
+      },
+    ],
+    faqs: [],
+  },
+  {
+    slug: 'the-ruff-agency',
+    title: 'The Ruff Agency: one workspace instead of six tools',
+    date: UPDATED,
+    artSeed: 14,
+    icon: 'chart',
+    lede: 'Clients, contracts, invoices, tasks and a client portal in one shared workspace.',
+    body: [
+      {
+        type: 'h2',
+        text: 'The problem',
+      },
+      {
+        type: 'p',
+        text: 'Agencies run on scattered infrastructure. Clients live in a spreadsheet, invoices in a separate system, payment tracking in someone head, and project handoffs in email. Growing the business means buying another tool, and teams work in silos because there is nowhere central to see who is doing what.',
+      },
+      {
+        type: 'h2',
+        text: 'What we built',
+      },
+      {
+        type: 'p',
+        text: 'A workspace where contacts, contracts, invoices and tasks all sit together, and every member sees the same data gated by their role. Clients get their own portal on a workspace subdomain with independent credentials: the same records, a different view, read-only or collaborative depending on what they are given.',
+      },
+      {
+        type: 'h2',
+        text: 'The hard part: two access patterns, one database',
+      },
+      {
+        type: 'p',
+        text: 'Team access had to be added to a schema whose policies assumed a single owner, across more than twenty tables, without a single existing read path breaking. The answer was two SECURITY DEFINER functions that resolve workspace membership once, referenced from permissive policies everywhere else. Postgres ORs permissive policies together, so the original owner-only check and the new member check coexist: adding a teammate can only ever grant access, never revoke it.',
+      },
+      {
+        type: 'h2',
+        text: 'Getting paid',
+      },
+      {
+        type: 'p',
+        text: 'Invoices carry their own lifecycle from draft through sent to paid, with customisable templates, and settle through Stripe or Paystack depending on where the client is. Transactional email runs on Resend, and a WhatsApp bot pushes task updates to people who live in messaging rather than dashboards.',
+      },
+      {
+        type: 'h2',
+        text: 'By the numbers',
+      },
+      {
+        type: 'ul',
+        items: [
+          [
+            {
+              text: '88',
+              strong: true,
+            },
+            ': Database migrations shipped',
+          ],
+          [
+            {
+              text: '20+',
+              strong: true,
+            },
+            ': Tables under row-level security',
+          ],
+        ],
+      },
+      {
+        type: 'h2',
+        text: 'Outcome',
+      },
+      {
+        type: 'p',
+        text: 'A client goes from invited to working inside their own portal without manual setup, pending approvals or a single email thread.',
+      },
+      {
+        type: 'p',
+        text: 'The Ruff Agency is the platform an agency runs on, built because the alternative was renting five products that do not know about each other.',
+      },
+      {
+        type: 'h2',
+        text: 'Beyond the core',
+      },
+      {
+        type: 'p',
+        text: 'An admin-only playground generates marketing assets through DALL-E 3 and Gemini, with a reference-image workflow and prompt review before anything is produced. A separate vault holds legal, brand and finance documents with a visibility model that decides which portals can see what, so a contract shared with one client is not quietly readable by another.',
+      },
+    ],
+    faqs: [],
+  },
+  {
+    slug: 'tomori',
+    title: 'Tomori: a shop for hand-dyed Adire, built for a phone',
+    date: UPDATED,
+    artSeed: 15,
+    icon: 'bag',
+    lede: 'A quiet, phone-first shop for hand-dyed clothes, and a back office that fits in a pocket.',
+    body: [
+      {
+        type: 'h2',
+        text: 'The problem',
+      },
+      {
+        type: 'p',
+        text: 'TOMORI makes hand-dyed Adire and Ankara bubu dresses, pants and two-piece sets. Most shoppers find a piece on Instagram or WhatsApp, on a phone, on mobile data. Marketplaces bury the clothes between phone cases, stock themes cover them in badges and countdowns, and selling through DMs leaves orders, payments and stock in one person’s head.',
+      },
+      {
+        type: 'h2',
+        text: 'What we built',
+      },
+      {
+        type: 'p',
+        text: 'A storefront that opens on a full-width photo of each collection, with every piece priced in naira. Paystack takes card, transfer or USSD, every step is sized for a thumb, and delivery fees are set by the owner and shown before anyone pays. A WhatsApp button sits on every page for shoppers who would rather ask first.',
+      },
+      {
+        type: 'h2',
+        text: 'A back office for one person',
+      },
+      {
+        type: 'p',
+        text: 'The owner runs the shop alone, between packing orders and answering messages, so the admin is written for a shop owner rather than a developer. Every section says what it is for in a few words, times read “3 hours ago”, and every empty screen says what will show up there.',
+      },
+      {
+        type: 'h2',
+        text: 'The parts most shop admins do not have',
+      },
+      {
+        type: 'p',
+        text: 'At a market she picks a piece by its code and the shop makes a QR code the customer pays through on their own phone. Bags left unpaid for twenty minutes are listed so she can follow up. Visitors are counted on the shop itself, with no ad trackers. QR codes printed on delivery bags report every scan and can be pointed somewhere new after printing. Takings, costs and discount codes live in the same place.',
+      },
+      {
+        type: 'h2',
+        text: 'The rule behind it',
+      },
+      {
+        type: 'p',
+        text: 'The interface keeps to deep navy, white and one soft lilac for the main button, so the brightest thing on screen is always the fabric. No countdowns and no “only 2 left”.',
+      },
+      {
+        type: 'h2',
+        text: 'Outcome',
+      },
+      {
+        type: 'p',
+        text: 'The clothes are the loudest thing on every page, and the owner runs the whole shop from her phone.',
+      },
+    ],
+    faqs: [],
+  },
+  {
+    slug: 'marvy',
+    title: 'Marvy: course videos filed in one step',
+    date: UPDATED,
+    artSeed: 16,
     icon: 'box',
-    lede: 'Customers earn points when they buy and spend them on a later order. You choose how many points a sale earns and what a point is worth.',
+    lede: 'Drop a video in and it lands in the right Drive folder, with the right people tagged.',
     body: [
-      { type: 'h2', text: 'Set it up' },
+      {
+        type: 'h2',
+        text: 'The problem',
+      },
       {
         type: 'p',
-        text: ['Under ', { text: 'Marketing', strong: true }, ', open ', { text: 'Loyalty', strong: true }, '.'],
+        text: 'A course-production team uploads videos to shared Google Drive folders all day. For every video someone found the folder by hand, dragged the file in, opened the tag sheet, copied four groups of email addresses and pasted four comments. Twenty videos in a sitting meant the same routine twenty times.',
       },
       {
-        type: 'ul',
-        items: [
-          'Give points on website orders, on sales you record, or both. Each has its own rule.',
-          'Set how many naira a customer spends to earn one point, and what a point is worth when they spend it.',
-          'Set the most points one order can earn, or leave it blank for no limit.',
-          'Name your points whatever suits your shop.',
-          'Choose whether unused points expire, after 6 months, 1 year or 2 years, counted from the customer’s last order or use of points.',
-          'Choose whether to email customers about their unused points once a month.',
-        ],
+        type: 'h2',
+        text: 'What we built',
       },
-      { type: 'h2', text: 'How customers earn and spend them' },
-      {
-        type: 'ul',
-        items: [
-          'Points are earned on paid orders, on what the goods cost after discounts.',
-          'On your website, signed-in customers tick a box at checkout to use their points. They see their points on their account page.',
-          'On a sale you record, add the points in the Record a sale form. The customer needs an email address on the sale to earn.',
-          'If an order is cancelled or fully refunded, the points it earned are taken back and any points it used are returned.',
-        ],
-      },
-      { type: 'h2', text: 'Check and correct' },
       {
         type: 'p',
-        text: 'Open a customer to see their points, and correct them by hand if you need to.',
-      },
-    ],
-    faqs: [
-      {
-        q: 'Who can use points at checkout?',
-        a: 'Customers who are signed in to their account on your shop.',
+        text: 'Marvy reads the course code and week from the filename, finds the folder, checks the person has access and that the video is not already there, then uploads the video with its matching audio. The @mention comments come from the tag sheet and post as whoever is signed in, so it is always clear who did what. Every video then sits on one board with the team’s own statuses, through to final render.',
       },
       {
-        q: 'What happens to points if I refund an order?',
-        a: 'On a full refund, the points the order earned are taken back and any points it used are returned.',
+        type: 'h2',
+        text: 'Quiet by default',
+      },
+      {
+        type: 'p',
+        text: 'The happy path asks nothing. Marvy only speaks up when something looks wrong, and then asks one clear question. A near match is shown, never accepted, and nothing it does can delete anything in Drive.',
+      },
+      {
+        type: 'h2',
+        text: 'Built for the team’s own machines',
+      },
+      {
+        type: 'p',
+        text: 'It runs entirely on the computer it is installed on, with no server and no tracking; the only thing it talks to is Google. The window works from 375 pixels wide to full screen, because people keep it docked beside After Effects between renders.',
+      },
+      {
+        type: 'h2',
+        text: 'Outcome',
+      },
+      {
+        type: 'p',
+        text: 'Nobody on the team has to think about where a video goes.',
       },
     ],
+    faqs: [],
   },
   {
-    slug: 'wholesale-prices',
-    title: 'Set wholesale prices',
-    date: CHECKED,
-    artSeed: 20,
-    icon: 'shirt',
-    lede: 'Charge less for each piece when a customer buys more. Your shop shows the lower prices, and checkout works them out.',
+    slug: 'rayo',
+    title: 'Rayo: quotes your client accepts on the page',
+    date: UPDATED,
+    artSeed: 17,
+    icon: 'bank',
+    lede: 'Send a quote with options, the client accepts one, and it becomes the invoice.',
     body: [
-      { type: 'h2', text: 'Add a price rule' },
       {
-        type: 'p',
-        text: [
-          'Go to ',
-          { text: 'Products', strong: true },
-          ', then ',
-          { text: 'Wholesale prices', strong: true },
-          ', and add a price rule.',
-        ],
-      },
-      {
-        type: 'ul',
-        items: [
-          'Give it a name. The name is for you: shoppers see the prices, not the name.',
-          'Choose what the price drops with: how many of one piece, how many pieces in the bag, or what the bag adds up to.',
-          'Choose what it covers: every piece, chosen pieces or chosen collections.',
-          'Add up to 6 price breaks, each a percentage off. For a rule on how many of one piece, you can set a price each instead.',
-        ],
-      },
-      { type: 'h2', text: 'What shoppers see' },
-      {
-        type: 'ul',
-        items: [
-          'Buy more, pay less on the product page, with the price breaks.',
-          'In the bag, the lower price on the line, and a note saying how many more to add for the next price.',
-          'At checkout, a Wholesale prices line for rules on the whole bag.',
-        ],
+        type: 'h2',
+        text: 'The problem',
       },
       {
         type: 'p',
-        text: 'Checkout works out every price again before payment, so the shopper pays what the rule says.',
+        text: 'Freelancers and small studios write a quote in one document, then rebuild the same numbers in an invoice once the client agrees. The client usually gets a PDF with three options and replies by email to say which one.',
       },
-      { type: 'h2', text: 'How rules combine' },
+      {
+        type: 'h2',
+        text: 'What we built',
+      },
       {
         type: 'p',
-        text: 'Rules never stack. Each line in the bag gets the lowest price any one rule gives it. Extras keep their own price.',
+        text: 'Rayo puts the choice on the page. You build a quote with options and send a link. The client picks one, watches the total update, and accepts it without a PDF to sign or an email to reply to. The accepted option becomes an invoice with your logo, bank details and terms already on it, and nothing is retyped.',
       },
-      { type: 'h2', text: 'Where they do not apply' },
+      {
+        type: 'h2',
+        text: 'Money, followed through',
+      },
       {
         type: 'p',
-        text: 'Wholesale prices apply to orders on your website. When you sell in person or record a sale by hand, you set the price yourself.',
+        text: 'The ledger shows paid, part paid and overdue, and what is still owed on each invoice, deposits included. Documents export as PDFs, and the mail Rayo sends goes out on your behalf.',
+      },
+      {
+        type: 'h2',
+        text: 'Two questions first',
+      },
+      {
+        type: 'p',
+        text: 'The overview answers where each quote stands and what money is in or owed before anything else. Most clients open their quote on a phone, so the quote page was designed for one first.',
+      },
+      {
+        type: 'h2',
+        text: 'Outcome',
+      },
+      {
+        type: 'p',
+        text: 'A quote that answers itself, and an invoice nobody has to retype.',
       },
     ],
-    faqs: [
+    faqs: [],
+  },
+  {
+    slug: 'dory',
+    title: 'Dory: a budget app that always knows what is left',
+    date: UPDATED,
+    artSeed: 18,
+    icon: 'chart',
+    lede: 'Budget, shopping, loans and subscriptions in one place, with what is left always on top.',
+    body: [
       {
-        q: 'Can a product be in two rules?',
-        a: 'Yes, but the rules do not add up. The line gets the lowest price either rule gives.',
+        type: 'h2',
+        text: 'The problem',
+      },
+      {
+        type: 'p',
+        text: 'Money in Lagos moves in naira and gets typed in shorthand: 5k, 1.2m. It also lives in too many places: a bank app, a shopping list in notes, a mental tally of who borrowed what, and subscriptions that renew before anyone remembers them.',
+      },
+      {
+        type: 'h2',
+        text: 'What we built',
+      },
+      {
+        type: 'p',
+        text: 'Dory pulls all of it into one place. The money left for the month sits at the top of every screen. Food, rent, transport and data each get a bar for how much is spent. Shopping lists remember what things cost, and receipt scanning fills them in. Loans show who owes you and who you owe, right beside the budget, and subscriptions due this week are flagged.',
+      },
+      {
+        type: 'h2',
+        text: 'A bank, built in',
+      },
+      {
+        type: 'p',
+        text: 'Dory shows the Kuda balance and can make transfers from it, so checking what is left and paying for something happen in the same app.',
+      },
+      {
+        type: 'h2',
+        text: 'Playful frame, serious figures',
+      },
+      {
+        type: 'p',
+        text: 'Shapes and colour carry the personality, while amounts stay calm and exact. The common action on each screen is large and in reach of one thumb, and every press, save and error answers, briefly.',
+      },
+      {
+        type: 'h2',
+        text: 'Outcome',
+      },
+      {
+        type: 'p',
+        text: 'You always know what is left without doing the maths.',
       },
     ],
+    faqs: [],
+  },
+  {
+    slug: 'planes',
+    title: 'Planes: a to-do list you race your friends on',
+    date: UPDATED,
+    artSeed: 19,
+    icon: 'qr',
+    lede: 'Swipe to land a task, fly one to a friend, and race your crew on the leaderboard.',
+    body: [
+      {
+        type: 'h2',
+        text: 'The problem',
+      },
+      {
+        type: 'p',
+        text: 'Most to-do apps are good at collecting tasks and bad at getting them done. The list grows, nobody else knows either way, and adding a task means stopping to type, which is enough friction that half of them never go in.',
+      },
+      {
+        type: 'h2',
+        text: 'What we built',
+      },
+      {
+        type: 'p',
+        text: 'Planes plans tasks by the day. Swipe right to land one, swipe left to push it to tomorrow, time it, or send it to a friend like a paper plane. Tasks go in by voice, or get pulled out of a screenshot or a note. XP, streaks and badges keep score, and a live leaderboard has only your crew on it.',
+      },
+      {
+        type: 'h2',
+        text: 'One codebase, three places',
+      },
+      {
+        type: 'p',
+        text: 'One Next.js codebase runs Planes on the web and as a desktop app, with an Android app alongside.',
+      },
+      {
+        type: 'h2',
+        text: 'Fast hands, quick feedback',
+      },
+      {
+        type: 'p',
+        text: 'Gestures follow the finger, every action answers in under 250 milliseconds, and celebrations finish in about a second. Anything you can swipe you can also tap, colour is never the only signal, and movement steps aside for anyone who asks for less of it.',
+      },
+      {
+        type: 'h2',
+        text: 'Outcome',
+      },
+      {
+        type: 'p',
+        text: 'Finishing a task feels like landing a plane.',
+      },
+    ],
+    faqs: [],
+  },
+  {
+    slug: 'beam',
+    title: 'Beam: from a finished project to a client document',
+    date: UPDATED,
+    artSeed: 20,
+    icon: 'sparkle',
+    lede: 'Save a brand once, answer a short interview, and get a document in the client’s brand.',
+    body: [
+      {
+        type: 'h2',
+        text: 'The problem',
+      },
+      {
+        type: 'p',
+        text: 'Once a project ships, writing it up is another job: screenshots, a case study, maybe a video, all in the client’s brand. Proposals and brand guides get built from scratch before every deadline, even though the colours, fonts and logo already exist.',
+      },
+      {
+        type: 'h2',
+        text: 'What we built',
+      },
+      {
+        type: 'p',
+        text: 'Beam saves each brand once: colours, fonts, logo and tone of voice, previewed as you type. Point it at a live link or a folder, answer a few questions, and it drafts the case study, captures the screens and writes a video script. Brand guides come from a template of about 40 slides across eight chapters, already in the brand, and any heading or paragraph can be edited right on the slide before export.',
+      },
+      {
+        type: 'h2',
+        text: 'Start from the task',
+      },
+      {
+        type: 'p',
+        text: 'People think “make a proposal”, not “open documents”, so the home screen asks what you want to make, and every screen names the next step in plain words. Beam stays neutral so the client’s colours are the colour on screen, and it works in light and dark, in a narrow window and on a big display.',
+      },
+      {
+        type: 'h2',
+        text: 'Checked, not assumed',
+      },
+      {
+        type: 'p',
+        text: 'The colour chapter checks every text and background pair and shows which pass. Every control can be reached by keyboard with a visible focus state, and errors carry no codes or jargon.',
+      },
+      {
+        type: 'h2',
+        text: 'Outcome',
+      },
+      {
+        type: 'p',
+        text: 'A finished project is a few clicks from a document the client can see.',
+      },
+    ],
+    faqs: [],
+  },
+  {
+    slug: 'marque',
+    title: 'Marque: brand guidelines, made easy',
+    date: UPDATED,
+    artSeed: 11,
+    icon: 'globe',
+    lede: 'Start from a logo, edit the guide in place, and publish it at one link.',
+    body: [
+      {
+        type: 'h2',
+        text: 'Starting from a logo',
+      },
+      {
+        type: 'p',
+        text: 'Name the brand and add its website, and Marque reads its logo, colours and description. Pick a palette, and AI can write the first draft of the copy.',
+      },
+      {
+        type: 'h2',
+        text: 'An editor, not a form',
+      },
+      {
+        type: 'p',
+        text: 'Every guide starts from a twelve-section template with 29 block types, edited right where they sit, with undo and redo, an asset library and a Brand panel for the logo, palette, type, motion, icons and cover.',
+      },
+      {
+        type: 'h2',
+        text: 'Published at one link',
+      },
+      {
+        type: 'p',
+        text: 'A finished guide goes live at its own address, with sidebar navigation, search, one section per page and a Markdown export.',
+      },
+      {
+        type: 'h2',
+        text: 'Works before you sign up',
+      },
+      {
+        type: 'p',
+        text: 'Marque runs signed out, saving in the browser. Signing in saves to an account, syncs across tabs and devices, and offers to move the brands already made into it.',
+      },
+      {
+        type: 'h2',
+        text: 'Outcome',
+      },
+      {
+        type: 'p',
+        text: 'A brand guide that lives at a link, not in a PDF nobody can find.',
+      },
+    ],
+    faqs: [],
   },
 ]
 
-/** Newest first; guides checked on the same day keep their order above. */
+/** Newest first; case studies updated on the same day keep their order above. */
 export function sortedGuides(): HelpGuide[] {
   return HELP_GUIDES.map((guide, index) => ({ guide, index }))
     .sort((a, b) => b.guide.date.localeCompare(a.guide.date) || a.index - b.index)
@@ -654,7 +783,7 @@ export function guideBySlug(slug: string): HelpGuide | undefined {
   return HELP_GUIDES.find((guide) => guide.slug === slug)
 }
 
-/** The next guides in the list after `guide`, wrapping round to the start. */
+/** The next case studies in the list after `guide`, wrapping round to the start. */
 export function relatedGuides(guide: HelpGuide, count = 3): HelpGuide[] {
   const all = sortedGuides()
   const start = all.findIndex((item) => item.slug === guide.slug)
@@ -666,13 +795,13 @@ export function relatedGuides(guide: HelpGuide, count = 3): HelpGuide[] {
   return related
 }
 
-/** The byline on every guide. */
-export const HELP_AUTHOR = { name: 'Help centre', role: `Written by the ${site.name} team` } as const
+/** The byline on every case study. */
+export const HELP_AUTHOR = { name: site.name, role: 'Studio' } as const
 
-/** Shown at the foot of every guide. */
+/** Shown at the foot of every case study, as on the main site's case study pages. */
 export const HELP_CTA = {
-  title: `Open your shop on ${site.name}`,
-  body: 'Start with a 7-day trial of Growth. After that, Free has no monthly fee until you choose a plan.',
-  label: 'Open your shop',
+  title: 'Got a job like this one?',
+  body: 'Tell us where it hurts and we will tell you what we would do about it.',
+  label: 'Talk to us',
   href: site.signUpUrl,
 } as const

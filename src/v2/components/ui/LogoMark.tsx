@@ -1,17 +1,21 @@
-/** The logo mark: three rows of bars, the middle row split; the split slides on hover. */
+import { MARK_PATHS, MARK_VIEW_BOX } from '@/components/ui/logo-paths'
+
+/**
+ * The WildHands "whs." mark, drawn from the same path data as the main
+ * site's Logo component. Letters take the current text colour; the accent
+ * paths stay lime.
+ */
 export function LogoMark({ className = '' }: { className?: string }) {
   return (
-    <span className={`c-logo-mark ${className}`} aria-hidden="true">
-      <span className="c-logo-mark_line">
-        <span className="c-logo-mark_bar" />
-      </span>
-      <span className="c-logo-mark_line">
-        <span className="c-logo-mark_bar" />
-        <span className="c-logo-mark_bar" />
-      </span>
-      <span className="c-logo-mark_line">
-        <span className="c-logo-mark_bar" />
-      </span>
-    </span>
+    <svg
+      viewBox={MARK_VIEW_BOX}
+      className={`c-logo-mark c-logo-mark--whs ${className}`}
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {MARK_PATHS.map((path) => (
+        <path key={path.d.slice(0, 24)} fill={path.accent ? 'var(--color-pink-500)' : 'currentColor'} d={path.d} />
+      ))}
+    </svg>
   )
 }

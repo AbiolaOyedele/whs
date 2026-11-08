@@ -187,7 +187,6 @@ export function Header({ scheme, fixed = false }: HeaderProps) {
         <div className="c-header_container">
           <SmartLink href="/" className="c-header_logo" aria-label={`${site.name} home`}>
             <LogoMark />
-            <span className="c-header_logo_text">{site.name}</span>
           </SmartLink>
 
           <nav className="c-header_nav" aria-label="Main" data-menu-desktop-nav="">
@@ -202,7 +201,7 @@ export function Header({ scheme, fixed = false }: HeaderProps) {
                   onMouseLeave={() => triggerScramble.current?.reset()}
                 >
                   <span className="c-header_nav_link_label c-header_nav_hoverbg">
-                    <ScrambleText ref={triggerScramble}>Shops</ScrambleText>
+                    <ScrambleText ref={triggerScramble}>Services</ScrambleText>
                     <span className="c-header_nav_link_label_dot" />
                   </span>
                 </button>
@@ -219,9 +218,9 @@ export function Header({ scheme, fixed = false }: HeaderProps) {
                     </ul>
                     <div className="c-header_nav_dropdown_button">
                       <Button
-                        label="See live shops"
+                        label="See our work"
                         variant="pink"
-                        href="/#live-shops"
+                        href="/resources"
                         className="w-full"
                       />
                     </div>
@@ -289,21 +288,21 @@ export function Header({ scheme, fixed = false }: HeaderProps) {
 
             <div className="c-header_nav_buttons">
               <Button
-                label="Sign in"
+                label="Request a quote"
                 variant="slate"
                 href={site.signInUrl}
                 className="max-md:hidden"
               />
               <Button
-                label="Sign up"
+                label="Get in touch"
                 variant="pink"
                 href={site.signUpUrl}
                 className="max-md:hidden"
               />
               <Button
-                label="Sign in"
+                label="Get in touch"
                 variant="pink"
-                href={site.signInUrl}
+                href={site.signUpUrl}
                 className="max-[400px]:hidden md:hidden"
               />
               <MobileToggle
@@ -338,7 +337,7 @@ export function Header({ scheme, fixed = false }: HeaderProps) {
                       aria-expanded={accordionOpen}
                       onClick={() => setAccordion(!accordionOpen)}
                     >
-                      <span className="c-header_mobile_menu_link_label">Shops</span>
+                      <span className="c-header_mobile_menu_link_label">Services</span>
                       <span className="c-header_mobile_menu_summary_button">
                         <span className="c-plus-icon" />
                       </span>
@@ -363,9 +362,9 @@ export function Header({ scheme, fixed = false }: HeaderProps) {
                           ))}
                           <li className="pt-2">
                             <Button
-                              label="See live shops"
+                              label="See our work"
                               variant="pink"
-                              href="/#live-shops"
+                              href="/resources"
                               className="w-full"
                             />
                           </li>
@@ -389,19 +388,19 @@ export function Header({ scheme, fixed = false }: HeaderProps) {
               </ul>
               <div className="c-header_mobile_menu_buttons">
                 <Button
-                  label="Sign up"
+                  label="Request a quote"
                   variant="slate"
-                  href={site.signUpUrl}
+                  href={site.signInUrl}
                   className="w-full bg-slate-50!"
                 />
                 <Button
-                  label="Talk to us"
+                  label="See our work"
                   variant="light"
-                  href="/book-demo"
+                  href="/resources"
                   className="w-full bg-slate-50!"
                 />
                 <div className="col-span-2 min-[400px]:hidden">
-                  <Button label="Sign in" variant="pink" href={site.signInUrl} className="w-full" />
+                  <Button label="Get in touch" variant="pink" href={site.signUpUrl} className="w-full" />
                 </div>
               </div>
             </div>

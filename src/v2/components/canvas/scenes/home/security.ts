@@ -127,8 +127,8 @@ export class SecurityView {
   private readonly discs = new Group()
   private readonly shield: Mesh<SphereGeometry, ShaderMaterial>
   private readonly shieldUniforms = {
-    uColor: { value: new Color('#d676bc') },
-    uBrightColor: { value: new Color('#d68ac0') },
+    uColor: { value: new Color('#a9dc66') },
+    uBrightColor: { value: new Color('#b5e27a') },
     uTime: { value: 0 },
     uOpacity: { value: 1 },
     uHexScale: { value: 9.5 },
@@ -175,7 +175,7 @@ export class SecurityView {
       count: 140 * quality.particleScale,
       position: new Vector3(0, 0, 0),
       boxSize: new Vector3(8.3, 7.2, 8),
-      color: new Color(0xff6fc8),
+      color: new Color(0xc6fd78),
       size: 0.26,
       opacity: 0.4,
       sway: 0.02,
@@ -191,7 +191,7 @@ export class SecurityView {
 
   private buildDiscs(): void {
     const random = createRandom(7)
-    const material = new MeshStandardMaterial({ color: new Color('#c2468f'), metalness: 0.53, roughness: 0.6 })
+    const material = new MeshStandardMaterial({ color: new Color('#8cc63c'), metalness: 0.53, roughness: 0.6 })
     this.disposables.push(material)
     const count = 9
     const sphereRadius = 0.72
@@ -206,7 +206,7 @@ export class SecurityView {
       this.discs.add(disc)
     }
     const ringGeometry = new TorusGeometry(0.8, 0.004, 8, 220)
-    const ringMaterial = new MeshBasicMaterial({ color: new Color(1.15, 0.06, 0.62) })
+    const ringMaterial = new MeshBasicMaterial({ color: new Color(0.75, 1.15, 0.3) })
     this.disposables.push(ringGeometry, ringMaterial)
     const ring = new Mesh(ringGeometry, ringMaterial)
     ring.rotation.set(Math.PI / 2 + 0.12, 0, 0.05)
@@ -221,9 +221,9 @@ export class SecurityView {
     key.position.set(1.39, -0.5, 0.4)
     this.group.add(key, key.target)
     const spots: [string, number, number, number, number, Vector3, Vector3][] = [
-      ['#fff5fb', 7, 0.39, 0.99, 0, new Vector3(3.2, 1.4, 5.5), new Vector3(0, 0.2, 0)],
+      ['#f8fff0', 7, 0.39, 0.99, 0, new Vector3(3.2, 1.4, 5.5), new Vector3(0, 0.2, 0)],
       ['#ffffff', 4, 0.47, 0.41, 7, new Vector3(-4.2, 0.2, 3.8), new Vector3(0, -0.1, 0)],
-      ['#f8b8e8', 9, 0.9, 0, 0, new Vector3(0.6, -2.8, -4.5), new Vector3(0, 0.5, 0)],
+      ['#dcfda8', 9, 0.9, 0, 0, new Vector3(0.6, -2.8, -4.5), new Vector3(0, 0.5, 0)],
     ]
     for (const [color, intensity, angle, penumbra, distance, position, target] of spots) {
       const spot = new SpotLight(new Color(color), intensity, distance, angle, penumbra, 2)

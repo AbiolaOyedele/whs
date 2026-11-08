@@ -39,8 +39,8 @@ function place(x: number, y: number, size = 0): CSSProperties {
 
 /**
  * Several sources feeding one pink box on a frosted panel over the art: dots
- * run up each link in turn and the box pulses as they land. Used for "every
- * order in one place".
+ * run up each link in turn and the box pulses as they land. Used for
+ * "everything a site needs, built in".
  */
 export function FlowCard({ hub, sources, sideLabel, artSeed }: FlowCardProps) {
   const panel = useRef<HTMLDivElement>(null)

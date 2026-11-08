@@ -100,7 +100,7 @@ export function HomeAnimatedChart({ series, max, xTicks, active, title }: HomeAn
     <div ref={host} className="aspect-520/286 w-full [&_svg]:h-full [&_svg]:w-full">
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} fill="none" role="img" aria-label={title}>
         {GRID.map((y) => (
-          <line key={y} x1="32" y1={y} x2="520" y2={y} stroke="#C6CEE0" strokeDasharray="5 5" />
+          <line key={y} x1="32" y1={y} x2="520" y2={y} stroke="#CFCFD4" strokeDasharray="5 5" />
         ))}
         <g opacity="0.7" className="fill-navy-500 font-mono text-[11px]">
           {GRID.map((y, i) => (

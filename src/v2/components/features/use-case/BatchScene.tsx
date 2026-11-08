@@ -188,10 +188,10 @@ export function BatchScene({ pattern, playing, onDone }: BatchSceneProps) {
           </g>
         </g>
       ))}
-      <polygon points={CUBE_FACES.bottom} fill="#f1a8e1" />
-      <polygon points={CUBE_FACES.top} fill="#f1a8e1" opacity="0.8" />
-      <polygon points={CUBE_FACES.left} fill="#f1a8e1" opacity="0.5" />
-      <polygon points={CUBE_FACES.right} fill="#e858b8" opacity="0.5" />
+      <polygon points={CUBE_FACES.bottom} fill="#d8fc9e" />
+      <polygon points={CUBE_FACES.top} fill="#d8fc9e" opacity="0.8" />
+      <polygon points={CUBE_FACES.left} fill="#d8fc9e" opacity="0.5" />
+      <polygon points={CUBE_FACES.right} fill="#b3f052" opacity="0.5" />
     </svg>
   )
 }

@@ -3,9 +3,8 @@ import { SHOWCASE_TABS, SHOWCASE_TITLE } from '@v2/content/home-lower'
 import { ShowcaseCard } from './ShowcaseCard'
 
 /**
- * Centred title over the sphere, then tabs for the three kinds of shop.
- * Each tab shows four cards: demo shops to visit and the features those
- * sellers lean on.
+ * Centred title over the sphere, then tabs for the three services.
+ * Each tab shows four cards: case studies to read and the service itself.
  */
 export function BuiltWithSection() {
   return (

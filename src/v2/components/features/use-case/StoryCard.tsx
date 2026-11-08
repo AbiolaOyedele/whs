@@ -8,7 +8,7 @@ interface StoryCardProps {
 }
 
 /**
- * A tall tile for one demo shop: its tags top left, its name as a wordmark in
+ * A tall tile for one case study: its tags top left, the client as a wordmark in
  * the middle, the title and an arrow below. Hovering nudges the parts apart.
  */
 export function StoryCard({ shop, action }: StoryCardProps) {

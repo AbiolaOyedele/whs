@@ -7,7 +7,7 @@ interface BlogPostCardProps {
   headingLevel?: 'h2' | 'h3'
 }
 
-/** A blog post as a card: the plain wordmark card for seller stories, the art card for everything else. */
+/** A post as a card: the plain wordmark card for stories, the art card for everything else. */
 export function BlogPostCard({ post, headingLevel = 'h2' }: BlogPostCardProps) {
   if (post.kind === 'story' && post.wordmark) {
     return (

@@ -1,7 +1,7 @@
 import { LinkCard } from '@v2/components/features/about/LinkCard'
 import { aboutLinkCards } from '@v2/content/about'
 
-/** Three link cards: copy the support email, visit the studio, open the brand assets. */
+/** Three link cards: copy our email, see the work, open the brand assets. */
 export function AboutLinks() {
   return (
     <div className="section-spacing container">

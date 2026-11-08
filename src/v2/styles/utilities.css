@@ -163,12 +163,17 @@
   font-family: var(--font-secondary);
 }
 
-/* Pink to purple fill on a word or two inside a heading. */
+/* Lime fill on a word or two inside a heading. Bright lime on the dark
+   background; a deeper lime on the light panels, where bright lime would
+   not be readable. */
 @utility text-gradient {
   background-image: linear-gradient(to right in oklab, var(--color-pink-500), var(--color-purple-100));
   color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
+  &:where(.slate, .slate *, .c-about-story, .c-about-story *) {
+    background-image: linear-gradient(to right in oklab, #4d7c0f, #3f6212);
+  }
 }
 
 /* ── form fields ──────────────────────────────────────────────────── */
@@ -315,7 +320,8 @@
 .wysiwyg-navy {
   --tw-prose-body: var(--color-navy-900);
   --tw-prose-headings: var(--color-navy-900);
-  --tw-prose-links: var(--color-pink-500);
+  /* Deep lime on light panels, where bright lime is unreadable; bright lime on dark below. */
+  --tw-prose-links: #4d7c0f;
   --tw-prose-bold: var(--color-navy-900);
   --tw-prose-counters: var(--color-navy-500);
   --tw-prose-bullets: var(--color-navy-900);
@@ -331,9 +337,14 @@
   --tw-prose-body: var(--color-white);
   --tw-prose-headings: var(--color-white);
   --tw-prose-bold: var(--color-white);
+  --tw-prose-links: var(--color-pink-500);
 }
 
 .wysiwyg-navy a:not(.button):hover {
+  color: #3f6212;
+}
+
+.wysiwyg-navy:where(.dark, .dark *) a:not(.button):hover {
   color: var(--color-pink-600);
 }
 

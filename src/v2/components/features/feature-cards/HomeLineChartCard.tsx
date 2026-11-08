@@ -6,7 +6,7 @@ import { chartTabs, chartXLabel, chartXTicks } from '@v2/content/home-upper'
 import { HomeAnimatedChart } from './HomeAnimatedChart'
 
 /**
- * A light slate card with tabs over a line chart of example shop figures.
+ * A light slate card with tabs over a line chart of example dashboard figures.
  * Each tab has an axis title, the chart and coloured legend chips; the
  * chosen tab's lines draw themselves while the card is on screen.
  */

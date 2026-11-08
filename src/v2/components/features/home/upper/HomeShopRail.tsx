@@ -3,11 +3,11 @@ import { SmartLink } from '@v2/components/ui/SmartLink'
 import { site } from '@v2/config/site'
 import { demoShops } from '@v2/content/home-upper'
 
-/** Shops live at <slug>.<root domain>; the root is the app's host without "app.". */
+/** Products live at <slug>.<root domain>; the root is the site's host without "app.". */
 const ROOT_DOMAIN = new URL(site.appUrl).hostname.replace(/^app\./, '')
 
 /**
- * A thin line, then the demo shops' names drifting left in an endless row
+ * A thin line, then the names of products WildHands built drifting left in an endless row
  * that speeds up while the page scrolls.
  */
 export function HomeShopRail() {
@@ -22,7 +22,7 @@ export function HomeShopRail() {
             <SmartLink
               href={`https://${shop.slug}.${ROOT_DOMAIN}`}
               className="absolute inset-0 flex items-center justify-center font-secondary text-[24px] leading-none font-light tracking-[-0.04em] text-white sm:text-[30px]"
-              aria-label={`${shop.slug}, a demo shop on the ${shop.template} template`}
+              aria-label={`${shop.slug}, built by WildHands: ${shop.template}`}
             >
               {shop.slug}
             </SmartLink>

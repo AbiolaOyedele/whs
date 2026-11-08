@@ -1,6 +1,6 @@
 import { site } from '@v2/config/site'
 
-/** Copy for /about. Real product facts only; anything we do not have yet is marked "Placeholder". */
+/** Copy for /about. Taken from the main site: mission, origin, founding idea and the products we have built. */
 
 export interface AboutHero {
   /** Words before the highlighted phrase. */
@@ -43,20 +43,21 @@ export interface AboutBackers {
 }
 
 export const aboutHero: AboutHero = {
-  before: 'Helping Nigerian sellers',
-  highlight: 'run their shop',
-  after: 'from one phone',
-  label: 'Company',
-  intro: `${site.name} gives a seller one place for the whole shop: a website with checkout, orders, stock, delivery and payments that land in her own bank account. It is made by ${site.company.name} for people who sell on Instagram, WhatsApp and at a stall, and run all of it from a phone.`,
+  before: 'To build systems',
+  highlight: 'that give people',
+  after: 'their time back.',
+  label: 'Our mission',
+  intro: `${site.name} builds custom websites, web apps and internal tools for businesses in Lagos, Nigeria and across Africa. Built around how you actually work, not a template.`,
 }
 
 export const aboutOverview: AboutOverview = {
-  label: `About ${site.name}`,
-  heading: 'Built for sellers who take orders on WhatsApp, get paid by transfer and keep count in a notebook.',
+  label: 'Who is behind it',
+  heading:
+    "We started small, solving one team's repetitive work. Today we build the systems that run behind businesses, driven by the same idea.",
   paragraphs: [
-    'Each shop gets its own website with a checkout that works on a phone. Shoppers pay by card, transfer or USSD through Paystack, and the money is settled to the bank account the seller adds.',
-    'Orders from the website, from WhatsApp and from the stall land in one list. Stock goes down when something sells and warns the seller before it runs out. Delivery fees are set by the seller, or paid orders are booked with Fez.',
-    `${site.name} is built and run by ${site.company.name}. Every new shop starts with a 7-day trial of the Growth plan. If the owner does not choose a plan, the shop moves to the free plan and stays open.`,
+    'We judge every system we build by how much time it saves you. You can see that in the work we ship and in how we scope a project, from first call to launch.',
+    'Every engagement starts with a discovery call, to learn what is broken and what it is costing you in time. Then a written plan for your brief, with what is in scope and what is out, and one price worked out from that scope.',
+    "We're based in Lagos, working with businesses across Nigeria and the wider African market.",
   ],
 }
 
@@ -69,23 +70,19 @@ export const aboutGallery: readonly AboutGalleryItem[] = [
 export const aboutStory: AboutStory = {
   headingLead: 'Why we built',
   headingHighlight: site.name,
-  lead: 'Selling online in Nigeria often means a page on one app, payments on another and orders in a chat. We wanted one shop that a seller can open in minutes and run without help.',
-  body: 'So the dashboard does the everyday work: adding products, packing orders, following up on unpaid bags and showing what sold. Discount codes, emails, loyalty points and wholesale prices are there when a shop is ready for them.',
-  cta: { label: 'Open your shop', href: site.signUpUrl },
+  lead: 'WildHands exists because most teams lose hours every week to work a system could do in seconds.',
+  body: 'We would rather build the system once than watch anyone rebuild the same report again. Your hours should go into the work only you can do.',
+  cta: { label: 'Talk to us', href: '/contact' },
 }
 
 export const aboutLinkCards: readonly AboutLinkCard[] = [
   { type: 'email', label: 'Questions', email: site.supportEmail },
-  { type: 'link', label: 'Made by', title: site.company.name, href: site.company.url },
+  { type: 'link', label: 'Our work', title: 'See what we ship', href: '/resources' },
   { type: 'link', label: 'Brand assets', title: 'Logo and colours', href: '/brand-assets' },
 ]
 
+/** Products WildHands has built. The band drifts, so the names repeat across it. */
 export const aboutBackers: AboutBackers = {
-  heading: 'Placeholder: backers heading',
-  names: [
-    'Placeholder: backer name',
-    'Placeholder: backer name',
-    'Placeholder: backer name',
-    'Placeholder: backer name',
-  ],
+  heading: 'Built by WildHands',
+  names: ['Dumpty', 'Rayo', 'Tomori', 'Marque', 'Lazy Meet', 'The Ruff Agency'],
 }

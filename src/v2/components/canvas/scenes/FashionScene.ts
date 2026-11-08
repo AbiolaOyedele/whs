@@ -47,7 +47,7 @@ export class FashionScene extends UseCaseScene {
       scrollEasing: 0.025,
     })
     this.look = { vignette: 0.8, edgeBlur: 0.9 }
-    const material = new MeshStandardMaterial({ color: new Color(0xba1d90), emissive: new Color(0x18071c), roughness: 0.55, metalness: 0 })
+    const material = new MeshStandardMaterial({ color: new Color(0x6f9a1f), emissive: new Color(0x0d110a), roughness: 0.55, metalness: 0 })
     const random = createRandom(17)
     RINGS.forEach(([inner, outer, height], index) => {
       const mesh = new Mesh(ringGeometry(inner, outer, height), material)
@@ -81,7 +81,7 @@ export class FashionScene extends UseCaseScene {
       count: 70 * ctx.quality.particleScale,
       position: new Vector3(0, 0, 4.2),
       boxSize: new Vector3(1.4, 1.6, 7),
-      color: new Color(0xff6fc8),
+      color: new Color(0xc6fd78),
       size: 0.03,
       opacity: 0.35,
       sway: 0.004,

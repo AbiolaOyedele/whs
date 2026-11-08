@@ -3,17 +3,17 @@ import type { IconName } from '@v2/components/ui/Icon'
 import type { MapPoint } from '@v2/components/features/feature-cards/MapCard'
 
 /**
- * The three "kinds of shop" pages. Each mirrors one of the reference site's
- * use-case pages (fashion ← voice, beauty ← language models, home and living
- * ← image and video) and is rendered by one shared template.
+ * The three service pages: websites, apps, and tools and systems. Each
+ * mirrors one of the reference site's use-case pages (websites ← voice, apps
+ * ← language models, tools and systems ← image and video) and is rendered by
+ * one shared template.
  *
- * Every claim here comes from the platform itself: plans and fees from the
- * main app's `src/config/plans.ts`, templates from `src/cms/templates.ts`,
- * shop wording from `src/config/industry-words.ts`, demo shops from
- * `npm run db:demo`. Change those first, then this.
+ * Every claim here comes from the main site: the service pages in
+ * `src/content/services/`, the case studies in `src/content/work/` and the
+ * process in `src/config/site.ts`. Change those first, then this.
  */
 
-export const USE_CASE_SLUGS = ['fashion', 'beauty', 'home-and-living'] as const
+export const USE_CASE_SLUGS = ['websites', 'apps', 'tools-and-systems'] as const
 export type UseCaseSlug = (typeof USE_CASE_SLUGS)[number]
 
 export function isUseCaseSlug(value: string): value is UseCaseSlug {
@@ -26,33 +26,35 @@ export interface TitlePart {
   highlight?: boolean
 }
 
-/* ── plan figures (mirror src/config/plans.ts; prices before 7.5% VAT) ── */
+/* ── chart lines (an illustration of time spent; the chart prints no figures) ── */
 
 export interface PlanCost {
   name: string
-  /** Naira a month. */
+  /** Where the line starts: the effort before anything runs. */
   monthly: number
-  /** Share of each online sale, 0.03 = 3%. */
+  /** How steeply the line climbs as the weeks go by. */
   fee: number
 }
 
+/**
+ * Doing the work by hand starts at nothing and keeps climbing. A dashboard or
+ * an automation costs effort up front and then little or nothing after. Only
+ * the shape is drawn: the chart carries no amounts.
+ */
 export const PLAN_COSTS = {
-  free: { name: 'Free', monthly: 0, fee: 0.03 },
-  starter: { name: 'Starter', monthly: 3500, fee: 0.01 },
-  growth: { name: 'Growth', monthly: 9000, fee: 0 },
+  free: { name: 'By hand', monthly: 0, fee: 0.03 },
+  starter: { name: 'Dashboard', monthly: 6000, fee: 0.008 },
+  growth: { name: 'Automated', monthly: 9000, fee: 0 },
 } as const satisfies Record<string, PlanCost>
 
-/** Monthly online sales at which two plans cost the same. */
+/** The point at which two lines meet. */
 export function breakEven(a: PlanCost, b: PlanCost): number {
   return Math.round((b.monthly - a.monthly) / (a.fee - b.fee))
 }
 
 const naira = (value: number) => `₦${value.toLocaleString('en-NG')}`
 
-/* ── demo shops and templates (from npm run db:demo / cms/templates.ts) ── */
-
-/** Shops live on subdomains of the platform's root domain. */
-const SHOP_ROOT = new URL(site.appUrl).host.replace(/^app\./, '')
+/* ── case studies and project cards (from src/content/work) ── */
 
 export type TemplateGlyph = 'default' | 'glow' | 'blush' | 'haven' | 'oak'
 
@@ -62,12 +64,22 @@ export interface TemplateSlide {
   bestFor: string
 }
 
-const TEMPLATE_SLIDES: Record<TemplateGlyph, TemplateSlide> = {
-  default: { glyph: 'default', name: 'Default', bestFor: 'Any shop with good pictures' },
-  glow: { glyph: 'glow', name: 'Glow', bestFor: 'Beauty and skincare' },
-  blush: { glyph: 'blush', name: 'Blush', bestFor: 'Make-up, perfume and gifts' },
-  haven: { glyph: 'haven', name: 'Haven', bestFor: 'Home, decor and candles' },
-  oak: { glyph: 'oak', name: 'Oak', bestFor: 'Furniture and interiors' },
+/** Apps we have built, one per layout sketch. */
+const APP_SLIDES: Record<TemplateGlyph, TemplateSlide> = {
+  default: { glyph: 'default', name: 'Rayo', bestFor: 'Quotes the client accepts on the page' },
+  glow: { glyph: 'glow', name: 'Dumpty', bestFor: 'Voice notes that arrive already organised' },
+  blush: { glyph: 'blush', name: 'Lazy Meet', bestFor: 'Joins your calls muted, camera off' },
+  haven: { glyph: 'haven', name: 'Dory', bestFor: 'A budget that always knows what is left' },
+  oak: { glyph: 'oak', name: 'Planes', bestFor: 'A to-do list you race your friends on' },
+}
+
+/** Tools and systems we have built, one per layout sketch. */
+const TOOL_SLIDES: Record<TemplateGlyph, TemplateSlide> = {
+  default: { glyph: 'default', name: 'Marvy', bestFor: 'Course videos filed in one step' },
+  glow: { glyph: 'glow', name: 'Beam', bestFor: 'Client documents from a short interview' },
+  blush: { glyph: 'blush', name: 'Dumpty', bestFor: 'Ideas filed, tagged and turned into next steps' },
+  haven: { glyph: 'haven', name: 'Auto Flow', bestFor: 'Bulk video generation, unattended' },
+  oak: { glyph: 'oak', name: 'The Ruff Agency', bestFor: 'One workspace instead of six tools' },
 }
 
 export interface DemoShop {
@@ -78,22 +90,27 @@ export interface DemoShop {
   href: string
 }
 
-function demoShop(slug: string, template: string, trade: string, sells: string): DemoShop {
+/** A case study card: the client as the wordmark, its industry and service as tags. */
+function workStory(id: string, client: string, industry: string, service: string, title: string): DemoShop {
   return {
-    slug,
-    template,
-    trade,
-    title: `${slug}: a demo shop selling ${sells}, on the ${template} template`,
-    href: `https://${slug}.${SHOP_ROOT}`,
+    slug: client,
+    template: service,
+    trade: industry,
+    title,
+    href: `/work/${id}`,
   }
 }
 
-const DEMO = {
-  adirelane: demoShop('adirelane', 'Default', 'Fashion', 'clothes, headwraps and fabric'),
-  itanna: demoShop('itanna', 'Glow', 'Beauty', 'skincare, hair and fragrance'),
-  oso: demoShop('oso', 'Blush', 'Beauty', 'make-up and fragrance'),
-  ile: demoShop('ile', 'Haven', 'Home', 'candles, ceramics and lighting'),
-  igi: demoShop('igi', 'Oak', 'Home', 'furniture for every room'),
+const WORK = {
+  tomori: workStory('tomori', 'Tomori', 'E-commerce', 'Websites', 'Tomori: a shop for hand-dyed Adire, built for a phone'),
+  marque: workStory('marque', 'Marque', 'Creative tooling', 'Websites', 'Marque: brand guidelines, made easy'),
+  ruffSite: workStory('the-ruff-agency', 'The Ruff Agency', 'Agency operations', 'Websites', 'The Ruff Agency: one workspace instead of six tools'),
+  dumpty: workStory('dumpty', 'Dumpty', 'Consumer product', 'Apps', 'Dumpty: voice notes that arrive already organised'),
+  lazyMeet: workStory('lazy-meet', 'Lazy Meet', 'Productivity', 'Apps', 'Lazy Meet: joining the call so you do not have to'),
+  rayo: workStory('rayo', 'Rayo', 'Business tools', 'Apps', 'Rayo: quotes your client accepts on the page'),
+  autoFlow: workStory('auto-flow', 'Auto Flow', 'Creative tooling', 'Tools & Systems', 'Auto Flow: bulk video generation without the manual loop'),
+  ruff: workStory('the-ruff-agency', 'The Ruff Agency', 'Agency operations', 'Tools & Systems', 'The Ruff Agency: one workspace instead of six tools'),
+  marvy: workStory('marvy', 'Marvy', 'Internal tools', 'Tools & Systems', 'Marvy: course videos filed in one step'),
 } as const
 
 /* ── map (Nigerian cities placed on MapCard's 0–100 grid of the country) ── */
@@ -185,40 +202,48 @@ export interface UseCaseContent {
 
 /* ── shared pieces ── */
 
-const SIGN_UP: ExampleLink = {
+const QUOTE_LINK: ExampleLink = {
   icon: 'bag',
-  title: 'Open your shop',
-  body: 'Free to open. No card needed.',
-  action: 'Start now',
-  href: site.signUpUrl,
+  title: 'Request a quote',
+  body: 'Send a short brief. We reply with a written plan and one price, worked out from that scope.',
+  action: 'Request a quote',
+  href: '/request-a-quote',
 }
 
-const PLANS_LINK: ExampleLink = {
+const WEBSITE_OFFER_LINK: ExampleLink = {
   icon: 'chart',
-  title: 'Compare the plans',
-  body: 'Start on Free, then move up when a flat price costs less than the fee.',
-  action: 'See plans',
+  title: 'The 72-hour website',
+  body: `Starter at ${naira(150000)} or Standard at ${naira(250000)}. The design is approved before any code, and the site is live in 72 hours.`,
+  action: 'See pricing',
   href: '/pricing',
 }
 
-const HELP_LINK: ExampleLink = {
+const APP_CASE_LINK: ExampleLink = {
+  icon: 'chart',
+  title: 'Read a case study',
+  body: 'Lazy Meet joins your Google Meet calls at start time, muted and camera off, across three accounts.',
+  action: 'Read the case study',
+  href: '/work/lazy-meet',
+}
+
+const INSIGHTS_LINK: ExampleLink = {
   icon: 'box',
-  title: 'Read the help guides',
-  body: 'Guides for setting up your shop and running it day to day.',
-  action: 'Read guides',
-  href: '/resources',
+  title: 'Read our insights',
+  body: 'Notes from the studio on websites, apps and the tools behind a business.',
+  action: 'Read insights',
+  href: '/blog',
 }
 
 const TALK_LINK: ExampleLink = {
   icon: 'calendar',
-  title: 'Talk to us',
-  body: 'Tell us what you sell and we will help you set up your shop.',
-  action: 'Talk to us',
-  href: '/book-demo',
+  title: 'Book a discovery call',
+  body: 'We learn what is broken and what it is costing you in time.',
+  action: 'Get in touch',
+  href: '/contact',
 }
 
-const DELIVERY_BODY =
-  'Set a delivery fee for each area, or connect Fez and every paid order is booked for you. Shoppers pay by card, transfer or USSD through Paystack.'
+const LOCATION_BODY =
+  'We are based in Lagos and build for businesses across Nigeria and Africa. Most of the process runs over calls, so location is not a barrier.'
 
 const why = (highlight: string): TitlePart[] => [
   { text: `Why ${site.name} for ` },
@@ -227,231 +252,231 @@ const why = (highlight: string): TitlePart[] => [
 
 /* ── the pages ── */
 
-const fashion: UseCaseContent = {
-  slug: 'fashion',
+const websites: UseCaseContent = {
+  slug: 'websites',
   meta: {
-    title: 'Online shop for fashion sellers',
+    title: 'Custom Website Design in Lagos, Nigeria',
     description:
-      'Sell clothes, shoes, bags and jewellery online. Every piece with its sizes and stock, orders from your website, WhatsApp and stall in one list, paid through Paystack.',
+      'Websites built from scratch around what you publish. Marketing sites that convert and full custom builds, designed in Lagos for businesses across Nigeria and Africa.',
   },
-  label: 'Fashion',
-  title: [{ text: 'An online shop for' }, { text: 'fashion', highlight: true }, { text: 'sellers' }],
+  label: 'Websites',
+  title: [{ text: 'Websites built' }, { text: 'from scratch', highlight: true }, { text: 'around your business' }],
   intro:
-    'Put every piece online with its sizes and colours. Take card, transfer and USSD payments through Paystack, and run orders and stock from your phone.',
+    'We build websites around your business, rather than fitting you into a theme. The structure, the content model and the page templates are designed for what you actually publish.',
   hero: { kind: 'voice' },
-  lede: 'Built for clothes, shoes, bags and jewellery, and the sizes that come with them.',
-  why: why('fashion?'),
-  featuresLabel: 'Features',
+  lede: 'Marketing sites that convert, and full custom builds for businesses that need the site to do more.',
+  why: why('websites?'),
+  featuresLabel: 'What you get',
   features: [
     {
-      id: 'one-order-list',
-      navTitle: 'One order list',
-      title: 'Every order in one place',
-      body: 'Website sales, WhatsApp sales and sales at your stall land in one list. Pack, send and refund from your phone.',
+      id: 'ships-with',
+      navTitle: 'What ships with it',
+      title: 'Everything a site needs, built in',
+      body: 'Every site ships with a CMS admin panel, search engine crawl rules, an XML sitemap, AI search visibility setup and simple website analytics.',
       visual: {
         kind: 'flow',
-        hub: 'Orders',
-        sources: ['Website', 'WhatsApp', 'Stall'],
-        sideLabel: '1 list',
+        hub: 'Website',
+        sources: ['CMS', 'Sitemap', 'Analytics'],
+        sideLabel: '1 build',
         artSeed: 2,
       },
     },
     {
-      id: 'stock-by-size',
-      navTitle: 'Stock by size',
-      title: 'Sizes and colours, counted',
-      body: 'Each size keeps its own count. It goes down when a piece sells and tells you before you run out.',
+      id: 'built-custom',
+      navTitle: 'Built from scratch',
+      title: 'Designed for what you publish',
+      body: 'Nothing is adapted from a site built for someone else. Editing is part of the build, so routine changes never need a developer.',
       visual: { kind: 'cubes' },
     },
     {
-      id: 'delivery',
-      navTitle: 'Delivery',
-      title: 'Booked as soon as they pay',
-      body: DELIVERY_BODY,
+      id: 'local-realities',
+      navTitle: 'Built for Nigeria',
+      title: 'Built for local realities',
+      body: 'Every site accounts for local hosting, payment and connectivity realities, not just international defaults. We are based in Lagos and build for businesses across Nigeria and Africa.',
       visual: {
         kind: 'map',
-        leftChip: 'Delivery : your fees or Fez',
-        rightChip: 'Payments : card, transfer, USSD',
+        leftChip: 'Studio : Lagos',
+        rightChip: 'Clients : Nigeria and Africa',
         points: CITIES,
       },
     },
     {
-      id: 'demo-shops',
-      navTitle: 'Demo shops',
-      title: 'See a shop before you build yours',
-      body: 'Every template has a demo shop with products, collections and reviews in it. Open adirelane to see the Default template dressed for fashion.',
-      visual: { kind: 'wordmarks', names: ['adirelane', 'itanna', 'oso', 'ile', 'igi'], artSeed: 5 },
+      id: 'our-work',
+      navTitle: 'Our work',
+      title: 'See what we have built',
+      body: 'Every project is built around its own brief, so none of them look like each other. Marque publishes brand guidelines as a live website at one link.',
+      visual: { kind: 'wordmarks', names: ['tomori', 'marque', 'dumpty', 'rayo', 'planes'], artSeed: 5 },
     },
   ],
   examples: {
     title: 'Start here',
-    items: [SIGN_UP, PLANS_LINK, HELP_LINK, TALK_LINK],
+    items: [QUOTE_LINK, WEBSITE_OFFER_LINK, INSIGHTS_LINK, TALK_LINK],
   },
   stories: {
-    title: `Demo shops running on ${site.name}`,
-    action: 'Open the shop',
-    items: [DEMO.adirelane, DEMO.oso, DEMO.itanna, DEMO.ile],
+    title: `Websites built by ${site.name}`,
+    action: 'Read the case study',
+    items: [WORK.tomori, WORK.marque, WORK.ruffSite],
   },
 }
 
-const beauty: UseCaseContent = {
-  slug: 'beauty',
+const apps: UseCaseContent = {
+  slug: 'apps',
   meta: {
-    title: 'Online shop for beauty sellers',
+    title: 'Custom web apps and internal tools',
     description:
-      'Sell skincare, hair, make-up and fragrance online. Each shade and size with its own stock, templates made for beauty, and payments through Paystack to your bank.',
+      'Custom web apps and internal tools built around how your team actually works, rather than how off-the-shelf software assumes you do.',
   },
-  label: 'Beauty',
-  title: [{ text: 'Run your' }, { text: 'beauty', highlight: true }, { text: 'shop online' }],
+  label: 'Apps',
+  title: [{ text: 'Software built around' }, { text: 'how you actually work', highlight: true }],
   intro:
-    'List every shade and size with its own stock. Shoppers pay by card, transfer or USSD, and the money goes to your own bank account.',
+    'An app is worth building when the way you work is specific enough that generic software makes it harder. We build around your real workflow, so the software fits the process.',
   hero: {
     kind: 'crossword',
-    words: ['DELIVERY', 'PAYSTACK', 'SHADES', 'ORDERS', 'STOCK', 'GLOW', 'PAID'],
-    mobileWords: ['STOCK', 'GLOW', 'PAID'],
-    sequence: [['STOCK', 'PAID'], ['GLOW', 'ORDERS'], ['SHADES'], ['DELIVERY'], ['PAYSTACK']],
-    mobileSequence: [['STOCK'], ['GLOW'], ['PAID']],
+    words: ['WORKFLOW', 'SOFTWARE', 'CUSTOM', 'PORTAL', 'TOOLS', 'APPS', 'TEAM'],
+    mobileWords: ['TOOLS', 'APPS', 'TEAM'],
+    sequence: [['TOOLS', 'TEAM'], ['APPS', 'PORTAL'], ['CUSTOM'], ['WORKFLOW'], ['SOFTWARE']],
+    mobileSequence: [['TOOLS'], ['APPS'], ['TEAM']],
   },
-  lede: 'Built for skincare, hair, make-up and fragrance, in every shade and size.',
-  why: why('beauty?'),
-  featuresLabel: 'Features',
+  lede: 'Custom web apps and internal tools, for teams whose workflow does not fit off-the-shelf software.',
+  why: why('apps?'),
+  featuresLabel: 'What you get',
   features: [
     {
-      id: 'shades-and-sizes',
-      navTitle: 'Shades and sizes',
-      title: 'Every shade keeps its own count',
-      body: 'Add a lipstick in six shades or a cream in two sizes. Each one has its own stock, goes down when it sells and tells you before it runs out.',
+      id: 'your-workflow',
+      navTitle: 'Your workflow',
+      title: 'Built around the real process',
+      body: 'Software your team or your customers log into, built for a job off-the-shelf tools do not quite do. Often it is the piece between the tools you already have, where the manual work lives.',
       visual: { kind: 'cubes' },
     },
     {
-      id: 'templates',
-      navTitle: 'Templates',
-      title: 'Templates made for beauty',
-      body: 'Glow suits skincare, hair and perfume, with round collection tiles and reviews by each product. Blush suits make-up and gifts, with serif headings on a soft tint.',
+      id: 'shaped-by-the-problem',
+      navTitle: 'Shaped by the problem',
+      title: 'No two apps alike',
+      body: 'Every app here started as a workflow someone was doing by hand. Dumpty replaced the note that never got tidied up. Lazy Meet replaced the five clicks before every call.',
       visual: {
         kind: 'templates',
-        items: [TEMPLATE_SLIDES.glow, TEMPLATE_SLIDES.blush, TEMPLATE_SLIDES.default, TEMPLATE_SLIDES.haven, TEMPLATE_SLIDES.oak],
+        items: [APP_SLIDES.glow, APP_SLIDES.blush, APP_SLIDES.default, APP_SLIDES.haven, APP_SLIDES.oak],
       },
     },
     {
-      id: 'payments',
-      navTitle: 'Payments',
-      title: 'Paid to your own bank',
-      body: 'Shoppers pay by card, bank transfer or USSD through Paystack. Each sale is settled to the bank account you add, usually the next working day.',
-      visual: { kind: 'batches', tabs: ['Card', 'Transfer', 'USSD'], artSeed: 3 },
+      id: 'how-the-work-runs',
+      navTitle: 'How the work runs',
+      title: 'Discovery, proposal, quote',
+      body: 'A discovery call first, to find out what is actually costing you time. Then a scoped proposal written around that brief. Then one price for the work in front of us.',
+      visual: { kind: 'batches', tabs: ['Discovery', 'Proposal', 'Quote'], artSeed: 3 },
     },
     {
-      id: 'delivery',
-      navTitle: 'Delivery',
-      title: 'Delivery fees you control',
-      body: DELIVERY_BODY,
+      id: 'where-we-work',
+      navTitle: 'Where we work',
+      title: 'Built in Lagos, used anywhere',
+      body: LOCATION_BODY,
       visual: {
         kind: 'map',
-        leftChip: 'Delivery : your fees or Fez',
-        rightChip: 'Payments : card, transfer, USSD',
+        leftChip: 'Studio : Lagos',
+        rightChip: 'Clients : Nigeria and Africa',
         points: CITIES,
       },
     },
   ],
   examples: {
     title: 'Start here',
-    seeAll: { label: 'See all', href: '/resources' },
-    items: [SIGN_UP, PLANS_LINK, HELP_LINK, TALK_LINK],
+    seeAll: { label: 'See all', href: '/blog' },
+    items: [QUOTE_LINK, APP_CASE_LINK, INSIGHTS_LINK, TALK_LINK],
   },
   stories: {
-    title: `Demo shops running on ${site.name}`,
-    action: 'Open the shop',
-    items: [DEMO.itanna, DEMO.oso, DEMO.adirelane],
+    title: `Apps built by ${site.name}`,
+    action: 'Read the case study',
+    items: [WORK.dumpty, WORK.lazyMeet, WORK.rayo],
   },
 }
 
-const free = PLAN_COSTS.free
-const starter = PLAN_COSTS.starter
-const growth = PLAN_COSTS.growth
+const byHand = PLAN_COSTS.free
+const dashboard = PLAN_COSTS.starter
+const automated = PLAN_COSTS.growth
 
-const homeAndLiving: UseCaseContent = {
-  slug: 'home-and-living',
+const toolsAndSystems: UseCaseContent = {
+  slug: 'tools-and-systems',
   meta: {
-    title: 'Online shop for home and living sellers',
+    title: 'Dashboards and workflow automation',
     description:
-      'Sell decor, candles, lighting and furniture online. Templates made for homeware, room for a full catalogue, and a flat monthly price once you sell more.',
+      'Dashboards that show what is actually happening, and automation that removes the manual steps between the tools you already use.',
   },
-  label: 'Home & living',
+  label: 'Tools & Systems',
   title: [
-    { text: 'Sell' },
-    { text: 'home', highlight: true },
+    { text: 'Dashboards', highlight: true },
     { text: 'and' },
-    { text: 'living', highlight: true },
-    { text: 'pieces online' },
+    { text: 'automation', highlight: true },
+    { text: 'that give you' },
+    { text: 'your time back' },
   ],
   intro:
-    'Give a big catalogue a calm, roomy shop. Haven and Oak are templates made for homeware and furniture.',
+    'Dashboards that put the numbers in one place, and automation that connects the tools you already pay for, so nobody re-keys data between them.',
   hero: { kind: 'media' },
-  lede: 'Built for decor, candles, lighting and furniture, however many pieces you stock.',
-  why: why('home and living?'),
-  featuresLabel: 'Features',
+  lede: 'For teams rebuilding the same report, or re-keying the same data, every week.',
+  why: why('tools and systems?'),
+  featuresLabel: 'What you get',
   features: [
     {
-      id: 'full-catalogue',
-      navTitle: 'Full catalogue',
-      title: 'Room for every piece you stock',
-      body: 'Free holds 25 products and Starter 300. Growth and Pro have no limit, so a whole showroom fits.',
+      id: 'dashboards',
+      navTitle: 'Dashboards',
+      title: 'The numbers in one place',
+      body: 'Most teams already produce the data and lose it across several tools. The work is pulling it into one live view, instead of rebuilding the same report every week.',
       visual: { kind: 'cubes' },
     },
     {
-      id: 'templates',
-      navTitle: 'Templates',
-      title: 'Layouts made for homeware',
-      body: 'Haven is quiet and roomy, for candles, lighting and decor. Oak leads with a bold banner and collection tabs, for furniture and other big pieces.',
+      id: 'automation',
+      navTitle: 'Automation',
+      title: 'Manual steps, removed for good',
+      body: 'Auto Flow turned a supervised afternoon of clicking into an unattended half-hour. Marvy files each course video in the right Drive folder and tags the right reviewers.',
       visual: {
         kind: 'templates',
-        items: [TEMPLATE_SLIDES.haven, TEMPLATE_SLIDES.oak, TEMPLATE_SLIDES.default, TEMPLATE_SLIDES.glow],
+        items: [TOOL_SLIDES.haven, TOOL_SLIDES.oak, TOOL_SLIDES.default, TOOL_SLIDES.glow],
       },
     },
     {
-      id: 'plan-costs',
-      navTitle: 'Plan costs',
-      title: 'A flat price once you sell more',
-      body: `Free takes 3% of each online sale. Starter is ${naira(starter.monthly)} a month plus 1%, and costs less than Free above ${naira(breakEven(free, starter))} a month in online sales. Growth is ${naira(growth.monthly)} a month with no fee, and costs less than Starter above ${naira(breakEven(starter, growth))}. Prices are before 7.5% VAT and Paystack's own charge.`,
+      id: 'hours-returned',
+      navTitle: 'Hours returned',
+      title: 'Judged on the time it gives back',
+      body: 'During discovery we work out how many hours the current process costs, and the finished build is measured against that number. If we cannot answer how much time it saves, it was not worth building.',
       visual: {
         kind: 'chart',
         tabs: [
-          { label: 'Starter', plans: [free, starter] },
-          { label: 'Growth', plans: [starter, growth] },
+          { label: 'Dashboard', plans: [byHand, dashboard] },
+          { label: 'Automation', plans: [byHand, automated] },
         ],
-        yLabel: 'Plan cost a month',
-        xLabel: 'Online sales a month',
+        yLabel: 'Hours spent',
+        xLabel: 'Weeks running',
         artSeed: 4,
       },
     },
     {
-      id: 'delivery',
-      navTitle: 'Delivery',
-      title: 'Delivery fees you control',
-      body: DELIVERY_BODY,
+      id: 'where-we-work',
+      navTitle: 'Where we work',
+      title: 'Built in Lagos, used anywhere',
+      body: LOCATION_BODY,
       visual: {
         kind: 'map',
-        leftChip: 'Delivery : your fees or Fez',
-        rightChip: 'Payments : card, transfer, USSD',
+        leftChip: 'Studio : Lagos',
+        rightChip: 'Clients : Nigeria and Africa',
         points: CITIES,
       },
     },
   ],
   examples: {
     title: 'Start here',
-    items: [SIGN_UP],
+    items: [TALK_LINK],
   },
   stories: {
-    title: `Demo shops running on ${site.name}`,
-    action: 'Open the shop',
-    items: [DEMO.ile, DEMO.igi, DEMO.adirelane],
+    title: `Systems built by ${site.name}`,
+    action: 'Read the case study',
+    items: [WORK.autoFlow, WORK.ruff, WORK.marvy],
   },
 }
 
 export const USE_CASES_CONTENT: Record<UseCaseSlug, UseCaseContent> = {
-  fashion,
-  beauty,
-  'home-and-living': homeAndLiving,
+  websites,
+  apps,
+  'tools-and-systems': toolsAndSystems,
 }
 
 export function getUseCase(slug: string): UseCaseContent | null {

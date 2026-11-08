@@ -3,7 +3,7 @@ import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { DESIGN_TILES, DESIGNS_SECTION } from '@v2/content/home-lower'
 import { DesignCarousel } from './DesignCarousel'
 
-/** Two-line title, then the carousel of shop designs with their demo shops. */
+/** Two-line title, then the carousel of recent projects. */
 export function DesignsSection() {
   const { title } = DESIGNS_SECTION
   return (

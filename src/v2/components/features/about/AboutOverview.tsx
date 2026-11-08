@@ -6,8 +6,8 @@ import { aboutOverview } from '@v2/content/about'
 import { CANVAS_EVENTS } from '@v2/lib/canvas-events'
 
 /**
- * The white panel that slides up over the hero: what the platform is, the
- * images, why we built it and the link cards. Its scroll progress drives the
+ * The white panel that slides up over the hero: who we are, the images,
+ * why we built it and the link cards. Its scroll progress drives the
  * 3D background (aboutOverviewScrollProgress).
  */
 export function AboutOverview() {

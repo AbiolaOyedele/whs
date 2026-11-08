@@ -48,9 +48,9 @@ function viewFromPath(pathname: string): View {
 /** The same title a direct load of that address gets from its route's metadata. */
 function titleFor(view: View): string {
   const category = view.category ? categoryBySlug(view.category) : undefined
-  if (category) return `${category.tab} | Blog | ${site.name}`
-  if (view.page > 1) return `Blog, page ${view.page} | ${site.name}`
-  return `Blog | ${site.name}`
+  if (category) return `${category.tab} | Insights | ${site.name}`
+  if (view.page > 1) return `Insights, page ${view.page} | ${site.name}`
+  return `Insights | ${site.name}`
 }
 
 function sameView(a: View, b: View): boolean {
@@ -115,7 +115,7 @@ export function BlogExplorer({ posts, featured }: BlogExplorerProps) {
       <div className="slate bg-slate-50">
         <div className="container">
           <header className="mb-fluid-lg h-safe-header">
-            <h1 className="sr-only">Blog</h1>
+            <h1 className="sr-only">Insights</h1>
           </header>
           {featured}
           <div className="mb-6">

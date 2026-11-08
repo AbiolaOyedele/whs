@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { SegmentedControls } from '@v2/components/ui/SegmentedControls'
-import { COMPARE_GROUPS, COMPARE_PRICE_LABEL, COMPARE_TITLE, PLANS } from '@v2/content/pricing'
+import { COMPARE_GROUPS, COMPARE_PRICE_LABEL, COMPARE_TITLE, PLANS, PRICE_CARD } from '@v2/content/pricing'
 import { CompareCell } from './CompareCell'
 import { ComparePanel } from './ComparePanel'
 import { formatNaira } from './money'
@@ -37,7 +37,7 @@ export function PlanCompare() {
               key={plan.id}
               className="text-heading-xs col-span-2 flex items-center justify-center text-center text-navy-500"
             >
-              {formatNaira(plan.monthlyKobo)}
+              {plan.monthlyKobo > 0 ? formatNaira(plan.monthlyKobo) : PRICE_CARD.noFee}
             </div>
           ))}
         </div>

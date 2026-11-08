@@ -100,13 +100,31 @@ interface AnimatedGradientProps {
   overrides?: Partial<GradientParams>
   className?: string
   style?: CSSProperties
+  /**
+   * Window event names that surge the gradient while held: between `start`
+   * and `end` it speeds up, swirls harder and zooms in, then eases back.
+   * Used by the v2 home hero's click-and-hold. Omit for the plain drift.
+   */
+  boostEvents?: { start: string; end: string }
 }
+
+/** How far a full boost pushes each parameter, and how fast it ramps. */
+const BOOST = {
+  speed: 4,
+  swirl: 0.3,
+  /** Added to `proportion` (0-100): pushes the mix toward the lime. */
+  proportion: 40,
+  scale: -0.2,
+  rampUpSeconds: 1.6,
+  rampDownSeconds: 1.2,
+} as const
 
 export default function AnimatedGradient({
   preset = 'hero',
   overrides,
   className,
   style,
+  boostEvents,
 }: AnimatedGradientProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -223,24 +241,64 @@ export default function AnimatedGradient({
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
     const speed = (params.speed / 100) * 5
-    const start = performance.now()
     let frameId: number | undefined
     let onScreen = true
     let running = false
 
-    const drawAt = (elapsedSeconds: number) => {
-      gl.uniform1f(uTime, elapsedSeconds * speed + params.offset * 0.01)
+    // Time is accumulated rather than read off the clock so the speed can
+    // change mid-flight without the pattern jumping. With no boost this is
+    // the same steady drift as elapsed * speed.
+    let phase = 0
+    let lastFrame: number | undefined
+    let boost = 0
+    let boostTarget = 0
+    const uSwirl = u('u_swirl')
+    const uProportion = u('u_proportion')
+    const uScale = u('u_scale')
+
+    const applyBoost = (amount: number) => {
+      // Smoothstep so the surge eases in and out rather than snapping.
+      const eased = amount * amount * (3 - 2 * amount)
+      gl.uniform1f(uSwirl, Math.min(1, (params.swirl / 100) * (1 + eased * BOOST.swirl)))
+      gl.uniform1f(uProportion, Math.min(100, params.proportion + eased * BOOST.proportion) / 100)
+      gl.uniform1f(uScale, params.scale * (1 + eased * BOOST.scale))
+      return eased
+    }
+
+    const drawAt = (time: number) => {
+      gl.uniform1f(uTime, time + params.offset * 0.01)
       gl.drawArrays(gl.TRIANGLES, 0, 6)
     }
 
     const tick = (now: number) => {
-      drawAt((now - start) / 1000)
+      const delta = lastFrame === undefined ? 0 : Math.min((now - lastFrame) / 1000, 0.1)
+      lastFrame = now
+      let eased = 0
+      if (boostEvents) {
+        const rate = boostTarget > boost ? 1 / BOOST.rampUpSeconds : 1 / BOOST.rampDownSeconds
+        boost = boostTarget > boost ? Math.min(boostTarget, boost + delta * rate) : Math.max(boostTarget, boost - delta * rate)
+        eased = applyBoost(boost)
+      }
+      phase += delta * speed * (1 + eased * BOOST.speed)
+      drawAt(phase)
       frameId = requestAnimationFrame(tick)
+    }
+
+    const onBoostStart = () => {
+      boostTarget = 1
+    }
+    const onBoostEnd = () => {
+      boostTarget = 0
+    }
+    if (boostEvents) {
+      window.addEventListener(boostEvents.start, onBoostStart)
+      window.addEventListener(boostEvents.end, onBoostEnd)
     }
 
     const stop = () => {
       if (frameId !== undefined) cancelAnimationFrame(frameId)
       frameId = undefined
+      lastFrame = undefined
       running = false
     }
 
@@ -272,6 +330,10 @@ export default function AnimatedGradient({
 
     return () => {
       stop()
+      if (boostEvents) {
+        window.removeEventListener(boostEvents.start, onBoostStart)
+        window.removeEventListener(boostEvents.end, onBoostEnd)
+      }
       intersectionObserver.disconnect()
       resizeObserver.disconnect()
       document.removeEventListener('visibilitychange', sync)
@@ -284,7 +346,7 @@ export default function AnimatedGradient({
       // for GC, since islands mount and unmount per page.
       gl.getExtension('WEBGL_lose_context')?.loseContext()
     }
-  }, [params])
+  }, [params, boostEvents?.start, boostEvents?.end])
 
   // On failure render nothing, so whatever CSS background sits behind shows through.
   if (failed) return null

@@ -149,7 +149,7 @@ html.has-menu-dropdown-open .c-header_logo_text {
 }
 
 .c-header_nav_list:where(.dark, .dark *) {
-  background: rgb(34 39 62 / 0.45);
+  background: rgb(30 30 32 / 0.45);
   backdrop-filter: blur(17.5px);
 }
 

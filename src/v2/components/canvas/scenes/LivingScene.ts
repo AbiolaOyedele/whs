@@ -39,7 +39,7 @@ export class LivingScene extends UseCaseScene {
       scrollEasing: 1,
     })
     const random = createRandom(53)
-    const material = new MeshStandardMaterial({ color: new Color(0.45, 0, 0.29), emissive: new Color(0x050003), roughness: 0.7, metalness: 0 })
+    const material = new MeshStandardMaterial({ color: new Color(0.2, 0.32, 0.04), emissive: new Color(0x030402), roughness: 0.7, metalness: 0 })
     const shadows = ctx.quality.shadows
     for (let i = 0; i < COUNT; i++) {
       const size = 0.08 + Math.pow(random(), 1.5) * 0.32
@@ -76,7 +76,7 @@ export class LivingScene extends UseCaseScene {
       box.far = 16
     }
     this.scene.add(key.target)
-    const fill = new DirectionalLight(0xff9fe5, 0.8)
+    const fill = new DirectionalLight(0xe0fdb0, 0.8)
     fill.position.set(0.8, -0.4, 1)
     this.scene.add(key, fill)
 
@@ -84,7 +84,7 @@ export class LivingScene extends UseCaseScene {
       count: 60 * ctx.quality.particleScale,
       position: new Vector3(0.4, -0.2, -2),
       boxSize: new Vector3(2.6, 1.6, 12),
-      color: new Color(0xff6fc8),
+      color: new Color(0xc6fd78),
       size: 0.04,
       opacity: 0.35,
       sway: 0.01,

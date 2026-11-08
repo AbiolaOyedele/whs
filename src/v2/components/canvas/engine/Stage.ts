@@ -113,7 +113,7 @@ export class Stage {
     })
     this.renderer.toneMapping = NoToneMapping
     this.renderer.outputColorSpace = SRGBColorSpace
-    this.renderer.setClearColor(0x050003, 1)
+    this.renderer.setClearColor(0x030402, 1)
     this.renderer.shadowMap.enabled = this.quality.shadows
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.quality.small ? 1 : 1.25))
     this.canvas = this.renderer.domElement

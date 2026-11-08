@@ -1,10 +1,10 @@
 /**
  * Copy and plan data for /pricing.
  *
- * The plan figures mirror the main app's src/config/plans.ts (PLANS, CYCLES,
- * TRIAL_DAYS, GRACE_DAYS, VAT_BPS). This site is a separate app and cannot
- * import that file, so when a price, fee or limit changes there, change it
- * here too.
+ * Two fixed-price website builds (Starter and Standard) and two custom builds
+ * that are quoted after a discovery call. The ids are fixed keys the page
+ * components switch on, so they no longer match the plan names: 'starter' is
+ * Starter, 'growth' is Standard, 'pro' is Apps and 'free' is Tools.
  */
 
 export type PlanId = 'free' | 'starter' | 'growth' | 'pro'
@@ -13,9 +13,9 @@ export interface PricingPlan {
   id: PlanId
   name: string
   tagline: string
-  /** Price for one month, in kobo, before VAT. */
+  /** One-off price, in kobo. 0 means the build is quoted after a discovery call. */
   monthlyKobo: number
-  /** The platform's cut of each online sale, in basis points (100 = 1%). */
+  /** The deposit taken to start, as a share of the price in basis points (5000 = 50%). 0 when quoted. */
   feeBps: number
   /** What the plan card lists, in order. */
   highlights: string[]
@@ -26,63 +26,92 @@ export interface PricingPlan {
 
 export const PLANS: PricingPlan[] = [
   {
-    id: 'free',
-    name: 'Free',
-    tagline: 'Start selling for nothing',
-    monthlyKobo: 0,
-    feeBps: 300,
-    highlights: ['Online shop and checkout', 'Up to 25 products', 'Just you', '1 written report a month', '3% on each online sale'],
-    cta: 'Start for free',
-    compareCta: 'Start free',
-  },
-  {
     id: 'starter',
     name: 'Starter',
-    tagline: 'For a shop finding its feet',
-    monthlyKobo: 350_000,
-    feeBps: 100,
-    highlights: ['Up to 300 products', '2 staff', 'Email campaigns', 'Your own domain', '1% on each online sale'],
-    cta: 'Choose Starter',
+    tagline: 'One page, live in 72 hours',
+    monthlyKobo: 15_000_000,
+    feeBps: 5000,
+    highlights: [
+      'One page, mobile-ready',
+      'WhatsApp and contact buttons that work',
+      'Your logo, photos and text laid out professionally',
+      'Hosted and connected to your domain',
+      '2 rounds of edits',
+    ],
+    cta: 'Start with Starter',
     compareCta: 'Get Starter',
   },
   {
     id: 'growth',
-    name: 'Growth',
-    tagline: 'For a shop that sells every day',
-    monthlyKobo: 900_000,
-    feeBps: 0,
-    highlights: ['Unlimited products', '5 staff', 'Full business report', '5 written reports a month', 'No fee on sales'],
-    cta: 'Try Growth free',
-    compareCta: 'Try Growth',
+    name: 'Standard',
+    tagline: 'Up to 4 pages you can edit yourself',
+    monthlyKobo: 25_000_000,
+    feeBps: 5000,
+    highlights: [
+      'Everything in Starter, up to 4 pages',
+      'Admin dashboard to edit text, images, prices and announcements',
+      'Analytics in plain English: visitors, top pages, where they came from',
+      'Copywriting from a 15-minute call',
+      '3 rounds of edits',
+    ],
+    cta: 'Start with Standard',
+    compareCta: 'Get Standard',
   },
   {
     id: 'pro',
-    name: 'Pro',
-    tagline: 'For a busy team',
-    monthlyKobo: 2_000_000,
+    name: 'Apps',
+    tagline: 'Web apps and larger builds',
+    monthlyKobo: 0,
     feeBps: 0,
-    highlights: ['Everything in Growth', 'Unlimited staff', '15 written reports a month', 'Priority support', 'No fee on sales'],
-    cta: 'Choose Pro',
-    compareCta: 'Get Pro',
+    highlights: [
+      'Custom web apps',
+      'Larger websites, past 4 pages',
+      'Built around how you actually work',
+      'Quoted after a discovery call',
+      'Written scope before work starts',
+    ],
+    cta: 'Talk to us',
+    compareCta: 'Talk to us',
+  },
+  {
+    id: 'free',
+    name: 'Tools',
+    tagline: 'Dashboards and automation',
+    monthlyKobo: 0,
+    feeBps: 0,
+    highlights: [
+      'Dashboards that put the numbers in one place',
+      'Automation between the tools you already use',
+      'Judged on hours returned',
+      'Quoted after a discovery call',
+      'Written scope before work starts',
+    ],
+    cta: 'Talk to us',
+    compareCta: 'Talk to us',
   },
 ]
 
-/** The plan every new shop tries, and for how long. */
+/** The plan most people choose: it gets the pink tab and the pink button. */
 export const TRIAL_PLAN: PlanId = 'growth'
-export const TRIAL_DAYS = 7
-export const GRACE_DAYS = 7
-/** The pink tab above the trial plan's card. */
-export const TRIAL_TAB = `${TRIAL_DAYS}-day free trial`
-export const PER_MONTH = '/ month'
-/** 7.5% VAT on the subscription, in basis points. */
-export const VAT_BPS = 750
+/** Hours from approved design to a live site, on Starter and Standard. */
+export const TRIAL_DAYS = 72
+/** Hours you have to approve the design before any code is written. */
+export const GRACE_DAYS = 24
+/** The pink tab above the featured plan's card. */
+export const TRIAL_TAB = 'Most popular'
+/** Printed after a fixed price. */
+export const PER_MONTH = 'one-off'
+/** No VAT is added to these prices. */
+export const VAT_BPS = 0
 
-/** Months you can pay for at once, and the discount for each, in percent. */
+/**
+ * The two ways a price is shown: in full, or the deposit that starts the work.
+ * `discount` is the share of the price not taken up front, in percent, so 50
+ * leaves the 50% deposit.
+ */
 export const CYCLES = [
   { months: 1, discount: 0 },
-  { months: 3, discount: 5 },
-  { months: 6, discount: 10 },
-  { months: 12, discount: 20 },
+  { months: 1, discount: 50 },
 ] as const
 
 export type Cycle = (typeof CYCLES)[number]
@@ -90,20 +119,21 @@ export type Cycle = (typeof CYCLES)[number]
 /* ── hero ─────────────────────────────────────────────────────────── */
 
 export const HERO = {
-  title: { highlight: 'Start', rest: 'free, pay as you grow' },
-  body: 'Open your shop for ₦0 and pay a small fee only when you sell online. When sales pick up, a monthly plan cuts that fee to 1% or nothing at all.',
-  primary: 'Open your shop',
-  secondary: 'Contact us',
+  title: { highlight: 'Live', rest: 'in 72 hours, priced up front' },
+  body: 'A website for your business for one fixed price, with half paid to start. You approve the design within 24 hours, before any code is written. Apps, internal tools and larger builds are quoted after a discovery call.',
+  primary: 'Get in touch',
+  secondary: 'Request a quote',
 } as const
 
 export const PRICE_CARD = {
-  title: 'Plan prices',
+  title: 'Prices',
   planHeading: 'Plan',
   priceHeading: 'Price',
-  feeSection: 'Fee on online sales',
-  feeHeading: 'Fee',
-  noFee: 'None',
-  feeNote: "*Paystack's own charge applies to card, transfer and USSD",
+  feeSection: 'Deposit to start',
+  feeHeading: 'Deposit',
+  /** Shown in place of a price or a deposit for the builds quoted after a call. */
+  noFee: 'Quoted',
+  feeNote: '*Paying from outside Nigeria? Ask for USD pricing on WhatsApp: 0812 979 6927',
 } as const
 
 /* ── plan comparison ──────────────────────────────────────────────── */
@@ -122,56 +152,62 @@ export interface CompareGroup {
 }
 
 export const COMPARE_TITLE = 'Compare the plans'
-export const COMPARE_PRICE_LABEL = 'Price a month'
+export const COMPARE_PRICE_LABEL = 'Price'
 
 export const COMPARE_GROUPS: CompareGroup[] = [
   {
-    title: 'Selling',
+    title: 'The website',
     rows: [
-      { label: 'Online shop and checkout', values: [true, true, true, true] },
-      { label: 'Products', values: ['25', '300', 'Unlimited', 'Unlimited'] },
-      { label: 'Fee on each online sale', values: ['3%', '1%', 'None', 'None'] },
+      { label: 'Pages', values: ['1', 'Up to 4', 'Per scope', 'Per scope'] },
+      { label: 'Mobile-ready', values: [true, true, 'Per scope', 'Per scope'] },
+      { label: 'WhatsApp and contact buttons', values: [true, true, 'Per scope', 'Per scope'] },
+      { label: 'Hosted and connected to your domain', values: [true, true, 'Per scope', 'Per scope'] },
     ],
   },
   {
-    title: 'Team and marketing',
+    title: 'Running it yourself',
     rows: [
-      { label: 'Staff besides you', values: [false, '2', '5', 'Unlimited'] },
-      { label: 'Email campaigns', values: [false, true, true, true] },
-      { label: 'Your own domain', values: [false, true, true, true] },
+      { label: 'Admin dashboard to edit it yourself', values: [false, true, 'Per scope', 'Per scope'] },
+      { label: 'Analytics in plain English', values: [false, true, 'Per scope', 'Per scope'] },
+      { label: 'Copywriting from a 15-minute call', values: [false, true, 'Per scope', 'Per scope'] },
     ],
   },
   {
-    title: 'Reports and support',
+    title: 'Timeline and payment',
     rows: [
-      { label: 'Written reports a month', values: ['1', '1', '5', '15'] },
-      { label: 'Full business report', values: [false, false, true, true] },
-      { label: 'Priority support', values: [false, false, false, true] },
+      { label: 'Live in', values: ['72 hours', '72 hours', 'Per scope', 'Per scope'] },
+      { label: 'Rounds of edits', values: ['2', '3', 'Per scope', 'Per scope'] },
+      { label: 'Deposit to start', values: ['₦75,000', '₦125,000', 'Quoted', 'Quoted'] },
     ],
   },
 ]
 
 /* ── calculator ───────────────────────────────────────────────────── */
 
+/**
+ * The calculator's fields. The keys are fixed by the component: `orders` is
+ * the pages slider, `average` the budget slider and `months` the full price
+ * or deposit choice (an index into CYCLES).
+ */
 export const CALCULATOR = {
   title: { line: 'What you', highlight: 'would pay' },
-  intro: 'Put in what you sell online in a month and see what each plan costs you.',
-  totalHeading: 'Estimated monthly cost',
-  onSales: 'On online sales of',
-  cheapest: 'Cheapest at these sales:',
+  intro: 'Choose a plan and how you want to pay, then set how many pages you need and your budget.',
+  totalHeading: 'What you pay now',
+  onSales: 'Against a budget of',
+  cheapest: 'Best fit for these pages:',
   details: 'Details',
-  estimate: 'Estimated costs',
-  planLine: 'plan',
-  vatLine: 'VAT on plan (7.5%)',
-  feeLine: 'Fee on online sales',
-  totalLine: 'Total',
-  perMonth: '/mo',
-  footnote: "*Paystack's own charge is not included",
-  orders: { label: 'Orders a month', hint: '*Paid online through your shop', min: 0, max: 1000, step: 1, typedMax: 100_000 },
-  average: { label: 'Average order', hint: 'What one order comes to', min: 1000, max: 100_000, step: 500 },
-  months: { label: 'Months paid at once', placeholder: 'Choose months' },
+  estimate: 'Amount',
+  planLine: 'full price',
+  vatLine: 'Deposit to start',
+  feeLine: 'Budget left after full price',
+  totalLine: 'Pay now',
+  perMonth: '',
+  footnote: '*Live in 72 hours on Starter and Standard. Apps and tools are quoted after a discovery call.',
+  orders: { label: 'Pages you need', hint: '*Starter is one page, Standard up to 4', min: 1, max: 10, step: 1, typedMax: 99 },
+  average: { label: 'Your budget', hint: 'Roughly what you have set aside', min: 75_000, max: 1_000_000, step: 5_000 },
+  months: { label: 'How you pay', placeholder: 'Choose how to pay' },
   plan: { label: 'Plan', placeholder: 'Choose a plan' },
-  defaults: { orders: 40, average: 15_000, months: 1, plan: 'starter' as PlanId },
+  defaults: { orders: 1, average: 150_000, months: 0, plan: 'starter' as PlanId },
 } as const
 
 /* ── questions ────────────────────────────────────────────────────── */
@@ -185,40 +221,39 @@ export const FAQ_TITLE = 'Pricing questions'
 
 export const FAQS: Faq[] = [
   {
-    question: 'What does it cost to start?',
+    question: 'What do I need to send you?',
     answer: [
-      "Nothing. Every shop can stay on Free: no monthly fee, and 3% of each online sale. Paystack's own charge applies to card, transfer and USSD payments. The rest goes to your bank.",
+      'Your logo, your photos and the text you want on the site. On Standard we can write the copy for you from a 15-minute call.',
     ],
   },
   {
-    question: 'What do I get in the free trial?',
+    question: 'What if I do not like the design?',
     answer: [
-      `Every new shop gets ${TRIAL_DAYS} days of Growth: unlimited products, 5 staff, the full business report and no fee on sales.`,
-      `When the ${TRIAL_DAYS} days end, the shop moves to Free unless you have chosen a plan.`,
+      `You see the design first and approve it within ${GRACE_DAYS} hours, before any code is written. Starter includes 2 rounds of edits and Standard includes 3.`,
     ],
   },
   {
-    question: 'What happens if my plan runs out?',
+    question: 'Do I own the website?',
+    answer: ['Yes. You own the site, the domain and everything on it.'],
+  },
+  {
+    question: 'What about my domain?',
     answer: [
-      `Your plan keeps working for ${GRACE_DAYS} days after it ends. After that the shop moves to Free. It is never switched off.`,
+      'If you already have one, we connect it. If not, we register one for you and add the cost to the invoice.',
     ],
   },
   {
-    question: 'Is there a discount for paying ahead?',
-    answer: ['Yes. Pay for 3 months at once for 5% off, 6 months for 10% off, or 12 months for 20% off.'],
+    question: 'What happens after the edit rounds?',
+    answer: ['Further changes are billed by the hour, and we quote them before we start.'],
   },
   {
-    question: 'Do prices include VAT?',
-    answer: ['No. Plan prices are before 7.5% VAT, which is added when you pay.'],
-  },
-  {
-    question: 'Can I change plans later?',
+    question: 'How do I start?',
     answer: [
-      'Yes. Paid time left on your old plan carries over at its value. A month of Growth left becomes about 2.5 months of Starter, or about 2 weeks of Pro.',
+      `Pay the deposit, half the price, to start. Starter and Standard sites are live in ${TRIAL_DAYS} hours.`,
     ],
   },
   {
-    question: 'When do I get my money?',
-    answer: ['Paystack settles each sale to the bank account you add, usually the next working day.'],
+    question: 'I am paying from outside Nigeria. Can I pay in dollars?',
+    answer: ['Yes. Ask us for USD pricing on WhatsApp: 0812 979 6927.'],
   },
 ]

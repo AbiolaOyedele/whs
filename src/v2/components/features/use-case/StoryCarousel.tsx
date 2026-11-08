@@ -24,7 +24,7 @@ const DRAG_THRESHOLD = 6
 const WHEEL_COOLDOWN = 400
 
 /**
- * A row of demo-shop tiles: 1¼ on phones, 2 on tablets, 3 on desktop, with
+ * A row of case-study tiles: 1¼ on phones, 2 on tablets, 3 on desktop, with
  * the next one peeking past the edge. Arrows step it on desktop; on any
  * screen it can be dragged or swiped and snaps to the nearest tile.
  */

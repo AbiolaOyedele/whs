@@ -4,7 +4,7 @@ interface GuideQuestionsProps {
   questions: HelpQuestion[]
 }
 
-/** Common questions at the foot of a help guide, each under a rule. */
+/** Common questions at the foot of a case study, each under a rule. */
 export function GuideQuestions({ questions }: GuideQuestionsProps) {
   if (questions.length === 0) return null
   return (

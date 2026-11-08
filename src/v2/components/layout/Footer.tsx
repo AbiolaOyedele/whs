@@ -49,11 +49,11 @@ export function Footer() {
               ))}
               <div className="col-span-2 flex flex-col gap-6">
                 <p className="text-heading-sm max-w-180 text-balance">
-                  Open your shop today, or tell us what you sell and we will help you set up.
+                  Tell us what is eating your hours. We will show you what a system built for it looks like.
                 </p>
                 <div className="flex flex-wrap gap-4">
-                  <Button label="Open your shop" variant="pink" href={site.signUpUrl} />
-                  <Button label="Talk to us" variant="glass" href="/book-demo" />
+                  <Button label="Get in touch" variant="pink" href={site.signUpUrl} />
+                  <Button label="Request a quote" variant="glass" href={site.signInUrl} />
                 </div>
               </div>
             </div>

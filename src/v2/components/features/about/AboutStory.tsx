@@ -4,7 +4,7 @@ import { aboutStory } from '@v2/content/about'
 /** "Why we built it": a two-line heading on the left, a lead line, a paragraph and a button on the right. */
 export function AboutStory() {
   return (
-    <div className="section-spacing container">
+    <div className="c-about-story section-spacing container">
       <div className="grid gap-x-gutter gap-y-fluid-xl max-md:mb-fluid-3xl md:mb-fluid-4xl md:grid-cols-12">
         <div className="md:col-start-1 md:col-end-5">
           <div className="flex flex-col gap-fluid-sm">

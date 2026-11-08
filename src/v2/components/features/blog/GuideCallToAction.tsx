@@ -1,7 +1,7 @@
 import { HELP_CTA } from '@v2/content/resources'
 import { Button } from '@v2/components/ui/Button'
 
-/** The panel at the foot of every help guide that points to sign-up. */
+/** The panel at the foot of every case study that points to the contact page. */
 export function GuideCallToAction() {
   return (
     <section

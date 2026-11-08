@@ -213,7 +213,7 @@ export function DesignCarousel({ tiles }: DesignCarouselProps) {
       onDragStart={(event) => event.preventDefault()}
       role="region"
       aria-roledescription="carousel"
-      aria-label="Shop designs"
+      aria-label="Recent work"
     >
       <div className="mb-fluid-lg flex items-center justify-between">
         <div />
@@ -221,7 +221,7 @@ export function DesignCarousel({ tiles }: DesignCarouselProps) {
           <button
             type="button"
             className={ARROW_BUTTON}
-            aria-label="Previous design"
+            aria-label="Previous project"
             disabled={index === 0}
             onClick={() => goTo(index - 1)}
           >
@@ -233,7 +233,7 @@ export function DesignCarousel({ tiles }: DesignCarouselProps) {
           <button
             type="button"
             className={ARROW_BUTTON}
-            aria-label="Next design"
+            aria-label="Next project"
             disabled={index >= snapCount - 1}
             onClick={() => goTo(index + 1)}
           >

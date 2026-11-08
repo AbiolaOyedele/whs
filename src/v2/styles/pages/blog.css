@@ -177,7 +177,7 @@
 [data-wysiwyg-root] .c-rich-table th,
 [data-wysiwyg-root] .c-rich-table td {
   border: 0;
-  border-bottom: 1px solid rgb(23 44 118 / 0.08);
+  border-bottom: 1px solid rgb(19 19 20 / 0.08);
   padding: 16px 20px;
   text-align: left;
   vertical-align: top;

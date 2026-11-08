@@ -18,7 +18,7 @@ const MAX_SALES = 1_000_000
 const MAX_COST = 30_000
 const X_TICKS = [0, 250_000, 500_000, 750_000, 1_000_000]
 const Y_TICKS = [0, 10_000, 20_000, 30_000]
-const COLOURS = ['#90AADE', '#FF488B'] as const
+const COLOURS = ['#8A8A93', '#BEFC65'] as const
 
 const DELAY = 0.3
 const DURATION = 1.7
@@ -28,23 +28,25 @@ const sx = (sales: number) => PLOT.left + (sales / MAX_SALES) * (PLOT.right - PL
 const sy = (cost: number) => PLOT.bottom - (Math.min(cost, MAX_COST) / MAX_COST) * (PLOT.bottom - PLOT.top)
 const costAt = (plan: PlanCost, sales: number) => plan.monthly + plan.fee * sales
 
-/** Short naira labels: ₦0, ₦250k, ₦1m. */
+/**
+ * Tick and crossing labels. The chart illustrates time spent by hand against
+ * a build, not measured figures, so it prints no amounts.
+ */
 function short(value: number): string {
-  if (value === 0) return '₦0'
-  if (value >= 1_000_000) return `₦${value / 1_000_000}m`
-  return `₦${value / 1000}k`
+  if (value === 0) return ''
+  if (value >= 1_000_000) return ''
+  return ''
 }
 
-/** A plan's monthly cost as sales grow, clipped to the top of the chart. */
+/** One line's hours as the weeks go by, clipped to the top of the chart. */
 function linePath(plan: PlanCost): string {
   const end = plan.fee > 0 ? Math.min(MAX_SALES, (MAX_COST - plan.monthly) / plan.fee) : MAX_SALES
   return `M${sx(0)} ${sy(costAt(plan, 0))}L${sx(end)} ${sy(costAt(plan, end))}`
 }
 
 /**
- * Two plans' monthly cost against monthly online sales, computed from the
- * real prices. The lines draw themselves in on a loop and a dot marks where
- * they cross.
+ * Hours spent by hand against hours spent on a build, as the weeks go by.
+ * The lines draw themselves in on a loop and a dot marks where they cross.
  */
 export function CostChart({ plans, playing }: CostChartProps) {
   const lines = useRef<(SVGPathElement | null)[]>([])
@@ -86,7 +88,7 @@ export function CostChart({ plans, playing }: CostChartProps) {
     <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} className="h-full w-full" aria-hidden="true">
       {Y_TICKS.map((tick) => (
         <g key={tick}>
-          <line x1={PLOT.left} x2={PLOT.right} y1={sy(tick)} y2={sy(tick)} stroke="#C6CEE0" strokeDasharray="5 5" />
+          <line x1={PLOT.left} x2={PLOT.right} y1={sy(tick)} y2={sy(tick)} stroke="#CFCFD4" strokeDasharray="5 5" />
           <text x={PLOT.left - 8} y={sy(tick) + 4} textAnchor="end" className="fill-navy-500 font-mono text-[11px]">
             {short(tick)}
           </text>

@@ -36,9 +36,9 @@ const RISE_FOR = 1.32
 const SINK_AFTER = 3.82
 const SINK_FOR = 1.27
 
-const BACKGROUND = '#eef2f5'
-const GREY = { top: [224, 231, 236], left: '#cdd7db', right: '#b5bbbf', edge: '#d3dbe1' } as const
-const PINK = { top: '#fec1f1', left: '#f1a8e1', right: '#e858b8' } as const
+const BACKGROUND = '#f4f4f5'
+const GREY = { top: [224, 231, 236], left: '#d4d4d8', right: '#b4b4b8', edge: '#dcdce0' } as const
+const PINK = { top: '#e6fdbd', left: '#d8fc9e', right: '#b3f052' } as const
 
 interface CubeSpot {
   x: number

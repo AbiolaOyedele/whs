@@ -2,24 +2,21 @@ import type { IconName } from '@v2/components/ui/Icon'
 import { site } from '@v2/config/site'
 
 /**
- * Words for the lower half of the home page: trust facts, the shop designs
- * and their demo shops, the feature list. Every line is something the
- * product does today (see PRODUCT.md, src/config/plans.ts and
- * src/cms/templates.ts in the main app).
+ * Words for the lower half of the home page: how an engagement runs, the
+ * work by service, recent projects and what we build. Every line comes from
+ * the main site's src/config/site.ts, src/content/services and
+ * src/content/work.
  */
 
-/**
- * The domain every shop lives under. Mirrors the app's NEXT_PUBLIC_ROOT_DOMAIN;
- * read from the app's own address so the platform's name is never typed here.
- */
+/** The domain WildHands products live under, read from the site's own address. */
 export const ROOT_DOMAIN = new URL(site.appUrl).hostname.replace(/^app\./, '')
 
-/** A demo shop's address, e.g. https://itanna.<root domain>. */
+/** A product's address, e.g. https://rayo.<root domain>. */
 export function demoShopUrl(slug: string): string {
   return `https://${slug}.${ROOT_DOMAIN}`
 }
 
-/* ── Security ─────────────────────────────────────────────────────── */
+/* ── How we work ───────────────────────────────────────────────── */
 
 export interface TrustPoint {
   icon: IconName
@@ -37,35 +34,35 @@ export interface TrustSection {
 }
 
 export const TRUST: TrustSection = {
-  label: 'Safety',
-  title: { before: 'Safe,', highlight: 'steady', after: 'and paid properly' },
-  primary: { label: 'How payouts work', href: '/resources' },
-  secondary: { label: 'Privacy policy', href: '/privacy' },
+  label: 'How we work',
+  title: { before: 'Scope first,', highlight: 'price second,', after: 'then we build' },
+  primary: { label: 'Request a quote', href: '/request-a-quote' },
+  secondary: { label: 'Get in touch', href: '/contact' },
   points: [
     {
       icon: 'lock',
-      title: 'Payments through Paystack',
-      body: 'Shoppers pay by card, bank transfer or USSD at checkout. Paystack handles the payment and its own charge applies.',
+      title: 'Discovery call',
+      body: 'We learn what is broken and what it is costing you in time.',
     },
     {
       icon: 'bank',
-      title: 'Paid to your own bank',
-      body: 'Money from each sale is settled to the bank account you add. Paystack checks the account name when you add it.',
+      title: 'Scoped proposal',
+      body: 'A written plan for your brief, with what is in scope and what is out.',
     },
     {
       icon: 'globe',
-      title: 'Your own address',
-      body: 'Every shop gets its own web address. On Starter and above you can use a domain you already own.',
+      title: 'Custom quote',
+      body: 'One price, worked out from that scope. The price follows the scope, not the other way around.',
     },
     {
       icon: 'shield',
-      title: 'Never switched off',
-      body: 'If your plan is not renewed, you get 7 days of grace, then your shop moves to the Free plan. It stays open for orders.',
+      title: 'Honest about fit',
+      body: 'If an off-the-shelf tool already does the job, we will tell you. We will also tell you if we are not the right fit.',
     },
   ],
 }
 
-/* ── Built with: three kinds of shop ──────────────────────────────── */
+/* ── Built by: work under each service ────────────────────────────── */
 
 export interface ShowcaseCard {
   icon: IconName
@@ -80,117 +77,117 @@ export interface ShowcaseTab {
   cards: ShowcaseCard[]
 }
 
-const VISIT = 'Visit the shop'
-const SEE_HOW = 'See how it works'
+const VISIT = 'Read the case study'
+const SEE_HOW = 'See the service'
 
-export const SHOWCASE_TITLE = `Built with ${site.name}`
+export const SHOWCASE_TITLE = `Built by ${site.name}`
 
 export const SHOWCASE_TABS: ShowcaseTab[] = [
   {
-    label: 'Fashion',
+    label: 'Websites',
     cards: [
       {
         icon: 'shirt',
-        title: 'Adire Lane, a demo fashion shop',
-        description: 'Dresses, kaftans, geles and fabric on the Default design.',
-        href: demoShopUrl('adirelane'),
+        title: 'Tomori, a phone-first site for hand-dyed Adire',
+        description: 'A quiet storefront for a Lagos label, with a back office the owner runs from her own phone.',
+        href: '/work/tomori',
         linkLabel: VISIT,
       },
       {
         icon: 'box',
-        title: 'Stock for every size and colour',
-        description: 'Each option keeps its own count. It goes down when something sells.',
-        href: '/resources',
-        linkLabel: SEE_HOW,
+        title: 'Marque, brand guidelines at one link',
+        description: 'Start from a logo, edit the guide in place, and publish it as a live website.',
+        href: '/work/marque',
+        linkLabel: VISIT,
       },
       {
         icon: 'phone',
-        title: 'WhatsApp and counter sales',
-        description: 'Record sales made off the website so every order sits in one list.',
-        href: '/resources',
+        title: 'Marketing site or full custom build',
+        description: 'A focused site built to convert visitors, or more pages and functionality for a site that does more.',
+        href: '/use-cases/websites',
         linkLabel: SEE_HOW,
       },
       {
         icon: 'bag',
-        title: 'Goods taken as part payment',
-        description: 'Record items a customer hands over as part of what they owe.',
-        href: '/resources',
-        linkLabel: SEE_HOW,
+        title: 'Live in 72 hours',
+        description: 'Starter at ₦150,000 or Standard at ₦250,000. The design is approved before any code is written.',
+        href: '/pricing',
+        linkLabel: 'See the prices',
       },
     ],
   },
   {
-    label: 'Beauty',
+    label: 'Apps',
     cards: [
       {
         icon: 'sparkle',
-        title: 'Itanna Beauty, a demo skincare shop',
-        description: 'Skincare, hair oils and perfume oils on the Glow design.',
-        href: demoShopUrl('itanna'),
+        title: 'Dumpty, voice notes already organised',
+        description: 'Talk through an idea and get back a clean transcript, tags and a checklist.',
+        href: '/work/dumpty',
         linkLabel: VISIT,
       },
       {
         icon: 'sparkle',
-        title: 'Oso Cosmetics, a demo make-up shop',
-        description: 'Lipsticks, bases and palettes on the Blush design.',
-        href: demoShopUrl('oso'),
+        title: 'Lazy Meet, calls that join themselves',
+        description: 'Joins your calls at start time, muted and camera off, across three accounts.',
+        href: '/work/lazy-meet',
         linkLabel: VISIT,
       },
       {
         icon: 'chart',
-        title: 'Loyalty points',
-        description: 'Shoppers earn points on paid orders and spend them at checkout.',
-        href: '/resources',
-        linkLabel: SEE_HOW,
+        title: 'Rayo, quotes accepted on the page',
+        description: 'Send a quote with options, the client accepts one, and it becomes the invoice.',
+        href: '/work/rayo',
+        linkLabel: VISIT,
       },
       {
         icon: 'mail',
-        title: 'Discount codes and emails',
-        description: 'Make codes, send emails and keep a newsletter list from the dashboard.',
-        href: '/resources',
+        title: 'Custom web apps',
+        description: 'Software your team or your customers log into, built for a job off-the-shelf tools do not quite do.',
+        href: '/use-cases/apps',
         linkLabel: SEE_HOW,
       },
     ],
   },
   {
-    label: 'Home & living',
+    label: 'Tools & Systems',
     cards: [
       {
         icon: 'home',
-        title: 'Ilé Home, a demo homeware shop',
-        description: 'Candles, ceramics, lamps and soft things on the Haven design.',
-        href: demoShopUrl('ile'),
+        title: 'Auto Flow, video batches unattended',
+        description: 'A 24-image batch that took about two hours of clicking now runs in about half an hour.',
+        href: '/work/auto-flow',
         linkLabel: VISIT,
       },
       {
         icon: 'home',
-        title: 'Igi Furniture, a demo furniture shop',
-        description: 'Sofas, tables, beds and storage on the Oak design.',
-        href: demoShopUrl('igi'),
+        title: 'The Ruff Agency, one workspace instead of six tools',
+        description: 'Clients, contracts, invoices, tasks and a client portal in one shared workspace.',
+        href: '/work/the-ruff-agency',
         linkLabel: VISIT,
       },
       {
         icon: 'truck',
-        title: 'Delivery booked with Fez',
-        description: 'Connect Fez and paid orders are booked for delivery. Or set your own fees.',
-        href: '/resources',
-        linkLabel: SEE_HOW,
+        title: 'Marvy, course videos filed in one step',
+        description: 'Drop a video in and it lands in the right Drive folder, with the right people tagged.',
+        href: '/work/marvy',
+        linkLabel: VISIT,
       },
       {
         icon: 'bag',
-        title: 'Wholesale prices',
-        description: 'Set lower prices for bigger orders. The bag shows the price break as shoppers add more.',
-        href: '/resources',
+        title: 'Dashboards and workflow automation',
+        description: 'The numbers that matter in one place, and tools connected so nobody re-keys data between them.',
+        href: '/use-cases/tools-and-systems',
         linkLabel: SEE_HOW,
       },
     ],
   },
 ]
 
-/* ── Shop designs carousel ────────────────────────────────────────── */
+/* ── Recent work carousel ─────────────────────────────────────────── */
 
 export interface ShopDesignTile {
-  /** The design's name, shown large in the tile. */
+  /** The project's name, shown large in the tile. */
   wordmark: string
   tags: string[]
   title: string
@@ -199,78 +196,78 @@ export interface ShopDesignTile {
 }
 
 export const DESIGNS_SECTION = {
-  label: 'Shop designs',
-  title: { before: 'Five shop designs,', highlight: 'ready to use', after: 'each with a demo shop' },
+  label: 'Recent work',
+  title: { before: 'Recent work,', highlight: 'built from scratch', after: 'around how each team works' },
 }
 
-/** Mirrors src/cms/templates.ts in the main app (name, bestFor, first line of the summary). */
+/** From src/content/work in the main site (client, industry, outcome). */
 export const DESIGN_TILES: ShopDesignTile[] = [
   {
-    wordmark: 'Default',
-    tags: ['Any shop with good pictures'],
-    title: 'Full-screen banners, a short welcome, then one big panel per collection.',
-    href: demoShopUrl('adirelane'),
+    wordmark: 'Dumpty',
+    tags: ['Consumer product'],
+    title: 'Raw voice goes in. A titled, tagged idea with a set of next steps comes out.',
+    href: '/work/dumpty',
     linkLabel: VISIT,
   },
   {
-    wordmark: 'Glow',
-    tags: ['Beauty and skincare'],
-    title: 'A framed banner, round collection tiles, then products with prices, reviews and your promises.',
-    href: demoShopUrl('itanna'),
+    wordmark: 'Auto Flow',
+    tags: ['Creative tooling'],
+    title: 'A 24-image batch that took roughly two hours now runs in about half an hour, unattended.',
+    href: '/work/auto-flow',
     linkLabel: VISIT,
   },
   {
-    wordmark: 'Blush',
-    tags: ['Make-up, perfume and gifts'],
-    title: 'A full-width photo with your collections laid over it and serif headings on a soft tint.',
-    href: demoShopUrl('oso'),
+    wordmark: 'Lazy Meet',
+    tags: ['Productivity'],
+    title: 'Meetings join themselves at the scheduled minute, muted, across up to three Google accounts.',
+    href: '/work/lazy-meet',
     linkLabel: VISIT,
   },
   {
-    wordmark: 'Haven',
-    tags: ['Home, decor and candles'],
-    title: 'A wide, light banner with your words beside the product. Quiet and roomy.',
-    href: demoShopUrl('ile'),
+    wordmark: 'Rayo',
+    tags: ['Business tools'],
+    title: 'A quote that answers itself, and an invoice nobody has to retype.',
+    href: '/work/rayo',
     linkLabel: VISIT,
   },
   {
-    wordmark: 'Oak',
-    tags: ['Furniture and interiors'],
-    title: "A tinted banner with a framed picture, a bold heading and this week's top three.",
-    href: demoShopUrl('igi'),
+    wordmark: 'Marque',
+    tags: ['Creative tooling'],
+    title: 'A brand guide that lives at a link, not in a PDF nobody can find.',
+    href: '/work/marque',
     linkLabel: VISIT,
   },
 ]
 
-/* ── Feature list ─────────────────────────────────────────────────── */
+/* ── What we build ────────────────────────────────────────────────── */
 
 export interface FeatureLink {
   label: string
   href: string
 }
 
-export const FEATURES_LABEL = 'Features'
+export const FEATURES_LABEL = 'What we build'
 
 export const FEATURE_LINKS: FeatureLink[] = [
-  { label: 'Card, transfer and USSD', href: '/resources' },
-  { label: 'Stock that counts itself', href: '/resources' },
-  { label: 'WhatsApp and counter sales', href: '/resources' },
-  { label: 'Delivery booked with Fez', href: '/resources' },
-  { label: 'Discount codes', href: '/resources' },
-  { label: 'Your own domain', href: '/resources' },
-  { label: 'QR codes for in-person sales', href: '/resources' },
-  { label: 'Loyalty points', href: '/resources' },
-  { label: 'Wholesale prices', href: '/resources' },
-  { label: 'Referral rewards', href: '/resources' },
-  { label: 'Search engine setup', href: '/resources' },
-  { label: 'Email campaigns', href: '/resources' },
-  { label: 'Staff accounts', href: '/resources' },
-  { label: 'Written business reports', href: '/resources' },
+  { label: 'Marketing sites', href: '/use-cases/websites' },
+  { label: 'Full custom builds', href: '/use-cases/websites' },
+  { label: 'Websites live in 72 hours', href: '/pricing' },
+  { label: 'CMS admin panel', href: '/use-cases/websites' },
+  { label: 'AI search visibility setup', href: '/use-cases/websites' },
+  { label: 'Sitemap and crawl rules', href: '/use-cases/websites' },
+  { label: 'Simple website analytics', href: '/use-cases/websites' },
+  { label: 'Invoice generator', href: '/use-cases/websites' },
+  { label: 'Client management dashboard', href: '/use-cases/websites' },
+  { label: 'Custom web apps', href: '/use-cases/apps' },
+  { label: 'Internal-facing tools', href: '/use-cases/apps' },
+  { label: 'Live dashboards', href: '/use-cases/tools-and-systems' },
+  { label: 'Workflow automation', href: '/use-cases/tools-and-systems' },
+  { label: 'Connecting the tools you use', href: '/use-cases/tools-and-systems' },
 ]
 
 /* ── Blog row ─────────────────────────────────────────────────────── */
 
 export const BLOG_ROW = {
-  title: 'Latest from the blog',
-  seeAll: { label: 'See all posts', href: '/blog' },
+  title: 'Latest insights',
+  seeAll: { label: 'See all insights', href: '/blog' },
 }

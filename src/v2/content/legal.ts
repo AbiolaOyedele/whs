@@ -1,8 +1,9 @@
 /**
- * The platform's privacy policy and terms of service, ported word for word
- * from the main app (`src/app/(platform)/privacy/page.tsx` and
- * `src/app/(platform)/terms/page.tsx`). When the wording changes there,
- * change it here too, along with `updated`.
+ * WildHands' privacy policy and terms, ported word for word from the main
+ * site: the privacy policy from `src/pages/legal/privacy-policy.astro`, and
+ * the terms from `STANDARD_TERMS` and `STANDARD_PAYMENT_TERMS` in
+ * `src/config/terms.ts`, the standard terms every quote carries. When the
+ * wording changes there, change it here too, along with `updated`.
  */
 import { site } from '@v2/config/site'
 import type { RichBlock } from '@v2/content/blog'
@@ -18,132 +19,263 @@ export interface LegalDocument {
 }
 
 const name = site.name
+const email = site.supportEmail
+const mailto = `mailto:${email}`
 
-/** The contact line the main app adds to the foot of every policy page. */
+/** The contact line at the foot of the privacy policy. */
 const CONTACT: RichBlock[] = [
-  { type: 'h2', text: 'Contact us' },
+  { type: 'h2', text: 'Contact' },
   {
     type: 'p',
     text: [
-      'Questions about this page can go to ',
-      { text: site.supportEmail, href: `mailto:${site.supportEmail}` },
-      '. We reply within 30 days, and usually much sooner.',
+      'Email ',
+      { text: email, href: mailto },
+      ' for anything on this page: questions, corrections, deletions, or complaints.',
     ],
   },
 ]
 
 export const PRIVACY_POLICY: LegalDocument = {
   title: 'Privacy Policy',
-  description: `How ${name} collects, uses and protects your personal data.`,
-  updated: '2026-11-04',
+  description: `What ${name} collects, why, how long we keep it, and how to get it deleted.`,
+  updated: '2026-08-27',
   intro: [
+    { type: 'h2', text: 'The short version' },
     {
-      type: 'p',
-      text: `${name} lets anyone open an online shop. This policy explains what personal data we collect, why, and what you can do about it. We handle personal data in line with the Nigeria Data Protection Act 2023.`,
+      type: 'ul',
+      items: [
+        'We collect what you type into our forms, and nothing else unless you accept analytics.',
+        'We do not run a database of you. Submissions arrive as email; a CV is also filed privately so we can read it again.',
+        'We do not sell your data, and we do not use it for advertising.',
+        'The site sets no cookies at all until you make a choice in the banner.',
+        ['Email ', { text: email, href: mailto }, ' and we will delete everything we hold about you.'],
+      ],
     },
   ],
   body: [
-    { type: 'h2', text: 'Who is responsible' },
+    { type: 'h2', text: 'Who we are' },
+    {
+      type: 'p',
+      text: `${name} is the data controller for the personal data described on this page. That means we decide what is collected and why, and we are responsible for looking after it.`,
+    },
+    {
+      type: 'p',
+      text: [
+        'For anything about this policy, or to exercise any of the rights below, email ',
+        { text: email, href: mailto },
+        '. A person reads that address.',
+      ],
+    },
+    { type: 'h2', text: 'What we collect' },
+    { type: 'p', text: 'There are only four ways we end up with your personal data.' },
     {
       type: 'ul',
       items: [
         [
-          { text: 'If you open a shop', strong: true },
-          ` (a seller), ${name} decides how your account data is used, so we are responsible for it.`,
+          { text: 'You contact us.', strong: true },
+          ' Your name, email address, your phone number if you give one, what you write about your project, and how you heard about us if you tell us.',
         ],
         [
-          { text: 'If you buy from a shop', strong: true },
-          `, the shop is responsible for your data. ${name} only stores and processes it on the shop’s behalf, to run the shop for them. Each shop has its own privacy policy, linked at the foot of its pages.`,
+          { text: 'You apply to work with us.', strong: true },
+          ' Your name and contact details, links to your professional profiles, your CV, and your answers to the application questions. Freelance applications also ask where you are resident for tax, what you are available for, and how many hours a month you want. Your CV is also stored as a private file so we can read it again during the process; everything else stays in the email.',
         ],
-      ],
-    },
-    { type: 'h2', text: 'What we collect from sellers' },
-    {
-      type: 'ul',
-      items: [
+        [{ text: 'You subscribe to the freelance newsletter.', strong: true }, ' Your email address.'],
         [
-          { text: 'Account details', strong: true },
-          ': your name and email address. If you sign in with Google, Google shares your name, email address and profile picture with us, and nothing else. If you use a password, we never see it in readable form.',
+          { text: 'You accept analytics.', strong: true },
+          ' Which pages you visited, roughly where in the world you are, and what browser you used. Analytics do not load unless you accept them.',
         ],
-        [
-          { text: 'Shop details', strong: true },
-          ': your shop’s name, web address, logo, description, products and anything else you add to your shop.',
-        ],
-        [
-          { text: 'Payout details', strong: true },
-          ': the bank name, account name and account number you give us to receive your money. These are passed to Paystack to set up your payouts. We keep only the bank name, account name and the last four digits.',
-        ],
-        [
-          { text: 'How you use the dashboard', strong: true },
-          ': a record of changes made to your shop and who made them, so you and your team can see what happened.',
-        ],
-        [
-          { text: 'Technical data', strong: true },
-          ': pages viewed and rough location, used to keep the service working and spot abuse. We count visitors with a code that changes every day, so nobody can be followed from one day to the next.',
-        ],
-      ],
-    },
-    { type: 'h2', text: 'What we process for shops' },
-    {
-      type: 'p',
-      text: 'To run a shop, we store its orders and customers: names, email addresses, phone numbers, delivery addresses, what was bought, and unfinished orders. We send the shop’s order emails and reminders. We use this only to run that shop, never for ourselves, and we never share one shop’s customers with another.',
-    },
-    { type: 'h2', text: 'Why we use it' },
-    {
-      type: 'p',
-      text: 'To create and run your account and shop, to pay out your sales, to send you messages about your shop, to keep the service safe and working, to answer you when you get in touch, and to meet our legal, tax and accounting duties. We do not sell personal data, and we do not use it for advertising.',
-    },
-    { type: 'h2', text: 'Who we share it with' },
-    { type: 'p', text: 'Only the suppliers that help us run the service, and only what each one needs:' },
-    {
-      type: 'ul',
-      items: [
-        [{ text: 'Supabase', strong: true }, ': stores account, shop and order data, and handles sign-in.'],
-        [{ text: 'Vercel', strong: true }, ': hosts the website.'],
-        [
-          { text: 'Paystack', strong: true },
-          ': takes card payments and pays sellers out. Card numbers never reach our servers.',
-        ],
-        [{ text: 'Cloudinary', strong: true }, ': stores and serves product photos and logos.'],
-        [{ text: 'Resend', strong: true }, ': sends emails.'],
-        [
-          { text: 'Fez Delivery', strong: true },
-          ': when a shop books delivery, the name, address and phone number needed to deliver.',
-        ],
-        [{ text: 'Google', strong: true }, ': only if you choose to sign in with Google.'],
       ],
     },
     {
       type: 'p',
-      text: 'Some of these suppliers store data outside Nigeria. Each one protects it under its own security and data-protection terms. We may also share data where the law requires it.',
+      text: 'We do not ask for anything sensitive, and we would rather you did not send it. Please do not put health information, financial details or identity documents into a form on this site.',
     },
-    { type: 'h2', text: 'Cookies' },
+    { type: 'h2', text: 'Why we collect it, and our lawful basis' },
     {
       type: 'p',
-      text: 'We use cookies only to keep you signed in and to remember your bag. We use no advertising or tracking cookies of our own. A shop may add its own marketing tools; its cookie policy explains them, and they load only if you agree.',
+      text: 'Under the UK GDPR we have to have a lawful basis for each thing we do with your data. Here is ours, in full.',
+    },
+    {
+      type: 'table',
+      caption: 'Our lawful basis for each use of your data',
+      head: ['What we do', 'What that uses', 'Lawful basis', 'Why that one'],
+      rows: [
+        [
+          'Replying to an enquiry you send us',
+          'Name, email, phone, what you write',
+          'Legitimate interests',
+          'You contacted us about working together, and you expect a reply.',
+        ],
+        [
+          'Assessing a job or freelance application',
+          'Name, contact details, profile links, CV, your answers',
+          'Steps prior to a contract',
+          'We cannot consider you for work without reading what you sent.',
+        ],
+        [
+          'Keeping an application on file for future roles',
+          'The same application',
+          'Consent',
+          'Only if you tick the box. You can withdraw it at any time.',
+        ],
+        [
+          'Sending the freelance newsletter',
+          'Email address',
+          'Consent',
+          'You asked for it, and you can tell us to stop at any time.',
+        ],
+        [
+          'Understanding which pages are useful',
+          'Page views, browser and country',
+          'Consent',
+          'Analytics stay switched off unless you accept them.',
+        ],
+      ],
+    },
+    {
+      type: 'p',
+      text: 'Where we rely on legitimate interests, we have weighed our interest in running the business against your privacy. Replying to an enquiry you chose to send us is not something we think you would object to. If you disagree, you can object. See your rights below.',
     },
     { type: 'h2', text: 'How long we keep it' },
     {
       type: 'p',
-      text: 'Account and shop data is kept while your account is open. When you close it, we delete it within 90 days, except order and payment records, which we keep for six years to meet Nigerian tax and accounting rules. Unfinished orders are deleted after 30 days.',
+      text: 'Form submissions arrive as email rather than going into a database, so deletion means removing the message and its attachments from our mailbox, and, for an application, deleting the stored copy of the CV. These are the periods we work to.',
     },
-    { type: 'h2', text: 'Your rights' },
+    {
+      type: 'table',
+      caption: 'How long we keep each kind of data',
+      head: ['What', 'How long'],
+      rows: [
+        ['Enquiries sent through the contact form', '24 months from your last message to us'],
+        ['Applications for a role we advertised', '12 months from the decision'],
+        ['Applications you asked us to keep on file', '24 months, then we ask again or delete'],
+        ['CVs, stored as private files', 'Deleted with the application they arrived with'],
+        ['Newsletter subscriptions', 'Until you unsubscribe'],
+        ['Analytics', '12 months, then aggregated'],
+      ],
+    },
     {
       type: 'p',
-      text: 'You can ask for a copy of your data, ask us to correct it or delete it, object to how we use it, or ask us to send it to someone else. Write to us and we will respond within 30 days. If you bought from a shop, you can also ask the shop directly. If you are not satisfied, you can complain to the Nigeria Data Protection Commission.',
+      text: 'If a project starts, the enquiry stops being an enquiry and becomes part of the client record, which we keep for as long as the law requires us to keep business records. Ask us and we will tell you exactly what we still hold.',
+    },
+    { type: 'h2', text: 'Who else touches it' },
+    {
+      type: 'p',
+      text: 'Four companies process data on our behalf. Each is bound by a contract that limits them to acting on our instructions.',
+    },
+    {
+      type: 'ul',
+      items: [
+        [
+          { text: 'Resend', strong: true },
+          ' delivers every form submission to us by email, including any CV you attach. Without Resend, the form does not reach anyone.',
+        ],
+        [
+          { text: 'Cloudinary', strong: true },
+          ' stores CVs sent with an application. They are kept as private files, not on a public address. Reaching one needs a signed link that we generate and that expires.',
+        ],
+        [{ text: 'PostHog', strong: true }, ' processes analytics, and only if you accept them.'],
+        [
+          { text: 'Vercel', strong: true },
+          ' hosts the site and serves every page. Its access logs record IP addresses for a short period as part of running the infrastructure.',
+        ],
+      ],
+    },
+    {
+      type: 'p',
+      text: 'Nobody else gets your data. We do not sell it, we do not trade it, and we do not hand it to advertisers. We would disclose it if a court or the law required us to, and we would tell you unless we were forbidden from doing so.',
+    },
+    { type: 'h2', text: 'Where it goes' },
+    {
+      type: 'p',
+      text: 'Our providers operate internationally, so your data may be processed outside the UK and the EEA, in practice in the United States. Where that happens it is covered by the UK International Data Transfer Addendum and the EU Standard Contractual Clauses, which are the safeguards the law provides for exactly this. You can ask us for a copy of the relevant terms.',
+    },
+    { type: 'h2', text: 'Cookies, and what we store in your browser' },
+    {
+      type: 'p',
+      text: [
+        { text: 'This site sets no cookies.', strong: true },
+        ' Nothing at all is stored in your browser until you choose Accept or Decline in the banner.',
+      ],
+    },
+    {
+      type: 'ul',
+      items: [
+        [
+          { text: 'Your choice.', strong: true },
+          ' We save it in your browser’s local storage so we do not ask again on every page. Nothing about it is sent to us.',
+        ],
+        [
+          { text: 'If you accept analytics,', strong: true },
+          ' PostHog stores an identifier in local storage so that a returning visitor is not counted as a new person. It is switched off entirely if you decline, and it never loads before you decide.',
+        ],
+      ],
+    },
+    {
+      type: 'p',
+      text: 'Analytics here are deliberately narrow. We record page views. We do not record clicks, keystrokes, form contents, or session replays.',
+    },
+    {
+      type: 'p',
+      text: 'To change your mind, clear this site’s data in your browser settings. The banner will appear again on your next visit and you can choose differently.',
     },
     { type: 'h2', text: 'Keeping it safe' },
     {
       type: 'p',
-      text: 'Data is encrypted in transit, each shop can only ever see its own data, access is limited to the people who need it, and payment card details never touch our systems. If a breach ever affects you, we will tell you.',
+      text: 'The site is served only over HTTPS. Form endpoints are rate-limited to make abuse expensive, which involves holding your IP address briefly in memory. It is never written to disk and never sent anywhere. Uploaded CVs are checked by file type and size and renamed on our side, so a filename can never be used to attack our systems. A stored CV is uploaded as a private file, not a public one, so it has no address anyone can guess. Reaching it needs a signed link that expires. Access to the mailbox holding enquiries is limited to the people who need it, and protected by two-factor authentication.',
     },
-    { type: 'h2', text: 'Children' },
-    { type: 'p', text: `${name} is not meant for anyone under 18, and we do not knowingly collect their data.` },
-    { type: 'h2', text: 'Changes' },
+    {
+      type: 'p',
+      text: 'No system is perfect. If we ever suffer a breach that puts you at risk, we will tell the Information Commissioner’s Office within 72 hours and tell you without undue delay.',
+    },
+    { type: 'h2', text: 'Your rights' },
+    { type: 'p', text: 'You can ask us to do any of the following, free of charge.' },
+    {
+      type: 'ul',
+      items: [
+        [{ text: 'See it.', strong: true }, ' Get a copy of everything we hold about you.'],
+        [{ text: 'Fix it.', strong: true }, ' Correct anything that is wrong or incomplete.'],
+        [{ text: 'Delete it.', strong: true }, ' Have it erased where we have no overriding reason to keep it.'],
+        [{ text: 'Limit it.', strong: true }, ' Have us pause using it while a dispute is sorted out.'],
+        [{ text: 'Object to it.', strong: true }, ' Tell us to stop, where we are relying on legitimate interests.'],
+        [{ text: 'Move it.', strong: true }, ' Get it in a portable format, or have us send it somewhere else.'],
+        [
+          { text: 'Withdraw consent.', strong: true },
+          ' Where consent is the basis, you can take it back at any time. That does not undo anything we did lawfully beforehand.',
+        ],
+      ],
+    },
     {
       type: 'p',
       text: [
-        'If we change this policy, we will update the date at the top. If the change matters, we will tell sellers by email first. See also our ',
+        'Email ',
+        { text: email, href: mailto },
+        '. We will reply within one month. We may ask you to confirm who you are first, so that we do not hand your data to somebody else.',
+      ],
+    },
+    { type: 'h2', text: 'If you are unhappy' },
+    {
+      type: 'p',
+      text: [
+        'Please tell us first, because most things are quicker to fix directly. If we do not put it right, you have the right to complain to the UK’s data protection regulator, the ',
+        { text: 'Information Commissioner’s Office', href: 'https://ico.org.uk/make-a-complaint/' },
+        '. Complaining to them does not affect your right to a legal remedy.',
+      ],
+    },
+    {
+      type: 'p',
+      text: 'If you are in the EEA, you can also complain to the supervisory authority where you live or work.',
+    },
+    { type: 'h2', text: 'Children' },
+    {
+      type: 'p',
+      text: 'This site is aimed at businesses and at people looking for professional work. It is not intended for anyone under 16, and we do not knowingly collect their data. If you believe a child has sent us something, email us and we will delete it.',
+    },
+    { type: 'h2', text: 'Changes to this policy' },
+    {
+      type: 'p',
+      text: [
+        'When we change how we handle data, we update this page and move the date at the top. If a change matters to you, such as a new processor or a new purpose, we will say so clearly here rather than burying it. See also our ',
         { text: 'Terms of Service', href: '/terms-of-service' },
         '.',
       ],
@@ -152,89 +284,75 @@ export const PRIVACY_POLICY: LegalDocument = {
   ],
 }
 
-// Fees, trial and grace mirror PLANS, TRIAL_DAYS and GRACE_DAYS in the main app's src/config/plans.ts.
 export const TERMS_OF_SERVICE: LegalDocument = {
   title: 'Terms of Service',
-  description: `The terms for opening and running a shop on ${name}.`,
-  updated: '2026-11-04',
+  description: `The standard terms that come with every ${name} quote: what is included, what counts as a revision, and what happens when something changes.`,
+  updated: '2026-09-03',
   intro: [
     {
       type: 'p',
       text: [
-        `These terms are an agreement between you and ${name} when you open or run a shop on ${name}. By creating an account, you agree to them. Please read them with our `,
+        `These are the standard terms that come with every ${name} quote. Where they say “above”, they mean the quote they arrive with: its breakdown, its timeline and its payment terms. Please read them with our `,
         { text: 'Privacy Policy', href: '/privacy' },
         '.',
       ],
     },
   ],
   body: [
-    { type: 'h2', text: 'Your account' },
-    {
-      type: 'ul',
-      items: [
-        'You must be at least 18 and able to enter a contract under Nigerian law.',
-        'Give us true details and keep them up to date.',
-        'Keep your sign-in safe. You are responsible for what happens in your account, including what team members you add do in it.',
-      ],
-    },
-    { type: 'h2', text: 'Your shop' },
-    {
-      type: 'ul',
-      items: [
-        'Your shop is your business. You are the seller to your customers, and you are responsible for your products, prices, descriptions, delivery, refunds and customer service, and for following the law, including consumer, tax and data-protection rules.',
-        `You keep ownership of everything you add: products, photos, words and logos. You give ${name} permission to store and show them only to run your shop and the service.`,
-        'Your shop must have its own refund, delivery and privacy terms for your buyers. We give you starting versions you can change.',
-      ],
-    },
-    { type: 'h2', text: 'What you may not sell or do' },
-    {
-      type: 'ul',
-      items: [
-        'Illegal, stolen, fake or counterfeit goods, weapons, drugs, or anything Paystack does not allow.',
-        'Anything that misleads or defrauds buyers, or infringes someone else’s rights.',
-        'Attacking, overloading or trying to get around the security of the service, or reaching another shop’s data.',
-        'Sending spam through the service.',
-      ],
-    },
-    { type: 'h2', text: 'Payments and fees' },
-    {
-      type: 'ul',
-      items: [
-        'Card payments are taken by Paystack and paid straight to your bank account. By taking payments you also agree to Paystack’s terms.',
-        `On the Free plan ${name} keeps 3% of each online payment, on Starter 1%, and nothing on Growth or Pro, unless we agree a different rate with you in writing. Each order in your dashboard shows the fee taken. Paystack’s own fee is also taken from your share, unless you choose to pass it to your buyers.`,
-        'Paid plans are paid in advance for 1, 3, 6 or 12 months, plus 7.5% VAT, and are not refunded for time not used. New shops get a 7-day trial of Growth. If a plan is not renewed, it keeps working for 7 more days, then the shop moves to Free: nothing is deleted.',
-        'If we change our fees, we will tell you by email at least 30 days before. Refunds and chargebacks are between you, your buyer and Paystack.',
-      ],
-    },
-    { type: 'h2', text: 'The service' },
-    {
-      type: 'ul',
-      items: [
-        `We work hard to keep ${name} running and your data safe, but we cannot promise it will never go down or have mistakes. We provide it as it is.`,
-        'We may change, add or remove features. If a change takes away something you rely on, we will tell you first.',
-        'We may suspend or close a shop that breaks these terms or puts buyers or the service at risk. Where we can, we will tell you why and give you a chance to fix it first.',
-      ],
-    },
-    { type: 'h2', text: 'Closing your shop' },
+    { type: 'h2', text: 'What is included' },
     {
       type: 'p',
-      text: `You can stop using ${name} at any time by writing to us. You can download your products, orders and customers before you go. Money already on its way to you will still be paid out.`,
+      text: 'Everything listed in the breakdown above, built to the scope agreed at the start. Each phase includes two rounds of revisions, and 30 days of support after handover for anything that is not working as described.',
     },
-    { type: 'h2', text: 'Limits on our responsibility' },
+    { type: 'h2', text: 'Revisions' },
     {
       type: 'p',
-      text: `As far as the law allows, ${name} is not responsible for lost profits, lost data or indirect losses, or for disputes between you and your buyers. Our total responsibility to you is limited to the fees you paid us in the 12 months before the claim. Nothing here limits any right you have that the law says cannot be limited.`,
+      text: 'A revision is a change to something we have already built, within the agreed scope: copy, layout, spacing, colour, wording, or fixing something that does not behave as specified. Revisions are included, two rounds per phase. Rounds are consolidated feedback, not individual requests, so gather your comments and send them together.',
     },
-    { type: 'h2', text: 'The law that applies' },
+    { type: 'h2', text: 'Work beyond the agreed scope' },
     {
       type: 'p',
-      text: 'These terms are governed by the laws of the Federal Republic of Nigeria. If we disagree, we will first try to settle it by talking. If that fails, the courts of Nigeria will decide.',
+      text: 'Three things are not revisions, and each is quoted separately before any work starts:',
     },
-    { type: 'h2', text: 'Changes to these terms' },
     {
       type: 'p',
-      text: `We may update these terms. We will change the date at the top, and tell you by email before any important change takes effect. If you keep using ${name} after that, you accept the new terms.`,
+      text: 'A rebuild is replacing something already approved and built with a different approach. If a page or a screen is signed off and then needs to be built again a different way, that is new work.',
     },
-    ...CONTACT,
+    {
+      type: 'p',
+      text: 'A redesign is changing the visual direction after it has been approved. Exploring alternatives before sign-off is part of the design phase; changing direction afterwards is not.',
+    },
+    {
+      type: 'p',
+      text: 'A new feature is anything not in the breakdown above. If it is not listed, it has not been priced.',
+    },
+    {
+      type: 'p',
+      text: 'We will always tell you before work becomes chargeable, and you will have a written price before we start. Nothing gets built that you have not agreed.',
+    },
+    { type: 'h2', text: 'What we need from you' },
+    {
+      type: 'p',
+      text: 'Timely feedback, and access to whatever the work depends on: accounts, test environments, content, and the people who can approve things. We work to the timeline above on the basis of feedback within five working days at each sign-off point. If that slips, the timeline moves with it.',
+    },
+    { type: 'h2', text: 'Third-party costs' },
+    {
+      type: 'p',
+      text: 'Hosting, domains, API fees, licences and identity checks are billed to you directly at cost, or passed on without markup. We will tell you what these are before you commit to anything.',
+    },
+    { type: 'h2', text: 'Payment' },
+    {
+      type: 'p',
+      text: 'As set out above. Work begins once the deposit clears. Invoices are payable within the terms stated on the invoice.',
+    },
+    {
+      type: 'p',
+      text: 'Unless your quote says otherwise: 50% to start, 50% on handover. Invoices are payable within 14 days. Work begins once the deposit clears.',
+    },
+    { type: 'h2', text: 'If something changes' },
+    {
+      type: 'p',
+      text: 'Either side can pause or stop the work. You pay for what has been done up to that point, and you keep it: designs, code and content produced so far are yours.',
+    },
   ],
 }

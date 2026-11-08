@@ -28,9 +28,9 @@ import { createPulseMaterial, createSpeckledMaterial, type PulseUniforms } from 
 import { SecurityView } from './home/security'
 import { Streaks } from './home/streaks'
 
-const CLEAR_COLOR = new Color(0x050003)
-const RIBBON_COLOR = new Color(0.23, 0, 0.12)
-const PATH_LIGHT_COLOR = new Color(0.99, 0.82, 1).multiplyScalar(0.9)
+const CLEAR_COLOR = new Color(0x030402)
+const RIBBON_COLOR = new Color(0.1, 0.17, 0.02)
+const PATH_LIGHT_COLOR = new Color(0.92, 1, 0.82).multiplyScalar(0.9)
 const FOV = 11.133
 const FLIGHT_FOV = 26
 /** Seconds of holding to fly the whole tunnel. */
@@ -150,7 +150,7 @@ export class HomeScene implements BackgroundScene {
       count: 60 * ctx.quality.particleScale,
       position: new Vector3(0.15, -0.05, -3.4),
       boxSize: new Vector3(2.2, 1.0, 6.5),
-      color: new Color(0xff6fc8),
+      color: new Color(0xc6fd78),
       size: 0.025,
       opacity: 0.35,
       sway: 0.012,
@@ -169,7 +169,7 @@ export class HomeScene implements BackgroundScene {
       speed: 0.32,
       length: 0.5,
       width: 0.02,
-      color: new Color(0xf5a1de),
+      color: new Color(0xdcfda8),
       seed: 5,
     })
     this.streaks.mesh.position.set(0, 0, -(ARCH_COUNT * ARCH_SPACING) / 2)
@@ -258,13 +258,13 @@ export class HomeScene implements BackgroundScene {
   }
 
   private buildLights(): void {
-    const key = new DirectionalLight(new Color(1, 0.5, 0.97), 4.5)
+    const key = new DirectionalLight(new Color(0.8, 1, 0.5), 4.5)
     key.position.set(-3.2, 1.6, 1.2)
-    const rim = new DirectionalLight(new Color(1, 0.75, 0.95), 2.2)
+    const rim = new DirectionalLight(new Color(0.88, 1, 0.75), 2.2)
     rim.position.set(1.5, 2.5, -1)
-    const glow = new PointLight(new Color(1, 0.55, 0.9), 2.4, 3.5, 2)
+    const glow = new PointLight(new Color(0.8, 1, 0.55), 2.4, 3.5, 2)
     glow.position.set(-0.2, 0.1, -3.2)
-    const sky = new HemisphereLight(new Color(0.5, 0.2, 0.45), new Color(0.02, 0, 0.02), 0.6)
+    const sky = new HemisphereLight(new Color(0.35, 0.5, 0.15), new Color(0.01, 0.02, 0), 0.6)
     this.tunnelScene.add(key, rim, glow, sky)
     this.lights.push({ light: key, intensity: 4.5 }, { light: rim, intensity: 2.2 }, { light: glow, intensity: 2.4 }, { light: sky, intensity: 0.6 })
   }
@@ -347,6 +347,10 @@ export class HomeScene implements BackgroundScene {
 
   setAbout(about: boolean): void {
     this.about = about
+    // On the home page the hero shows the fluid gradient instead of the
+    // ribbon tunnel (see HeroFluid), so the arches, rings and light streaks
+    // only render for the About page's close-up.
+    this.tunnel.visible = about
     if (!this.holding && !this.rewinding) this.state.flight = about ? ABOUT_FLIGHT : 0
     this.state.revealFlight = this.state.flight
   }

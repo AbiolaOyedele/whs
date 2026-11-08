@@ -15,11 +15,11 @@ interface CostChartCardProps {
   artSeed: number
 }
 
-const CHIPS = ['bg-[#90AADE]', 'bg-pink-500'] as const
+const CHIPS = ['bg-[#8A8A93]', 'bg-pink-500'] as const
 
 /**
- * A frosted chart panel over the art, one tab per pair of plans. The chosen
- * chart draws its two cost lines in on a loop while the card is on screen.
+ * A frosted chart panel over the art, one tab per pair of lines. The chosen
+ * chart draws its two lines in on a loop while the card is on screen.
  */
 export function CostChartCard({ tabs, yLabel, xLabel, artSeed }: CostChartCardProps) {
   const card = useRef<HTMLDivElement>(null)
