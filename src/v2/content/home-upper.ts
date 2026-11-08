@@ -1,8 +1,11 @@
+import { logoImage, type CardImage } from '@v2/content/photos'
+import { GRACE_DAYS, PLANS, TRIAL_DAYS, type PlanId } from '@v2/content/pricing'
+
 /**
  * Words and figures for the top half of the home page: hero, product rail,
- * intro and the four "why" cards. Every price here is the real 72-hour
- * website offer; every other figure is sample data that the card itself
- * labels as an example.
+ * intro and the four "Why WildHands" cards. Every price and number here is
+ * read from the real offer in pricing.ts; every product is one WildHands
+ * built (src/content/work). Nothing is sample data.
  */
 
 /* ── hero ─────────────────────────────────────────────────────────── */
@@ -38,159 +41,121 @@ export const introCopy = {
   title: { before: 'Built around how you work,', highlight: 'not a template' },
 } as const
 
-/* ── card a: how the 72-hour website is paid ──────────────────────── */
+/* ── "Why WildHands": the sticky list and each card's words ───────── */
 
-export interface Plan {
-  name: string
-  /** A fixed amount in naira, added to the share below. */
-  monthly: number
-  /** Share of the package price, in percent. */
-  feePercent: number
-}
-
-/** The 72-hour website: the deposit that starts the build, and the full price. */
-export const plans: readonly Plan[] = [
-  { name: 'Deposit to start', monthly: 0, feePercent: 50 },
-  { name: 'Full price', monthly: 0, feePercent: 100 },
-]
-
-/** The two package prices the tabs compare, in naira: Starter and Standard. */
-export const monthlySales: readonly number[] = [150_000, 250_000]
-
-/* ── card b: map ──────────────────────────────────────────────────── */
-
-export const mapChips = {
-  left: 'Based in : Lagos',
-  right: 'Building for : Nigeria and Africa',
-} as const
-
-/* ── card c: example automation run ───────────────────────────────── */
-
-export interface FeedLine {
-  text: string
-  /** Pink tick lines. */
-  done?: boolean
-  /** Plain text after the pink part. */
-  rest?: string
-}
-
-export const feedChip = 'Example run'
-
-export const feedLines: readonly FeedLine[] = [
-  { text: 'auto-flow % batch of 24 images' },
-  { text: '' },
-  { text: '✓ image-01 uploaded : prompt written by Gemini', done: true },
-  { text: '✓ image-02 uploaded : 2 generations in flight', done: true },
-  { text: '✓ image-03 uploaded : 3 generations in flight', done: true },
-  { text: '✓ image-01 video saved to the output folder', done: true },
-  { text: '✓ Progress written to CSV', done: true },
-  { text: '' },
-  { text: 'Failed : image-07, retrying once' },
-  { text: 'Retried : image-07, video saved' },
-  { text: '' },
-  { text: 'Generating [███░░░░░░░░░]' },
-  { text: '6 of 24 videos saved' },
-  { text: '' },
-  { text: 'Generating [██████░░░░░░]' },
-  { text: '12 of 24 videos saved' },
-  { text: '' },
-  { text: 'Generating [█████████░░░]' },
-  { text: '18 of 24 videos saved' },
-  { text: '' },
-  { text: 'Generating [████████████]' },
-  { text: '24 of 24 videos saved' },
-  { text: '' },
-  { text: '✓ Batch done:', done: true, rest: ' nobody at the keyboard' },
-]
-
-/* ── card d: example line chart ───────────────────────────────────── */
-
-export interface ChartSeries {
-  label: string
-  colour: string
-  /** One reading per tick on the x axis. */
-  values: readonly number[]
-}
-
-export interface ChartTab {
-  tab: string
-  yLabel: string
-  /** Top of the y axis; the grid shows quarters of it. */
-  max: number
-  series: readonly ChartSeries[]
-}
-
-/** Legend colours, in the reference's order. */
-const LINE = { first: '#6B6A73', second: '#8A8A93', third: '#BEFC65' } as const
-
-export const chartXLabel = 'Day'
-/** Days of the month along the x axis. */
-export const chartXTicks: readonly string[] = ['1', '8', '15', '22', '29']
-
-export const chartTabs: readonly ChartTab[] = [
-  {
-    tab: 'Visits',
-    yLabel: 'Example visits',
-    max: 200,
-    series: [
-      { label: 'Direct', colour: LINE.first, values: [40, 40, 25, 40, 40, 52, 30, 52, 52, 18, 40, 40, 56] },
-      { label: 'Social', colour: LINE.second, values: [92, 92, 70, 58, 92, 92, 130, 92, 70, 92, 50, 92, 130] },
-      { label: 'Search', colour: LINE.third, values: [120, 120, 112, 112, 120, 120, 165, 112, 112, 128, 128, 165, 120] },
-    ],
-  },
-  {
-    tab: 'Enquiries',
-    yLabel: 'Example enquiries',
-    max: 40,
-    series: [
-      { label: 'Email', colour: LINE.first, values: [6, 6, 4, 6, 8, 6, 4, 9, 6, 3, 6, 6, 9] },
-      { label: 'WhatsApp', colour: LINE.second, values: [14, 14, 11, 9, 14, 14, 20, 14, 11, 16, 8, 14, 21] },
-      { label: 'Website', colour: LINE.third, values: [22, 22, 19, 19, 24, 22, 31, 19, 21, 24, 24, 33, 22] },
-    ],
-  },
-  {
-    tab: 'Tasks',
-    yLabel: 'Example tasks automated',
-    max: 100,
-    series: [
-      { label: 'Last month', colour: LINE.second, values: [30, 30, 22, 34, 34, 26, 40, 40, 30, 30, 44, 36, 36] },
-      { label: 'This month', colour: LINE.third, values: [38, 38, 30, 46, 46, 34, 58, 52, 40, 52, 66, 52, 70] },
-    ],
-  },
-]
-
-/* ── the "why" list and card captions ─────────────────────────────── */
-
-export interface CardCopy {
+export interface WhyCopy {
+  /** Anchor id; also links the sticky list entry to its card. */
   id: string
   navTitle: string
   title: string
   body: string
+  action?: { label: string; href: string }
 }
 
-export const cardCopy = {
-  plans: {
-    id: 'live-in-72-hours',
-    navTitle: 'Live in 72 hours',
-    title: 'A website, live in 72 hours.',
-    body: 'Starter is ₦150,000 with a ₦75,000 deposit. Standard is ₦250,000 with a ₦125,000 deposit. You approve the design before any code is written, and the site is live in 72 hours. Message us on WhatsApp on 0812 979 6927.',
+/** Naira, whole: 250000 → "₦250,000". */
+export function naira(amount: number): string {
+  return `₦${amount.toLocaleString('en-NG')}`
+}
+
+interface PlanPrice {
+  name: string
+  price: number
+  deposit: number
+}
+
+/** A fixed-price website plan's price and deposit, in naira, from pricing.ts. */
+function planPrice(id: PlanId): PlanPrice {
+  const plan = PLANS.find((item) => item.id === id)
+  const price = plan ? plan.monthlyKobo / 100 : 0
+  return { name: plan?.name ?? '', price, deposit: plan ? (price * plan.feeBps) / 10_000 : 0 }
+}
+
+const STARTER = planPrice('starter')
+const STANDARD = planPrice('growth')
+
+export const whyCopy = {
+  price: {
+    id: 'priced-up-front',
+    navTitle: 'Priced up front',
+    title: 'One price, agreed before any work starts.',
+    body: `Every project starts with a written proposal: what is in scope, what is out, and one price worked out from it. Websites are a fixed ${naira(STARTER.price)} or ${naira(STANDARD.price)}, with half to start. If the scope changes, the change is written and priced before work starts on it.`,
+    action: { label: 'See the prices', href: '/pricing' },
   },
-  map: {
-    id: 'built-in-lagos',
-    navTitle: 'Built in Lagos',
-    title: 'Built in Lagos, for Africa.',
-    body: 'We are based in Lagos and build for businesses across Nigeria and Africa. Most of the process runs over calls, so location is not a barrier, and every site accounts for local hosting, payment and connectivity realities.',
+  design: {
+    id: 'design-first',
+    navTitle: 'Design first',
+    title: 'You approve the design before any code is written.',
+    body: `You see the design and sign it off within ${GRACE_DAYS} hours. Starter and Standard websites go live ${TRIAL_DAYS} hours after that, with 2 or 3 rounds of edits included. Apps and internal tools are quoted after a discovery call.`,
   },
-  orders: {
-    id: 'automate-the-repeats',
-    navTitle: 'Automate the repeats',
-    title: 'Automate the repeats.',
-    body: 'We build tools that take repetitive work off your plate for good. Auto Flow turned a supervised afternoon of clicking into an unattended half-hour.',
+  scratch: {
+    id: 'built-from-scratch',
+    navTitle: 'Built from scratch',
+    title: 'Built around your business, never a theme.',
+    body: 'The structure, the content and the screens are designed for what your business actually does, which is why a clothes shop, a quoting tool and an agency workspace come out nothing alike. Accessibility is checked in CI as we build, not audited once at the end.',
+    action: { label: 'See our work', href: '/resources' },
   },
-  money: {
-    id: 'see-what-is-happening',
-    navTitle: 'See it in real time',
-    title: 'See what is happening, in real time.',
-    body: 'Custom dashboards that show you the numbers that matter, without digging for them. Most teams already produce the data and lose it across several tools.',
+  own: {
+    id: 'yours-to-keep',
+    navTitle: 'Yours to keep',
+    title: 'You own all of it, and you meet who builds it.',
+    body: 'The site, the domain, the code and everything on it are yours. The people you meet in the pitch are the people who build your project. And if an off-the-shelf tool already does the job, we will tell you.',
   },
-} as const satisfies Record<string, CardCopy>
+} as const satisfies Record<string, WhyCopy>
+
+/* ── card: the written proposal ───────────────────────────────────── */
+
+export const proposalCard = {
+  label: 'Written proposal',
+  project: `${STANDARD.name} website`,
+  inLabel: 'In scope',
+  inScope: [
+    'Up to 4 pages',
+    'Admin dashboard to edit text, images and prices',
+    'Analytics in plain English',
+    'Copywriting from a 15-minute call',
+    '3 rounds of edits',
+  ],
+  outLabel: 'Out of scope',
+  outScope: ['Pages past 4, quoted separately'],
+  priceLabel: 'Fixed price',
+  price: naira(STANDARD.price),
+  depositLabel: 'Deposit to start',
+  deposit: naira(STANDARD.deposit),
+} as const
+
+/* ── card: design first, then live in 72 hours ────────────────────── */
+
+export const launchCard = {
+  chip: 'Starter and Standard websites',
+  hours: TRIAL_DAYS,
+  unit: 'hours',
+  caption: 'from approved design to a live site',
+  steps: ['You approve the design', 'We build it', 'Live on your domain'],
+} as const
+
+/* ── card: three builds, nothing alike ────────────────────────────── */
+
+export interface ScratchProduct {
+  name: string
+  logo: CardImage
+  /** The product's industry, from src/content/work. */
+  industry: string
+}
+
+export const scratchCard = {
+  chip: 'Three businesses, three builds',
+  products: [
+    { name: 'Tomori', logo: logoImage('tomori.svg', 'Tomori'), industry: 'E-commerce' },
+    { name: 'Rayo', logo: logoImage('rayo.svg', 'Rayo'), industry: 'Business tools' },
+    { name: 'The Ruff Agency', logo: logoImage('the-ruff-agency.svg', 'The Ruff Agency'), industry: 'Agency operations' },
+  ] satisfies ScratchProduct[],
+} as const
+
+/* ── card: what you own ───────────────────────────────────────────── */
+
+export const ownCard = {
+  label: 'Who owns it',
+  rows: ['The site', 'The domain', 'The code', 'Everything on it'],
+  owner: 'Yours',
+  footer: 'Built by the people in your pitch',
+} as const

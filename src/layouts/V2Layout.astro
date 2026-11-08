@@ -10,6 +10,7 @@
  * src/v2/app/globals.css; these variables are the names the v2 CSS reads.
  */
 import '@v2/app/globals.css'
+import type { JsonLd } from '@/lib/seo'
 
 interface Props {
   title: string
@@ -18,9 +19,11 @@ interface Props {
   scene: string
   /** Value for <html data-template>. */
   template: string
+  /** Structured data nodes, one <script type="application/ld+json"> each. */
+  jsonLd?: JsonLd[]
 }
 
-const { title, description, scene, template } = Astro.props
+const { title, description, scene, template, jsonLd = [] } = Astro.props
 ---
 
 <!doctype html>
@@ -35,6 +38,11 @@ const { title, description, scene, template } = Astro.props
     <link rel="preload" href="/fonts/Diagramm-Medium.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/IBMPlexSans-400.woff2" as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
+    {
+      jsonLd.map((node) => (
+        <script type="application/ld+json" is:inline set:html={JSON.stringify(node).replace(/</g, '\\u003c')} />
+      ))
+    }
     <style is:global>
       :root {
         --font-stand-sans: 'IBM Plex Sans';

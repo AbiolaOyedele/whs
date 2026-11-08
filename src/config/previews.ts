@@ -110,6 +110,33 @@ export const LIVE_PREVIEWS = {
     caption: 'The website',
     sizes: SITE,
   },
+  /* The four below are not from Joisti: one hand-written page of a sample
+     shop's admin panel, in WildHands colours, copied under four names. The
+     file name picks the tour. See the comment at the top of wh-cms.html. */
+  'wh-cms': {
+    label:
+      'A sample shop’s admin panel: the home page heading is rewritten beside a live preview, saved, published, then a product’s stock is changed.',
+    caption: 'Sample admin panel',
+    sizes: APP,
+  },
+  'wh-dashboard': {
+    label:
+      'A sample shop’s dashboard: a new order lifts the week’s takings, then the best sellers, finance and the daily report.',
+    caption: 'Sample dashboard',
+    sizes: APP,
+  },
+  'wh-analytics': {
+    label:
+      'A sample shop’s visitors page: visitors each day, where they came from, devices, cities, busiest hours and visit to sale.',
+    caption: 'Sample analytics',
+    sizes: APP,
+  },
+  'wh-search': {
+    label:
+      'A sample shop’s search settings: the page title and description are rewritten with a live search preview, then the sitemap, robots.txt, llms.txt and business details files.',
+    caption: 'Sample search settings',
+    sizes: APP,
+  },
 } as const satisfies Record<string, LivePreview>
 
 export type LivePreviewSlug = keyof typeof LIVE_PREVIEWS

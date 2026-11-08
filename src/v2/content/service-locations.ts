@@ -1,0 +1,52 @@
+/**
+ * The service-by-location pages: one per service and place, such as
+ * /use-cases/websites/lekki. They carry over the original site's
+ * /services/<service>/<location> pages (3 services by 29 places), which exist
+ * so a business searching for "custom website design in Lekki" finds a page
+ * that names their area.
+ *
+ * Each page is the service's own page with the place in its title and a hero
+ * line written for that place. Both pieces come from elsewhere and are not
+ * copied: the service from ./use-cases.ts, the places and their hand-written
+ * answers from src/config/service-locations.ts. Add a place there and its
+ * three pages appear here.
+ */
+import { SERVICE_LOCATIONS, type ServiceLocation } from '@/config/service-locations'
+import { USE_CASE_SLUGS, getUseCase, type UseCaseContent } from '@v2/content/use-cases'
+import { site } from '@v2/config/site'
+
+export { SERVICE_LOCATIONS }
+
+export function locationBySlug(slug: string): ServiceLocation | undefined {
+  return SERVICE_LOCATIONS.find((location) => location.slug === slug)
+}
+
+/** Every service and place pair, as URL paths. */
+export function serviceLocationPaths(): string[] {
+  return USE_CASE_SLUGS.flatMap((service) => SERVICE_LOCATIONS.map((location) => `/use-cases/${service}/${location.slug}`))
+}
+
+/**
+ * The service page's content, retitled for one place. The hero line is the
+ * place's own answer to "do you build for businesses here?", without its
+ * leading "Yes." so it reads as a statement.
+ */
+export function serviceLocationContent(serviceSlug: string, locationSlug: string): UseCaseContent | null {
+  const service = getUseCase(serviceSlug)
+  const location = locationBySlug(locationSlug)
+  if (!service || !location) return null
+
+  const noun = service.label.toLowerCase()
+  const local = location.faqAnswer.replace(/^Yes\.\s*/, '')
+
+  return {
+    ...service,
+    meta: {
+      title: `Custom ${noun} in ${location.longLabel}`,
+      description: `${site.name} builds custom ${noun} for businesses in ${location.longLabel}. ${service.lede}`,
+    },
+    label: `${service.label} in ${location.label}`,
+    title: [{ text: `${service.label} in` }, { text: location.longLabel, highlight: true }],
+    intro: `${local} ${service.lede}`,
+  }
+}

@@ -1,38 +1,38 @@
 import { FeatureCards, type FeatureCardItem } from '@v2/components/features/feature-cards/FeatureCards'
-import { HomeFeedCard } from '@v2/components/features/feature-cards/HomeFeedCard'
-import { HomeLineChartCard } from '@v2/components/features/feature-cards/HomeLineChartCard'
-import { nigeriaCityPoint, type NigeriaCity } from '@v2/components/features/feature-cards/HomeMapGeometry'
-import { HomePlanCostCard } from '@v2/components/features/feature-cards/HomePlanCostCard'
-import { MapCard } from '@v2/components/features/feature-cards/MapCard'
+import { Button } from '@v2/components/ui/Button'
 import { site } from '@v2/config/site'
-import { cardCopy, introCopy, mapChips } from '@v2/content/home-upper'
+import { introCopy, whyCopy, type WhyCopy } from '@v2/content/home-upper'
+import type { ReactNode } from 'react'
 import { HeroHome } from './upper/HeroHome'
 import { HomeIntroTitle } from './upper/HomeIntroTitle'
+import { WhyLaunchCard } from './upper/why/WhyLaunchCard'
+import { WhyOwnCard } from './upper/why/WhyOwnCard'
+import { WhyProposalCard } from './upper/why/WhyProposalCard'
+import { WhyScratchCard } from './upper/why/WhyScratchCard'
 
-/** Cities the map marks, three waves of four. */
-const MAP_CITIES: NigeriaCity[] = [
-  'Lagos', 'Kano', 'Enugu', 'Calabar',
-  'Ibadan', 'Abuja', 'Port Harcourt', 'Sokoto',
-  'Benin', 'Kaduna', 'Ilorin', 'Maiduguri',
-]
+/** One "Why WildHands" entry: its words, its visual and, if it has one, its button. */
+function whyItem(copy: WhyCopy, visual: ReactNode): FeatureCardItem {
+  return {
+    id: copy.id,
+    navTitle: copy.navTitle,
+    title: copy.title,
+    visual,
+    body: <p>{copy.body}</p>,
+    ...(copy.action ? { actions: <Button label={copy.action.label} href={copy.action.href} variant="navy" /> } : {}),
+  }
+}
 
 const CARDS: FeatureCardItem[] = [
-  { ...cardCopy.plans, visual: <HomePlanCostCard />, body: <p>{cardCopy.plans.body}</p> },
-  {
-    ...cardCopy.map,
-    visual: (
-      <MapCard leftChip={mapChips.left} rightChip={mapChips.right} points={MAP_CITIES.map((city) => nigeriaCityPoint(city))} />
-    ),
-    body: <p>{cardCopy.map.body}</p>,
-  },
-  { ...cardCopy.orders, visual: <HomeFeedCard />, body: <p>{cardCopy.orders.body}</p> },
-  { ...cardCopy.money, visual: <HomeLineChartCard />, body: <p>{cardCopy.money.body}</p> },
+  whyItem(whyCopy.price, <WhyProposalCard />),
+  whyItem(whyCopy.design, <WhyLaunchCard />),
+  whyItem(whyCopy.scratch, <WhyScratchCard />),
+  whyItem(whyCopy.own, <WhyOwnCard />),
 ]
 
 /**
- * The top half of the home page: the click-and-hold hero with the product rail
- * and dot grid, then the white panel with the intro row and the sticky
- * "why" list beside its four animated cards.
+ * The top half of the home page: the click-and-hold hero, then the white
+ * panel with the intro row and the sticky "Why WildHands" list beside its
+ * four cards: priced up front, design first, built from scratch, yours to keep.
  */
 export function HomeUpper() {
   return (

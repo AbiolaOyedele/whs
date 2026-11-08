@@ -18,7 +18,18 @@ export const site = {
 export type Scheme = 'dark' | 'slate'
 
 /** Pages on a light panel; everything else (home, about, use cases, 404) sits on the dark 3D background. */
-const SLATE_PAGES = ['/pricing', '/blog', '/resources', '/contact', '/book-demo', '/brand-assets', '/privacy', '/terms-of-service']
+const SLATE_PAGES = [
+  '/pricing',
+  '/blog',
+  '/resources',
+  '/contact',
+  '/request-a-quote',
+  '/careers',
+  '/freelance-hub',
+  '/brand-assets',
+  '/privacy',
+  '/terms-of-service',
+]
 
 /** Which header scheme each page wears. */
 export function pageScheme(pathname: string): Scheme {

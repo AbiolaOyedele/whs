@@ -247,7 +247,7 @@ export function DesignCarousel({ tiles }: DesignCarouselProps) {
       <div ref={track} className="c-design-carousel_track flex items-stretch">
         {tiles.map((tile, i) => (
           <div
-            key={tile.wordmark}
+            key={tile.name}
             ref={(node) => {
               slides.current[i] = node
             }}

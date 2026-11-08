@@ -14,6 +14,7 @@
 @import '../styles/pages/blog.css' layer(components);
 @import '../styles/pages/legal.css' layer(components);
 @import '../styles/pages/canvas.css' layer(components);
+@import '../styles/pages/capability.css' layer(components);
 @source '../';
 
 /* WildHands typefaces, the same files and faces the main site declares in src/styles/global.css. */

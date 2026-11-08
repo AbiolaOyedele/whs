@@ -13,7 +13,7 @@ import { CANVAS_EVENTS } from '@v2/lib/canvas-events'
 export function AboutOverview() {
   return (
     <div
-      className="wrapper relative z-above -mt-7.5 rounded-b-none! bg-white md:-mt-15"
+      className="wrapper relative z-above -mt-7.5 bg-white md:-mt-15"
       data-scroll=""
       data-scroll-event-progress={CANVAS_EVENTS.aboutOverviewProgress}
     >

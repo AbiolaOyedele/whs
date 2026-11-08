@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>/* pace: ?pace=1.8 stretches every timed step of the tour (added by WildHands for the v2 site; re-add after regenerating in Joisti) */(function(){var p=parseFloat(new URLSearchParams(location.search).get('pace'));if(!(p>0)||p===1)return;var st=window.setTimeout;window.setTimeout=function(f,ms){var a=[].slice.call(arguments,2);return st.apply(window,[f,(+ms||0)*p].concat(a));};})();</script><script>(function(){var q=new URLSearchParams(location.search),d=q.get('device'),r=document.documentElement;if(d==='tablet'||d==='phone')r.setAttribute('data-device',d);if(q.get('bare')==='1')r.setAttribute('data-bare','1')})()</script>
+<style>html[data-bare]{--safe-top:0px!important;--safe-bottom:0px!important}</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WildHands admin preview</title>
+<!--
+  A shop's admin panel in WildHands colours and type, on sample data, for the
+  "What we build" pages (/what-we-build/...). Its structure follows the admin
+  panels WildHands has built (the Tomori back office and the storefront admin):
+  sections named in plain words, a live preview beside every edit, Save kept
+  separate from Publish, visitors counted on the site itself with no ad
+  trackers. Every shop, product, customer and number here is example data.
+
+  Written by hand, not generated in Joisti. No build step, no dependencies:
+  the only outside files are the site's own fonts in /fonts.
+
+  ONE FILE, FOUR COPIES: wh-cms.html, wh-dashboard.html, wh-analytics.html and
+  wh-search.html are identical. The file name picks the tour. Edit one, then
+  copy it over the other three.
+
+  ?device=tablet|phone  leaves room for the device's status and home bars
+  ?bare=1               drops that room (how the site shows it)
+  ?pace=1.8             stretches every timed step of the tour
+  The tour pauses while the page is off screen or hidden, stops for good on
+  the first tap or key press, and does not run under prefers-reduced-motion.
+-->
+<style>
+@font-face{font-family:'IBM Plex Sans';src:url('/fonts/IBMPlexSans-400.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'IBM Plex Sans';src:url('/fonts/IBMPlexSans-500.woff2') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'IBM Plex Sans';src:url('/fonts/IBMPlexSans-600.woff2') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:'Diagramm';src:url('/fonts/Diagramm-Medium.woff2') format('woff2');font-weight:500;font-display:swap}
+:root{--ink:#131314;--ink-2:#232326;--lime:#befc65;--lime-2:#dcfda8;--lime-3:#ecfecc;--lime-deep:#4d7c0f;--s50:#f4f4f5;--s100:#e4e4e7;--s200:#d8d8dc;--s300:#cfcfd4;--s400:#a1a1aa;--muted:#6b6a73;--safe-top:0px;--safe-bottom:0px;--r:16px;--mono:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;--display:'Diagramm','IBM Plex Sans',sans-serif}
+html[data-device="phone"]{--safe-top:47px;--safe-bottom:22px}
+html[data-device="tablet"]{--safe-top:24px;--safe-bottom:20px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--s50)}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.4;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+svg.i{width:18px;height:18px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+b,strong{font-weight:500}
+small{font-size:12px;color:var(--muted)}
+
+/* ---- Mockup chrome: the frame, the screens, the pointer. ---- */
+.mock-screen{position:relative;overflow:hidden;height:100svh;isolation:isolate;transform:translateZ(0)}
+.app{position:absolute;inset:0;display:flex;flex-direction:column}
+.side{display:none}
+.top{flex-shrink:0;display:flex;align-items:center;gap:10px;padding:calc(var(--safe-top) + 10px) 16px 10px;background:var(--ink);color:#fff}
+.top .where{margin-left:auto;font:400 11px var(--mono);text-transform:uppercase;color:var(--s400)}
+.badge{width:32px;height:32px;border-radius:9px;background:var(--lime);color:var(--ink);display:grid;place-items:center;font-family:var(--display);font-weight:500;font-size:16px;flex-shrink:0}
+.main{position:relative;flex:1;min-height:0}
+.mock-view{position:absolute;inset:0;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;visibility:hidden;padding:18px 16px calc(92px + var(--safe-bottom))}
+.mock-view::-webkit-scrollbar{display:none}
+.mock-view.on{visibility:visible}
+.dock{position:absolute;z-index:20;left:50%;bottom:calc(var(--safe-bottom) + 12px);transform:translateX(-50%);display:flex;gap:2px;padding:5px;background:var(--ink);border-radius:999px;box-shadow:0 10px 30px rgba(19,19,20,.28)}
+.dock a{width:52px;height:44px;border-radius:999px;display:grid;place-items:center;color:var(--s400)}
+.dock a.on{background:var(--lime);color:var(--ink)}
+@media(min-width:1000px){
+  .app{flex-direction:row}
+  .top,.dock{display:none}
+  .side{display:flex;flex-direction:column;width:240px;flex-shrink:0;background:var(--ink);color:#fff;padding:22px 14px 18px;overflow:hidden}
+  .mock-view{padding:30px 40px 48px}
+}
+.side .brand{display:flex;align-items:center;gap:10px;padding:0 8px 16px}
+.side .brand small{display:block;color:var(--s400)}
+.side h6{font:400 11px var(--mono);text-transform:uppercase;color:var(--s400);padding:14px 10px 6px}
+.side a{display:flex;align-items:center;gap:10px;min-height:38px;padding:0 10px;border-radius:10px;color:var(--s100)}
+.side a.on{background:var(--lime);color:var(--ink);font-weight:500}
+.side .note{margin-top:auto;padding:14px 10px 0;border-top:1px solid rgba(255,255,255,.1);font-size:12px;color:var(--s400);line-height:1.45}
+
+/* ---- Shared pieces ---- */
+.ph{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 16px;margin-bottom:18px}
+.ph h1{font-family:var(--display);font-weight:500;font-size:28px;line-height:1.05;letter-spacing:-.025em}
+.ph p{color:var(--muted);margin-top:6px;max-width:46ch}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);margin-bottom:8px;font-size:13px}
+@media(min-width:1000px){.ph h1{font-size:36px}}
+.acts{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 16px;border-radius:999px;font-weight:500;white-space:nowrap;transition:background-color .2s,box-shadow .2s}
+.btn-lime{background:var(--lime);color:var(--ink)}
+.btn-ghost{background:#fff;box-shadow:inset 0 0 0 1px var(--s200)}
+.status{font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:5px}
+.status:empty{display:none}
+.status.ok{color:var(--lime-deep)}
+.status svg.i{width:15px;height:15px}
+.card{background:#fff;border-radius:var(--r);box-shadow:0 0 0 1px var(--s100);padding:18px;min-width:0}
+.card-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.k{font:400 11px var(--mono);text-transform:uppercase;color:var(--muted)}
+.disp{font-family:var(--display);font-weight:500;letter-spacing:-.025em}
+.stack>*+*{margin-top:14px}
+.two{display:grid;gap:14px;margin-top:14px}
+@media(min-width:700px){.two{grid-template-columns:1fr 1fr}}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+@media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}.stats.s3{grid-template-columns:repeat(3,1fr)}}
+.stat .v{font-family:var(--display);font-weight:500;font-size:24px;letter-spacing:-.02em;margin-top:10px}
+.stat .s{font-size:12px;color:var(--muted);margin-top:2px}
+.seg{display:inline-flex;max-width:100%;overflow-x:auto;scrollbar-width:none;padding:4px;background:#fff;border-radius:999px;box-shadow:inset 0 0 0 1px var(--s200)}
+.seg::-webkit-scrollbar{display:none}
+.seg button{min-height:34px;padding:0 12px;border-radius:999px;font-size:13px;color:var(--muted);white-space:nowrap;transition:background-color .2s,color .2s}
+.seg button.on{background:var(--ink);color:#fff}
+.chip{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;font-size:12px;background:var(--s50);color:var(--muted);box-shadow:inset 0 0 0 1px var(--s200);white-space:nowrap}
+.chip.lime{background:var(--lime-2);color:#2f4a0a;box-shadow:none}
+.chip.ink{background:var(--ink);color:#fff;box-shadow:none}
+.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--s100)}
+.row:first-child{border-top:0;padding-top:2px}
+.row .grow{flex:1;min-width:0}
+.row .grow small{display:block;margin-top:2px}
+.row .end{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.ico{width:36px;height:36px;border-radius:10px;background:var(--s50);display:grid;place-items:center;flex-shrink:0}
+.new{animation:flash 2.4s ease-out}
+@keyframes flash{0%{background:var(--lime-3)}100%{background:transparent}}
+.sw{border-radius:10px;flex-shrink:0}
+.sw1{background:radial-gradient(circle at 50% 50%,#c9d3f0 0 18%,transparent 20%) 0 0/14px 14px,#26335f}
+.sw2{background:repeating-linear-gradient(45deg,#b5522d 0 6px,#e9b48a 6px 9px)}
+.sw3{background:radial-gradient(circle,#f2c14e 0 24%,transparent 26%) 0 0/12px 12px,#0f6b5c}
+.sw4{background:repeating-linear-gradient(90deg,#5d4a8c 0 5px,#c8b9e8 5px 10px)}
+.sw5{background:linear-gradient(135deg,#1f2a44 0 50%,#d9a441 50% 100%) 0 0/16px 16px}
+.sw6{background:repeating-radial-gradient(circle at 50% 50%,#befc65 0 3px,#131314 3px 7px)}
+.toast{position:absolute;z-index:150;left:16px;right:16px;top:calc(var(--safe-top) + 62px);display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:var(--ink);color:#fff;box-shadow:0 14px 34px rgba(19,19,20,.3);opacity:0;transform:translateY(-8px);transition:opacity .3s,transform .3s;pointer-events:none}
+.toast.on{opacity:1;transform:none}
+.toast svg.i{color:var(--lime)}
+@media(min-width:1000px){.toast{left:auto;right:28px;top:auto;bottom:28px;max-width:400px}}
+
+/* ---- Fields (the editor's inputs are drawn, so the tour can type into them) ---- */
+.field+.field{margin-top:16px}
+.field label{display:block;font-weight:500;margin-bottom:6px}
+.field small{display:block;margin-top:6px}
+.inp{display:block;min-height:44px;padding:11px 12px;border-radius:12px;background:#fff;box-shadow:inset 0 0 0 1px var(--s200);transition:box-shadow .2s;word-break:break-word}
+.inp.ta{min-height:72px}
+.inp .caret{display:none;width:1.5px;height:1.1em;background:var(--ink);vertical-align:-3px;margin-left:1px;animation:blink 1s steps(1) infinite}
+.field.focus .inp{box-shadow:inset 0 0 0 2px var(--ink),0 0 0 4px var(--lime-2)}
+.field.focus .caret{display:inline-block}
+@keyframes blink{50%{opacity:0}}
+.sel{display:flex;align-items:center;justify-content:space-between}
+.sel svg.i{transform:rotate(90deg);color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+
+/* ---- Home ---- */
+.home-grid{display:grid;gap:14px;margin-bottom:14px}
+@media(min-width:1000px){.home-grid{grid-template-columns:7fr 5fr}}
+.hero{background:var(--ink);color:#fff;box-shadow:none}
+.hero .k{color:var(--s400)}
+.hero-v{font-size:40px;margin-top:10px;line-height:1}
+.hero-s{color:var(--s300);margin-top:8px}
+.bars{display:flex;align-items:flex-end;gap:8px;height:118px;margin-top:20px}
+@media(min-width:1000px){.hero-v{font-size:52px}.bars{height:150px}}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%}
+.bar i{display:block;width:100%;height:0;border-radius:6px;background:rgba(255,255,255,.16);transition:height .7s cubic-bezier(.2,.7,.2,1)}
+.bar.today i{background:var(--lime)}
+.bar span{font-size:11px;color:var(--s400)}
+.tabrow{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin:-4px -4px 10px;padding:4px}
+.tabrow::-webkit-scrollbar{display:none}
+.tabrow button{min-height:36px;padding:0 12px;border-radius:999px;font-size:13px;color:var(--muted);white-space:nowrap}
+.tabrow button.on{background:var(--s50);color:var(--ink);box-shadow:inset 0 0 0 1px var(--s200)}
+.panel{display:none}
+.panel.on{display:block}
+.meter{height:6px;border-radius:6px;background:var(--s100);margin-top:6px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;border-radius:6px;background:var(--ink);transition:width .7s cubic-bezier(.2,.7,.2,1)}
+.meter.lime i{background:var(--lime-deep)}
+
+/* ---- Products ---- */
+.prod{cursor:pointer}
+.prod .sw{width:46px;height:46px}
+.sizes{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.sizes .chip{min-height:22px;padding:0 7px;font-size:11px}
+.ed-grid{display:grid;gap:14px}
+@media(min-width:1000px){.ed-grid{grid-template-columns:minmax(0,400px) minmax(0,1fr)}.ed-grid.even{grid-template-columns:1fr 1fr}}
+.photos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.photos .sw{aspect-ratio:1;border-radius:12px}
+.photos .add{aspect-ratio:1;border-radius:12px;box-shadow:inset 0 0 0 1.5px var(--s300);display:grid;place-items:center;color:var(--muted)}
+.stock{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--s100)}
+.stock:first-of-type{border-top:0}
+.stock b{width:44px}
+.step{display:inline-flex;align-items:center;gap:2px;padding:3px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--s200)}
+.step button{width:34px;height:34px;border-radius:999px;display:grid;place-items:center;font-size:18px;line-height:1}
+.step span{min-width:26px;text-align:center;font-weight:500}
+
+/* ---- Website editor and its preview of the shop ---- */
+.prev-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;color:var(--muted);font-size:12px}
+.prev-h span{display:inline-flex;align-items:center;gap:6px}
+.prev-h svg.i{width:15px;height:15px}
+.site{border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 0 0 1px var(--s100)}
+.site-nav{display:flex;align-items:center;gap:14px;padding:12px 16px;font-size:12px;color:var(--muted)}
+.site-nav b{font-family:var(--display);font-size:16px;color:var(--ink);margin-right:auto}
+.site-hero{position:relative;min-height:220px;display:flex;align-items:flex-end;padding:20px;color:#fff}
+.site-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(19,19,20,.9),rgba(19,19,20,.55) 55%,rgba(19,19,20,.15))}
+.site-copy{position:relative;max-width:420px}
+.site-copy h2{font-family:var(--display);font-weight:500;font-size:26px;line-height:1.05;letter-spacing:-.025em}
+.site-copy p{margin-top:8px;color:var(--s100);font-size:13px}
+.site-btn{display:inline-flex;align-items:center;min-height:36px;margin-top:12px;padding:0 14px;border-radius:999px;background:var(--lime);color:var(--ink);font-weight:500;font-size:13px}
+.site-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px 16px 16px}
+.site-grid .sw{aspect-ratio:4/5;border-radius:8px}
+.site-grid b{display:block;font-size:12px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.site-grid small{font-size:11px}
+@media(min-width:1000px){.site-hero{min-height:290px}.site-copy h2{font-size:34px}}
+
+/* ---- Visitors ---- */
+.cols{position:relative;display:flex;align-items:flex-end;gap:3px;height:150px}
+.col{flex:1;height:100%;display:flex;align-items:flex-end}
+.col i{display:block;width:100%;height:0;border-radius:4px 4px 2px 2px;background:var(--ink);transition:height .7s cubic-bezier(.2,.7,.2,1),background-color .2s}
+.col.hl i{background:var(--lime);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.axis{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--muted)}
+.tip{position:absolute;z-index:3;bottom:100%;transform:translate(-50%,-6px);padding:8px 10px;border-radius:10px;background:var(--ink);color:#fff;font-size:12px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none}
+.tip.on{opacity:1}
+.bl+.bl{margin-top:12px}
+.bl div{display:flex;justify-content:space-between;gap:10px}
+.dn{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.donut{width:120px;height:120px;border-radius:50%;flex-shrink:0;-webkit-mask:radial-gradient(circle,transparent 54%,#000 55%);mask:radial-gradient(circle,transparent 54%,#000 55%)}
+.legend{display:flex;flex-direction:column;gap:8px}
+.legend span{display:flex;align-items:center;gap:8px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.heat{display:grid;grid-template-columns:repeat(24,1fr);gap:2px}
+.heat i{display:block;height:34px;border-radius:3px}
+.heat-ax{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--muted)}
+.fn+.fn{margin-top:12px}
+.fn div{display:flex;justify-content:space-between;gap:10px}
+
+/* ---- Money ---- */
+.gcols{display:flex;align-items:flex-end;gap:14px;height:170px}
+.gcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%}
+.gcol .pair{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;gap:4px}
+.gcol .pair i{display:block;width:44%;max-width:28px;height:0;border-radius:5px 5px 2px 2px;transition:height .7s cubic-bezier(.2,.7,.2,1)}
+.gcol .pair i.a{background:var(--lime);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.gcol .pair i.b{background:var(--ink)}
+.gcol span{font-size:11px;color:var(--muted)}
+.report{max-width:620px}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px 0 16px;border-bottom:1px dashed var(--s300)}
+.sum .v{font-family:var(--display);font-weight:500;font-size:22px;margin-top:6px}
+.line{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--s100)}
+.line:first-of-type{border-top:0}
+.total{display:flex;justify-content:space-between;padding-top:12px;margin-top:4px;border-top:1.5px solid var(--ink);font-weight:500}
+
+/* ---- Search ---- */
+.serp{margin-top:10px;padding:14px;border-radius:12px;background:var(--s50)}
+.serp .u{display:flex;align-items:center;gap:8px}
+.serp .u small{display:block}
+.fav{width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--lime);display:grid;place-items:center;font-family:var(--display);font-size:13px;flex-shrink:0}
+.serp h3{font-size:18px;font-weight:400;margin-top:8px;color:var(--ink);text-decoration:underline;text-decoration-color:var(--s300);text-underline-offset:3px;line-height:1.3}
+.serp p{color:var(--muted);margin-top:4px;font-size:13px}
+.share{display:flex;gap:12px;margin-top:10px;padding:10px;border-radius:12px;background:var(--s50)}
+.share .sw{width:72px;height:72px}
+.share b{display:block;font-size:13px}
+.share p{font-size:12px;color:var(--muted);margin-top:2px}
+.code{margin-top:14px;padding:16px;border-radius:12px;background:var(--ink);color:var(--s100);font:400 12.5px/1.6 var(--mono);white-space:pre-wrap;word-break:break-all;min-height:210px}
+.code .t{color:var(--lime)}
+.code .c{color:var(--s400)}
+.code .ln{display:block;animation:ln .35s ease-out both}
+@keyframes ln{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* The pointer: an arrow on a laptop, a fingertip on a phone or tablet. */
+.mock-cursor{position:absolute;left:0;top:0;z-index:200;pointer-events:none;opacity:0;transition:transform .75s cubic-bezier(.65,0,.35,1),opacity .3s}
+.mock-cursor svg{display:block;width:26px;height:26px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.mock-cursor .ring{position:absolute;left:-4px;top:-4px;width:34px;height:34px;border-radius:50%;background:rgba(120,120,125,.45);transform:scale(0);opacity:0}
+.mock-cursor.click .ring{animation:mock-ring .45s ease-out}
+@keyframes mock-ring{0%{transform:scale(0);opacity:.9}100%{transform:scale(1.25);opacity:0}}
+.mock-cursor .finger{display:none}
+html[data-device="phone"] .mock-cursor svg,html[data-device="tablet"] .mock-cursor svg{display:none}
+html[data-device="phone"] .mock-cursor .finger,html[data-device="tablet"] .mock-cursor .finger{display:block;position:absolute;left:-19px;top:-19px;width:38px;height:38px;border-radius:50%;background:rgba(20,20,22,.32);box-shadow:0 0 0 1.5px rgba(255,255,255,.9),0 4px 14px rgba(0,0,0,.35)}
+html[data-device="phone"] .mock-cursor .ring,html[data-device="tablet"] .mock-cursor .ring{left:-19px;top:-19px;width:38px;height:38px}
+@media(prefers-reduced-motion:reduce){.mock-cursor{display:none}*,*::before,*::after{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="mock-screen" id="screen">
+  <div class="app">
+    <aside class="side" id="side"></aside>
+    <header class="top"><span class="badge">S</span><b>Sample Shop</b><span class="where">Sample data</span></header>
+    <main class="main">
+      <div class="mock-view" data-view="home" inert></div>
+      <div class="mock-view" data-view="products" inert></div>
+      <div class="mock-view" data-view="product" inert></div>
+      <div class="mock-view" data-view="website" inert></div>
+      <div class="mock-view" data-view="pages" inert></div>
+      <div class="mock-view" data-view="visitors" inert></div>
+      <div class="mock-view" data-view="finance" inert></div>
+      <div class="mock-view" data-view="reports" inert></div>
+      <div class="mock-view" data-view="search" inert></div>
+    </main>
+    <nav class="dock" id="dock" aria-label="Sections"></nav>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <div class="mock-cursor" id="cursor" aria-hidden="true"><span class="ring"></span><svg viewBox="0 0 24 24"><path d="M4 2.5l15 9.2-6.6 1.5 3.9 7.1-2.9 1.6-3.9-7.2L4 19.4V2.5Z" fill="#fff" stroke="#111" stroke-width="1.3" stroke-linejoin="round"/></svg><span class="finger"></span></div>
+</div>
+<script>
+(function(){
+  'use strict';
+  var IC={"home":"<path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\"/><path d=\"M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/>","bag":"<path d=\"M16 10a4 4 0 0 1-8 0\"/><path d=\"M3.103 6.034h17.794\"/><path d=\"M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z\"/>","box":"<path d=\"M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z\"/><path d=\"M12 22V12\"/><polyline points=\"3.29 7 12 12 20.71 7\"/><path d=\"m7.5 4.27 9 5.15\"/>","users":"<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><path d=\"M16 3.128a4 4 0 0 1 0 7.744\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/>","chart":"<path d=\"M3 3v16a2 2 0 0 0 2 2h16\"/><path d=\"m19 9-5 5-4-4-3 3\"/>","wallet":"<path d=\"M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1\"/><path d=\"M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4\"/>","fileText":"<path d=\"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z\"/><path d=\"M14 2v5a1 1 0 0 0 1 1h5\"/><path d=\"M10 9H8\"/><path d=\"M16 13H8\"/><path d=\"M16 17H8\"/>","penTool":"<path d=\"M15.707 21.293a1 1 0 0 1-1.414 0l-1.586-1.586a1 1 0 0 1 0-1.414l5.586-5.586a1 1 0 0 1 1.414 0l1.586 1.586a1 1 0 0 1 0 1.414z\"/><path d=\"m18 13-1.375-6.874a1 1 0 0 0-.746-.776L3.235 2.028a1 1 0 0 0-1.207 1.207L5.35 15.879a1 1 0 0 0 .776.746L13 18\"/><path d=\"m2.3 2.3 7.286 7.286\"/><circle cx=\"11\" cy=\"11\" r=\"2\"/>","search":"<path d=\"m21 21-4.34-4.34\"/><circle cx=\"11\" cy=\"11\" r=\"8\"/>","settings":"<path d=\"M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","eye":"<path d=\"M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>","check":"<path d=\"M20 6 9 17l-5-5\"/>","plus":"<path d=\"M5 12h14\"/><path d=\"M12 5v14\"/>","download":"<path d=\"M12 15V3\"/><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><path d=\"m7 10 5 5 5-5\"/>","external":"<path d=\"M15 3h6v6\"/><path d=\"M10 14 21 3\"/><path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\"/>","qr":"<rect width=\"5\" height=\"5\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"16\" y=\"3\" rx=\"1\"/><rect width=\"5\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/><path d=\"M21 16h-3a2 2 0 0 0-2 2v3\"/><path d=\"M21 21v.01\"/><path d=\"M12 7v3a2 2 0 0 1-2 2H7\"/><path d=\"M3 12h.01\"/><path d=\"M12 3h.01\"/><path d=\"M12 16v.01\"/><path d=\"M16 12h1\"/><path d=\"M21 12v.01\"/><path d=\"M12 21v-1\"/>","globe":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20\"/><path d=\"M2 12h20\"/>","receipt":"<path d=\"M12 17V7\"/><path d=\"M16 8h-6a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8\"/><path d=\"M4 3a1 1 0 0 1 1-1 1.3 1.3 0 0 1 .7.2l.933.6a1.3 1.3 0 0 0 1.4 0l.934-.6a1.3 1.3 0 0 1 1.4 0l.933.6a1.3 1.3 0 0 0 1.4 0l.933-.6a1.3 1.3 0 0 1 1.4 0l.934.6a1.3 1.3 0 0 0 1.4 0l.933-.6A1.3 1.3 0 0 1 19 2a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1 1.3 1.3 0 0 1-.7-.2l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.934.6a1.3 1.3 0 0 1-1.4 0l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-1.4 0l-.934-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-.7.2 1 1 0 0 1-1-1z\"/>","calendar":"<path d=\"M8 2v3\"/><path d=\"M16 2v3\"/><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M3 9h18\"/>","sitemap":"<rect x=\"16\" y=\"16\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"2\" y=\"16\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"9\" y=\"2\" width=\"6\" height=\"6\" rx=\"1\"/><path d=\"M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3\"/><path d=\"M12 12V8\"/>","bot":"<path d=\"M12 8V4H8\"/><rect width=\"16\" height=\"12\" x=\"4\" y=\"8\" rx=\"2\"/><path d=\"M2 14h2\"/><path d=\"M20 14h2\"/><path d=\"M15 13v2\"/><path d=\"M9 13v2\"/>","image":"<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\"/><circle cx=\"9\" cy=\"9\" r=\"2\"/><path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\"/>","layers":"<path d=\"M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z\"/><path d=\"M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12\"/><path d=\"M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17\"/>","clock":"<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 6v6l4 2\"/>","trendingUp":"<path d=\"M16 7h6v6\"/><path d=\"m22 7-8.5 8.5-5-5L2 17\"/>","shield":"<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"m9 12 2 2 4-4\"/>","mapPin":"<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/>","mail":"<path d=\"m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7\"/><rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"/>","monitorSmartphone":"<path d=\"M18 8V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8\"/><path d=\"M10 19v-3.96 3.15\"/><path d=\"M7 19h5\"/><rect width=\"6\" height=\"10\" x=\"16\" y=\"12\" rx=\"2\"/>","phone":"<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\" ry=\"2\"/><path d=\"M12 18h.01\"/>","x":"<path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/>","arrowRight":"<path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/>","store":"<path d=\"M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5\"/><path d=\"M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244\"/><path d=\"M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05\"/>","zap":"<path d=\"M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z\"/>"};
+  var screen=document.getElementById('screen'), cur=document.getElementById('cursor'), toastEl=document.getElementById('toast');
+  var views=[].slice.call(screen.querySelectorAll('.mock-view'));
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var TOUR=(location.pathname.match(/wh-([a-z]+)\.html/)||[])[1]||'cms';
+
+  function ic(n){ return '<svg class="i" viewBox="0 0 24 24" aria-hidden="true">'+(IC[n]||'')+'</svg>'; }
+  function naira(n){ return '₦'+Math.round(n).toLocaleString('en-NG'); }
+  function num(n){ return Math.round(n).toLocaleString('en-NG'); }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function $(sel,root){ return (root||screen).querySelector(sel); }
+  function $$(sel,root){ return [].slice.call((root||screen).querySelectorAll(sel)); }
+  function view(name){ return $('.mock-view[data-view="'+name+'"]'); }
+
+  /* ---- Sample data. Every name and figure is an example. ---- */
+  var NAV=[
+    ['Daily',[['home','Home','home'],['orders','Orders','bag'],['products','Products','box'],['customers','Customers','users'],['visitors','Visitors','chart']]],
+    ['Money',[['finance','Finance','wallet'],['reports','Reports','fileText']]],
+    ['Website',[['website','Site content','penTool'],['pages','Pages','layers'],['search','Search','search']]],
+    ['Shop',[['settings','Settings','settings']]]
+  ];
+  var DOCK=[['home','Home','home'],['products','Products','box'],['website','Site content','penTool'],['visitors','Visitors','chart'],['finance','Finance','wallet']];
+  var DAYS=['Fri','Sat','Sun','Mon','Tue','Wed','Today'];
+  var PRODUCTS=[
+    {id:'indigo',name:'Indigo wrap dress',col:'Dresses',price:38500,sw:'sw1',stock:[['S',2],['M',3],['L',0],['XL',1]]},
+    {id:'adire',name:'Adire two-piece set',col:'Sets',price:45000,sw:'sw2',stock:[['S',1],['M',2],['L',2],['XL',0]]},
+    {id:'bubu',name:'Ankara bubu',col:'Dresses',price:32000,sw:'sw3',stock:[['One size',6]]},
+    {id:'pants',name:'Tie-dye pants',col:'Pants',price:21500,sw:'sw4',stock:[['S',0],['M',0],['L',0]]},
+    {id:'shirt',name:'Kampala shirt',col:'Shirts',price:18000,sw:'sw5',stock:[['M',4],['L',3]]},
+    {id:'wrap',name:'Head wrap',col:'Accessories',price:6500,sw:'sw6',stock:[['One size',12]]}
+  ];
+  var ORDERS=[
+    ['#1048','Amaka O.','2 items, 2 hours ago',70500,'To pack','lime'],
+    ['#1047','Tunde B.','1 item, 5 hours ago',18000,'Sent',''],
+    ['#1046','Zainab M.','1 item, yesterday',45000,'Sent',''],
+    ['#1045','Chidi E.','3 items, yesterday',76500,'Delivered','ink']
+  ];
+  var SOURCES=[['Instagram',41],['WhatsApp',26],['Google',17],['Typed in',11],['Other',5]];
+  var CITIES=[['Lagos',58],['Abuja',14],['Port Harcourt',8],['Ibadan',6],['Outside Nigeria',5]];
+  var HOURS=[2,1,1,0,0,1,3,6,9,11,12,16,22,20,15,13,14,17,24,31,34,28,15,6];
+  var FILES={
+    sitemap:['<?xml version="1.0" encoding="UTF-8"?>','<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">','  <url><loc>https://sampleshop.example/</loc></url>','  <url><loc>https://sampleshop.example/shop</loc></url>','  <url><loc>https://sampleshop.example/shop/indigo-wrap-dress</loc></url>','  <url><loc>https://sampleshop.example/shop/adire-two-piece-set</loc></url>','  <url><loc>https://sampleshop.example/delivery</loc></url>','  <url><loc>https://sampleshop.example/about</loc></url>','</urlset>'],
+    robots:['# Who may read the site, and what to skip','User-agent: *','Allow: /','Disallow: /admin','Disallow: /checkout','','Sitemap: https://sampleshop.example/sitemap.xml'],
+    llms:['# Sample Shop','','> Hand-dyed clothes made in Lagos, priced in naira','> and delivered across Nigeria.','','## Shop','- [All pieces](https://sampleshop.example/shop): dresses, sets and pants','- [Delivery](https://sampleshop.example/delivery): fees shown before you pay','','## Contact','- WhatsApp and email on every page'],
+    ld:['{','  "@context": "https://schema.org",','  "@type": "ClothingStore",','  "name": "Sample Shop",','  "url": "https://sampleshop.example",','  "address": {','    "addressLocality": "Lagos",','    "addressCountry": "NG"','  }','}']
+  };
+  var START={cms:'website',dashboard:'home',analytics:'visitors',search:'search'};
+
+  var S;
+  function init(){
+    return {week:[64500,112000,38500,71000,83500,99000,58000],orders:34,todo:4,days:14,file:'sitemap',
+      head:'New pieces, every week',
+      title:'Sample Shop',desc:'Clothes from Lagos.',
+      stock:PRODUCTS[0].stock.map(function(s){ return s.slice(); }),
+      now:6};
+  }
+
+  /* ---- Visitors: a steady sample series, busier at weekends ---- */
+  function series(n){
+    var out=[]; for(var i=0;i<n;i++){ var d=(i+n)%7, wk=(d===5||d===6)?1.28:1; out.push(Math.round((150+i*(60/n)+34*Math.sin(i*1.7))*wk)); } return out;
+  }
+  function sum(a){ return a.reduce(function(x,y){ return x+y; },0); }
+
+  /* ---- Rendering ---- */
+  function navHtml(){
+    var h='<div class="brand"><span class="badge">S</span><div><b>Sample Shop</b><small>Admin</small></div></div>';
+    NAV.forEach(function(g){ h+='<h6>'+g[0]+'</h6>'; g[1].forEach(function(n){ h+='<a href="#'+n[0]+'" data-go="'+n[0]+'">'+ic(n[2])+'<span>'+n[1]+'</span></a>'; }); });
+    return h+'<p class="note">A sample shop. Every name and number here is example data.</p>';
+  }
+  function dockHtml(){
+    return DOCK.map(function(n){ return '<a href="#'+n[0]+'" data-go="'+n[0]+'" aria-label="'+n[1]+'">'+ic(n[2])+'</a>'; }).join('');
+  }
+  function ph(title,sub,acts,back){
+    return '<div class="ph"><div>'+(back?'<a class="back" href="#'+back[0]+'" data-go="'+back[0]+'">← '+back[1]+'</a>':'')+'<h1>'+title+'</h1>'+(sub?'<p>'+sub+'</p>':'')+'</div>'+(acts?'<div class="acts">'+acts+'</div>':'')+'</div>';
+  }
+  function stat(label,value,sub,id){ return '<div class="card stat"><div class="k">'+label+'</div><div class="v"'+(id?' id="'+id+'"':'')+'>'+value+'</div>'+(sub?'<div class="s">'+sub+'</div>':'')+'</div>'; }
+  function meterRow(label,pct,value,lime){ return '<div class="bl"><div><span>'+label+'</span><b>'+(value||pct+'%')+'</b></div><div class="meter'+(lime?' lime':'')+'"><i data-w="'+pct+'"></i></div></div>'; }
+  function orderRow(o,fresh){
+    return '<div class="row'+(fresh?' new':'')+'"><div class="ico">'+ic('bag')+'</div><div class="grow"><b>'+o[0]+' '+o[1]+'</b><small>'+o[2]+'</small></div><div class="end"><b>'+naira(o[3])+'</b><span class="chip '+o[5]+'">'+o[4]+'</span></div></div>';
+  }
+
+  function vHome(){
+    var max=Math.max.apply(null,S.week);
+    var bars=S.week.map(function(v,i){ return '<div class="bar'+(i===6?' today':'')+'"><i data-h="'+(v/max*100)+'"></i><span>'+DAYS[i]+'</span></div>'; }).join('');
+    return ph('Sample Shop','How the shop is doing this week, and what to do next. Times are Lagos time.','<a class="btn btn-ghost" href="#home">'+ic('external')+'View shop</a>')+
+      '<div class="home-grid">'+
+        '<section class="card hero"><div class="k">This week</div><div class="disp hero-v" id="weekV">'+naira(sum(S.week))+'</div><p class="hero-s"><span id="weekO">'+S.orders+'</span> orders. Today <span id="todayV">'+naira(S.week[6])+'</span></p><div class="bars" id="bars">'+bars+'</div></section>'+
+        '<section class="card"><div class="tabrow"><button class="on" data-tab="todo">To do</button><button data-tab="messages">Messages</button><button data-tab="best">Best sellers</button><button data-tab="channels">Top channels</button></div>'+
+          '<div class="panel on" data-panel="todo">'+
+            '<div class="row"><div class="ico">'+ic('box')+'</div><div class="grow"><b id="todoPack">'+S.todo+' orders to pack</b><small>Paid and waiting to go out</small></div></div>'+
+            '<div class="row"><div class="ico">'+ic('mail')+'</div><div class="grow"><b>2 unread messages</b><small>From the contact form</small></div></div>'+
+            '<div class="row"><div class="ico">'+ic('wallet')+'</div><div class="grow"><b>1 debt overdue</b><small>'+naira(12000)+', due last Friday</small></div></div>'+
+          '</div>'+
+          '<div class="panel" data-panel="messages">'+
+            '<div class="row"><div class="grow"><b>Amaka O.</b><small>Do you have the wrap dress in L?</small></div><small>2 hours ago</small></div>'+
+            '<div class="row"><div class="grow"><b>Femi A.</b><small>How long is delivery to Abuja?</small></div><small>Yesterday</small></div>'+
+            '<div class="row"><div class="grow"><b>Ngozi K.</b><small>Thank you, it fits well.</small></div><small>Monday</small></div>'+
+          '</div>'+
+          '<div class="panel" data-panel="best">'+
+            [['Indigo wrap dress',14,'sw1'],['Adire two-piece set',9,'sw2'],['Ankara bubu',7,'sw3'],['Kampala shirt',6,'sw5']].map(function(p){ return '<div class="row"><span class="sw '+p[2]+'" style="width:36px;height:36px"></span><div class="grow"><b>'+p[0]+'</b></div><small>'+p[1]+' sold</small></div>'; }).join('')+
+          '</div>'+
+          '<div class="panel" data-panel="channels">'+SOURCES.slice(0,4).map(function(s){ return meterRow(s[0],s[1]); }).join('')+'</div>'+
+        '</section>'+
+      '</div>'+
+      '<div class="stats">'+stat('Orders',num(1284),'All time')+stat('Customers',num(912),'All time')+stat('Average order',naira(15200),'Last 30 days')+stat('Owed to you',naira(42000),'2 people')+'</div>'+
+      '<section class="card"><div class="card-h"><b>Recent orders</b><a class="k" href="#home">See all</a></div><div id="orders">'+ORDERS.map(function(o){ return orderRow(o); }).join('')+'</div></section>';
+  }
+
+  function stockChips(stock){
+    return stock.map(function(s){ return '<span class="chip'+(s[1]===0?'':' lime')+'">'+s[0]+' '+s[1]+'</span>'; }).join('');
+  }
+  function vProducts(){
+    return ph('Products','What you sell. 24 pieces in 5 collections.','<a class="btn btn-lime" href="#products">'+ic('plus')+'Add product</a>')+
+      '<div class="seg" style="margin-bottom:14px"><button class="on">All</button><button>In stock</button><button>Sold out</button></div>'+
+      '<section class="card">'+PRODUCTS.map(function(p,i){
+        var stock=i===0?S.stock:p.stock, total=sum(stock.map(function(s){ return s[1]; }));
+        return '<div class="row prod" data-prod="'+p.id+'"><span class="sw '+p.sw+'" style="width:46px;height:46px"></span><div class="grow"><b>'+p.name+'</b><small>'+p.col+'</small><div class="sizes">'+stockChips(stock)+'</div></div><div class="end"><b>'+naira(p.price)+'</b>'+(total?'<small>'+total+' in stock</small>':'<span class="chip ink">Sold out</span>')+'</div></div>';
+      }).join('')+'</section>';
+  }
+  function vProduct(){
+    var p=PRODUCTS[0];
+    var rows=S.stock.map(function(s,i){ return '<div class="stock"><b>'+s[0]+'</b><span class="step"><button data-step="-1" data-i="'+i+'" aria-label="One fewer">−</button><span>'+s[1]+'</span><button data-step="1" data-i="'+i+'" aria-label="One more">+</button></span>'+(s[1]===0?'<span class="chip ink">Sold out</span>':'')+'</div>'; }).join('');
+    return ph(p.name,'Dresses. Shown on the shop and in search.','<span class="status" id="prodStatus"></span><button class="btn btn-lime" data-save="prod">Save</button>',['products','Products'])+
+      '<div class="ed-grid even">'+
+        '<section class="card">'+
+          '<div class="field"><label>Name</label><div class="inp">'+p.name+'</div></div>'+
+          '<div class="field"><label>Price</label><div class="inp">'+naira(p.price)+'</div><small>In naira. Delivery is added at checkout.</small></div>'+
+          '<div class="field"><label>Collection</label><div class="inp sel"><span>Dresses</span>'+ic('arrowRight')+'</div></div>'+
+          '<div class="field"><label>About this piece</label><div class="inp ta">Hand-dyed cotton with a tie at the waist. Each one is dyed by hand, so the pattern on yours will differ a little.</div></div>'+
+        '</section>'+
+        '<div class="stack">'+
+          '<section class="card"><div class="card-h"><b>Photos</b><small>Drag to reorder</small></div><div class="photos"><span class="sw sw1"></span><span class="sw sw1" style="filter:brightness(1.25)"></span><span class="sw sw1" style="filter:saturate(.6)"></span><span class="add">'+ic('plus')+'</span></div></section>'+
+          '<section class="card"><div class="card-h"><b>Sizes and stock</b><small>Sold out sizes stay on the page</small></div><div id="stockRows">'+rows+'</div></section>'+
+        '</div>'+
+      '</div>';
+  }
+  function vWebsite(){
+    var tabs=['Brand','Home page','Shop page','Product pages','Footer'].map(function(t){ return '<button'+(t==='Home page'?' class="on"':'')+'>'+t+'</button>'; }).join('');
+    return ph('Your website','Change any words or pictures. Nothing goes live until you publish.','<span class="status" id="webStatus"></span><button class="btn btn-ghost" data-save="draft">Save</button><button class="btn btn-lime" data-save="publish">Publish</button>')+
+      '<div class="seg" style="margin-bottom:14px">'+tabs+'</div>'+
+      '<div class="ed-grid">'+
+        '<section class="card">'+
+          '<div class="field" id="fHead"><label>Big heading</label><div class="inp"><span class="txt">'+esc(S.head)+'</span><i class="caret"></i></div></div>'+
+          '<div class="field"><label>Paragraph underneath</label><div class="inp ta">Hand-dyed dresses, sets and pants, priced in naira and delivered across Nigeria.</div></div>'+
+          '<div class="field"><label>Button text</label><div class="inp">Shop the collection</div></div>'+
+          '<div class="field"><label>Picture</label><div class="row" style="padding:0;border:0"><span class="sw sw1" style="width:64px;height:64px"></span><div class="grow"><b>indigo-wrap.jpg</b><small>Shown full width on phones</small></div><button class="btn btn-ghost">Change</button></div></div>'+
+        '</section>'+
+        '<div class="site-wrap"><div class="prev-h"><span>'+ic('eye')+'Live preview: this is how it will look</span><span>Open real site '+ic('external')+'</span></div>'+
+          '<div class="site"><div class="site-nav"><b>Sample Shop</b><span>Shop</span><span>About</span><span>Bag (0)</span></div>'+
+            '<div class="site-hero sw1"><div class="site-copy"><h2 id="pvHead">'+esc(S.head)+'</h2><p>Hand-dyed dresses, sets and pants, priced in naira and delivered across Nigeria.</p><span class="site-btn">Shop the collection</span></div></div>'+
+            '<div class="site-grid">'+PRODUCTS.slice(0,3).map(function(p){ return '<div><span class="sw '+p.sw+'" style="display:block"></span><b>'+p.name+'</b><small>'+naira(p.price)+'</small></div>'; }).join('')+'</div>'+
+          '</div></div>'+
+      '</div>';
+  }
+  function vPages(){
+    var pages=[['Shipping and delivery','Edited 3 hours ago'],['Returns and exchanges','Edited yesterday'],['Size guide','Edited last week'],['Terms','Edited 2 weeks ago'],['Privacy','Edited 2 weeks ago']];
+    return ph('Pages','Shipping, returns, terms, and posts for your blog.','<a class="btn btn-lime" href="#pages">'+ic('plus')+'New page</a>')+
+      '<section class="card">'+pages.map(function(p){ return '<div class="row"><div class="ico">'+ic('fileText')+'</div><div class="grow"><b>'+p[0]+'</b><small>'+p[1]+'</small></div><span class="chip lime">Live</span></div>'; }).join('')+'</section>'+
+      '<div class="two"><section class="card"><div class="card-h"><b>Blog</b><small>4 posts, 1 draft</small></div><div class="row"><div class="grow"><b>How we dye each piece</b><small>Draft, saved privately</small></div><span class="chip">Draft</span></div><div class="row"><div class="grow"><b>Caring for hand-dyed cotton</b><small>Published last month</small></div><span class="chip lime">Live</span></div></section>'+
+      '<section class="card"><div class="card-h"><b>Gallery</b><small>Your lookbook pictures</small></div><div class="photos"><span class="sw sw2"></span><span class="sw sw3"></span><span class="sw sw5"></span><span class="sw sw4"></span></div></section></div>';
+  }
+  function vVisitors(){
+    var d=S.days, s=series(d), v=sum(s), max=Math.max.apply(null,s);
+    var cols=s.map(function(x,i){ return '<div class="col" data-i="'+i+'" data-n="'+x+'"><i data-h="'+(x/max*100)+'"></i></div>'; }).join('');
+    var heatMax=Math.max.apply(null,HOURS);
+    var heat=HOURS.map(function(h){ var a=h/heatMax; return '<i style="background:'+(a>.8?'var(--lime)':'rgba(19,19,20,'+(0.06+a*0.8).toFixed(2)+')')+'"></i>'; }).join('');
+    var seg=[7,14,30,90].map(function(n){ return '<button data-days="'+n+'"'+(n===d?' class="on"':'')+'>'+n+' days</button>'; }).join('');
+    var bags=Math.round(v*0.077), paid=Math.round(bags*0.35), viewed=Math.round(v*0.58);
+    return ph('Visitors','The last '+d+' days. Counted on your own site, with no ad trackers. Times are Lagos time.','<div class="seg">'+seg+'</div>')+
+      '<div class="stats">'+stat('Browsing now','<span id="nowV">'+S.now+'</span>','On the site right now')+stat('Visitors',num(v),d+' days')+stat('Page views',num(v*4.1),'About 4 a visit')+stat('Bags started',num(bags),num(paid)+' paid')+'</div>'+
+      '<section class="card"><div class="card-h"><b>Visitors each day</b><span class="k">Busiest: Saturdays</span></div><div class="cols" id="cols">'+cols+'<div class="tip" id="tip"></div></div><div class="axis"><span>'+d+' days ago</span><span>Today</span></div></section>'+
+      '<div class="two"><section class="card" id="sources"><div class="card-h"><b>Where they came from</b></div>'+SOURCES.map(function(x){ return meterRow(x[0],x[1]); }).join('')+'</section>'+
+      '<section class="card"><div class="card-h"><b>Devices</b></div><div class="dn"><span class="donut" style="background:conic-gradient(var(--ink) 0 84%,var(--lime) 84% 97%,var(--s300) 97% 100%)"></span><div class="legend"><span><i style="background:var(--ink)"></i>Phone, 84%</span><span><i style="background:var(--lime)"></i>Computer, 13%</span><span><i style="background:var(--s300)"></i>Tablet, 3%</span></div></div></section></div>'+
+      '<div class="two"><section class="card"><div class="card-h"><b>Where they are</b></div>'+CITIES.map(function(x){ return meterRow(x[0],x[1]); }).join('')+'</section>'+
+      '<section class="card" id="hours"><div class="card-h"><b>Busiest time of day</b><span class="k">7 pm to 10 pm</span></div><div class="heat">'+heat+'</div><div class="heat-ax"><span>12 am</span><span>6 am</span><span>12 pm</span><span>6 pm</span><span>11 pm</span></div></section></div>'+
+      '<section class="card" id="funnel" style="margin-top:14px"><div class="card-h"><b>From visit to sale</b><small>On the shop, '+d+' days</small></div>'+
+        [['Visited',v],['Looked at a piece',viewed],['Added to bag',bags],['Paid',paid]].map(function(f,i){ return meterRow(f[0],Math.max(2,Math.round(f[1]/v*100)),num(f[1]),i===3); }).join('')+
+      '</section>';
+  }
+  function vFinance(){
+    var M=[['Jun',1420,580],['Jul',1610,660],['Aug',1380,550],['Sep',1770,710],['Oct',1940,740],['Nov',864,331.5]], max=1940;
+    var cols=M.map(function(m){ return '<div class="gcol"><div class="pair"><i class="a" data-h="'+(m[1]/max*100)+'"></i><i class="b" data-h="'+(m[2]/max*100)+'"></i></div><span>'+m[0]+'</span></div>'; }).join('');
+    var costs=[['Fabric and dye',184000],['Tailoring',47000],['Delivery',62500],['Packaging',38000]];
+    return ph('Finance','Takings, costs and profit. This month so far.','<a class="btn btn-ghost" href="#reports" data-go="reports">'+ic('fileText')+'Reports</a>')+
+      '<div class="stats s3">'+stat('Takings',naira(864000),'From 58 orders')+stat('Costs',naira(331500),'4 kinds')+stat('Profit',naira(532500),'Takings less costs')+'</div>'+
+      '<section class="card"><div class="card-h"><b>Takings and costs, last 6 months</b><span class="legend" style="flex-direction:row;gap:14px"><span><i style="background:var(--lime);box-shadow:inset 0 0 0 1.5px var(--ink)"></i>Takings</span><span><i style="background:var(--ink)"></i>Costs</span></span></div><div class="gcols">'+cols+'</div></section>'+
+      '<section class="card" id="costs" style="margin-top:14px"><div class="card-h"><b>Costs this month</b><a class="btn btn-ghost" href="#finance">'+ic('plus')+'Add a cost</a></div>'+
+        costs.map(function(c){ return '<div class="row"><div class="ico">'+ic('receipt')+'</div><div class="grow"><b>'+c[0]+'</b></div><b>'+naira(c[1])+'</b></div>'; }).join('')+
+      '</section>';
+  }
+  function vReports(){
+    var lines=[['Kampala shirt, 1',18000],['Ankara bubu, 1',32000],['Head wrap, 1',6500],['Delivery fees',1500]];
+    return ph('Daily report','One day at a time, to print or download.','<button class="btn btn-ghost">Print</button><button class="btn btn-lime" data-save="report">'+ic('download')+'Download PDF</button>',['finance','Finance'])+
+      '<section class="card report"><div class="card-h"><b>Today</b><small>Lagos time</small></div>'+
+        '<div class="sum"><div><div class="k">Orders</div><div class="v">3</div></div><div><div class="k">Takings</div><div class="v">'+naira(58000)+'</div></div><div><div class="k">Average</div><div class="v">'+naira(19333)+'</div></div></div>'+
+        '<div class="card-h" style="margin:16px 0 4px"><b>What sold</b></div>'+lines.map(function(l){ return '<div class="line"><span>'+l[0]+'</span><span>'+naira(l[1])+'</span></div>'; }).join('')+
+        '<div class="total"><span>Total</span><span>'+naira(58000)+'</span></div>'+
+        '<div class="card-h" style="margin:20px 0 4px"><b>How people paid</b></div>'+[['Card',32000],['Bank transfer',19500],['USSD',6500]].map(function(l){ return '<div class="line"><span>'+l[0]+'</span><span>'+naira(l[1])+'</span></div>'; }).join('')+
+      '</section>';
+  }
+  function vSearch(){
+    var seg=[['sitemap','sitemap.xml'],['robots','robots.txt'],['llms','llms.txt'],['ld','Business details']].map(function(f){ return '<button data-file="'+f[0]+'"'+(f[0]===S.file?' class="on"':'')+'>'+f[1]+'</button>'; }).join('');
+    return ph('Search and sharing','How your site shows up on Google, in AI assistants and in shared links.','<span class="status" id="seoStatus"></span><button class="btn btn-lime" data-save="seo">Save</button>')+
+      '<div class="ed-grid">'+
+        '<section class="card">'+
+          '<div class="field" id="fTitle"><label>Home page title</label><div class="inp"><span class="txt">'+esc(S.title)+'</span><i class="caret"></i></div><small><span id="tLen">'+S.title.length+'</span> of 60 characters</small></div>'+
+          '<div class="field" id="fDesc"><label>Search description</label><div class="inp ta"><span class="txt">'+esc(S.desc)+'</span><i class="caret"></i></div><small>One or two sentences on what you sell and where.</small></div>'+
+          '<div class="field"><label>Search words</label><div class="chips"><span class="chip lime">adire dresses lagos</span><span class="chip lime">ankara two-piece</span><span class="chip lime">hand-dyed clothes</span></div></div>'+
+        '</section>'+
+        '<section class="card"><div class="k">In search results</div>'+
+          '<div class="serp"><div class="u"><span class="fav">S</span><div><b>Sample Shop</b><small>https://sampleshop.example</small></div></div><h3 id="sTitle">'+esc(S.title)+'</h3><p id="sDesc">'+esc(S.desc)+'</p></div>'+
+          '<div class="k" style="margin-top:16px">Shared on WhatsApp</div>'+
+          '<div class="share"><span class="sw sw1"></span><div><b id="wTitle">'+esc(S.title)+'</b><p id="wDesc">'+esc(S.desc)+'</p><small>sampleshop.example</small></div></div>'+
+        '</section>'+
+      '</div>'+
+      '<section class="card" id="files" style="margin-top:14px"><div class="card-h"><b>Files search engines and AI assistants read</b><small>Kept up to date as pages change</small></div><div class="seg">'+seg+'</div><pre class="code" id="code"></pre></section>';
+  }
+
+  function paintCode(type){
+    var el=$('#code'); if(!el) return;
+    el.innerHTML=FILES[type].map(function(line,i){
+      var h=esc(line);
+      if(type==='sitemap') h=h.replace(/(&lt;\/?[a-z?]+)/g,'<span class="t">$1</span>');
+      else if(type==='robots') h=/^#/.test(line)?'<span class="c">'+h+'</span>':h.replace(/^([A-Za-z-]+:)/,'<span class="t">$1</span>');
+      else if(type==='llms') h=/^#|^>/.test(line)?'<span class="t">'+h+'</span>':h;
+      else h=h.replace(/(&quot;|")(@?[a-zA-Z]+)("):/g,'<span class="t">"$2"</span>:');
+      return '<span class="ln" style="animation-delay:'+(i*45)+'ms">'+(h||' ')+'</span>';
+    }).join('');
+  }
+
+  var RENDER={home:vHome,products:vProducts,product:vProduct,website:vWebsite,pages:vPages,visitors:vVisitors,finance:vFinance,reports:vReports,search:vSearch};
+  function render(name){ var v=view(name); v.innerHTML=RENDER[name](); if(name==='search') paintCode(S.file); }
+  function renderAll(){ Object.keys(RENDER).forEach(render); }
+
+  /* Bars and meters grow from nothing each time their screen is shown. */
+  function grow(root){
+    $$('[data-h]',root).forEach(function(el){ el.style.height='0'; });
+    $$('[data-w]',root).forEach(function(el){ el.style.width='0'; });
+    void root.offsetWidth;
+    setTimeout(function(){
+      $$('[data-h]',root).forEach(function(el){ el.style.height=el.getAttribute('data-h')+'%'; });
+      $$('[data-w]',root).forEach(function(el){ el.style.width=el.getAttribute('data-w')+'%'; });
+    },60);
+  }
+  var NAV_OF={product:'products'};
+  function show(name){
+    views.forEach(function(v){ var on=v.dataset.view===name; v.classList.toggle('on',on); if(on){ v.removeAttribute('inert'); v.scrollTop=0; } else v.setAttribute('inert',''); });
+    var key=NAV_OF[name]||name;
+    $$('[data-go]').forEach(function(a){ if(!a.closest('.mock-view')) a.classList.toggle('on',a.dataset.go===key); });
+    var v=view(name); if(v) grow(v);
+  }
+  function current(){ return $('.mock-view.on'); }
+
+  var toastTimer=null;
+  function toast(text){
+    toastEl.innerHTML=ic('check')+'<span>'+text+'</span>'; toastEl.classList.add('on');
+    clearTimeout(toastTimer); toastTimer=setTimeout(function(){ toastEl.classList.remove('on'); },2600);
+  }
+  function setStatus(id,text,ok){ var el=$('#'+id); if(el){ el.className='status'+(ok?' ok':''); el.innerHTML=text?(ic('check')+text):''; } }
+
+  /* ---- What a click does (shared by the tour and by a visitor's own taps) ---- */
+  function act(el){
+    var go=el.closest('[data-go]'); if(go){ if(RENDER[go.dataset.go]) show(go.dataset.go); return; }
+    var tab=el.closest('[data-tab]'); if(tab){ var card=tab.closest('.card'); $$('[data-tab]',card).forEach(function(b){ b.classList.toggle('on',b===tab); }); $$('.panel',card).forEach(function(p){ var on=p.dataset.panel===tab.dataset.tab; p.classList.toggle('on',on); if(on) grow(p); }); return; }
+    var days=el.closest('[data-days]'); if(days){ S.days=+days.dataset.days; render('visitors'); grow(view('visitors')); return; }
+    var file=el.closest('[data-file]'); if(file){ S.file=file.dataset.file; $$('[data-file]').forEach(function(b){ b.classList.toggle('on',b===file); }); paintCode(S.file); return; }
+    var prod=el.closest('[data-prod]'); if(prod){ if(prod.dataset.prod==='indigo') show('product'); return; }
+    var step=el.closest('[data-step]'); if(step){ var i=+step.dataset.i; S.stock[i][1]=Math.max(0,S.stock[i][1]+(+step.dataset.step)); var y=current().scrollTop; render('product'); render('products'); current().scrollTop=y; setStatus('prodStatus','Not saved yet'); return; }
+    var save=el.closest('[data-save]'); if(save){
+      var k=save.dataset.save;
+      if(k==='draft') setStatus('webStatus','Saved privately');
+      else if(k==='publish'){ setStatus('webStatus','Live on your site',true); toast('Published. Your changes are on the shop.'); }
+      else if(k==='prod'){ setStatus('prodStatus','Saved',true); toast('Saved. The shop shows the new stock.'); }
+      else if(k==='seo'){ setStatus('seoStatus','Saved',true); }
+      else if(k==='report'){ toast('Today’s report is ready to download.'); }
+    }
+  }
+  screen.addEventListener('click',function(e){ var a=e.target.closest('a[href^="#"]'); if(a) e.preventDefault(); if(e.target.closest('.mock-view, .side, .dock')) act(e.target); });
+  screen.addEventListener('pointerdown',function(e){ if(e.isTrusted) stop(); });
+  screen.addEventListener('keydown',function(){ stop(); });
+
+  /* ---- The tour: the pointer goes to a control, presses it, and the app does what a press does ---- */
+  var token=0, running=false, chosen=false, TRAVEL=750;
+  function wait(ms){ var t=token; return new Promise(function(res,rej){ setTimeout(function(){ if(t===token) res(); else rej(new Error('paused')); },ms); }); }
+  function visible(el){ return !!el && el.getClientRects().length>0 && getComputedStyle(el).visibility!=='hidden'; }
+  function find(sel){
+    var list=$$(sel);
+    for(var i=0;i<list.length;i++){ var v=list[i].closest('.mock-view'); if(v&&!v.classList.contains('on')) continue; if(visible(list[i])) return list[i]; }
+    return null;
+  }
+  async function reveal(el){
+    var v=el.closest('.mock-view'); if(!v) return;
+    var r=el.getBoundingClientRect(), vr=v.getBoundingClientRect();
+    if(r.top<vr.top+12||r.bottom>vr.bottom-96){ v.scrollTo({top:Math.max(0,v.scrollTop+(r.top-vr.top)-vr.height*.3),behavior:'smooth'}); await wait(700); }
+  }
+  async function point(el){
+    var box=screen.getBoundingClientRect(), r=el.getBoundingClientRect();
+    cur.style.opacity=1; cur.style.transform='translate('+(r.left-box.left+Math.min(r.width*.5,60))+'px,'+(r.top-box.top+r.height*.55)+'px)';
+    await wait(TRAVEL);
+  }
+  function press(el){
+    cur.classList.remove('click'); void cur.offsetWidth; cur.classList.add('click');
+    if(el.animate) el.animate([{transform:'scale(1)'},{transform:'scale(.97)'},{transform:'scale(1)'}],{duration:220,easing:'ease-out'});
+  }
+  /* Taps a control. A control that is not on this screen (the sidebar, on a phone) is pressed without the pointer. */
+  async function tap(sel){
+    var el=find(sel);
+    if(!el){ var any=$(sel); if(any) act(any); return; }
+    await reveal(el); await point(el); press(el); act(el);
+  }
+  async function scrollTo(sel){
+    var v=current(), el=sel?find(sel):null; if(!v) return;
+    var top=el?v.scrollTop+el.getBoundingClientRect().top-v.getBoundingClientRect().top-16:0;
+    v.scrollTo({top:Math.max(0,top),behavior:'smooth'}); await wait(800);
+  }
+  /* Clears a drawn field and types into it, mirroring every letter into the preview. */
+  async function type(fieldSel,text,mirror){
+    var field=find(fieldSel); if(!field) return;
+    var inp=$('.inp',field), txt=$('.txt',field);
+    await reveal(field); await point(inp); press(inp); field.classList.add('focus');
+    await wait(300);
+    var value=txt.textContent;
+    while(value.length){ value=value.slice(0,-2); txt.textContent=value; mirror(value); await wait(24); }
+    await wait(200);
+    for(var i=1;i<=text.length;i++){ value=text.slice(0,i); txt.textContent=value; mirror(value); await wait(text.charAt(i-1)===' '?70:42); }
+    await wait(400); field.classList.remove('focus');
+  }
+  function countUp(sel,from,to,ms){
+    var el=$(sel), steps=18, i=0;
+    (function next(){ if(!el) return; i++; el.textContent=naira(from+(to-from)*i/steps); if(i<steps) setTimeout(next,ms/steps); })();
+  }
+  /* Somebody browsing: the number moves now and then while the tour runs. */
+  async function browsing(){
+    var seq=[7,6,8,7,9,8];
+    for(var i=0;i<seq.length;i++){ await wait(2400); S.now=seq[i]; var el=$('#nowV'); if(el) el.textContent=seq[i]; }
+  }
+  function newOrder(){
+    toast('New order #1049, '+naira(24000)+', paid by transfer');
+    var before=sum(S.week); S.week[6]+=24000; S.orders+=1; S.todo+=1;
+    countUp('#weekV',before,sum(S.week),900);
+    var o=$('#weekO'); if(o) o.textContent=S.orders;
+    var t=$('#todayV'); if(t) t.textContent=naira(S.week[6]);
+    var p=$('#todoPack'); if(p) p.textContent=S.todo+' orders to pack';
+    var max=Math.max.apply(null,S.week);
+    $$('#bars .bar i').forEach(function(el,i){ el.setAttribute('data-h',S.week[i]/max*100); el.style.height=(S.week[i]/max*100)+'%'; });
+    var list=$('#orders'); if(list) list.insertAdjacentHTML('afterbegin',orderRow(['#1049','Kemi A.','1 item, just now',24000,'To pack','lime'],true));
+  }
+  async function hoverCol(i){
+    var col=find('#cols .col[data-i="'+i+'"]'); if(!col) return;
+    await reveal(col); await point(col.firstChild);
+    col.classList.add('hl');
+    var tip=$('#tip'), wrap=$('#cols'), r=col.getBoundingClientRect(), wr=wrap.getBoundingClientRect();
+    var day=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][(i+S.days)%7];
+    tip.textContent=day+', '+col.dataset.n+' visitors';
+    tip.style.left=Math.min(Math.max(r.left-wr.left+r.width/2,70),wr.width-70)+'px';
+    tip.classList.add('on');
+  }
+  function busiest(){ var s=series(S.days), best=0; s.forEach(function(x,i){ if(x>s[best]) best=i; }); return best; }
+
+  var TOURS={
+    cms:[
+      function(){ return wait(2200); },
+      function(){ return type('#fHead','Hand-dyed pieces, made in Lagos',function(v){ S.head=v; var h=$('#pvHead'); if(h) h.textContent=v; }); },
+      function(){ return matchMedia('(min-width:1000px)').matches?wait(600):scrollTo('.site-wrap').then(function(){ return wait(1800); }); },
+      function(){ return tap('[data-save="draft"]').then(function(){ return wait(1800); }); },
+      function(){ return tap('[data-save="publish"]').then(function(){ return wait(2600); }); },
+      function(){ return tap('[data-go="products"]').then(function(){ return wait(2400); }); },
+      function(){ return tap('[data-prod="indigo"]').then(function(){ return wait(2000); }); },
+      function(){ return tap('[data-step="1"][data-i="2"]').then(function(){ return wait(1500); }); },
+      function(){ return tap('[data-save="prod"]').then(function(){ return wait(2400); }); },
+      function(){ return tap('[data-go="pages"]').then(function(){ return wait(3000); }); },
+      function(){ return tap('[data-go="website"]').then(function(){ return wait(600); }); }
+    ],
+    dashboard:[
+      function(){ return wait(2600); },
+      function(){ newOrder(); return wait(3400); },
+      function(){ return tap('[data-tab="best"]').then(function(){ return wait(2400); }); },
+      function(){ return tap('[data-tab="channels"]').then(function(){ return wait(2400); }); },
+      function(){ return scrollTo('#orders').then(function(){ return wait(2200); }); },
+      function(){ return tap('[data-go="finance"]').then(function(){ return wait(3200); }); },
+      function(){ return scrollTo('#costs').then(function(){ return wait(2400); }); },
+      function(){ return tap('[data-go="reports"]').then(function(){ return wait(2600); }); },
+      function(){ return tap('[data-save="report"]').then(function(){ return wait(2600); }); },
+      function(){ return tap('[data-go="home"]').then(function(){ return wait(600); }); }
+    ],
+    analytics:[
+      function(){ browsing().catch(function(){}); return wait(2600); },
+      function(){ return tap('[data-days="30"]').then(function(){ return wait(2600); }); },
+      function(){ return hoverCol(busiest()).then(function(){ return wait(2600); }); },
+      function(){ var t=$('#tip'); if(t) t.classList.remove('on'); cur.style.opacity=0; return scrollTo('#sources').then(function(){ return wait(3000); }); },
+      function(){ return scrollTo('#hours').then(function(){ return wait(2600); }); },
+      function(){ return scrollTo('#funnel').then(function(){ return wait(3200); }); },
+      function(){ return scrollTo(null).then(function(){ return tap('[data-days="7"]'); }).then(function(){ return wait(2800); }); }
+    ],
+    search:[
+      function(){ return wait(2000); },
+      function(){ return type('#fTitle','Sample Shop | Hand-dyed clothes, made in Lagos',function(v){ S.title=v; ['#sTitle','#wTitle'].forEach(function(s){ var e=$(s); if(e) e.textContent=v; }); var l=$('#tLen'); if(l) l.textContent=v.length; }); },
+      function(){ return type('#fDesc','Hand-dyed Adire and Ankara pieces, priced in naira and delivered across Nigeria.',function(v){ S.desc=v; ['#sDesc','#wDesc'].forEach(function(s){ var e=$(s); if(e) e.textContent=v; }); }); },
+      function(){ return matchMedia('(min-width:1000px)').matches?wait(400):scrollTo('.serp').then(function(){ return wait(2200); }); },
+      function(){ return tap('[data-save="seo"]').then(function(){ return wait(1800); }); },
+      function(){ return scrollTo('#files').then(function(){ return wait(2400); }); },
+      function(){ return tap('[data-file="robots"]').then(function(){ return wait(2800); }); },
+      function(){ return tap('[data-file="llms"]').then(function(){ return wait(3000); }); },
+      function(){ return tap('[data-file="ld"]').then(function(){ return wait(2600); }); }
+    ]
+  };
+
+  function reset(){ S=init(); renderAll(); show(START[TOUR]); }
+  async function loop(){
+    try{
+      for(;;){
+        var steps=TOURS[TOUR]||TOURS.cms;
+        for(var i=0;i<steps.length;i++) await steps[i]();
+        cur.style.opacity=0; await wait(600); reset();
+      }
+    }catch(e){ /* paused: the next start begins again from a fresh screen */ }
+  }
+  function start(){
+    if(running||chosen||reduce) return;
+    running=true; token++; reset(); window.__mockStarted=Date.now(); loop();
+  }
+  function pause(){ running=false; token++; cur.style.opacity=0; toastEl.classList.remove('on'); }
+  function stop(){ if(chosen) return; chosen=true; pause(); }
+
+  document.getElementById('side').innerHTML=navHtml();
+  document.getElementById('dock').innerHTML=dockHtml();
+  reset();
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){ if(es[0].isIntersecting) start(); else pause(); },{threshold:.35}).observe(screen);
+  } else start();
+  document.addEventListener('visibilitychange',function(){ if(document.hidden) pause(); else if(!chosen) start(); });
+  /* Only a change of layout (sidebar or dock) restarts the tour; a plain rescale does not. */
+  var wide=matchMedia('(min-width:1000px)').matches;
+  addEventListener('resize',function(){ var now=matchMedia('(min-width:1000px)').matches; if(now!==wide){ wide=now; if(running){ pause(); start(); } } });
+})();
+</script>
+</body>
+</html>

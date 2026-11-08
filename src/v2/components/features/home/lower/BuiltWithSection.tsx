@@ -3,8 +3,10 @@ import { SHOWCASE_TABS, SHOWCASE_TITLE } from '@v2/content/home-lower'
 import { ShowcaseCard } from './ShowcaseCard'
 
 /**
- * Centred title over the sphere, then tabs for the three services.
- * Each tab shows four cards: case studies to read and the service itself.
+ * Centred title over the sphere, then tabs for the three services. Each tab
+ * lists the products built under it, each linking to its case study. Tabs
+ * hold different numbers of cards; two to a row, and an odd last card sits
+ * centred under the pair above it.
  */
 export function BuiltWithSection() {
   return (
@@ -16,11 +18,13 @@ export function BuiltWithSection() {
           panelsClassName="overflow-hidden"
           tabs={SHOWCASE_TABS.map((tab) => tab.label)}
           panels={SHOWCASE_TABS.map((tab) => (
-            <div key={tab.label} className="grid gap-gutter @2xl:grid-cols-2">
+            <ul key={tab.label} className="flex flex-wrap justify-center gap-gutter">
               {tab.cards.map((card) => (
-                <ShowcaseCard key={card.title} card={card} />
+                <li key={card.href} className="w-full @2xl:w-[calc((100%-var(--spacing-gutter))/2)]">
+                  <ShowcaseCard card={card} />
+                </li>
               ))}
-            </div>
+            </ul>
           ))}
         />
       </div>

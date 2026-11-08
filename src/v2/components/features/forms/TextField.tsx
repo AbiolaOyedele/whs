@@ -8,8 +8,10 @@ interface TextFieldProps {
   placeholder: string
   value: string
   onChange: (value: string) => void
-  type?: 'text' | 'email' | 'tel'
+  type?: 'text' | 'email' | 'tel' | 'url'
   autoComplete?: HTMLInputAutoCompleteAttribute
+  /** A line under the label that explains what to put in. */
+  hint?: string
   required?: boolean
   multiline?: boolean
   maxLength?: number
@@ -29,9 +31,12 @@ export function TextField({
   required = false,
   multiline = false,
   maxLength,
+  hint,
   error,
 }: TextFieldProps) {
   const errorId = `${id}-error`
+  const hintId = `${id}-hint`
+  const describedBy = [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(' ')
   const shared = {
     id,
     name,
@@ -41,7 +46,7 @@ export function TextField({
     ...(autoComplete ? { autoComplete } : {}),
     'aria-required': required || undefined,
     'aria-invalid': error ? true : undefined,
-    'aria-describedby': error ? errorId : undefined,
+    'aria-describedby': describedBy || undefined,
   }
 
   return (
@@ -57,6 +62,11 @@ export function TextField({
           </>
         ) : null}
       </label>
+      {hint ? (
+        <p id={hintId} className="text-body-sm -mt-1 mb-2 text-navy-500">
+          {hint}
+        </p>
+      ) : null}
       {multiline ? (
         <textarea
           {...shared}
@@ -69,7 +79,7 @@ export function TextField({
           {...shared}
           type={type}
           className="input-base"
-          {...(type === 'tel' ? { inputMode: 'tel' as const } : {})}
+          {...(type === 'tel' ? { inputMode: 'tel' as const } : type === 'url' ? { inputMode: 'url' as const } : {})}
           onChange={(event) => onChange(event.target.value)}
         />
       )}

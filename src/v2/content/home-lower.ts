@@ -1,4 +1,4 @@
-import { PHOTOS, coverImage, logoImage, type CardImage } from '@v2/content/photos'
+import { logoImage, type CardImage } from '@v2/content/photos'
 import type { IconName } from '@v2/components/ui/Icon'
 import { site } from '@v2/config/site'
 
@@ -63,14 +63,14 @@ export const TRUST: TrustSection = {
   ],
 }
 
-/* ── Built by: work under each service ────────────────────────────── */
+/* ── Built by: the products, by service ───────────────────────────── */
 
 export interface ShowcaseCard {
-  icon: IconName
-  /** Shown in the tile in place of the icon: the product's logo, or a photo. */
-  image?: CardImage
+  /** The product's own logo, from public/work-logos. */
+  logo: CardImage
   title: string
   description: string
+  /** The product's case study, /resources/<id>. */
   href: string
   linkLabel: string
 }
@@ -81,45 +81,33 @@ export interface ShowcaseTab {
 }
 
 const VISIT = 'Read the case study'
-const SEE_HOW = 'See the service'
 
 export const SHOWCASE_TITLE = `Built by ${site.name}`
 
+/**
+ * Only products WildHands built, each under the service it shows best, from
+ * the `services` and summary in src/content/work. Marque is listed as Apps
+ * and Websites there; it sits under Websites because what it makes is a
+ * published site. Dumpty, Marvy, Auto Flow and The Ruff Agency list Apps and
+ * Tools & Systems; Dumpty is a product people use, so it sits under Apps.
+ */
 export const SHOWCASE_TABS: ShowcaseTab[] = [
   {
     label: 'Websites',
     cards: [
       {
-        icon: 'shirt',
-        image: logoImage('tomori.svg', 'Tomori'),
-        title: 'Tomori, a phone-first site for hand-dyed Adire',
-        description: 'A quiet storefront for a Lagos label, with a back office the owner runs from her own phone.',
+        logo: logoImage('tomori.svg', 'Tomori'),
+        title: 'Tomori, a phone-first shop for hand-dyed Adire',
+        description: 'A quiet, phone-first shop for hand-dyed clothes, and a back office that fits in a pocket.',
         href: '/resources/tomori',
         linkLabel: VISIT,
       },
       {
-        icon: 'box',
-        image: logoImage('marque.svg', 'Marque'),
+        logo: logoImage('marque.svg', 'Marque'),
         title: 'Marque, brand guidelines at one link',
-        description: 'Start from a logo, edit the guide in place, and publish it as a live website.',
+        description: 'Start from a logo, edit the guide in place, and publish it at one link.',
         href: '/resources/marque',
         linkLabel: VISIT,
-      },
-      {
-        icon: 'phone',
-        image: coverImage(PHOTOS.serviceSiteBuild),
-        title: 'Marketing site or full custom build',
-        description: 'A focused site built to convert visitors, or more pages and functionality for a site that does more.',
-        href: '/use-cases/websites',
-        linkLabel: SEE_HOW,
-      },
-      {
-        icon: 'bag',
-        image: coverImage(PHOTOS.service72Hours),
-        title: 'Live in 72 hours',
-        description: 'Starter at ₦150,000 or Standard at ₦250,000. The design is approved before any code is written.',
-        href: '/pricing',
-        linkLabel: 'See the prices',
       },
     ],
   },
@@ -127,36 +115,39 @@ export const SHOWCASE_TABS: ShowcaseTab[] = [
     label: 'Apps',
     cards: [
       {
-        icon: 'sparkle',
-        image: logoImage('dumpty.png', 'Dumpty'),
+        logo: logoImage('dumpty.png', 'Dumpty'),
         title: 'Dumpty, voice notes already organised',
         description: 'Talk through an idea and get back a clean transcript, tags and a checklist.',
         href: '/resources/dumpty',
         linkLabel: VISIT,
       },
       {
-        icon: 'sparkle',
-        image: logoImage('lazy-meet.png', 'Lazy Meet'),
-        title: 'Lazy Meet, calls that join themselves',
-        description: 'Joins your calls at start time, muted and camera off, across three accounts.',
-        href: '/resources/lazy-meet',
-        linkLabel: VISIT,
-      },
-      {
-        icon: 'chart',
-        image: logoImage('rayo.svg', 'Rayo'),
+        logo: logoImage('rayo.svg', 'Rayo'),
         title: 'Rayo, quotes accepted on the page',
         description: 'Send a quote with options, the client accepts one, and it becomes the invoice.',
         href: '/resources/rayo',
         linkLabel: VISIT,
       },
       {
-        icon: 'mail',
-        image: coverImage(PHOTOS.serviceWebApps),
-        title: 'Custom web apps',
-        description: 'Software your team or your customers log into, built for a job off-the-shelf tools do not quite do.',
-        href: '/use-cases/apps',
-        linkLabel: SEE_HOW,
+        logo: logoImage('dory.svg', 'Dory'),
+        title: 'Dory, a budget that knows what is left',
+        description: 'Budget, shopping, loans and subscriptions in one place, with what is left always on top.',
+        href: '/resources/dory',
+        linkLabel: VISIT,
+      },
+      {
+        logo: logoImage('planes.png', 'Planes'),
+        title: 'Planes, a to-do list you race friends on',
+        description: 'Swipe to land a task, fly one to a friend, and race your crew on the leaderboard.',
+        href: '/resources/planes',
+        linkLabel: VISIT,
+      },
+      {
+        logo: logoImage('lazy-meet.png', 'Lazy Meet'),
+        title: 'Lazy Meet, calls that join themselves',
+        description: 'Joins your calls at start time, muted and camera off, across three accounts.',
+        href: '/resources/lazy-meet',
+        linkLabel: VISIT,
       },
     ],
   },
@@ -164,36 +155,25 @@ export const SHOWCASE_TABS: ShowcaseTab[] = [
     label: 'Tools & Systems',
     cards: [
       {
-        icon: 'home',
-        image: logoImage('auto-flow.png', 'Auto Flow'),
-        title: 'Auto Flow, video batches unattended',
-        description: 'A 24-image batch that took about two hours of clicking now runs in about half an hour.',
-        href: '/resources/auto-flow',
-        linkLabel: VISIT,
-      },
-      {
-        icon: 'home',
-        image: logoImage('the-ruff-agency.svg', 'The Ruff Agency'),
+        logo: logoImage('the-ruff-agency.svg', 'The Ruff Agency'),
         title: 'The Ruff Agency, one workspace instead of six tools',
         description: 'Clients, contracts, invoices, tasks and a client portal in one shared workspace.',
         href: '/resources/the-ruff-agency',
         linkLabel: VISIT,
       },
       {
-        icon: 'truck',
-        image: logoImage('marvy.svg', 'Marvy'),
+        logo: logoImage('auto-flow.png', 'Auto Flow'),
+        title: 'Auto Flow, video batches unattended',
+        description: 'Point it at a folder of images and it generates every video unattended, three at a time.',
+        href: '/resources/auto-flow',
+        linkLabel: VISIT,
+      },
+      {
+        logo: logoImage('marvy.svg', 'Marvy'),
         title: 'Marvy, course videos filed in one step',
         description: 'Drop a video in and it lands in the right Drive folder, with the right people tagged.',
         href: '/resources/marvy',
         linkLabel: VISIT,
-      },
-      {
-        icon: 'bag',
-        image: coverImage(PHOTOS.serviceDashboards),
-        title: 'Dashboards and workflow automation',
-        description: 'The numbers that matter in one place, and tools connected so nobody re-keys data between them.',
-        href: '/use-cases/tools-and-systems',
-        linkLabel: SEE_HOW,
       },
     ],
   },
@@ -202,8 +182,10 @@ export const SHOWCASE_TABS: ShowcaseTab[] = [
 /* ── Recent work carousel ─────────────────────────────────────────── */
 
 export interface ShopDesignTile {
-  /** The project's name, shown large in the tile. */
-  wordmark: string
+  /** The product's name, for keys and screen readers. */
+  name: string
+  /** The product's logo, centred on a white tile as on the Work page. */
+  logo: CardImage
   tags: string[]
   title: string
   href: string
@@ -215,38 +197,83 @@ export const DESIGNS_SECTION = {
   title: { before: 'Recent work,', highlight: 'built from scratch', after: 'around how each team works' },
 }
 
-/** From src/content/work in the main site (client, industry, outcome). */
+/** Every product in src/content/work (Beam excepted), in its `order`: industry and outcome. */
 export const DESIGN_TILES: ShopDesignTile[] = [
   {
-    wordmark: 'Dumpty',
+    name: 'Dumpty',
+    logo: logoImage('dumpty.png', 'Dumpty'),
     tags: ['Consumer product'],
     title: 'Raw voice goes in. A titled, tagged idea with a set of next steps comes out.',
     href: '/resources/dumpty',
     linkLabel: VISIT,
   },
   {
-    wordmark: 'Auto Flow',
+    name: 'Auto Flow',
+    logo: logoImage('auto-flow.png', 'Auto Flow'),
     tags: ['Creative tooling'],
     title: 'A 24-image batch that took roughly two hours now runs in about half an hour, unattended.',
     href: '/resources/auto-flow',
     linkLabel: VISIT,
   },
   {
-    wordmark: 'Lazy Meet',
+    name: 'Lazy Meet',
+    logo: logoImage('lazy-meet.png', 'Lazy Meet'),
     tags: ['Productivity'],
     title: 'Meetings join themselves at the scheduled minute, muted, across up to three Google accounts.',
     href: '/resources/lazy-meet',
     linkLabel: VISIT,
   },
   {
-    wordmark: 'Rayo',
+    name: 'The Ruff Agency',
+    logo: logoImage('the-ruff-agency.svg', 'The Ruff Agency'),
+    tags: ['Agency operations'],
+    title: 'A client goes from invited to working inside their own portal, without a single email thread.',
+    href: '/resources/the-ruff-agency',
+    linkLabel: VISIT,
+  },
+  {
+    name: 'Tomori',
+    logo: logoImage('tomori.svg', 'Tomori'),
+    tags: ['E-commerce'],
+    title: 'The clothes are the loudest thing on every page, and the owner runs the shop from her phone.',
+    href: '/resources/tomori',
+    linkLabel: VISIT,
+  },
+  {
+    name: 'Marvy',
+    logo: logoImage('marvy.svg', 'Marvy'),
+    tags: ['Internal tools'],
+    title: 'Nobody on the team has to think about where a video goes.',
+    href: '/resources/marvy',
+    linkLabel: VISIT,
+  },
+  {
+    name: 'Rayo',
+    logo: logoImage('rayo.svg', 'Rayo'),
     tags: ['Business tools'],
     title: 'A quote that answers itself, and an invoice nobody has to retype.',
     href: '/resources/rayo',
     linkLabel: VISIT,
   },
   {
-    wordmark: 'Marque',
+    name: 'Dory',
+    logo: logoImage('dory.svg', 'Dory'),
+    tags: ['Personal finance'],
+    title: 'You always know what is left without doing the maths.',
+    href: '/resources/dory',
+    linkLabel: VISIT,
+  },
+  {
+    name: 'Planes',
+    logo: logoImage('planes.png', 'Planes'),
+    tags: ['Productivity'],
+    title: 'Finishing a task feels like landing a plane.',
+    href: '/resources/planes',
+    linkLabel: VISIT,
+  },
+  {
+    name: 'Marque',
+    logo: logoImage('marque.svg', 'Marque'),
     tags: ['Creative tooling'],
     title: 'A brand guide that lives at a link, not in a PDF nobody can find.',
     href: '/resources/marque',
@@ -263,21 +290,25 @@ export interface FeatureLink {
 
 export const FEATURES_LABEL = 'What we build'
 
+/**
+ * Each links to its own page, written in src/v2/content/capabilities.ts.
+ * "Websites live in 72 hours" (an offer, covered on Marketing sites and
+ * /pricing) and "Sitemap and crawl rules" (part of Search and AI visibility)
+ * no longer have rows of their own.
+ */
 export const FEATURE_LINKS: FeatureLink[] = [
-  { label: 'Marketing sites', href: '/use-cases/websites' },
-  { label: 'Full custom builds', href: '/use-cases/websites' },
-  { label: 'Websites live in 72 hours', href: '/pricing' },
-  { label: 'CMS admin panel', href: '/use-cases/websites' },
-  { label: 'AI search visibility setup', href: '/use-cases/websites' },
-  { label: 'Sitemap and crawl rules', href: '/use-cases/websites' },
-  { label: 'Simple website analytics', href: '/use-cases/websites' },
-  { label: 'Invoice generator', href: '/use-cases/websites' },
-  { label: 'Client management dashboard', href: '/use-cases/websites' },
-  { label: 'Custom web apps', href: '/use-cases/apps' },
-  { label: 'Internal-facing tools', href: '/use-cases/apps' },
-  { label: 'Live dashboards', href: '/use-cases/tools-and-systems' },
-  { label: 'Workflow automation', href: '/use-cases/tools-and-systems' },
-  { label: 'Connecting the tools you use', href: '/use-cases/tools-and-systems' },
+  { label: 'Marketing sites', href: '/what-we-build/marketing-sites' },
+  { label: 'Full custom builds', href: '/what-we-build/full-custom-builds' },
+  { label: 'CMS admin panel', href: '/what-we-build/cms-admin-panel' },
+  { label: 'Search and AI visibility', href: '/what-we-build/search-visibility' },
+  { label: 'Simple website analytics', href: '/what-we-build/website-analytics' },
+  { label: 'Quotes and invoices', href: '/what-we-build/quotes-and-invoices' },
+  { label: 'Client management dashboard', href: '/what-we-build/client-management' },
+  { label: 'Custom web apps', href: '/what-we-build/custom-web-apps' },
+  { label: 'Internal-facing tools', href: '/what-we-build/internal-tools' },
+  { label: 'Live dashboards', href: '/what-we-build/live-dashboards' },
+  { label: 'Workflow automation', href: '/what-we-build/workflow-automation' },
+  { label: 'Connecting the tools you use', href: '/what-we-build/connected-tools' },
 ]
 
 /* ── Blog row ─────────────────────────────────────────────────────── */

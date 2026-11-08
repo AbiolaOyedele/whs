@@ -163,16 +163,39 @@
   font-family: var(--font-secondary);
 }
 
-/* Lime fill on a word or two inside a heading. Bright lime on the dark
-   background; a deeper lime on the light panels, where bright lime would
-   not be readable. */
+/* Lime on a word or two inside a heading. On dark backgrounds the words are
+   lime. On light panels (.slate, or a white or slate-50 fill, unless a .dark
+   section sits in between) lime text is unreadable, so the words stay ink and
+   WildHands lime sits behind them like a highlighter. Split titles fade each
+   word in on its own, so there the highlight rides on each word (wider side
+   shadows close the gaps between words) instead of on the whole phrase. */
 @utility text-gradient {
   background-image: linear-gradient(to right in oklab, var(--color-pink-500), var(--color-purple-100));
   color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
-  &:where(.slate, .slate *, .c-about-story, .c-about-story *) {
-    background-image: linear-gradient(to right in oklab, #4d7c0f, #3f6212);
+  &:where(.slate, .slate *, .bg-white, .bg-white *, .bg-slate-50, .bg-slate-50 *, .c-about-story, .c-about-story *):not(:where(.dark, .dark *)) {
+    color: var(--color-charcoal);
+    background-image: none;
+    background-color: var(--color-pink-500);
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    /* Side shadows, not padding, widen the highlight so the words wrap exactly as they do on dark. */
+    box-shadow:
+      -0.08em 0 0 var(--color-pink-500),
+      0.08em 0 0 var(--color-pink-500);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  &:where(.slate, .slate *, .bg-white, .bg-white *, .bg-slate-50, .bg-slate-50 *, .c-about-story, .c-about-story *):not(:where(.dark, .dark *)):has(.word) {
+    background-color: transparent;
+    box-shadow: none;
+  }
+  &:where(.slate, .slate *, .bg-white, .bg-white *, .bg-slate-50, .bg-slate-50 *, .c-about-story, .c-about-story *):not(:where(.dark, .dark *)) .word {
+    background-color: var(--color-pink-500);
+    box-shadow:
+      -0.14em 0 0 var(--color-pink-500),
+      0.14em 0 0 var(--color-pink-500);
   }
 }
 
@@ -320,8 +343,8 @@
 .wysiwyg-navy {
   --tw-prose-body: var(--color-navy-900);
   --tw-prose-headings: var(--color-navy-900);
-  /* Deep lime on light panels, where bright lime is unreadable; bright lime on dark below. */
-  --tw-prose-links: #4d7c0f;
+  /* Ink links with a WildHands lime underline on light panels; lime text on dark below. */
+  --tw-prose-links: var(--color-navy-900);
   --tw-prose-bold: var(--color-navy-900);
   --tw-prose-counters: var(--color-navy-500);
   --tw-prose-bullets: var(--color-navy-900);
@@ -340,12 +363,30 @@
   --tw-prose-links: var(--color-pink-500);
 }
 
+.wysiwyg-navy a:not(.button) {
+  text-decoration-line: underline;
+  text-decoration-color: var(--color-pink-500);
+  text-decoration-thickness: 0.22em;
+  text-underline-offset: 0.12em;
+  text-decoration-skip-ink: none;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* On hover the lime fills in behind the link like a highlighter; the text stays ink. */
 .wysiwyg-navy a:not(.button):hover {
-  color: #3f6212;
+  color: var(--color-navy-900);
+  background-color: var(--color-pink-500);
+}
+
+.wysiwyg-navy:where(.dark, .dark *) a:not(.button) {
+  text-decoration-color: currentColor;
+  text-decoration-thickness: from-font;
 }
 
 .wysiwyg-navy:where(.dark, .dark *) a:not(.button):hover {
   color: var(--color-pink-600);
+  background-color: transparent;
 }
 
 .wysiwyg h1,

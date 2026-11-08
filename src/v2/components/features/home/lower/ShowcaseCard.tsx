@@ -1,7 +1,6 @@
 'use client'
 
 import { useRef } from 'react'
-import { Icon } from '@v2/components/ui/Icon'
 import { ScrambleText, type ScrambleHandle } from '@v2/components/ui/ScrambleText'
 import { SmartLink } from '@v2/components/ui/SmartLink'
 import type { ShowcaseCard as ShowcaseCardData } from '@v2/content/home-lower'
@@ -14,39 +13,29 @@ interface ShowcaseCardProps {
 const FAST = 'duration-(--transition-duration-fast) ease-in-out'
 
 /**
- * A light card on the dark section: square icon tile, title, one line and
- * an underlined link. On hover the card turns white, the tile grows a
- * touch, the link loses its underline and scrambles, and an arrow slides in.
- * The whole card is the link.
+ * A light card on the dark section: the product's logo on a white square,
+ * title, one line and an underlined link to its case study. On hover the
+ * card turns white, the tile grows a touch, the link loses its underline and
+ * scrambles, and an arrow slides in. The whole card is the link.
  */
 export function ShowcaseCard({ card }: ShowcaseCardProps) {
   const scramble = useRef<ScrambleHandle>(null)
 
   return (
     <div
-      className="group anim-scale"
+      className="group anim-scale h-full"
       data-scroll=""
       onMouseEnter={() => scramble.current?.scramble()}
       onMouseLeave={() => scramble.current?.reset()}
     >
       <div className={`group relative flex h-full gap-4 rounded-md bg-slate-50 p-4 transition-all hover:bg-white slate:bg-white ${FAST}`}>
-        <div className="relative shrink-0 basis-1/4">
-          <div className="relative">
-            <div
-              className={`absolute inset-0 rounded-sm ${card.image?.fit === 'logo' ? 'bg-white' : 'bg-slate-200'} transition-transform group-focus-within:scale-102 group-hover:scale-102 ${FAST}`}
-            />
-            {card.image ? (
-              card.image.fit === 'logo' ? (
-                <img src={card.image.src} alt={card.image.alt} className="relative aspect-square w-full object-contain p-4" />
-              ) : (
-                <img src={card.image.src} alt={card.image.alt} className="relative aspect-square w-full rounded-sm object-cover" />
-              )
-            ) : (
-              <span className="relative flex aspect-square w-full items-center justify-center p-5">
-                <Icon name={card.icon} className="h-1/2 w-1/2 text-navy-900" />
-              </span>
-            )}
-          </div>
+        <div className="relative w-22 shrink-0 sm:w-28">
+          <div
+            className={`absolute inset-0 rounded-sm border border-slate-100 bg-white transition-transform group-focus-within:scale-102 group-hover:scale-102 ${FAST}`}
+          />
+          <span className="relative flex aspect-square w-full items-center justify-center p-3 sm:p-4">
+            <img src={card.logo.src} alt={card.logo.alt} className="max-h-full max-w-full object-contain" />
+          </span>
         </div>
         <div className="flex grow flex-col justify-between gap-4">
           <div className="flex flex-col gap-1.5">

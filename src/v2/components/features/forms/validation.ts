@@ -36,6 +36,38 @@ export function checkMessage(value: string, required: boolean): string | undefin
   return undefined
 }
 
+/** Required free text with a minimum length, as the quote summary needs. */
+export function checkMinText(value: string, min: number, max: number, empty: string, short: string): string | undefined {
+  const trimmed = value.trim()
+  if (!trimmed) return empty
+  if (trimmed.length < min) return short
+  if (trimmed.length > max) return ERRORS.tooLong(max)
+  return undefined
+}
+
+/** Optional free text: only its length is checked. */
+export function checkOptional(value: string, max: number): string | undefined {
+  return value.trim().length > max ? ERRORS.tooLong(max) : undefined
+}
+
+/** A full web address. Optional ones may be blank. */
+export function checkUrl(value: string, message: string, required: boolean): string | undefined {
+  const trimmed = value.trim()
+  if (!trimmed) return required ? message : undefined
+  if (trimmed.length > LIMITS.url) return ERRORS.tooLong(LIMITS.url)
+  try {
+    const url = new URL(trimmed)
+    return url.protocol === 'https:' || url.protocol === 'http:' ? undefined : message
+  } catch {
+    return message
+  }
+}
+
+/** A tick box the visitor must tick. Stored as 'true' or ''. */
+export function checkTicked(value: string, message: string): string | undefined {
+  return value === 'true' ? undefined : message
+}
+
 export function checkChoice(value: string, allowed: readonly string[], message: string): string | undefined {
   return allowed.includes(value) ? undefined : message
 }

@@ -8,7 +8,6 @@
  */
 import type { ReactElement } from 'react'
 import { site } from '@v2/config/site'
-import { AboutBackers } from '@v2/components/features/about/AboutBackers'
 import { AboutOverview } from '@v2/components/features/about/AboutOverview'
 import { HeroAbout } from '@v2/components/features/about/HeroAbout'
 import { ArticleShell } from '@v2/components/features/blog/ArticleShell'
@@ -23,13 +22,20 @@ import { RelatedRow } from '@v2/components/features/blog/RelatedRow'
 import { RichContent } from '@v2/components/features/blog/RichContent'
 import { BrandHero } from '@v2/components/features/brand/BrandHero'
 import { ContactForm } from '@v2/components/features/forms/ContactForm'
-import { DemoForm } from '@v2/components/features/forms/DemoForm'
 import { FormPage } from '@v2/components/features/forms/FormPage'
+import { FreelanceHub } from '@v2/components/features/freelance/FreelanceHub'
+import { JobApplicationForm } from '@v2/components/features/forms/JobApplicationForm'
+import { QuoteForm } from '@v2/components/features/forms/QuoteForm'
+import { CareersIndex } from '@v2/components/features/careers/CareersIndex'
+import { RolePage } from '@v2/components/features/careers/RolePage'
+import { QuoteAside } from '@v2/components/features/quote/QuoteAside'
 import { HomeLower } from '@v2/components/features/home/HomeLower'
 import { HomeUpper } from '@v2/components/features/home/HomeUpper'
 import { LegalPage } from '@v2/components/features/legal/LegalPage'
 import { PricingPage } from '@v2/components/features/pricing/PricingPage'
 import { UseCaseTemplate } from '@v2/components/features/use-case/UseCaseTemplate'
+import { CapabilityPage } from '@v2/components/features/capability/CapabilityPage'
+import { CAPABILITY_SLUGS, capabilityBySlug } from '@v2/content/capabilities'
 import { Button } from '@v2/components/ui/Button'
 import {
   BLOG_CATEGORIES,
@@ -42,7 +48,10 @@ import {
   relatedPosts,
   toBlogCard,
 } from '@v2/content/blog'
-import { CONTACT_PAGE, DEMO_PAGE } from '@v2/content/forms'
+import { APPLY_PAGE, CAREERS_PAGE, ROLES, applyPath, findRole, rolePath } from '@v2/content/careers'
+import { CONTACT_PAGE, QUOTE_PAGE } from '@v2/content/forms'
+import { FREELANCE_PAGE } from '@v2/content/freelance'
+import { serviceLocationContent, serviceLocationPaths } from '@v2/content/service-locations'
 import { PRIVACY_POLICY, TERMS_OF_SERVICE } from '@v2/content/legal'
 import { HELP_AUTHOR, HELP_GUIDES, guideBySlug, relatedGuides } from '@v2/content/resources'
 import { USE_CASE_SLUGS, getUseCase } from '@v2/content/use-cases'
@@ -115,7 +124,6 @@ const STATIC_ROUTES: Record<string, () => ResolvedRoute> = {
       <div className="c-about">
         <HeroAbout />
         <AboutOverview />
-        <AboutBackers />
       </div>
     ),
   }),
@@ -128,14 +136,24 @@ const STATIC_ROUTES: Record<string, () => ResolvedRoute> = {
       </FormPage>
     ),
   }),
-  '/book-demo': () => ({
-    title: titled('Request a quote'),
+  '/request-a-quote': () => ({
+    title: titled(QUOTE_PAGE.title),
     description: "Tell us what you're building and we come back with a scoped quote within a working day. Nothing here is binding.",
     element: (
-      <FormPage title={DEMO_PAGE.title} lead={DEMO_PAGE.lead}>
-        <DemoForm />
+      <FormPage title={QUOTE_PAGE.title} lead={QUOTE_PAGE.lead} aside={<QuoteAside />}>
+        <QuoteForm />
       </FormPage>
     ),
+  }),
+  '/careers': () => ({
+    title: titled(CAREERS_PAGE.meta.title),
+    description: CAREERS_PAGE.meta.description,
+    element: <CareersIndex />,
+  }),
+  '/freelance-hub': () => ({
+    title: titled(FREELANCE_PAGE.meta.title),
+    description: FREELANCE_PAGE.meta.description,
+    element: <FreelanceHub />,
   }),
   '/brand-assets': () => ({
     title: titled('Brand assets'),
@@ -272,7 +290,36 @@ export function resolveRoute(pathname: string): ResolvedRoute {
   const staticRoute = STATIC_ROUTES[pathname]
   if (staticRoute) return staticRoute()
 
-  const [, first, second, third] = pathname.split('/')
+  const [, first, second, third, fourth] = pathname.split('/')
+
+  if (first === 'use-cases' && second && third && !fourth) {
+    const content = serviceLocationContent(second, third)
+    if (content) {
+      return {
+        title: titled(content.meta.title),
+        description: content.meta.description,
+        element: <UseCaseTemplate content={content} />,
+      }
+    }
+  }
+
+  if (first === 'careers' && second && !fourth) {
+    const role = findRole(second)
+    if (role && !third) {
+      return { title: titled(role.title), description: role.summary, element: <RolePage role={role} /> }
+    }
+    if (role && third === 'apply') {
+      return {
+        title: titled(`Apply for ${role.title}`),
+        description: `Apply for the ${role.title} role at ${site.name}.`,
+        element: (
+          <FormPage title={APPLY_PAGE.title} eyebrow={role.title} lead={APPLY_PAGE.lead}>
+            <JobApplicationForm role={role.title} roleSlug={role.slug} />
+          </FormPage>
+        ),
+      }
+    }
+  }
 
   if (first === 'use-cases' && second && !third) {
     const content = getUseCase(second)
@@ -281,6 +328,17 @@ export function resolveRoute(pathname: string): ResolvedRoute {
         title: titled(content.meta.title),
         description: content.meta.description,
         element: <UseCaseTemplate content={content} />,
+      }
+    }
+  }
+
+  if (first === 'what-we-build' && second && !third) {
+    const capability = capabilityBySlug(second)
+    if (capability) {
+      return {
+        title: titled(capability.meta.title),
+        description: capability.meta.description,
+        element: <CapabilityPage capability={capability} />,
       }
     }
   }
@@ -330,6 +388,9 @@ export function allPaths(): string[] {
   return [
     ...Object.keys(STATIC_ROUTES),
     ...USE_CASE_SLUGS.map((slug) => `/use-cases/${slug}`),
+    ...CAPABILITY_SLUGS.map((slug) => `/what-we-build/${slug}`),
+    ...serviceLocationPaths(),
+    ...ROLES.flatMap((role) => [rolePath(role.slug), applyPath(role.slug)]),
     ...BLOG_POSTS.map((post) => `/blog/${post.slug}`),
     ...BLOG_CATEGORIES.map((category) => `/blog/category/${category.slug}`),
     ...Array.from({ length: BLOG_PAGES - 1 }, (_, index) => `/blog/page/${index + 2}`),

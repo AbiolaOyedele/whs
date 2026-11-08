@@ -9,18 +9,19 @@ interface DesignTileProps {
 const FAST = 'duration-(--transition-duration-fast) ease-in-out'
 
 /**
- * A tall slate tile in the designs carousel: tags top left, the design's
- * name large in the middle, a line about it and a link to its case study.
- * On hover the backing grows 1%, the text nudges toward the corner and an
- * arrow slides in.
+ * A tall white tile in the recent work carousel, as on the Work page: the
+ * product's logo centred, its industry top left, then a line about the
+ * result and a link to its case study. On hover the backing grows 1%, the
+ * logo eases up a touch, the text nudges toward the corner and an arrow
+ * slides in.
  */
 export function DesignTile({ tile }: DesignTileProps) {
   return (
     <div className="group anim-scale relative flex h-full flex-col" data-scroll="">
       <div
-        className={`absolute inset-0 rounded-md bg-slate-100 transition-transform group-focus-within:scale-101 group-hover:scale-101 ${FAST}`}
+        className={`absolute inset-0 rounded-md bg-white transition-transform group-focus-within:scale-101 group-hover:scale-101 ${FAST}`}
       />
-      <div className="relative z-2 flex aspect-464/392 items-center justify-center overflow-hidden p-5">
+      <div className="relative z-2 flex aspect-464/392 items-center justify-center overflow-hidden border-b border-slate-100 p-5">
         <ul
           className={`text-label absolute top-5 right-5 left-5 flex flex-wrap gap-x-3.5 gap-y-1 text-navy-500 transition-transform group-focus-within:-translate-1 group-hover:-translate-1 ${FAST}`}
         >
@@ -28,9 +29,12 @@ export function DesignTile({ tile }: DesignTileProps) {
             <li key={tag}>{tag}</li>
           ))}
         </ul>
-        <p className="text-heading-md text-navy-900" aria-hidden="true">
-          {tile.wordmark}
-        </p>
+        <img
+          src={tile.logo.src}
+          alt={tile.logo.alt}
+          draggable={false}
+          className={`max-h-[34%] max-w-[46%] object-contain transition-transform group-focus-within:scale-105 group-hover:scale-105 ${FAST}`}
+        />
       </div>
       <div className="relative z-2 flex grow flex-col justify-between gap-3.5 p-5">
         <h3
@@ -54,7 +58,7 @@ export function DesignTile({ tile }: DesignTileProps) {
       </div>
       <SmartLink href={tile.href} className="absolute inset-0 z-3 rounded-md -outline-offset-2" draggable={false}>
         <span className="sr-only">
-          {tile.wordmark}: {tile.linkLabel}
+          {tile.name}: {tile.linkLabel}
         </span>
       </SmartLink>
     </div>

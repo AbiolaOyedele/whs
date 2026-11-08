@@ -45,6 +45,7 @@ export const FOOTER_COLUMNS: { title: string; links: NavLink[] }[] = [
       { label: 'About us', href: '/about' },
       { label: 'Careers', href: '/careers' },
       { label: 'Freelance Hub', href: '/freelance-hub' },
+      { label: 'Request a quote', href: '/request-a-quote' },
       { label: 'Get in touch', href: '/contact' },
     ],
   },

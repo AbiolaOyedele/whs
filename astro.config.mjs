@@ -96,6 +96,86 @@ const emptyInsightCategories = (() => {
 })()
 
 /**
+ * Permanent redirects from the original site's URLs to the v2 pages that
+ * replaced them, so old links, bookmarks and search results keep working.
+ * The original .astro pages were removed (they remain in git history); a
+ * redirect and a page on the same path would conflict.
+ *
+ * Listed out rather than written as [slug] patterns: the old URL set is fixed,
+ * a few old pages have no direct counterpart (the Beam case study, the
+ * placeholder insight categories), and a static build needs every source path
+ * spelled out anyway.
+ */
+const { SERVICE_LOCATIONS } = await import('./src/config/service-locations.ts')
+
+const permanentRedirects = (() => {
+  /** @type {Record<string, { status: 301, destination: string }>} */
+  const map = {}
+  const add = (/** @type {string} */ from, /** @type {string} */ to) => {
+    map[from] = { status: 301, destination: to }
+  }
+
+  // Pages moved to a new address.
+  add('/get-in-touch', '/contact')
+  add('/book-demo', '/request-a-quote')
+  add('/legal/privacy-policy', '/privacy')
+  add('/services', '/')
+  add('/work', '/resources')
+  add('/insights', '/blog')
+
+  // Services and the service-by-location pages.
+  for (const service of ['websites', 'apps', 'tools-and-systems']) {
+    add(`/services/${service}`, `/use-cases/${service}`)
+    for (const location of SERVICE_LOCATIONS) {
+      add(`/services/${service}/${location.slug}`, `/use-cases/${service}/${location.slug}`)
+    }
+  }
+
+  // Case studies. Beam has no v2 case study yet, so it goes to the list.
+  for (const slug of [
+    'auto-flow',
+    'dory',
+    'dumpty',
+    'lazy-meet',
+    'marque',
+    'marvy',
+    'planes',
+    'rayo',
+    'the-ruff-agency',
+    'tomori',
+  ]) {
+    add(`/work/${slug}`, `/resources/${slug}`)
+  }
+  add('/work/beam', '/resources')
+
+  // Insights. Only the websites category had published articles.
+  for (const category of ['design-systems', 'field-notes', 'migration', 'operations', 'platform-choice']) {
+    add(`/insights/${category}`, '/blog')
+  }
+  add('/insights/websites', '/blog/category/websites')
+  for (const slug of [
+    'choose-web-development-agency-lagos',
+    'ecommerce-development-cost-nigeria',
+    'nigerian-business-website-checklist',
+    'website-cost-nigeria',
+    'website-structure-nigerian-businesses',
+    'website-vs-web-app',
+  ]) {
+    add(`/insights/websites/${slug}`, `/blog/${slug}`)
+  }
+
+  // The job application's old thank-you and video steps. The application now
+  // confirms on its own page, and the video step never uploaded anything.
+  add('/careers/apply/video', '/careers')
+  add('/careers/apply/video/thank-you', '/careers')
+  for (const role of ['senior-frontend-engineer', 'product-designer']) {
+    add(`/careers/${role}/apply/thank-you`, `/careers/${role}`)
+  }
+
+  return map
+})()
+
+/**
  * Hybrid rendering: every page is prerendered to static HTML by default.
  * API routes under src/pages/api/v1/ opt into SSR with `export const prerender = false`.
  */
@@ -103,6 +183,7 @@ export default defineConfig({
   site: publicEnv.PUBLIC_SITE_URL,
   output: 'static',
   adapter: vercel(),
+  redirects: permanentRedirects,
   integrations: [
     react(),
     sitemap({

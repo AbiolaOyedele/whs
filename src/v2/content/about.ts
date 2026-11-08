@@ -35,14 +35,12 @@ export interface AboutStory {
   cta: { label: string; href: string }
 }
 
-export type AboutLinkCard =
-  | { type: 'email'; label: string; email: string }
-  | { type: 'download' | 'link'; label: string; title: string; href: string }
+/** Brand fill for a link card: WildHands lime, ink (charcoal) or white. */
+export type AboutLinkTone = 'lime' | 'ink' | 'white'
 
-export interface AboutBackers {
-  heading: string
-  names: readonly string[]
-}
+export type AboutLinkCard =
+  | { type: 'email'; label: string; email: string; tone: AboutLinkTone }
+  | { type: 'download' | 'link'; label: string; title: string; href: string; tone: AboutLinkTone }
 
 export const aboutHero: AboutHero = {
   before: 'To build systems',
@@ -78,13 +76,7 @@ export const aboutStory: AboutStory = {
 }
 
 export const aboutLinkCards: readonly AboutLinkCard[] = [
-  { type: 'email', label: 'Questions', email: site.supportEmail },
-  { type: 'link', label: 'Our work', title: 'See what we ship', href: '/resources' },
-  { type: 'link', label: 'Brand assets', title: 'Logo and colours', href: '/brand-assets' },
+  { type: 'email', label: 'Questions', email: site.supportEmail, tone: 'ink' },
+  { type: 'link', label: 'Our work', title: 'See what we ship', href: '/resources', tone: 'lime' },
+  { type: 'link', label: 'Brand assets', title: 'Logo and colours', href: '/brand-assets', tone: 'white' },
 ]
-
-/** Products WildHands has built. The band drifts, so the names repeat across it. */
-export const aboutBackers: AboutBackers = {
-  heading: 'Built by WildHands',
-  names: ['Dumpty', 'Rayo', 'Tomori', 'Marque', 'Lazy Meet', 'The Ruff Agency'],
-}

@@ -1,0 +1,9 @@
+/* Page styles: the "What we build" pages (/what-we-build/<slug>). */
+
+/* The live preview on the dark hero: a hairline edge and a faint lime glow
+   underneath, so the frame reads as a screen rather than a hole in the page. */
+.c-capability-preview {
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.12),
+    0 40px 120px -48px rgb(190 252 101 / 0.35);
+}

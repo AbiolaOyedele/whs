@@ -28,38 +28,37 @@
   .c-about .section-spacing:last-child {
     margin-bottom: 0;
   }
-
-  /* A hairline that draws in from the left once the page is ready. */
-  .c-about .animated-line {
-    width: 100%;
-    height: 1px;
-    background-color: var(--color-white);
-    opacity: 0.2;
-    transform: scaleX(0);
-    transform-origin: 0;
-    transition: transform var(--transition-duration-slowest) var(--ease);
-  }
 }
 
-html.is-ready .c-about .animated-line {
-  transform: scale(1);
+/* ── link cards: three brand fills (lime, ink, white) so the row is not one flat stack ── */
+
+.c-about-links .c-link-card.-ink {
+  --label-circle-color: var(--color-pink-500);
+  color: var(--color-white);
 }
 
-/* Backer tiles: 1.5 of 4 columns on phones, 1 of 5 on tablets, 2 of 12 on desktops. */
-.c-about-backer {
-  width: calc(1.5 / 4 * (100vw - 2 * var(--grid-margin)) - (1 - 1.5 / 4) * var(--grid-gutter));
+.c-about-links .c-link-card.-ink::before {
+  background-color: var(--color-charcoal);
 }
 
-@media (min-width: 700px) {
-  .c-about-backer {
-    width: calc(1 / 5 * (100vw - 2 * var(--grid-margin)) - (1 - 1 / 5) * var(--grid-gutter));
-  }
+.c-about-links .c-link-card.-lime {
+  --label-circle-color: var(--color-charcoal);
+  color: var(--color-charcoal);
 }
 
-@media (min-width: 1200px) {
-  .c-about-backer {
-    width: calc(2 / 12 * (100vw - 2 * var(--grid-margin)) - (1 - 2 / 12) * var(--grid-gutter));
-  }
+.c-about-links .c-link-card.-lime::before {
+  background-color: var(--color-pink-500);
+}
+
+.c-about-links .c-link-card.-white {
+  --label-circle-color: var(--color-charcoal);
+  color: var(--color-charcoal);
+}
+
+/* The panel behind is white too, so a hairline keeps the card's edge. */
+.c-about-links .c-link-card.-white::before {
+  background-color: var(--color-white);
+  box-shadow: inset 0 0 0 1px var(--color-slate-300);
 }
 
 /* ── hero: a dark layer that closes in to a card over a light copy ── */
@@ -162,6 +161,13 @@ html.is-ready .c-about .animated-line {
 @media not all and (min-width: 700px) {
   .c-hero-about_content {
     padding-bottom: var(--spacing-fluid-xl);
+  }
+}
+
+/* Beside the card (sm and up), the intro sits on the card's vertical centre, so it is in view whenever the card is. */
+@media (min-width: 700px) {
+  .c-hero-about_content {
+    justify-content: center;
   }
 }
 

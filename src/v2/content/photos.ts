@@ -38,6 +38,16 @@ export const PHOTOS = {
   aboutTeam1: photo('about-team-1', 3869649, 'Colleagues talking through an idea in an office.'),
   aboutTeam2: photo('about-team-2', 9301197, 'Four men working through a project around a laptop.'),
   aboutTeam3: photo('about-team-3', 30677714, 'A team meeting around a table in an office in Lagos.'),
+  insightWebsiteInstagramWhatsapp: photo('insight-website-instagram-whatsapp', 39916918, 'A trader in traditional dress checking his phone among his goods.'),
+  insightWebsiteTimeline: photo('insight-website-timeline', 16940578, 'A woman smiling at her desk with a laptop open in front of her.'),
+  insightAcceptPayments: photo('insight-accept-payments', 17792243, 'A woman working on her laptop with her phone beside her.'),
+  insightShopifyVsCustom: photo('insight-shopify-vs-custom', 38506009, 'A fashion designer sewing patterned African fabric on a sewing machine.'),
+  insightWebsiteRunningCosts: photo('insight-website-running-costs', 30689108, 'A man working on his laptop on a sofa.'),
+  insightAppCost: photo('insight-app-cost', 3894376, 'Four women gathered around a laptop in an office.'),
+  insightWebAppVsMobileApp: photo('insight-web-app-vs-mobile-app', 4042143, 'A man using his phone on a busy street in Ikeja, Lagos.'),
+  insightReplaceSpreadsheets: photo('insight-replace-spreadsheets', 8547397, 'A woman in a blazer working at her laptop in an open-plan office.'),
+  insightInternalTools: photo('insight-internal-tools', 9301295, 'Two colleagues working through something together on a laptop.'),
+  insightBusinessOnGoogle: photo('insight-business-on-google', 33672079, 'A woman in a bright print top working on her laptop.'),
 } as const satisfies Record<string, Photo>
 
 /** A photo as a card tile image. */
