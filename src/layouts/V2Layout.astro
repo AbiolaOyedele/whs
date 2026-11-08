@@ -5,9 +5,9 @@
  * island, src/v2/App.tsx, which holds the header, background, page and
  * footer so client-side navigation keeps all of them alive between pages.
  *
- * Fonts are the clone's stand-ins (Inter, Inter Tight, IBM Plex Mono),
- * exposed under the same CSS variables next/font set. Swap them here for the
- * WildHands faces in the reskin.
+ * Fonts are WildHands' own: Diagramm for headings, IBM Plex Sans for body
+ * copy, the system monospace for labels. The faces are declared in
+ * src/v2/app/globals.css; these variables are the names the v2 CSS reads.
  */
 import '@v2/app/globals.css'
 
@@ -32,18 +32,14 @@ const { title, description, scene, template } = Astro.props
     <meta name="robots" content="noindex, nofollow" />
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=Inter+Tight:wght@300&family=Inter:wght@400;600&display=swap"
-    />
+    <link rel="preload" href="/fonts/Diagramm-Medium.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/IBMPlexSans-400.woff2" as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
     <style is:global>
       :root {
-        --font-stand-sans: 'Inter';
-        --font-stand-secondary: 'Inter Tight';
-        --font-stand-mono: 'IBM Plex Mono';
+        --font-stand-sans: 'IBM Plex Sans';
+        --font-stand-secondary: 'Diagramm', 'IBM Plex Sans';
+        --font-stand-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas;
       }
     </style>
   </head>

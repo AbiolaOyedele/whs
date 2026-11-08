@@ -1,5 +1,6 @@
 'use client'
 
+import AnimatedGradient from '@/components/ui/animated-gradient'
 import { useEffect, useRef } from 'react'
 import { Label } from '@v2/components/ui/Label'
 import { SplitTitle } from '@v2/components/ui/SplitTitle'
@@ -229,7 +230,9 @@ export function HeroAbout() {
       >
         <div ref={mask} className="c-hero-about_inner -front" data-hero-about-mask="">
           <div className="c-hero-about_background">
-            <div className="c-hero-about_background_sticky" data-hero-about-canvas="" />
+            <div className="c-hero-about_background_sticky">
+              <AnimatedGradient preset="hero" className="absolute inset-0" />
+            </div>
           </div>
           <div className="c-hero-about_top container">
             <SplitTitle as="h2" className="c-hero-about_title pointer-events-auto">

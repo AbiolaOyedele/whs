@@ -676,7 +676,7 @@ html.has-menu-mobile-open .c-header_mobile_menu_buttons {
   font-family: var(--font-sans);
   font-size: clamp(1.5rem, 1.3486rem + 0.6211vw, 2.125rem);
   line-height: 1.15;
-  font-weight: 300;
+  font-weight: var(--font-weight-display);
   letter-spacing: var(--tracking-tight);
 }
 

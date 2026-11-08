@@ -136,7 +136,7 @@ html.is-ready .c-about .animated-line {
   font-family: var(--font-secondary);
   font-size: var(--text-fluid-heading-3xl);
   line-height: 1;
-  font-weight: 300;
+  font-weight: var(--font-weight-display);
   letter-spacing: -0.025em;
 }
 

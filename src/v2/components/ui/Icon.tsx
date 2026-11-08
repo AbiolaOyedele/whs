@@ -1,30 +1,9 @@
+import { createElement } from 'react'
+import { ICON_NODES } from './icon-nodes'
 import type { SVGProps } from 'react'
 
 /** Stroke icons on a 24 grid; colour follows the text. */
-const STROKE = {
-  arrowRight: 'M5 12h14M13 6l6 6-6 6',
-  arrowLeft: 'M19 12H5M11 6l-6 6 6 6',
-  external: 'M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5',
-  download: 'M12 4v12M7 11l5 5 5-5M5 20h14',
-  plus: 'M12 5v14M5 12h14',
-  shirt: 'M8 4L3 7l2 4 2-1v10h10V10l2 1 2-4-5-3a4 4 0 01-8 0z',
-  sparkle: 'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z',
-  home: 'M4 11l8-7 8 7M6 10v10h12V10',
-  calendar: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',
-  mail: 'M4 6h16v12H4zM4 7l8 6 8-6',
-  shield: 'M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z M9 12l2 2 4-4',
-  lock: 'M5 11h14v10H5zM8 11V7a4 4 0 018 0v4',
-  box: 'M12 3l8 4.5v9L12 21l-8-4.5v-9zM4 7.5l8 4.5 8-4.5M12 12v9',
-  globe: 'M12 21a9 9 0 100-18 9 9 0 000 18zM3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18',
-  bag: 'M5 8h14l-1 12H6zM9 8V6a3 3 0 016 0v2',
-  truck: 'M3 6h11v10H3zM14 9h4l3 3.5V16h-7M7 20a2 2 0 100-4 2 2 0 000 4zM17 20a2 2 0 100-4 2 2 0 000 4z',
-  bank: 'M3 9.5L12 4l9 5.5M4 20h16M6 10v7M10 10v7M14 10v7M18 10v7',
-  qr: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z',
-  chart: 'M4 20V4M4 20h16M8 16l4-5 3 3 5-7',
-  phone: 'M7 3h10v18H7zM11 18h2',
-} as const
-
-export type IconName = keyof typeof STROKE
+export type IconName = keyof typeof ICON_NODES
 
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, 'name'> {
   name: IconName
@@ -36,7 +15,7 @@ export function Icon({ name, className = 'size-6', ...rest }: IconProps) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.5}
+      strokeWidth={1.8}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -44,7 +23,7 @@ export function Icon({ name, className = 'size-6', ...rest }: IconProps) {
       className={className}
       {...rest}
     >
-      <path d={STROKE[name]} />
+      {ICON_NODES[name].map(([tag, attrs], index) => createElement(tag, { key: index, ...attrs }))}
     </svg>
   )
 }

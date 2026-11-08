@@ -1,7 +1,6 @@
 'use client'
 
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react'
-import { getGsap, isTouchDevice } from '@v2/lib/gsap'
+import { forwardRef, useImperativeHandle, useRef } from 'react'
 
 export interface ScrambleHandle {
   scramble: () => void
@@ -15,8 +14,8 @@ interface ScrambleTextProps {
 }
 
 /**
- * Text that briefly scrambles into random characters and back, run by the
- * control it sits in (on hover) through the ref. Does nothing on touch screens.
+ * A label its control can address through the ref. It used to scramble on
+ * hover; that is off, and `setText` simply swaps the text.
  */
 export const ScrambleText = forwardRef<ScrambleHandle, ScrambleTextProps>(function ScrambleText(
   { children, className },
@@ -25,24 +24,19 @@ export const ScrambleText = forwardRef<ScrambleHandle, ScrambleTextProps>(functi
   const element = useRef<HTMLSpanElement>(null)
   const text = useRef(children)
 
-  const run = useCallback((to: string, duration: number) => {
-    if (!element.current || isTouchDevice()) return
-    getGsap().to(element.current, { duration, scrambleText: { text: to } })
-  }, [])
-
   useImperativeHandle(
     ref,
     () => ({
-      scramble: () => run(text.current, 0.5),
-      reset: () => run(text.current, 0.5),
+      // Scrambling is switched off site-wide: WildHands keeps its labels still.
+      // The handle stays so the controls that call it need no changes.
+      scramble: () => {},
+      reset: () => {},
       setText: (next: string) => {
         text.current = next
-        if (!element.current) return
-        if (isTouchDevice()) element.current.textContent = next
-        else run(next, 0.4)
+        if (element.current) element.current.textContent = next
       },
     }),
-    [run],
+    [],
   )
 
   return (

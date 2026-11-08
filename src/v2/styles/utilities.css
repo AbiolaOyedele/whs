@@ -51,7 +51,7 @@
   font-family: var(--font-secondary);
   font-size: var(--text-fluid-heading-3xl);
   line-height: 1;
-  font-weight: 300;
+  font-weight: var(--font-weight-display);
   letter-spacing: -0.025em;
 }
 
@@ -59,7 +59,7 @@
   font-family: var(--font-secondary);
   font-size: var(--text-fluid-heading-2xl);
   line-height: 1;
-  font-weight: 300;
+  font-weight: var(--font-weight-display);
   letter-spacing: -0.025em;
 }
 
@@ -67,7 +67,7 @@
   font-family: var(--font-secondary);
   font-size: var(--text-fluid-heading-xl);
   line-height: 1.05;
-  font-weight: 300;
+  font-weight: var(--font-weight-display);
   letter-spacing: -0.025em;
 }
 
@@ -75,7 +75,7 @@
   font-family: var(--font-secondary);
   font-size: var(--text-fluid-heading-lg);
   line-height: 1.05;
-  font-weight: 300;
+  font-weight: var(--font-weight-display);
   letter-spacing: var(--tracking-tighter);
 }
 
@@ -83,7 +83,7 @@
   font-family: var(--font-secondary);
   font-size: var(--text-fluid-heading-md);
   line-height: 1.15;
-  font-weight: 300;
+  font-weight: var(--font-weight-display);
   letter-spacing: var(--tracking-tighter);
 }
 
@@ -91,7 +91,7 @@
   font-family: var(--font-sans);
   font-size: var(--text-fluid-heading-sm);
   line-height: 1.15;
-  font-weight: 300;
+  font-weight: var(--font-weight-display);
   letter-spacing: var(--tracking-tight);
 }
 
@@ -350,10 +350,10 @@
 
 .wysiwyg h1,
 .wysiwyg h2 {
-  font-family: var(--font-sans);
+  font-family: var(--font-secondary);
   font-size: var(--text-fluid-heading-sm);
   line-height: 1.15;
-  font-weight: 300;
+  font-weight: var(--font-weight-display);
   letter-spacing: var(--tracking-tight);
   margin-top: 2em;
   margin-bottom: 1em;

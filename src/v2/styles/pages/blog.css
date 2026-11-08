@@ -27,7 +27,7 @@
   font-family: var(--font-secondary);
   font-size: var(--text-fluid-heading-md);
   line-height: 1;
-  font-weight: 300;
+  font-weight: var(--font-weight-display);
   letter-spacing: var(--tracking-tighter);
   color: var(--color-navy-900);
   overflow-wrap: anywhere;

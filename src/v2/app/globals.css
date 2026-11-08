@@ -15,6 +15,50 @@
 @import '../styles/pages/legal.css' layer(components);
 @import '../styles/pages/canvas.css' layer(components);
 @source '../';
+
+/* WildHands typefaces, the same files and faces the main site declares in src/styles/global.css. */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('/fonts/IBMPlexSans-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('/fonts/IBMPlexSans-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('/fonts/IBMPlexSans-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Diagramm';
+  src: url('/fonts/Diagramm-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Diagramm';
+  src: url('/fonts/Diagramm-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Diagramm';
+  src: url('/fonts/Diagramm-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
 @plugin '@tailwindcss/typography' {
   className: wysiwyg;
 }
@@ -28,6 +72,8 @@
   --font-sans: var(--font-stand-sans), sans-serif;
   --font-mono: var(--font-stand-mono), monospace;
   --font-secondary: var(--font-stand-secondary), sans-serif;
+  /* Every display heading's weight, as on the main site (Diagramm Medium). */
+  --font-weight-display: 500;
 
   --breakpoint-*: initial;
   --breakpoint-2xs: 340px;
