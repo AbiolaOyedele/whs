@@ -21,8 +21,10 @@ export interface HelpGuide {
   date: string
   artSeed: number
   icon: IconName
-  /** Live previews of the project, first one leads (from `previews` in src/content/work). */
+  /** Live previews of the project, shown in the write-up (from `previews` in src/content/work). */
   previews: LivePreviewSlug[]
+  /** The product's own logo, from public/work-logos. Shown on the card and as the page header. */
+  logo: string
   /** The project's one-line summary. */
   lede: string
   body: RichBlock[]
@@ -40,6 +42,7 @@ export const HELP_GUIDES: HelpGuide[] = [
     artSeed: 11,
     icon: 'phone',
     previews: ['dumpty', 'dumpty-site'],
+    logo: '/work-logos/dumpty.png',
     lede: 'Talk through an idea and get back a clean transcript, tags and a checklist.',
     body: [
       {
@@ -135,6 +138,7 @@ export const HELP_GUIDES: HelpGuide[] = [
     artSeed: 12,
     icon: 'sparkle',
     previews: ['autoflow'],
+    logo: '/work-logos/auto-flow.png',
     lede: 'Point it at a folder of images and it generates every video unattended, three at a time.',
     body: [
       {
@@ -230,6 +234,7 @@ export const HELP_GUIDES: HelpGuide[] = [
     artSeed: 13,
     icon: 'globe',
     previews: ['lazy-meet'],
+    logo: '/work-logos/lazy-meet.png',
     lede: 'Joins your calls at start time, muted and camera off, across three accounts.',
     body: [
       {
@@ -332,6 +337,7 @@ export const HELP_GUIDES: HelpGuide[] = [
     artSeed: 14,
     icon: 'chart',
     previews: ['fey'],
+    logo: '/work-logos/the-ruff-agency.svg',
     lede: 'Clients, contracts, invoices, tasks and a client portal in one shared workspace.',
     body: [
       {
@@ -419,6 +425,7 @@ export const HELP_GUIDES: HelpGuide[] = [
     artSeed: 15,
     icon: 'bag',
     previews: ['tomori'],
+    logo: '/work-logos/tomori.svg',
     lede: 'A quiet, phone-first shop for hand-dyed clothes, and a back office that fits in a pocket.',
     body: [
       {
@@ -479,6 +486,7 @@ export const HELP_GUIDES: HelpGuide[] = [
     artSeed: 16,
     icon: 'box',
     previews: ['marvy'],
+    logo: '/work-logos/marvy.svg',
     lede: 'Drop a video in and it lands in the right Drive folder, with the right people tagged.',
     body: [
       {
@@ -531,6 +539,7 @@ export const HELP_GUIDES: HelpGuide[] = [
     artSeed: 17,
     icon: 'bank',
     previews: ['rayo'],
+    logo: '/work-logos/rayo.svg',
     lede: 'Send a quote with options, the client accepts one, and it becomes the invoice.',
     body: [
       {
@@ -583,6 +592,7 @@ export const HELP_GUIDES: HelpGuide[] = [
     artSeed: 18,
     icon: 'chart',
     previews: ['dory'],
+    logo: '/work-logos/dory.svg',
     lede: 'Budget, shopping, loans and subscriptions in one place, with what is left always on top.',
     body: [
       {
@@ -635,6 +645,7 @@ export const HELP_GUIDES: HelpGuide[] = [
     artSeed: 19,
     icon: 'qr',
     previews: ['planes'],
+    logo: '/work-logos/planes.png',
     lede: 'Swipe to land a task, fly one to a friend, and race your crew on the leaderboard.',
     body: [
       {
@@ -687,6 +698,7 @@ export const HELP_GUIDES: HelpGuide[] = [
     artSeed: 20,
     icon: 'sparkle',
     previews: ['beam'],
+    logo: '/work-logos/beam.svg',
     lede: 'Save a brand once, answer a short interview, and get a document in the client’s brand.',
     body: [
       {
@@ -739,6 +751,7 @@ export const HELP_GUIDES: HelpGuide[] = [
     artSeed: 11,
     icon: 'globe',
     previews: ['marque-app', 'marque'],
+    logo: '/work-logos/marque.svg',
     lede: 'Start from a logo, edit the guide in place, and publish it at one link.',
     body: [
       {

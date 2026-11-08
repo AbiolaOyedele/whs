@@ -8,6 +8,8 @@ type Device = 'laptop' | 'tablet' | 'phone'
 /** Narrowest box that gets the laptop layout. */
 const LAPTOP_MIN_WIDTH = 600
 const PHONE_WIDTH = 390
+/** How much slower than recorded the tour runs: each screen holds 1.8x as long. */
+const PACE = 1.8
 
 interface LivePreviewProps {
   slug: LivePreviewSlug
@@ -55,7 +57,7 @@ export function LivePreview({ slug, device: pinned, className = '' }: LivePrevie
     const mount = () => {
       if (frame()) return
       const next = document.createElement('iframe')
-      next.src = `/previews/screens/${slug}.html?device=${device}&bare=1`
+      next.src = `/previews/screens/${slug}.html?device=${device}&bare=1&pace=${PACE}`
       next.title = preview.label
       next.tabIndex = -1
       next.setAttribute('aria-hidden', 'true')

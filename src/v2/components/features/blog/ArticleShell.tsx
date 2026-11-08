@@ -7,8 +7,6 @@ import { SmartLink } from '@v2/components/ui/SmartLink'
 import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { AuthorChip } from '@v2/components/features/blog/AuthorChip'
 import { Button } from '@v2/components/ui/Button'
-import { LivePreview } from '@v2/components/ui/LivePreview'
-import { LIVE_PREVIEWS, type LivePreviewSlug } from '@/config/previews'
 
 interface ArticleShellProps {
   title: string
@@ -20,12 +18,8 @@ interface ArticleShellProps {
   author: Author
   artSeed: number
   icon: IconName
-  /**
-   * Live previews of the project (case studies). The first replaces the art
-   * banner; after the body it is shown again at tablet and phone size, then
-   * any others follow with their captions, as on the main site.
-   */
-  previews?: LivePreviewSlug[]
+  /** The product's logo (case studies): shown in the header panel in place of the art. */
+  logo?: string | undefined
   /** The "See all" button that rides down beside the article. */
   back: { label: string; href: string }
   /** The body column: lede, rich text and any closing sections. */
@@ -48,12 +42,11 @@ export function ArticleShell({
   author,
   artSeed,
   icon,
-  previews = [],
+  logo,
   back,
   children,
   after,
 }: ArticleShellProps) {
-  const [lead, ...more] = previews
   return (
     <>
       <div className="slate bg-slate-50 pb-1">
@@ -88,9 +81,13 @@ export function ArticleShell({
                     </div>
                   </div>
                 </div>
-                {lead ? (
-                  <div className="anim-image-clip-path relative mb-fluid-lg overflow-hidden rounded-md">
-                    <LivePreview slug={lead} className="relative aspect-4/5 w-full md:aspect-5/3" />
+                {logo ? (
+                  <div className="anim-image-clip-path relative mb-fluid-lg flex justify-center overflow-hidden bg-slate-100 py-fluid-2xl">
+                    <div className="relative aspect-880/744 w-[50%] max-w-180">
+                      <div className="flex h-full w-full items-center justify-center">
+                        <img src={logo} alt="" className="m-auto max-h-1/2 max-w-3/4 object-contain" />
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <div className="anim-image-clip-path relative mb-fluid-lg flex justify-center overflow-hidden bg-slate-100 py-fluid-2xl">
@@ -111,27 +108,6 @@ export function ArticleShell({
                 </div>
                 <div className="min-w-0 md:col-span-8">{children}</div>
               </div>
-              {lead && (
-                <div className="mt-fluid-2xl grid gap-1.5 md:grid-cols-12">
-                  <LivePreview
-                    slug={lead}
-                    device="tablet"
-                    className="relative aspect-4/5 w-full rounded-md md:col-span-7 md:aspect-6/5"
-                  />
-                  {/* Dropped below md, where the lead preview is already the phone layout. */}
-                  <LivePreview
-                    slug={lead}
-                    device="phone"
-                    className="relative hidden w-full rounded-md md:col-span-5 md:block"
-                  />
-                </div>
-              )}
-              {more.map((slug) => (
-                <figure key={slug} className="mt-fluid-2xl">
-                  <figcaption className="text-label mb-5">{LIVE_PREVIEWS[slug].caption}</figcaption>
-                  <LivePreview slug={slug} className="relative aspect-4/5 w-full rounded-md md:aspect-5/3" />
-                </figure>
-              ))}
             </article>
             <div className="pointer-events-none md:absolute md:top-0 md:left-0 md:h-[calc(100%+var(--grid-gutter))]">
               <div className="sticky top-0 flex h-screen items-end pb-gutter max-md:hidden">

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en" style="color-scheme: light;">
 <head>
-<script>(function(){var q=new URLSearchParams(location.search),d=q.get('device'),r=document.documentElement;if(d==='tablet'||d==='phone')r.setAttribute('data-device',d);if(q.get('bare')==='1')r.setAttribute('data-bare','1')})()</script>
+<script>/* pace: ?pace=1.8 stretches every timed step of the tour (added by WildHands for the v2 site; re-add after regenerating in Joisti) */(function(){var p=parseFloat(new URLSearchParams(location.search).get('pace'));if(!(p>0)||p===1)return;var st=window.setTimeout;window.setTimeout=function(f,ms){var a=[].slice.call(arguments,2);return st.apply(window,[f,(+ms||0)*p].concat(a));};})();</script><script>(function(){var q=new URLSearchParams(location.search),d=q.get('device'),r=document.documentElement;if(d==='tablet'||d==='phone')r.setAttribute('data-device',d);if(q.get('bare')==='1')r.setAttribute('data-bare','1')})()</script>
 <style>html[data-bare]{--safe-top:0px!important;--safe-bottom:0px!important;--mock-safe-top:0px!important;--mock-safe-bottom:0px!important;--mock-top:0px!important;--mock-bottom:0px!important}html[data-bare] .mock-view header.sticky{padding-top:0!important}html[data-bare] .wh-dock-nav{bottom:.75rem!important}html[data-bare] #stage{top:0!important;bottom:0!important}</style>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

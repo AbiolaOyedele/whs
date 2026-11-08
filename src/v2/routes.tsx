@@ -14,6 +14,7 @@ import { HeroAbout } from '@v2/components/features/about/HeroAbout'
 import { ArticleShell } from '@v2/components/features/blog/ArticleShell'
 import { BlogIndex } from '@v2/components/features/blog/BlogIndex'
 import { BlogPostCard } from '@v2/components/features/blog/BlogPostCard'
+import { CaseStudyPreview } from '@v2/components/features/blog/CaseStudyPreview'
 import { GuideCallToAction } from '@v2/components/features/blog/GuideCallToAction'
 import { GuideQuestions } from '@v2/components/features/blog/GuideQuestions'
 import { HelpIndex } from '@v2/components/features/blog/HelpIndex'
@@ -215,6 +216,7 @@ function blogPost(slug: string): ResolvedRoute | null {
 function guide(slug: string): ResolvedRoute | null {
   const entry = guideBySlug(slug)
   if (!entry) return null
+  const [lead, ...more] = entry.previews
   return {
     title: titled(entry.title),
     description: entry.lede,
@@ -226,7 +228,7 @@ function guide(slug: string): ResolvedRoute | null {
         author={HELP_AUTHOR}
         artSeed={entry.artSeed}
         icon={entry.icon}
-        previews={entry.previews}
+        logo={entry.logo}
         back={{ label: 'See all work', href: '/resources' }}
         after={
           <RelatedRow
@@ -243,7 +245,7 @@ function guide(slug: string): ResolvedRoute | null {
                   labels={[]}
                   artSeed={related.artSeed}
                   icon={related.icon}
-                  preview={related.previews[0]}
+                  logo={related.logo}
                   headingLevel="h3"
                 />
               ),
@@ -252,7 +254,11 @@ function guide(slug: string): ResolvedRoute | null {
         }
       >
         <p className="text-body-lg mb-fluid-lg text-balance">{entry.lede}</p>
+        {lead && <CaseStudyPreview slug={lead} />}
         <RichContent blocks={entry.body} className="not-first:mt-fluid-xl not-last:mb-fluid-xl" />
+        {more.map((slug) => (
+          <CaseStudyPreview key={slug} slug={slug} />
+        ))}
         <GuideQuestions questions={entry.faqs} />
         <GuideCallToAction />
       </ArticleShell>

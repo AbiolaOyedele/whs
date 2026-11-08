@@ -2,8 +2,6 @@ import { ArtPanel } from '@v2/components/ui/ArtPanel'
 import { Icon, type IconName } from '@v2/components/ui/Icon'
 import { ParallaxMedia } from '@v2/components/ui/ParallaxMedia'
 import { SmartLink } from '@v2/components/ui/SmartLink'
-import { LivePreview } from '@v2/components/ui/LivePreview'
-import type { LivePreviewSlug } from '@/config/previews'
 
 export interface PostCardProps {
   href: string
@@ -15,8 +13,8 @@ export interface PostCardProps {
   labels: string[]
   artSeed: number
   icon: IconName
-  /** A live preview of the project, shown in place of the art (case studies). */
-  preview?: LivePreviewSlug | undefined
+  /** The product's logo, shown on a light panel in place of the art (case studies). */
+  logo?: string | undefined
   /** Heading level for the title, so the page's outline stays in order. */
   headingLevel?: 'h2' | 'h3'
 }
@@ -34,16 +32,16 @@ export function PostCard({
   labels,
   artSeed,
   icon,
-  preview,
+  logo,
   headingLevel = 'h2',
 }: PostCardProps) {
   const Heading = headingLevel
   return (
     <div className="group anim-scale relative flex h-full flex-col overflow-hidden rounded-md" data-scroll="">
       <div className="relative flex aspect-464/392 items-center justify-center overflow-hidden">
-        {preview ? (
-          <div className="c-blog-art absolute inset-0 group-focus-within:scale-105 group-hover:scale-105">
-            <LivePreview slug={preview} className="absolute inset-0" />
+        {logo ? (
+          <div className="c-blog-art absolute inset-0 flex items-center justify-center bg-slate-100 group-focus-within:scale-105 group-hover:scale-105">
+            <img src={logo} alt="" className="max-h-[34%] max-w-[46%] object-contain" />
           </div>
         ) : (
           <>
