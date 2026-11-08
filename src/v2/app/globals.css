@@ -1,0 +1,189 @@
+/* Scan only the v2 sources, so the old site's class names do not leak in. */
+@import 'tailwindcss' source(none);
+@import '../styles/utilities.css';
+@import '../styles/loader.css';
+@import '../styles/header.css';
+@import '../styles/components.css';
+@import '../styles/pages/home.css' layer(components);
+@import '../styles/pages/home-lower.css' layer(components);
+@import '../styles/pages/use-case.css' layer(components);
+@import '../styles/pages/pricing.css' layer(components);
+@import '../styles/pages/forms.css' layer(components);
+@import '../styles/pages/about.css' layer(components);
+@import '../styles/pages/brand.css' layer(components);
+@import '../styles/pages/blog.css' layer(components);
+@import '../styles/pages/legal.css' layer(components);
+@import '../styles/pages/canvas.css' layer(components);
+@source '../';
+@plugin '@tailwindcss/typography' {
+  className: wysiwyg;
+}
+
+/* Sections set their own scheme with a class; children style against it. */
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant slate (&:where(.slate, .slate *));
+
+@theme {
+  --font-*: initial;
+  --font-sans: var(--font-stand-sans), sans-serif;
+  --font-mono: var(--font-stand-mono), monospace;
+  --font-secondary: var(--font-stand-secondary), sans-serif;
+
+  --breakpoint-*: initial;
+  --breakpoint-2xs: 340px;
+  --breakpoint-xs: 500px;
+  --breakpoint-sm: 700px;
+  --breakpoint-md: 1000px;
+  --breakpoint-lg: 1200px;
+  --breakpoint-xl: 1400px;
+  --breakpoint-2xl: 1600px;
+  --breakpoint-3xl: 1800px;
+  --breakpoint-4xl: 2000px;
+  --breakpoint-5xl: 2400px;
+
+  --color-*: initial;
+  --color-black: #000;
+  --color-white: #fff;
+  --color-slate-50: #eef2f5;
+  --color-slate-100: #dbe5ed;
+  --color-slate-200: #cfd7e7;
+  --color-slate-300: #c6cee0;
+  --color-slate-400: #b3c0d4;
+  --color-navy-500: #586490;
+  --color-navy-900: #172b76;
+  --color-pink-100: #fdcdeb;
+  --color-pink-200: #f8a2d3;
+  --color-pink-300: #f480c0;
+  --color-pink-500: #ff488b;
+  --color-pink-600: #f6186a;
+  --color-purple-100: #e33adb;
+  --color-charcoal: #101421;
+  --color-red: #ff0000;
+
+  --container-md: 28rem;
+  --container-lg: 32rem;
+  --container-2xl: 42rem;
+  --container-3xl: 48rem;
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: calc(1 / 0.75);
+  --text-sm: 0.875rem;
+  --text-sm--line-height: calc(1.25 / 0.875);
+  --text-7xl: 4.5rem;
+  --text-7xl--line-height: 1;
+  --text-fluid-heading-3xl: clamp(2.8125rem, 1.5256rem + 5.2795vw, 8.125rem);
+  --text-fluid-heading-2xl: clamp(2.8125rem, 1.8587rem + 3.913vw, 6.75rem);
+  --text-fluid-heading-xl: clamp(2.5rem, 1.743rem + 3.1056vw, 5.625rem);
+  --text-fluid-heading-lg: clamp(1.875rem, 1.2391rem + 2.6087vw, 4.5rem);
+  --text-fluid-heading-md: clamp(1.5625rem, 1.1234rem + 1.8012vw, 3.375rem);
+  --text-fluid-heading-sm: clamp(1.5625rem, 1.3051rem + 1.0559vw, 2.625rem);
+  --text-fluid-heading-xs: clamp(1.25rem, 1.0986rem + 0.6211vw, 1.875rem);
+  --text-fluid-heading-2xs: clamp(1.125rem, 1.0493rem + 0.3106vw, 1.4375rem);
+
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-wider: 0.05em;
+
+  --radius-sm: 7px;
+  --radius-md: 10px;
+  --radius-lg: 15px;
+  --radius-xl: 30px;
+  --radius-4xl: 2rem;
+
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --spacing-fluid-xs: clamp(0.5rem, 0.4394rem + 0.2484vw, 0.75rem);
+  --spacing-fluid-sm: clamp(1rem, 0.8032rem + 0.8075vw, 1.8125rem);
+  --spacing-fluid-md: clamp(1.5rem, 1.288rem + 0.8696vw, 2.375rem);
+  --spacing-fluid-lg: clamp(2rem, 1.7578rem + 0.9938vw, 3rem);
+  --spacing-fluid-xl: clamp(2.5rem, 2.0912rem + 1.677vw, 4.1875rem);
+  --spacing-fluid-2xl: clamp(3.5rem, 2.8944rem + 2.4845vw, 6rem);
+  --spacing-fluid-3xl: clamp(5rem, 3.8797rem + 4.5963vw, 9.625rem);
+  --spacing-fluid-4xl: clamp(8rem, 7.0311rem + 3.9752vw, 12rem);
+  --spacing-gutter: var(--grid-gutter);
+  --spacing-header: calc(var(--header-height) + var(--announcement-banner-height, 0px));
+  --spacing-safe-header: calc(var(--spacing-header) + calc(var(--spacing) * 4));
+}
+
+:root {
+  --grid-columns: 6;
+  --grid-gutter: 15px;
+  --grid-margin: 15px;
+  --announcement-banner-height: 0px;
+  --header-height: calc(calc(var(--spacing) * 11) + (var(--grid-margin) * 2));
+
+  --transition-page-duration: 0.3s;
+  --transition-duration-fast: 0.2s;
+  --transition-duration: 0.3s;
+  --transition-duration-slow: 0.6s;
+  --transition-duration-slower: 0.8s;
+  --transition-duration-slowest: 1s;
+  --ease: cubic-bezier(0.645, 0.045, 0.355, 1);
+  --ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  --z-index-modal: 200;
+  --z-index-overlay: 300;
+  --z-index-header-absolute: 90;
+  --z-index-header: 100;
+  --z-index-header-fixed: 150;
+  --z-index-above: 1;
+  --z-index-below: -1;
+}
+
+@media (min-width: 1000px) {
+  :root {
+    --grid-columns: 12;
+    --grid-gutter: calc(var(--spacing) * 5);
+    --grid-margin: calc(var(--spacing) * 5);
+    --header-height: calc(calc(var(--spacing) * 13.5) + (calc(var(--spacing) * 3.5) * 2));
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --grid-margin: calc(var(--spacing) * 10);
+  }
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--color-charcoal);
+    font-weight: 500;
+  }
+
+  body {
+    color: var(--color-navy-900);
+  }
+
+  ::selection {
+    background-color: var(--color-navy-900);
+    color: var(--color-white);
+    text-shadow: none;
+  }
+
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis:not(.lenis-autoToggle).lenis-stopped {
+    overflow: clip;
+  }
+
+  .lenis [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  html.has-menu-mobile-open {
+    overflow: hidden;
+  }
+}

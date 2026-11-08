@@ -1,4 +1,5 @@
 // @ts-check
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'astro/config'
 import vercel from '@astrojs/vercel'
 import sitemap from '@astrojs/sitemap'
@@ -128,5 +129,15 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+    resolve: {
+      /*
+       * The v2 site (src/v2) was built on Next.js. Its two Next imports are
+       * pointed at small stand-ins so its components run here unchanged.
+       */
+      alias: {
+        'next/navigation': fileURLToPath(new URL('./src/v2/shims/next-navigation.ts', import.meta.url)),
+        'next/link': fileURLToPath(new URL('./src/v2/shims/next-link.tsx', import.meta.url)),
+      },
+    },
   },
 })

@@ -1,0 +1,126 @@
+/* Page styles: forms. Owned by the forms builder. */
+
+/* ── pick-one box (the reference's .input-select, without a native <select>) ── */
+
+.input-select {
+  position: relative;
+  width: 100%;
+  height: 55px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-slate-50);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  outline: 1px solid transparent;
+  transition: outline-color var(--transition-duration-fast) var(--ease);
+}
+
+.input-select:where(.slate, .slate *) {
+  background-color: var(--color-white);
+}
+
+.input-select:focus-within {
+  outline-color: var(--color-navy-500);
+}
+
+.input-select[data-invalid] {
+  outline-color: var(--color-red);
+}
+
+@media (min-width: 1000px) {
+  .input-select {
+    font-size: 17px;
+  }
+}
+
+@media (min-width: 2000px) {
+  .input-select {
+    font-size: 18px;
+  }
+}
+
+.c-listbox_button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding-inline: calc(var(--spacing) * 4) calc(var(--spacing) * 9);
+  border-radius: inherit;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+}
+
+.c-listbox_button > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c-listbox_list {
+  position: absolute;
+  top: calc(100% + calc(var(--spacing) * 2));
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  max-height: min(320px, 60svh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: calc(var(--spacing) * 1);
+  border: 1px solid var(--color-slate-200);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-white);
+  box-shadow: 0 12px 30px -12px rgb(23 43 118 / 0.25);
+  outline: none;
+  animation: c-listbox-in var(--transition-duration-fast) var(--ease) both;
+}
+
+.c-listbox_option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 3);
+  min-height: calc(var(--spacing) * 11);
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+  border-radius: calc(var(--radius-sm) - 2px);
+  color: var(--color-navy-900);
+  cursor: pointer;
+  transition: background-color var(--transition-duration-fast) var(--ease);
+}
+
+.c-listbox_option[data-active] {
+  background-color: var(--color-slate-50);
+}
+
+.c-listbox_option[aria-selected='true'] {
+  color: var(--color-navy-500);
+}
+
+@keyframes c-listbox-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .c-listbox_list {
+    animation: none;
+  }
+}
+
+/* ── text fields that failed their check ── */
+
+.input-base[aria-invalid='true'],
+.input-base[aria-invalid='true']:focus {
+  outline-color: var(--color-red);
+}

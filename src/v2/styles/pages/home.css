@@ -1,0 +1,222 @@
+/* Page styles: home (top half). Owned by the home builder. */
+
+/* A faint hairline that draws in from the left once the page is ready. */
+.animated-line {
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-white);
+  opacity: 0.2;
+  transform: scaleX(0);
+  transform-origin: 0;
+  transition: transform var(--transition-duration-slowest) var(--ease);
+}
+
+html.is-ready .animated-line {
+  transform: scale(1);
+}
+
+/* ── hero: click-and-hold cursor ──────────────────────────────────── */
+
+@media (hover: hover) and (pointer: fine) {
+  .c-hero-home[data-hero-hold-root] {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .c-hero-home[data-hero-hold-root] [data-hero-cursor-hide],
+  .c-hero-home[data-hero-hold-root] [data-hero-cursor-hide] * {
+    cursor: auto;
+    user-select: text;
+  }
+
+  .c-hero-home[data-hero-hold-root] [data-hero-cursor-hide] a,
+  .c-hero-home[data-hero-hold-root] [data-hero-cursor-hide] a * {
+    cursor: pointer;
+  }
+}
+
+.c-hero-hold-letter {
+  opacity: 0;
+}
+
+.c-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 70;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s var(--ease);
+  will-change: transform, opacity;
+}
+
+.c-cursor.is-visible {
+  opacity: 1;
+}
+
+.c-cursor.is-hidden {
+  opacity: 0;
+}
+
+.c-cursor_container {
+  position: relative;
+}
+
+.c-cursor_text {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  width: 100%;
+  color: var(--color-white);
+}
+
+.c-cursor_svg {
+  --hero-cursor-scale: 0.72;
+  display: block;
+  width: 150px;
+  height: 150px;
+  transform: rotate(-90deg) scale(var(--hero-cursor-scale));
+  transform-origin: center;
+  transition: transform 0.35s var(--ease-in-out);
+}
+
+.c-cursor.is-visible .c-cursor_svg {
+  --hero-cursor-scale: 1;
+  transition-delay: 0.1s;
+}
+
+.c-cursor.is-hidden .c-cursor_svg {
+  --hero-cursor-scale: 0.82;
+}
+
+.c-cursor.is-holding .c-cursor_svg {
+  --hero-cursor-scale: 0.75;
+}
+
+.c-cursor_ring {
+  fill: none;
+  stroke: #ffffff40;
+  stroke-width: 1;
+  stroke-linecap: round;
+}
+
+.c-cursor_progress {
+  fill: none;
+  stroke: #fffffff2;
+  stroke-width: 1;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.c-cursor_content {
+  position: absolute;
+  top: 15%;
+  left: 15%;
+  display: flex;
+  width: 70%;
+  height: 70%;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.35s var(--ease-in-out);
+}
+
+.c-cursor_content_bar {
+  width: 4px;
+  height: 4px;
+  border-radius: 4px;
+  background-color: #fffffff2;
+  transition:
+    width 0.35s var(--ease-in-out),
+    transform 0.35s var(--ease-in-out),
+    border-radius 0.35s var(--ease-in-out);
+}
+
+.c-cursor.is-holding .c-cursor_content {
+  transform: scale(0.85);
+  transform-origin: center;
+}
+
+.c-cursor.is-holding .c-cursor_content_bar {
+  width: 16px;
+  border-radius: 2px;
+  transform: scaleY(0.5);
+}
+
+/* ── map card: bursts of pink hex dots with name tags ─────────────── */
+
+/* A wave lives 3.12s: bursts bloom, hold, then fade as the next wave starts. */
+.c-map-wave {
+  animation: c-map-wave 3.12s linear both;
+}
+
+@keyframes c-map-wave {
+  0%,
+  93% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Each ring of a burst pops 0.1s after the one inside it; bursts 0.083s apart. */
+.c-map-wave .c-map-cell {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: c-map-cell 0.567s both;
+  animation-delay: calc(var(--map-i, 0) * 0.083s + var(--map-ring, 0) * 0.1s);
+}
+
+@keyframes c-map-cell {
+  0% {
+    transform: scale(0);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 1);
+  }
+  26% {
+    transform: scale(1.25);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 1);
+  }
+  64% {
+    transform: scale(0.9);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* The tag sits to the right of its burst, or to the left near the edge. */
+.c-map-tag {
+  translate: 14px -50%;
+}
+
+.c-map-tag.-is-left {
+  translate: calc(-100% - 14px) -50%;
+}
+
+.c-map-wave .c-map-tag {
+  animation:
+    c-map-tag-fade 0.2s var(--ease-out) both,
+    c-map-tag-rise 0.417s var(--ease-in-out) both;
+  animation-delay: calc(var(--map-i, 0) * 0.083s + 0.283s);
+}
+
+@keyframes c-map-tag-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes c-map-tag-rise {
+  from {
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .c-map-wave,
+  .c-map-wave .c-map-cell,
+  .c-map-wave .c-map-tag {
+    animation: none;
+  }
+}

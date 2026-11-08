@@ -1,0 +1,104 @@
+/* Page styles: pricing. Owned by the pricing builder. */
+
+/* ── calculator slider (the reference's .range) ──
+   Navy fill up to --value on a pale 6px track. The input itself is 44px tall
+   and transparent so the whole strip takes a tap; only the track is drawn. */
+
+.c-range {
+  --range-empty: var(--color-slate-50);
+  appearance: none;
+  -webkit-appearance: none;
+  height: calc(var(--spacing) * 11);
+  margin-block: calc(var(--spacing) * -4.75);
+  background: transparent;
+  accent-color: var(--color-navy-900);
+  cursor: pointer;
+}
+
+.c-range:where(.slate, .slate *) {
+  --range-empty: var(--color-white);
+}
+
+.c-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--color-navy-900) 0%,
+    var(--color-navy-900) var(--value),
+    var(--range-empty) var(--value),
+    var(--range-empty) 100%
+  );
+}
+
+.c-range::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--color-navy-900) 0%,
+    var(--color-navy-900) var(--value),
+    var(--range-empty) var(--value),
+    var(--range-empty) 100%
+  );
+}
+
+.c-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: calc(var(--spacing) * 4);
+  height: calc(var(--spacing) * 4);
+  margin-top: -5px;
+  border: 0;
+  border-radius: 100%;
+  background-color: var(--color-navy-900);
+  cursor: pointer;
+  transition: transform var(--transition-duration-fast) var(--ease);
+}
+
+.c-range::-moz-range-thumb {
+  width: calc(var(--spacing) * 4);
+  height: calc(var(--spacing) * 4);
+  border: 0;
+  border-radius: 100%;
+  background-color: var(--color-navy-900);
+  cursor: pointer;
+}
+
+.c-range:focus {
+  outline: none;
+}
+
+.c-range:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--color-pink-500);
+  outline-offset: 2px;
+}
+
+.c-range:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--color-pink-500);
+  outline-offset: 2px;
+}
+
+.c-range:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+
+/* The typed "orders a month" box: bare like the reference, but a full tap target. */
+.c-pricing-number {
+  min-height: calc(var(--spacing) * 11);
+  padding-inline: calc(var(--spacing) * 2);
+  margin-right: calc(var(--spacing) * -2);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  outline: 1px solid transparent;
+  transition: outline-color var(--transition-duration-fast) var(--ease);
+}
+
+.c-pricing-number:focus {
+  outline-color: var(--color-navy-500);
+}
+
+/* Phone comparison: the plan tabs share the full width, like the reference's `grow` tabs. */
+.c-pricing-compare [role='tab'] {
+  flex-grow: 1;
+}

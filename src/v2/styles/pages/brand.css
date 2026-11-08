@@ -1,0 +1,21 @@
+/* Page styles: brand. Owned by the brand builder. */
+
+/* The outlined logo that drifts across the dark panel: 1.5× the screen wide on phones, the screen's width from 700px. */
+.c-brand-outline {
+  display: block;
+  width: 150vw;
+  height: auto;
+  color: var(--color-white);
+}
+
+@media (min-width: 700px) {
+  .c-brand-outline {
+    width: 100vw;
+  }
+}
+
+.c-brand-outline_word {
+  font-family: var(--font-sans);
+  font-size: 270px;
+  letter-spacing: -0.02em;
+}

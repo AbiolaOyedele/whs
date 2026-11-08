@@ -1,0 +1,53 @@
+---
+/**
+ * Document shell for the v2 site: the <html>/<head> half of the Next app's
+ * root layout (website-v2/src/app/layout.tsx). The <body> is one React
+ * island, src/v2/App.tsx, which holds the header, background, page and
+ * footer so client-side navigation keeps all of them alive between pages.
+ *
+ * Fonts are the clone's stand-ins (Inter, Inter Tight, IBM Plex Mono),
+ * exposed under the same CSS variables next/font set. Swap them here for the
+ * WildHands faces in the reskin.
+ */
+import '@v2/app/globals.css'
+
+interface Props {
+  title: string
+  description: string
+  /** Value for <html data-scene>; the background picks its scene from it. */
+  scene: string
+  /** Value for <html data-template>. */
+  template: string
+}
+
+const { title, description, scene, template } = Astro.props
+---
+
+<!doctype html>
+<html lang="en" class="is-initial-loading" data-scene={scene} data-template={template}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101421" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=Inter+Tight:wght@300&family=Inter:wght@400;600&display=swap"
+    />
+    <title>{title}</title>
+    <style is:global>
+      :root {
+        --font-stand-sans: 'Inter';
+        --font-stand-secondary: 'Inter Tight';
+        --font-stand-mono: 'IBM Plex Mono';
+      }
+    </style>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

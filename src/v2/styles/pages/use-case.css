@@ -1,0 +1,498 @@
+/* Page styles: use-case. Owned by the use-case builder. */
+
+@layer components {
+
+/* ── page helpers (the reference's shared layout classes, scoped here) ── */
+
+.c-use-case .section-spacing {
+  margin-block: var(--spacing-fluid-xl);
+}
+
+@media (min-width: 1000px) {
+  .c-use-case .section-spacing {
+    margin-block: var(--spacing-fluid-3xl);
+  }
+}
+
+.c-use-case .section-spacing:first-child {
+  margin-top: 0;
+}
+
+.c-use-case .section-spacing:last-child {
+  margin-bottom: 0;
+}
+
+.c-use-case .wrapper {
+  border-radius: var(--radius-4xl);
+  padding-block: var(--spacing-fluid-xl);
+}
+
+@media (min-width: 1000px) {
+  .c-use-case .wrapper {
+    padding-block: var(--spacing-fluid-2xl);
+  }
+}
+
+.c-use-case .animated-line {
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-white);
+  opacity: 0.2;
+  transform: scaleX(0);
+  transform-origin: 0;
+  transition: transform var(--transition-duration-slowest) var(--ease);
+}
+
+html.is-ready .c-use-case .animated-line {
+  transform: scale(1);
+}
+
+/* ── hero: voice bars ── */
+
+.c-voice-visualizer {
+  display: flex;
+  justify-content: space-between;
+  height: clamp(12.5rem, 9.7748rem + 11.1801vw, 23.75rem);
+}
+
+.c-voice-visualizer_line {
+  width: 1px;
+  height: 100%;
+  transform-origin: bottom;
+}
+
+.c-voice-visualizer_line:nth-child(odd) {
+  background-color: var(--color-white);
+}
+
+.c-voice-visualizer_line:nth-child(2n) {
+  background-color: var(--color-pink-500);
+}
+
+/* ── hero: letter grid ── */
+
+.c-crossword-grid {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.c-crossword-grid-cells-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.c-crossword-grid-highlight-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.c-crossword-grid-cells {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(var(--crossword-cols, 24), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--crossword-rows, 5), auto);
+  gap: clamp(0.45rem, 1.5vw, 1rem) clamp(0.35rem, 1.2vw, 0.85rem);
+}
+
+.c-crossword-grid-cell {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  max-height: 2.75rem;
+  font-family: var(--font-mono);
+  font-size: clamp(0.65rem, 0.55rem + 0.35vw, 0.95rem);
+  font-weight: 400;
+  line-height: 1.07;
+  letter-spacing: var(--tracking-tight);
+  text-transform: uppercase;
+}
+
+@media not all and (min-width: 1000px) {
+  .c-crossword-grid-cells {
+    gap: clamp(0.55rem, 3.5vw, 1.1rem) clamp(0.5rem, 3vw, 1rem);
+  }
+
+  .c-crossword-grid-cell {
+    aspect-ratio: auto;
+    min-height: 1.75rem;
+    max-height: none;
+  }
+}
+
+.c-crossword-grid-cell.is-word-active {
+  z-index: 2;
+}
+
+.c-crossword-grid-word-highlight {
+  position: absolute;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-pink-500);
+  mix-blend-mode: screen;
+  opacity: 0.85;
+  will-change: transform, opacity;
+}
+
+.c-crossword-grid-word-highlight-diag-wrap {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.c-crossword-grid-word-highlight-diag-wipe {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: 0;
+  animation: crossword-highlight-wipe-x 0.7s var(--ease) forwards;
+}
+
+.c-crossword-grid-word-highlight-h {
+  transform: scaleX(0);
+  transform-origin: 0;
+  animation: crossword-highlight-wipe-x 0.7s var(--ease) forwards;
+}
+
+.c-crossword-grid-word-highlight-v {
+  transform: scaleY(0);
+  transform-origin: top;
+  animation: crossword-highlight-wipe-y 0.7s var(--ease) forwards;
+}
+
+.c-crossword-grid-word-highlight-mixed {
+  opacity: 0;
+  transform: scale(0.94);
+  animation: crossword-highlight-pop 0.72s var(--ease) forwards;
+}
+
+.c-crossword-grid-word-highlight-h.is-exiting,
+.c-crossword-grid-word-highlight-diag-wipe.is-exiting {
+  transform-origin: 100%;
+  animation: crossword-highlight-exit-x 0.55s var(--ease) forwards;
+}
+
+.c-crossword-grid-word-highlight-v.is-exiting {
+  transform-origin: bottom;
+  animation: crossword-highlight-exit-y 0.55s var(--ease) forwards;
+}
+
+.c-crossword-grid-word-highlight-mixed.is-exiting {
+  animation: crossword-highlight-exit-pop 0.52s var(--ease) forwards;
+}
+
+@keyframes crossword-highlight-wipe-x {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes crossword-highlight-wipe-y {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes crossword-highlight-pop {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes crossword-highlight-exit-x {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes crossword-highlight-exit-y {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes crossword-highlight-exit-pop {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+/* ── hero: photo / video tiles ── */
+
+.c-media-transform {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--grid-gutter);
+}
+
+@media (max-width: 720px) {
+  .c-media-transform {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .c-media-transform_item:nth-child(n + 5) {
+    display: none;
+  }
+}
+
+.c-media-transform_item {
+  border: 1px solid;
+  transition: color var(--transition-duration-fast) var(--ease);
+}
+
+.c-media-transform_item.is-white {
+  color: var(--color-white);
+}
+
+.c-media-transform_item.is-pink {
+  color: var(--color-pink-500);
+}
+
+.c-media-transform_svg-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.c-media-transform_svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.c-media-transform_morph {
+  stroke: currentColor;
+}
+
+/* ── feature card: order flow ── */
+
+.c-uc-flow_link {
+  stroke: var(--color-navy-500);
+  stroke-width: 1;
+}
+
+.c-uc-flow_dot {
+  fill: var(--color-pink-500);
+  opacity: 0;
+}
+
+.c-uc-flow.is-playing .c-uc-flow_dot {
+  animation: uc-flow-travel 2.4s var(--ease-in-out) infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes uc-flow-travel {
+  0% {
+    opacity: 0;
+    transform: translate(var(--x1), var(--y1));
+  }
+  10% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 1;
+    transform: translate(var(--x2), var(--y2));
+  }
+  55%,
+  100% {
+    opacity: 0;
+    transform: translate(var(--x2), var(--y2));
+  }
+}
+
+.c-uc-flow_hub {
+  transition: transform 0.2s var(--ease);
+}
+
+.c-uc-flow.is-playing .c-uc-flow_hub {
+  animation: uc-flow-pulse 0.8s var(--ease-in-out) infinite;
+  animation-delay: 0.48s;
+}
+
+@keyframes uc-flow-pulse {
+  0%,
+  60%,
+  100% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(1.06);
+  }
+}
+
+/* ── feature card: template carousel (the reference's GPU carousel) ── */
+
+.c-uc-gpu-carousel_container {
+  position: relative;
+  display: flex;
+  aspect-ratio: 707 / 600;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-slate-50);
+}
+
+.c-uc-gpu-carousel_list {
+  position: relative;
+  width: 80%;
+  height: 100%;
+}
+
+@media (min-width: 700px) {
+  .c-uc-gpu-carousel_list {
+    width: 70%;
+  }
+}
+
+.c-uc-gpu-carousel_item {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  transform-origin: 50%;
+}
+
+.c-uc-gpu-carousel_card {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: calc(var(--spacing) * 5);
+  overflow: hidden;
+  padding: calc(var(--spacing) * 2.5);
+  border-radius: var(--radius-md);
+  background-color: var(--color-white);
+}
+
+.c-uc-gpu-carousel_card_logo {
+  display: flex;
+  flex: 0 0 30%;
+  aspect-ratio: 1;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background-color: var(--color-slate-200);
+}
+
+.c-uc-gpu-carousel_card_content {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+}
+
+.c-uc-gpu-carousel_card_overlay {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-slate-50);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── feature card: demo-shop wordmarks (the reference's logo carousel) ── */
+
+.c-uc-logo-carousel_container {
+  position: relative;
+  display: flex;
+  aspect-ratio: 707 / 600;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-charcoal);
+}
+
+.c-uc-logo-carousel_list {
+  position: relative;
+  z-index: 2;
+  width: 33.3333%;
+  height: 100%;
+}
+
+.c-uc-logo-carousel_item {
+  position: absolute;
+  left: 0;
+  display: flex;
+  width: 100%;
+  aspect-ratio: 1;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 10%;
+  border-radius: var(--radius-md);
+  background-color: var(--color-slate-50);
+  container-type: inline-size;
+}
+
+/* ── feature card: cost chart ── */
+
+.c-uc-chart_line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── demo-shop carousel (the reference's tile carousel) ── */
+
+.c-uc-carousel {
+  --slides-per-view: 1.25;
+  --slide-gap: 15px;
+}
+
+@media (min-width: 700px) {
+  .c-uc-carousel {
+    --slides-per-view: 2;
+  }
+}
+
+@media (min-width: 1000px) {
+  .c-uc-carousel {
+    --slides-per-view: 3;
+  }
+}
+
+.c-uc-carousel_track {
+  display: flex;
+  gap: var(--slide-gap);
+  touch-action: pan-y;
+  transition: transform 0.3s ease;
+}
+
+.c-uc-carousel_track.is-dragging {
+  transition: none;
+}
+
+.c-uc-carousel_slide {
+  flex: 0 0 calc((100% - (var(--slides-per-view) - 1) * var(--slide-gap)) / var(--slides-per-view));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .c-uc-carousel_track {
+    transition: none;
+  }
+}
+}

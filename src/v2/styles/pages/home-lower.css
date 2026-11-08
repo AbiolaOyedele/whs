@@ -1,0 +1,92 @@
+/* Page styles: home-lower. Owned by the home-lower builder. */
+
+/* In the components layer so one-off margin utilities (e.g. the security
+   block's large bottom margin) still win, as on the reference. */
+@layer components {
+  /* Vertical rhythm between blocks (the reference's .section-spacing). */
+  .c-home-lower-spacing {
+    margin-block: var(--spacing-fluid-xl);
+  }
+
+  @media (min-width: 1000px) {
+    .c-home-lower-spacing {
+      margin-block: var(--spacing-fluid-3xl);
+    }
+  }
+
+  .c-home-lower-spacing:first-child {
+    margin-top: 0;
+  }
+
+  .c-home-lower-spacing:last-child {
+    margin-bottom: 0;
+  }
+
+  /* The rounded slate panel that slides up over the dark section (the reference's .wrapper). */
+  .c-home-lower-panel {
+    position: relative;
+    border-radius: var(--radius-4xl);
+    padding-block: var(--spacing-fluid-xl);
+  }
+
+  @media (min-width: 1000px) {
+    .c-home-lower-panel {
+      padding-block: var(--spacing-fluid-2xl);
+    }
+  }
+}
+
+/* ── designs carousel: 1.25 per view, 2 from 700px, 3 from 1000px, 15px apart ── */
+
+.c-design-carousel {
+  --carousel-per-view: 1.25;
+  --carousel-gap: 15px;
+  cursor: grab;
+}
+
+.c-design-carousel:active {
+  cursor: grabbing;
+}
+
+@media (min-width: 700px) {
+  .c-design-carousel {
+    --carousel-per-view: 2;
+  }
+}
+
+@media (min-width: 1000px) {
+  .c-design-carousel {
+    --carousel-per-view: 3;
+  }
+}
+
+.c-design-carousel_track {
+  transition-property: transform;
+  transition-timing-function: ease;
+  transition-duration: 0ms;
+  will-change: transform;
+}
+
+.c-design-carousel_slide {
+  flex-shrink: 0;
+  width: calc((100% - var(--carousel-gap) * (var(--carousel-per-view) - 1)) / var(--carousel-per-view));
+  margin-right: var(--carousel-gap);
+}
+
+.c-design-carousel_slide:last-child {
+  margin-right: 0;
+}
+
+/* ── blog row: card widths on the sideways row below 1000px ─────── */
+
+@media not all and (min-width: 1000px) {
+  .c-home-lower-post {
+    width: calc(3 / 7 * (100vw - 2 * var(--grid-margin)) - (4 / 7) * var(--grid-gutter));
+  }
+}
+
+@media not all and (min-width: 700px) {
+  .c-home-lower-post {
+    width: calc(5 / 6 * (100vw - 2 * var(--grid-margin)) - (1 / 6) * var(--grid-gutter));
+  }
+}

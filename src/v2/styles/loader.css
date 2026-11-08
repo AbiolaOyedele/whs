@@ -1,0 +1,151 @@
+/* The first-load screen: the logo mark's bars rock side to side on charcoal. */
+
+/* In the components layer, like the reference: utility classes on an element win over these. */
+@layer components {
+.c-initial-loader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-index-overlay);
+  display: grid;
+  place-items: center;
+  background-color: var(--color-charcoal);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity var(--transition-duration-fast) var(--ease),
+    visibility 0s linear var(--transition-duration-fast);
+}
+
+html.is-initial-loading .c-initial-loader {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s, 0s;
+}
+
+.c-initial-loader_mark {
+  opacity: 0;
+}
+
+html.is-first-loaded .c-initial-loader_mark,
+html.is-changing .c-initial-loader_mark {
+  animation: overlay-anim-in 0.3s var(--ease-in-out) forwards;
+}
+
+html.is-ready .c-initial-loader_mark {
+  animation: overlay-anim-out 0.3s var(--ease-in-out) forwards;
+}
+
+.c-initial-loader .c-logo-mark_line:first-child .c-logo-mark_bar {
+  animation: loader-bar 1s ease-in-out infinite;
+}
+
+.c-initial-loader .c-logo-mark_line:nth-child(3) .c-logo-mark_bar {
+  animation: loader-bar 1s ease-in-out 0.1s infinite;
+}
+
+.c-initial-loader .c-logo-mark_line:nth-child(2) .c-logo-mark_bar:first-child {
+  animation: loader-bar-middle 1s ease-in-out infinite;
+}
+
+.c-initial-loader .c-logo-mark_line:nth-child(2) .c-logo-mark_bar:last-child {
+  animation: loader-bar-middle 1s ease-in-out 0.1s infinite;
+}
+
+@keyframes loader-bar {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: translateX(-5px);
+  }
+}
+
+@keyframes loader-bar-middle {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes overlay-anim-in {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes overlay-anim-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-25px);
+  }
+}
+
+/* The logo mark: three rows of rounded bars, the middle row split in two. */
+
+.c-logo-mark {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 24px;
+}
+
+.c-logo-mark_line {
+  display: flex;
+  height: 4px;
+}
+
+.c-logo-mark_line:first-child,
+.c-logo-mark_line:nth-child(3) {
+  justify-content: flex-end;
+}
+
+.c-logo-mark_line:nth-child(2) {
+  gap: 3px;
+}
+
+.c-logo-mark_bar {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+  background-color: var(--color-pink-500);
+}
+
+.c-logo-mark_line:first-child .c-logo-mark_bar,
+.c-logo-mark_line:nth-child(3) .c-logo-mark_bar {
+  width: 19px;
+}
+
+.c-logo-mark_line:nth-child(2) .c-logo-mark_bar {
+  transition: width var(--transition-duration) var(--ease);
+}
+
+.c-logo-mark_line:nth-child(2) .c-logo-mark_bar:first-child {
+  width: 13px;
+}
+
+.c-logo-mark_line:nth-child(2) .c-logo-mark_bar:last-child {
+  width: 4px;
+}
+
+@media (max-width: 999px) {
+  .c-header .c-logo-mark {
+    width: 22px;
+    height: 22px;
+  }
+}
+}

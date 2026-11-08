@@ -1,0 +1,31 @@
+/* Page styles: canvas. Owned by the canvas builder. */
+
+/* Like the reference: hidden until the first frame, and faded out while a page leaves or swaps. */
+.c-background-canvas {
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity var(--transition-page-duration) var(--ease-in-out);
+}
+
+html.is-leaving .c-background-canvas,
+html.is-changing .c-background-canvas,
+.c-background-canvas:not([data-ready]) {
+  opacity: 0;
+}
+
+/* No WebGL: a still glow in the scene's colours. */
+.c-background-canvas[data-fallback] {
+  background-image: radial-gradient(130% 110% at 20% 23%, #000000 0%, #050003 35%, #2d0b23 100%);
+}
+
+.c-background-canvas > canvas,
+[data-hero-about-canvas] > canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The about hero card covers its stand-in glow once the scene is drawn inside it. */
+[data-hero-about-canvas]:has(> canvas) {
+  background-image: none;
+}
