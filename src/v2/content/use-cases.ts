@@ -1,3 +1,4 @@
+import { PHOTOS, coverImage, logoImage, type CardImage } from '@v2/content/photos'
 import { site } from '@v2/config/site'
 import type { IconName } from '@v2/components/ui/Icon'
 import type { MapPoint } from '@v2/components/features/feature-cards/MapCard'
@@ -76,7 +77,7 @@ const APP_SLIDES: Record<TemplateGlyph, TemplateSlide> = {
 /** Tools and systems we have built, one per layout sketch. */
 const TOOL_SLIDES: Record<TemplateGlyph, TemplateSlide> = {
   default: { glyph: 'default', name: 'Marvy', bestFor: 'Course videos filed in one step' },
-  glow: { glyph: 'glow', name: 'Beam', bestFor: 'Client documents from a short interview' },
+  glow: { glyph: 'glow', name: 'Lazy Meet', bestFor: 'Joins your calls muted, camera off' },
   blush: { glyph: 'blush', name: 'Dumpty', bestFor: 'Ideas filed, tagged and turned into next steps' },
   haven: { glyph: 'haven', name: 'Auto Flow', bestFor: 'Bulk video generation, unattended' },
   oak: { glyph: 'oak', name: 'The Ruff Agency', bestFor: 'One workspace instead of six tools' },
@@ -97,7 +98,7 @@ function workStory(id: string, client: string, industry: string, service: string
     template: service,
     trade: industry,
     title,
-    href: `/work/${id}`,
+    href: `/resources/${id}`,
   }
 }
 
@@ -178,6 +179,8 @@ export interface FeatureContent {
 
 export interface ExampleLink {
   icon: IconName
+  /** Shown in the tile in place of the icon: the product's logo, or a photo. */
+  image?: CardImage
   title: string
   body: string
   action: string
@@ -203,6 +206,7 @@ export interface UseCaseContent {
 /* ── shared pieces ── */
 
 const QUOTE_LINK: ExampleLink = {
+  image: coverImage(PHOTOS.startQuote),
   icon: 'bag',
   title: 'Request a quote',
   body: 'Send a short brief. We reply with a written plan and one price, worked out from that scope.',
@@ -211,6 +215,7 @@ const QUOTE_LINK: ExampleLink = {
 }
 
 const WEBSITE_OFFER_LINK: ExampleLink = {
+  image: coverImage(PHOTOS.service72Hours),
   icon: 'chart',
   title: 'The 72-hour website',
   body: `Starter at ${naira(150000)} or Standard at ${naira(250000)}. The design is approved before any code, and the site is live in 72 hours.`,
@@ -219,14 +224,16 @@ const WEBSITE_OFFER_LINK: ExampleLink = {
 }
 
 const APP_CASE_LINK: ExampleLink = {
+  image: logoImage('lazy-meet.png', 'Lazy Meet'),
   icon: 'chart',
   title: 'Read a case study',
   body: 'Lazy Meet joins your Google Meet calls at start time, muted and camera off, across three accounts.',
   action: 'Read the case study',
-  href: '/work/lazy-meet',
+  href: '/resources/lazy-meet',
 }
 
 const INSIGHTS_LINK: ExampleLink = {
+  image: coverImage(PHOTOS.startInsights),
   icon: 'box',
   title: 'Read our insights',
   body: 'Notes from the studio on websites, apps and the tools behind a business.',
@@ -235,6 +242,7 @@ const INSIGHTS_LINK: ExampleLink = {
 }
 
 const TALK_LINK: ExampleLink = {
+  image: coverImage(PHOTOS.startDiscoveryCall),
   icon: 'calendar',
   title: 'Book a discovery call',
   body: 'We learn what is broken and what it is costing you in time.',
@@ -430,7 +438,7 @@ const toolsAndSystems: UseCaseContent = {
       body: 'Auto Flow turned a supervised afternoon of clicking into an unattended half-hour. Marvy files each course video in the right Drive folder and tags the right reviewers.',
       visual: {
         kind: 'templates',
-        items: [TOOL_SLIDES.haven, TOOL_SLIDES.oak, TOOL_SLIDES.default, TOOL_SLIDES.glow],
+        items: [TOOL_SLIDES.haven, TOOL_SLIDES.oak, TOOL_SLIDES.default],
       },
     },
     {

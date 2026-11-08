@@ -1,3 +1,4 @@
+import { PHOTOS, type Photo } from '@v2/content/photos'
 import { site } from '@v2/config/site'
 
 /** Copy for /about. Taken from the main site: mission, origin, founding idea and the products we have built. */
@@ -18,6 +19,7 @@ export interface AboutOverview {
 }
 
 export interface AboutGalleryItem {
+  photo: Photo
   seed: number
   /** Width over height on wide screens. */
   ratio: number
@@ -62,9 +64,9 @@ export const aboutOverview: AboutOverview = {
 }
 
 export const aboutGallery: readonly AboutGalleryItem[] = [
-  { seed: 3, ratio: 0.7043, speed: -0.1, span: 'one' },
-  { seed: 7, ratio: 1.3333, speed: -0.2, span: 'two' },
-  { seed: 11, ratio: 1.8145, speed: -0.2, span: 'full' },
+  { seed: 3, ratio: 0.7043, speed: -0.1, span: 'one', photo: PHOTOS.aboutTeam1 },
+  { seed: 7, ratio: 1.3333, speed: -0.2, span: 'two', photo: PHOTOS.aboutTeam2 },
+  { seed: 11, ratio: 1.8145, speed: -0.2, span: 'full', photo: PHOTOS.aboutTeam3 },
 ]
 
 export const aboutStory: AboutStory = {

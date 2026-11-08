@@ -692,59 +692,6 @@ export const HELP_GUIDES: HelpGuide[] = [
     faqs: [],
   },
   {
-    slug: 'beam',
-    title: 'Beam: from a finished project to a client document',
-    date: UPDATED,
-    artSeed: 20,
-    icon: 'sparkle',
-    previews: ['beam'],
-    logo: '/work-logos/beam.svg',
-    lede: 'Save a brand once, answer a short interview, and get a document in the client’s brand.',
-    body: [
-      {
-        type: 'h2',
-        text: 'The problem',
-      },
-      {
-        type: 'p',
-        text: 'Once a project ships, writing it up is another job: screenshots, a case study, maybe a video, all in the client’s brand. Proposals and brand guides get built from scratch before every deadline, even though the colours, fonts and logo already exist.',
-      },
-      {
-        type: 'h2',
-        text: 'What we built',
-      },
-      {
-        type: 'p',
-        text: 'Beam saves each brand once: colours, fonts, logo and tone of voice, previewed as you type. Point it at a live link or a folder, answer a few questions, and it drafts the case study, captures the screens and writes a video script. Brand guides come from a template of about 40 slides across eight chapters, already in the brand, and any heading or paragraph can be edited right on the slide before export.',
-      },
-      {
-        type: 'h2',
-        text: 'Start from the task',
-      },
-      {
-        type: 'p',
-        text: 'People think “make a proposal”, not “open documents”, so the home screen asks what you want to make, and every screen names the next step in plain words. Beam stays neutral so the client’s colours are the colour on screen, and it works in light and dark, in a narrow window and on a big display.',
-      },
-      {
-        type: 'h2',
-        text: 'Checked, not assumed',
-      },
-      {
-        type: 'p',
-        text: 'The colour chapter checks every text and background pair and shows which pass. Every control can be reached by keyboard with a visible focus state, and errors carry no codes or jargon.',
-      },
-      {
-        type: 'h2',
-        text: 'Outcome',
-      },
-      {
-        type: 'p',
-        text: 'A finished project is a few clicks from a document the client can see.',
-      },
-    ],
-    faqs: [],
-  },
-  {
     slug: 'marque',
     title: 'Marque: brand guidelines, made easy',
     date: UPDATED,

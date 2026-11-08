@@ -7,6 +7,7 @@ import { SmartLink } from '@v2/components/ui/SmartLink'
 import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { AuthorChip } from '@v2/components/features/blog/AuthorChip'
 import { Button } from '@v2/components/ui/Button'
+import type { Photo } from '@v2/content/photos'
 
 interface ArticleShellProps {
   title: string
@@ -20,6 +21,8 @@ interface ArticleShellProps {
   icon: IconName
   /** The product's logo (case studies): shown in the header panel in place of the art. */
   logo?: string | undefined
+  /** A photo (Insights posts): shown as the banner in place of the art. */
+  photo?: Photo | undefined
   /** The "See all" button that rides down beside the article. */
   back: { label: string; href: string }
   /** The body column: lede, rich text and any closing sections. */
@@ -43,6 +46,7 @@ export function ArticleShell({
   artSeed,
   icon,
   logo,
+  photo,
   back,
   children,
   after,
@@ -81,8 +85,12 @@ export function ArticleShell({
                     </div>
                   </div>
                 </div>
-                {logo ? (
-                  <div className="anim-image-clip-path relative mb-fluid-lg flex justify-center overflow-hidden bg-slate-100 py-fluid-2xl">
+                {photo ? (
+                  <div className="anim-image-clip-path relative mb-fluid-lg overflow-hidden rounded-md">
+                    <img src={photo.src} alt={photo.alt} className="aspect-4/3 w-full object-cover md:aspect-2/1" />
+                  </div>
+                ) : logo ? (
+                  <div className="anim-image-clip-path relative mb-fluid-lg flex justify-center overflow-hidden rounded-md bg-white py-fluid-2xl">
                     <div className="relative aspect-880/744 w-[50%] max-w-180">
                       <div className="flex h-full w-full items-center justify-center">
                         <img src={logo} alt="" className="m-auto max-h-1/2 max-w-3/4 object-contain" />

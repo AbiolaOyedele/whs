@@ -15,15 +15,11 @@ export function FeaturedSmall({ post, delay }: FeaturedSmallProps) {
   return (
     <div className={`group anim-transform-opacity relative flex gap-gutter ${DELAY[delay]}`}>
       <div className="relative flex aspect-square w-1/3 shrink-0">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 rounded-md bg-navy-500 transition-transform duration-200 ease-in-out group-focus-within:scale-102 group-hover:scale-105"
+        <img
+          src={post.photo.src}
+          alt={post.photo.alt}
+          className="absolute inset-0 size-full rounded-md object-cover transition-transform duration-200 ease-in-out group-focus-within:scale-102 group-hover:scale-105"
         />
-        <div className="relative z-above flex grow items-center justify-center">
-          <div className="flex aspect-square w-1/2 items-center justify-center">
-            <Icon name={post.icon} strokeWidth={1.25} className="size-full text-white" />
-          </div>
-        </div>
       </div>
       <div className="flex min-w-0 flex-col justify-between gap-0.5">
         <div>

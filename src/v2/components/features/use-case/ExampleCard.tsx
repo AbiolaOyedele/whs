@@ -27,10 +27,18 @@ export function ExampleCard({ item }: ExampleCardProps) {
       >
         <div className="relative shrink-0 basis-1/4">
           <div className="relative">
-            <div className="absolute inset-0 rounded-sm bg-slate-200 transition-transform duration-200 ease-in-out group-focus-within:scale-102 group-hover:scale-102" />
-            <span className="relative flex aspect-square w-full items-center justify-center p-5">
-              <Icon name={item.icon} className="h-1/2 w-1/2 text-navy-900" />
-            </span>
+            <div className={`absolute inset-0 rounded-sm ${item.image?.fit === 'logo' ? 'bg-white' : 'bg-slate-200'} transition-transform duration-200 ease-in-out group-focus-within:scale-102 group-hover:scale-102`} />
+            {item.image ? (
+              item.image.fit === 'logo' ? (
+                <img src={item.image.src} alt={item.image.alt} className="relative aspect-square w-full object-contain p-4" />
+              ) : (
+                <img src={item.image.src} alt={item.image.alt} className="relative aspect-square w-full rounded-sm object-cover" />
+              )
+            ) : (
+              <span className="relative flex aspect-square w-full items-center justify-center p-5">
+                <Icon name={item.icon} className="h-1/2 w-1/2 text-navy-900" />
+              </span>
+            )}
           </div>
         </div>
         <div className="flex grow flex-col justify-between gap-4">

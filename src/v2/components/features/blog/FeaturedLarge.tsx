@@ -1,5 +1,4 @@
 import type { BlogCardData } from '@v2/content/blog'
-import { ArtPanel } from '@v2/components/ui/ArtPanel'
 import { Icon } from '@v2/components/ui/Icon'
 import { ParallaxMedia } from '@v2/components/ui/ParallaxMedia'
 import { SmartLink } from '@v2/components/ui/SmartLink'
@@ -29,11 +28,7 @@ export function FeaturedLarge({ post }: FeaturedLargeProps) {
             </ul>
             <h2 className="text-heading-md text-balance text-white sm:w-3/4">{post.title}</h2>
           </div>
-          <div className="relative z-above flex max-w-[220px] grow items-center justify-center self-center py-6 max-md:w-[30%] md:w-[20%]">
-            <div className="aspect-square w-full">
-              <Icon name={post.icon} strokeWidth={1} className="size-full text-white" />
-            </div>
-          </div>
+          <div className="grow" />
           <div
             aria-hidden="true"
             className="shrink-0 translate-x-1 text-white opacity-0 transition-all duration-200 ease-in-out group-focus-within:translate-x-0 group-focus-within:opacity-100 group-hover:translate-x-0 group-hover:opacity-100"
@@ -43,7 +38,9 @@ export function FeaturedLarge({ post }: FeaturedLargeProps) {
         </div>
         <ParallaxMedia speed={-0.1} className="z-below">
           <div className="c-blog-art absolute inset-0 group-hover:scale-105">
-            <ArtPanel seed={post.artSeed} />
+            <img src={post.photo.src} alt={post.photo.alt} className="size-full object-cover" />
+            {/* Keeps the white date and title readable over the photo. */}
+            <div className="absolute inset-0 bg-linear-to-b from-black/70 via-black/20 to-black/40" />
           </div>
         </ParallaxMedia>
         <SmartLink href={post.href} className="absolute inset-0 z-above rounded-md -outline-offset-2">

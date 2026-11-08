@@ -1,5 +1,3 @@
-import { ArtPanel } from '@v2/components/ui/ArtPanel'
-import { Icon, type IconName } from '@v2/components/ui/Icon'
 import { ParallaxMedia } from '@v2/components/ui/ParallaxMedia'
 import { SmartLink } from '@v2/components/ui/SmartLink'
 import type { BlogPost } from '@v2/content/blog'
@@ -10,8 +8,6 @@ interface PostCardProps {
 }
 
 const FAST = 'duration-(--transition-duration-fast) ease-in-out'
-/** White line marks laid over the art, picked by the post's art seed so cards differ. */
-const MARKS: IconName[] = ['chart', 'bag', 'globe', 'truck', 'qr', 'mail']
 
 const DATE_FORMAT = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
 
@@ -21,16 +17,14 @@ const DATE_FORMAT = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'l
  * is the link.
  */
 export function PostCard({ post }: PostCardProps) {
-  const mark = MARKS[post.artSeed % MARKS.length] ?? 'chart'
   return (
     <div className="group anim-scale relative flex h-full flex-col overflow-hidden rounded-md" data-scroll="">
       <div className="relative flex aspect-464/392 items-center justify-center overflow-hidden">
         <ParallaxMedia speed={-0.1}>
           <div className="absolute inset-0 transition-transform duration-(--transition-duration-slow) ease-in-out group-focus-within:scale-105 group-hover:scale-105">
-            <ArtPanel seed={post.artSeed} />
+            <img src={post.photo.src} alt={post.photo.alt} className="size-full object-cover" />
           </div>
         </ParallaxMedia>
-        <Icon name={mark} className="relative h-[38%] w-[25%] text-white" strokeWidth={1} />
       </div>
       <div className="flex grow flex-col gap-3.5 bg-slate-50 p-5 pb-7 slate:bg-white">
         <div className="flex items-center justify-between">

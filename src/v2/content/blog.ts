@@ -1,3 +1,4 @@
+import { PHOTOS, type Photo } from '@v2/content/photos'
 /**
  * WildHands Insights, and the rich-text shape every long page on the site
  * shares (insights, case studies, the legal pages).
@@ -67,6 +68,8 @@ export function categoryByLabel(label: string): BlogCategory | undefined {
 /* ── posts ────────────────────────────────────────────────────────── */
 
 export interface BlogPost {
+  /** Pexels photo shown on the post's cards and as its banner (content/photos.ts). */
+  photo: Photo
   slug: string
   title: string
   /** ISO date, e.g. "2026-11-01". */
@@ -91,6 +94,7 @@ const WILDHANDS: Author = { name: 'WildHands', role: 'Studio' }
 export const BLOG_POSTS: BlogPost[] = [
   {
     slug: 'choose-web-development-agency-lagos',
+    photo: PHOTOS.insightAgencyLagos,
     title: 'How to Choose a Web Development Agency in Lagos',
     date: '2026-09-07',
     categories: ['Websites'],
@@ -231,6 +235,7 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: 'ecommerce-development-cost-nigeria',
+    photo: PHOTOS.insightEcommerceCost,
     title: 'How Much Does E-commerce Development Cost in Nigeria?',
     date: '2026-09-07',
     categories: ['Websites'],
@@ -464,6 +469,7 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: 'nigerian-business-website-checklist',
+    photo: PHOTOS.insightWebsiteChecklist,
     title: 'What Should a Nigerian Business Website Include?',
     date: '2026-09-07',
     categories: ['Websites'],
@@ -629,6 +635,7 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: 'website-cost-nigeria',
+    photo: PHOTOS.insightWebsiteCost,
     title: 'How Much Does a Website Cost in Nigeria?',
     date: '2026-09-07',
     categories: ['Websites'],
@@ -872,6 +879,7 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: 'website-structure-nigerian-businesses',
+    photo: PHOTOS.insightWebsiteStructure,
     title: 'Best Website Structure for Nigerian Businesses',
     date: '2026-09-07',
     categories: ['Websites'],
@@ -1046,6 +1054,7 @@ export const BLOG_POSTS: BlogPost[] = [
   },
   {
     slug: 'website-vs-web-app',
+    photo: PHOTOS.insightWebsiteVsApp,
     title: 'Website vs Web App: What Does Your Business Need?',
     date: '2026-09-07',
     categories: ['Websites'],
@@ -1241,6 +1250,7 @@ export interface BlogCardData {
   categorySlugs: BlogCategorySlug[]
   artSeed: number
   icon: IconName
+  photo: Photo
   kind: BlogPost['kind']
   wordmark: string
 }
@@ -1257,6 +1267,7 @@ export function toBlogCard(post: BlogPost): BlogCardData {
     categorySlugs: post.categories.flatMap((label) => categoryByLabel(label)?.slug ?? []),
     artSeed: post.artSeed,
     icon: post.icon,
+    photo: post.photo,
     kind: post.kind,
     wordmark: post.wordmark ?? '',
   }

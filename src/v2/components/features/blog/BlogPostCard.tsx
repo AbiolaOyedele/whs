@@ -28,6 +28,7 @@ export function BlogPostCard({ post, headingLevel = 'h2' }: BlogPostCardProps) {
       labels={post.labels}
       artSeed={post.artSeed}
       icon={post.icon}
+      photo={post.photo}
       headingLevel={headingLevel}
     />
   )

@@ -1,3 +1,4 @@
+import { PHOTOS, coverImage, logoImage, type CardImage } from '@v2/content/photos'
 import type { IconName } from '@v2/components/ui/Icon'
 import { site } from '@v2/config/site'
 
@@ -66,6 +67,8 @@ export const TRUST: TrustSection = {
 
 export interface ShowcaseCard {
   icon: IconName
+  /** Shown in the tile in place of the icon: the product's logo, or a photo. */
+  image?: CardImage
   title: string
   description: string
   href: string
@@ -88,20 +91,23 @@ export const SHOWCASE_TABS: ShowcaseTab[] = [
     cards: [
       {
         icon: 'shirt',
+        image: logoImage('tomori.svg', 'Tomori'),
         title: 'Tomori, a phone-first site for hand-dyed Adire',
         description: 'A quiet storefront for a Lagos label, with a back office the owner runs from her own phone.',
-        href: '/work/tomori',
+        href: '/resources/tomori',
         linkLabel: VISIT,
       },
       {
         icon: 'box',
+        image: logoImage('marque.svg', 'Marque'),
         title: 'Marque, brand guidelines at one link',
         description: 'Start from a logo, edit the guide in place, and publish it as a live website.',
-        href: '/work/marque',
+        href: '/resources/marque',
         linkLabel: VISIT,
       },
       {
         icon: 'phone',
+        image: coverImage(PHOTOS.serviceSiteBuild),
         title: 'Marketing site or full custom build',
         description: 'A focused site built to convert visitors, or more pages and functionality for a site that does more.',
         href: '/use-cases/websites',
@@ -109,6 +115,7 @@ export const SHOWCASE_TABS: ShowcaseTab[] = [
       },
       {
         icon: 'bag',
+        image: coverImage(PHOTOS.service72Hours),
         title: 'Live in 72 hours',
         description: 'Starter at ₦150,000 or Standard at ₦250,000. The design is approved before any code is written.',
         href: '/pricing',
@@ -121,27 +128,31 @@ export const SHOWCASE_TABS: ShowcaseTab[] = [
     cards: [
       {
         icon: 'sparkle',
+        image: logoImage('dumpty.png', 'Dumpty'),
         title: 'Dumpty, voice notes already organised',
         description: 'Talk through an idea and get back a clean transcript, tags and a checklist.',
-        href: '/work/dumpty',
+        href: '/resources/dumpty',
         linkLabel: VISIT,
       },
       {
         icon: 'sparkle',
+        image: logoImage('lazy-meet.png', 'Lazy Meet'),
         title: 'Lazy Meet, calls that join themselves',
         description: 'Joins your calls at start time, muted and camera off, across three accounts.',
-        href: '/work/lazy-meet',
+        href: '/resources/lazy-meet',
         linkLabel: VISIT,
       },
       {
         icon: 'chart',
+        image: logoImage('rayo.svg', 'Rayo'),
         title: 'Rayo, quotes accepted on the page',
         description: 'Send a quote with options, the client accepts one, and it becomes the invoice.',
-        href: '/work/rayo',
+        href: '/resources/rayo',
         linkLabel: VISIT,
       },
       {
         icon: 'mail',
+        image: coverImage(PHOTOS.serviceWebApps),
         title: 'Custom web apps',
         description: 'Software your team or your customers log into, built for a job off-the-shelf tools do not quite do.',
         href: '/use-cases/apps',
@@ -154,27 +165,31 @@ export const SHOWCASE_TABS: ShowcaseTab[] = [
     cards: [
       {
         icon: 'home',
+        image: logoImage('auto-flow.png', 'Auto Flow'),
         title: 'Auto Flow, video batches unattended',
         description: 'A 24-image batch that took about two hours of clicking now runs in about half an hour.',
-        href: '/work/auto-flow',
+        href: '/resources/auto-flow',
         linkLabel: VISIT,
       },
       {
         icon: 'home',
+        image: logoImage('the-ruff-agency.svg', 'The Ruff Agency'),
         title: 'The Ruff Agency, one workspace instead of six tools',
         description: 'Clients, contracts, invoices, tasks and a client portal in one shared workspace.',
-        href: '/work/the-ruff-agency',
+        href: '/resources/the-ruff-agency',
         linkLabel: VISIT,
       },
       {
         icon: 'truck',
+        image: logoImage('marvy.svg', 'Marvy'),
         title: 'Marvy, course videos filed in one step',
         description: 'Drop a video in and it lands in the right Drive folder, with the right people tagged.',
-        href: '/work/marvy',
+        href: '/resources/marvy',
         linkLabel: VISIT,
       },
       {
         icon: 'bag',
+        image: coverImage(PHOTOS.serviceDashboards),
         title: 'Dashboards and workflow automation',
         description: 'The numbers that matter in one place, and tools connected so nobody re-keys data between them.',
         href: '/use-cases/tools-and-systems',
@@ -206,35 +221,35 @@ export const DESIGN_TILES: ShopDesignTile[] = [
     wordmark: 'Dumpty',
     tags: ['Consumer product'],
     title: 'Raw voice goes in. A titled, tagged idea with a set of next steps comes out.',
-    href: '/work/dumpty',
+    href: '/resources/dumpty',
     linkLabel: VISIT,
   },
   {
     wordmark: 'Auto Flow',
     tags: ['Creative tooling'],
     title: 'A 24-image batch that took roughly two hours now runs in about half an hour, unattended.',
-    href: '/work/auto-flow',
+    href: '/resources/auto-flow',
     linkLabel: VISIT,
   },
   {
     wordmark: 'Lazy Meet',
     tags: ['Productivity'],
     title: 'Meetings join themselves at the scheduled minute, muted, across up to three Google accounts.',
-    href: '/work/lazy-meet',
+    href: '/resources/lazy-meet',
     linkLabel: VISIT,
   },
   {
     wordmark: 'Rayo',
     tags: ['Business tools'],
     title: 'A quote that answers itself, and an invoice nobody has to retype.',
-    href: '/work/rayo',
+    href: '/resources/rayo',
     linkLabel: VISIT,
   },
   {
     wordmark: 'Marque',
     tags: ['Creative tooling'],
     title: 'A brand guide that lives at a link, not in a PDF nobody can find.',
-    href: '/work/marque',
+    href: '/resources/marque',
     linkLabel: VISIT,
   },
 ]

@@ -1,4 +1,3 @@
-import { ArtPanel } from '@v2/components/ui/ArtPanel'
 import { ParallaxMedia } from '@v2/components/ui/ParallaxMedia'
 import { aboutGallery, type AboutGalleryItem } from '@v2/content/about'
 
@@ -22,7 +21,7 @@ export function AboutGallery() {
                 style={{ ['--aspect-ratio' as string]: String(item.ratio) }}
               >
                 <ParallaxMedia speed={item.speed}>
-                  <ArtPanel seed={item.seed} />
+                  <img src={item.photo.src} alt={item.photo.alt} className="absolute inset-0 size-full object-cover" />
                 </ParallaxMedia>
               </div>
             </div>

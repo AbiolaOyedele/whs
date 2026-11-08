@@ -195,6 +195,7 @@ function blogPost(slug: string): ResolvedRoute | null {
         author={post.author}
         artSeed={post.artSeed}
         icon={post.icon}
+        photo={post.photo}
         back={{ label: 'See all posts', href: '/blog' }}
         after={
           <RelatedRow
