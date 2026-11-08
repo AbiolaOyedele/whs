@@ -1,5 +1,5 @@
-import { ArtPanel } from '@v2/components/ui/ArtPanel'
-import { Icon, type IconName } from '@v2/components/ui/Icon'
+import { Icon } from '@v2/components/ui/Icon'
+import { LogoMark } from '@v2/components/ui/LogoMark'
 import { ParallaxMedia } from '@v2/components/ui/ParallaxMedia'
 import { SmartLink } from '@v2/components/ui/SmartLink'
 import type { Photo } from '@v2/content/photos'
@@ -12,11 +12,9 @@ export interface PostCardProps {
   /** Already formatted for display. */
   dateLabel: string
   labels: string[]
-  artSeed: number
-  icon: IconName
-  /** A photo filling the media box in place of the art (Insights posts). */
+  /** A photo filling the media box (Insights posts). */
   photo?: Photo | undefined
-  /** The product's logo, shown on a light panel in place of the art (case studies). */
+  /** The product's logo on a white panel (case studies). Without a photo or logo, the WildHands mark. */
   logo?: string | undefined
   /** Heading level for the title, so the page's outline stays in order. */
   headingLevel?: 'h2' | 'h3'
@@ -33,8 +31,6 @@ export function PostCard({
   date,
   dateLabel,
   labels,
-  artSeed,
-  icon,
   logo,
   photo,
   headingLevel = 'h2',
@@ -54,14 +50,9 @@ export function PostCard({
             <img src={logo} alt="" className="max-h-[34%] max-w-[46%] object-contain" />
           </div>
         ) : (
-          <>
-            <ParallaxMedia speed={-0.1}>
-              <div className="c-blog-art absolute inset-0 group-focus-within:scale-105 group-hover:scale-105">
-                <ArtPanel seed={artSeed} />
-              </div>
-            </ParallaxMedia>
-            <Icon name={icon} strokeWidth={1} className="relative h-[38%] w-[25%] text-white" />
-          </>
+          <div className="c-blog-art absolute inset-0 flex items-center justify-center bg-white group-focus-within:scale-105 group-hover:scale-105">
+            <LogoMark className="w-[34%] text-navy-900" />
+          </div>
         )}
       </div>
       <div className="flex grow flex-col gap-3.5 bg-slate-50 p-5 pb-7 slate:bg-white">

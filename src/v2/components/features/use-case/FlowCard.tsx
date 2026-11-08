@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, type CSSProperties } from 'react'
-import { ArtPanel } from '@v2/components/ui/ArtPanel'
+import { FluidPanel } from '@v2/components/ui/FluidPanel'
 import { ParallaxMedia } from '@v2/components/ui/ParallaxMedia'
 import { useInviewPlaying } from './useInviewPlaying'
 
@@ -51,7 +51,7 @@ export function FlowCard({ hub, sources, sideLabel, artSeed }: FlowCardProps) {
   return (
     <div className="relative flex aspect-707/600 items-center justify-center overflow-hidden rounded-lg bg-charcoal p-6">
       <ParallaxMedia>
-        <ArtPanel seed={artSeed} />
+        <FluidPanel seed={artSeed} />
       </ParallaxMedia>
       <div
         ref={panel}

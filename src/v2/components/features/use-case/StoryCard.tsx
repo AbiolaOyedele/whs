@@ -8,21 +8,25 @@ interface StoryCardProps {
 }
 
 /**
- * A tall tile for one case study: its tags top left, the client as a wordmark in
- * the middle, the title and an arrow below. Hovering nudges the parts apart.
+ * A tall tile for one case study: its tags top left, the product's logo on
+ * white in the middle, the title and an arrow below. Hovering nudges the parts
+ * apart.
  */
 export function StoryCard({ shop, action }: StoryCardProps) {
   return (
     <div className="group anim-scale relative flex h-full flex-col" data-scroll="">
-      <div className="absolute inset-0 rounded-md bg-slate-100 transition-transform duration-200 ease-in-out group-focus-within:scale-101 group-hover:scale-101" />
-      <div className="relative z-2 flex aspect-464/392 items-center justify-center overflow-hidden p-5">
+      <div className="absolute inset-0 rounded-md bg-white transition-transform duration-200 ease-in-out group-focus-within:scale-101 group-hover:scale-101" />
+      <div className="relative z-2 flex aspect-464/392 items-center justify-center overflow-hidden border-b border-slate-100 p-5">
         <ul className="text-label absolute top-5 left-5 flex gap-3.5 text-navy-500 transition-transform duration-200 ease-in-out group-focus-within:-translate-1 group-hover:-translate-1">
           <li>{shop.trade}</li>
           <li>{shop.template}</li>
         </ul>
-        <span className="font-secondary text-heading-lg leading-none text-navy-900" aria-hidden="true">
-          {shop.slug}
-        </span>
+        <img
+          src={shop.logo.src}
+          alt={shop.logo.alt}
+          draggable={false}
+          className="max-h-[34%] max-w-[46%] object-contain transition-transform duration-200 ease-in-out group-focus-within:scale-105 group-hover:scale-105"
+        />
       </div>
       <div className="relative z-2 flex grow flex-col justify-between gap-3.5 p-5">
         <h3 className="text-heading-xs transition-transform duration-200 ease-in-out group-focus-within:-translate-x-1 group-hover:-translate-x-1">

@@ -10,7 +10,9 @@
  * src/v2/app/globals.css; these variables are the names the v2 CSS reads.
  */
 import '@v2/app/globals.css'
-import type { JsonLd } from '@/lib/seo'
+import Seo from '@/components/layout/Seo.astro'
+import { organizationSchema, webSiteSchema, type JsonLd } from '@/lib/seo'
+import { publicEnv } from '@/config/env'
 
 interface Props {
   title: string
@@ -24,6 +26,17 @@ interface Props {
 }
 
 const { title, description, scene, template, jsonLd = [] } = Astro.props
+
+/**
+ * Every v2 page stays out of search results until the site launches. Set to
+ * false at launch: canonical links, social tags and structured data are
+ * already in place.
+ */
+const HIDDEN_UNTIL_LAUNCH = true
+
+const siteUrl = publicEnv.PUBLIC_SITE_URL.replace(/\/$/, '')
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', siteUrl).href
+const schemas: JsonLd[] = [organizationSchema(siteUrl), webSiteSchema(siteUrl), ...jsonLd]
 ---
 
 <!doctype html>
@@ -32,17 +45,12 @@ const { title, description, scene, template, jsonLd = [] } = Astro.props
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#131314" />
-    <meta name="robots" content="noindex, nofollow" />
-    <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preload" href="/fonts/Diagramm-Medium.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/IBMPlexSans-400.woff2" as="font" type="font/woff2" crossorigin />
-    <title>{title}</title>
-    {
-      jsonLd.map((node) => (
-        <script type="application/ld+json" is:inline set:html={JSON.stringify(node).replace(/</g, '\\u003c')} />
-      ))
-    }
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <Seo title={title} description={description} canonical={canonical} noindex={HIDDEN_UNTIL_LAUNCH} jsonLd={schemas} />
     <style is:global>
       :root {
         --font-stand-sans: 'IBM Plex Sans';

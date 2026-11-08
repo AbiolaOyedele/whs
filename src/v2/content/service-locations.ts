@@ -5,8 +5,9 @@
  * so a business searching for "custom website design in Lekki" finds a page
  * that names their area.
  *
- * Each page is the service's own page with the place in its title and a hero
- * line written for that place. Both pieces come from elsewhere and are not
+ * Each page is the service's own page with the place in its title, a hero
+ * line written for that place, and that place's answer to "do you build for
+ * businesses here?" leading the questions. Both pieces come from elsewhere and are not
  * copied: the service from ./use-cases.ts, the places and their hand-written
  * answers from src/config/service-locations.ts. Add a place there and its
  * three pages appear here.
@@ -38,6 +39,10 @@ export function serviceLocationContent(serviceSlug: string, locationSlug: string
 
   const noun = service.label.toLowerCase()
   const local = location.faqAnswer.replace(/^Yes\.\s*/, '')
+  const localFaq = {
+    question: `Do you build ${noun} for businesses in ${location.label}?`,
+    answer: location.faqAnswer,
+  }
 
   return {
     ...service,
@@ -48,5 +53,7 @@ export function serviceLocationContent(serviceSlug: string, locationSlug: string
     label: `${service.label} in ${location.label}`,
     title: [{ text: `${service.label} in` }, { text: location.longLabel, highlight: true }],
     intro: `${local} ${service.lede}`,
+    // The place's own answer leads, in place of the general "outside Lagos?" one.
+    faqs: [localFaq, ...service.faqs.filter((faq) => !faq.aboutLocation)],
   }
 }

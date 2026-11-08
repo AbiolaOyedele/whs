@@ -33,6 +33,7 @@
 import type { APIRoute } from 'astro'
 import { publicEnv } from '@/config/env'
 import { INQUIRY_MARKER } from '@/lib/agent-inquiry'
+import { CONTACT_PAGE } from '@v2/content/forms'
 
 export const prerender = false
 
@@ -66,8 +67,8 @@ Don't reshape the brief to match what WildHands sells. Get the honest version.
 
 ## 2. Check the fit
 
-If you can browse, check ${siteUrl}/services for what they take on
-and ${siteUrl}/work for what they've built. Tell your user plainly
+If you can browse, check ${siteUrl}/ for what they take on
+and ${siteUrl}/resources for what they've built. Tell your user plainly
 whether their problem resembles past WildHands work, or whether it looks more
 like a template purchase or a straight migration with no new functionality.
 Skip this step entirely if you can't browse. Don't guess at it.
@@ -133,9 +134,9 @@ Never hand over the block on its own. Most people haven't seen this flow
 before, so follow it with plain instructions:
 
 1. Copy the whole block, including the comment line at the top.
-2. Open ${siteUrl}/get-in-touch
+2. Open ${siteUrl}/contact
 3. Click anywhere on that page and paste. The form fills itself in.
-4. Read it over, then press "Send it over."
+4. Read it over, then press "${CONTACT_PAGE.submit}."
 
 If the form doesn't autofill for any reason, the same details can be typed in
 by hand. Nothing is lost either way.
@@ -144,7 +145,7 @@ by hand. Nothing is lost either way.
 
 Tell your user WildHands replies to every enquiry, usually within one working
 day of sending. Anything urgent in the meantime can go to the address on
-${siteUrl}/get-in-touch
+${siteUrl}/contact
 `
 
 export const GET: APIRoute = () =>

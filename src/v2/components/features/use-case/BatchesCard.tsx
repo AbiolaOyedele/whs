@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
-import { ArtPanel } from '@v2/components/ui/ArtPanel'
+import { FluidPanel } from '@v2/components/ui/FluidPanel'
 import { ParallaxMedia } from '@v2/components/ui/ParallaxMedia'
 import { SegmentedControls } from '@v2/components/ui/SegmentedControls'
 import { BatchScene, type BatchPattern } from './BatchScene'
@@ -44,7 +44,7 @@ export function BatchesCard({ tabs, artSeed }: BatchesCardProps) {
   return (
     <div className="relative flex justify-center gap-6 overflow-hidden rounded-lg bg-charcoal p-6 md:min-h-[500px]">
       <ParallaxMedia>
-        <ArtPanel seed={artSeed} />
+        <FluidPanel seed={artSeed} />
       </ParallaxMedia>
       <div ref={wrap} className="relative z-2 w-full">
         <SegmentedControls

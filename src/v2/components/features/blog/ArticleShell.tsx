@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react'
 import type { Author } from '@v2/content/blog'
-import type { IconName } from '@v2/components/ui/Icon'
-import { ArtPanel } from '@v2/components/ui/ArtPanel'
-import { Icon } from '@v2/components/ui/Icon'
+import { LogoMark } from '@v2/components/ui/LogoMark'
 import { SmartLink } from '@v2/components/ui/SmartLink'
 import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { AuthorChip } from '@v2/components/features/blog/AuthorChip'
@@ -17,8 +15,6 @@ interface ArticleShellProps {
   /** Category links beside the date. */
   labels?: { label: string; href: string }[]
   author: Author
-  artSeed: number
-  icon: IconName
   /** The product's logo (case studies): shown in the header panel in place of the art. */
   logo?: string | undefined
   /** A photo (Insights posts): shown as the banner in place of the art. */
@@ -43,8 +39,6 @@ export function ArticleShell({
   dateLabel,
   labels = [],
   author,
-  artSeed,
-  icon,
   logo,
   photo,
   back,
@@ -80,7 +74,7 @@ export function ArticleShell({
                         {title}
                       </SplitTitle>
                       <div className="anim-transform-opacity -delay-3 flex justify-center">
-                        <AuthorChip author={author} seed={artSeed + 40} />
+                        <AuthorChip author={author} />
                       </div>
                     </div>
                   </div>
@@ -98,13 +92,8 @@ export function ArticleShell({
                     </div>
                   </div>
                 ) : (
-                  <div className="anim-image-clip-path relative mb-fluid-lg flex justify-center overflow-hidden bg-slate-100 py-fluid-2xl">
-                    <ArtPanel seed={artSeed} />
-                    <div className="relative z-above aspect-880/744 w-[50%] max-w-180">
-                      <div className="flex h-full w-full items-center justify-center">
-                        <Icon name={icon} strokeWidth={0.75} className="m-auto h-1/2 w-1/2 text-white" />
-                      </div>
-                    </div>
+                  <div className="anim-image-clip-path relative mb-fluid-lg flex justify-center overflow-hidden rounded-md bg-white py-fluid-2xl">
+                    <LogoMark className="m-auto w-[28%] max-w-90 text-navy-900" />
                   </div>
                 )}
               </header>

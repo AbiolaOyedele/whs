@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { FieldError } from './FieldError'
+import { Icon } from '@v2/components/ui/Icon'
 
 interface CheckboxFieldProps {
   id: string
@@ -36,14 +37,7 @@ export function CheckboxField({ id, name, children, value, onChange, required = 
             aria-describedby={error ? errorId : undefined}
             className="peer absolute inset-0 size-5 cursor-pointer appearance-none rounded-[4px] bg-white outline outline-slate-300 transition-colors checked:bg-navy-900 checked:outline-navy-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-500 aria-[invalid=true]:outline-red"
           />
-          <svg
-            className="pointer-events-none absolute inset-0 m-auto size-3 text-pink-500 opacity-0 transition-opacity peer-checked:opacity-100"
-            viewBox="0 0 15 11"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path d="M1 5.4 4.9 9.2 13.8.9" stroke="currentColor" strokeWidth="2" />
-          </svg>
+          <Icon name="check" strokeWidth={3} className="pointer-events-none absolute inset-0 m-auto size-3 text-pink-500 opacity-0 transition-opacity peer-checked:opacity-100" />
         </span>
         <span className="text-body-md text-navy-900">
           {children}

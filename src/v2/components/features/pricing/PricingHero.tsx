@@ -1,4 +1,4 @@
-import { ArtPanel } from '@v2/components/ui/ArtPanel'
+import { FluidPanel } from '@v2/components/ui/FluidPanel'
 import { Button } from '@v2/components/ui/Button'
 import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { site } from '@v2/config/site'
@@ -36,7 +36,7 @@ export function PricingHero() {
       <div className="relative flex h-auto w-full grow flex-col items-center justify-center bg-charcoal pb-12.5 max-md:pt-fluid-xl md:px-(--grid-margin) md:pt-safe-header">
         <HeroPriceTable />
         <div className="absolute top-0 -right-(--grid-margin) -left-(--grid-margin) h-full overflow-hidden">
-          <ArtPanel seed={4} />
+          <FluidPanel seed={4} />
         </div>
       </div>
     </div>

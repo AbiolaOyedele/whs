@@ -84,17 +84,20 @@ const TOOL_SLIDES: Record<TemplateGlyph, TemplateSlide> = {
 }
 
 export interface DemoShop {
-  slug: string
+  client: string
+  /** The product's logo, from public/work-logos. */
+  logo: CardImage
   template: string
   trade: string
   title: string
   href: string
 }
 
-/** A case study card: the client as the wordmark, its industry and service as tags. */
-function workStory(id: string, client: string, industry: string, service: string, title: string): DemoShop {
+/** A case study card: the product's logo, its industry and service as tags. */
+function workStory(id: string, logoFile: string, client: string, industry: string, service: string, title: string): DemoShop {
   return {
-    slug: client,
+    client,
+    logo: logoImage(logoFile, client),
     template: service,
     trade: industry,
     title,
@@ -103,15 +106,15 @@ function workStory(id: string, client: string, industry: string, service: string
 }
 
 const WORK = {
-  tomori: workStory('tomori', 'Tomori', 'E-commerce', 'Websites', 'Tomori: a shop for hand-dyed Adire, built for a phone'),
-  marque: workStory('marque', 'Marque', 'Creative tooling', 'Websites', 'Marque: brand guidelines, made easy'),
-  ruffSite: workStory('the-ruff-agency', 'The Ruff Agency', 'Agency operations', 'Websites', 'The Ruff Agency: one workspace instead of six tools'),
-  dumpty: workStory('dumpty', 'Dumpty', 'Consumer product', 'Apps', 'Dumpty: voice notes that arrive already organised'),
-  lazyMeet: workStory('lazy-meet', 'Lazy Meet', 'Productivity', 'Apps', 'Lazy Meet: joining the call so you do not have to'),
-  rayo: workStory('rayo', 'Rayo', 'Business tools', 'Apps', 'Rayo: quotes your client accepts on the page'),
-  autoFlow: workStory('auto-flow', 'Auto Flow', 'Creative tooling', 'Tools & Systems', 'Auto Flow: bulk video generation without the manual loop'),
-  ruff: workStory('the-ruff-agency', 'The Ruff Agency', 'Agency operations', 'Tools & Systems', 'The Ruff Agency: one workspace instead of six tools'),
-  marvy: workStory('marvy', 'Marvy', 'Internal tools', 'Tools & Systems', 'Marvy: course videos filed in one step'),
+  tomori: workStory('tomori', 'tomori.svg', 'Tomori', 'E-commerce', 'Websites', 'Tomori: a shop for hand-dyed Adire, built for a phone'),
+  marque: workStory('marque', 'marque.svg', 'Marque', 'Creative tooling', 'Websites', 'Marque: brand guidelines, made easy'),
+  ruffSite: workStory('the-ruff-agency', 'the-ruff-agency.svg', 'The Ruff Agency', 'Agency operations', 'Websites', 'The Ruff Agency: one workspace instead of six tools'),
+  dumpty: workStory('dumpty', 'dumpty.png', 'Dumpty', 'Consumer product', 'Apps', 'Dumpty: voice notes that arrive already organised'),
+  lazyMeet: workStory('lazy-meet', 'lazy-meet.png', 'Lazy Meet', 'Productivity', 'Apps', 'Lazy Meet: joining the call so you do not have to'),
+  rayo: workStory('rayo', 'rayo.svg', 'Rayo', 'Business tools', 'Apps', 'Rayo: quotes your client accepts on the page'),
+  autoFlow: workStory('auto-flow', 'auto-flow.png', 'Auto Flow', 'Creative tooling', 'Tools & Systems', 'Auto Flow: bulk video generation without the manual loop'),
+  ruff: workStory('the-ruff-agency', 'the-ruff-agency.svg', 'The Ruff Agency', 'Agency operations', 'Tools & Systems', 'The Ruff Agency: one workspace instead of six tools'),
+  marvy: workStory('marvy', 'marvy.svg', 'Marvy', 'Internal tools', 'Tools & Systems', 'Marvy: course videos filed in one step'),
 } as const
 
 /* ── map (Nigerian cities placed on MapCard's 0–100 grid of the country) ── */
@@ -164,7 +167,7 @@ export type FeatureVisual =
   | { kind: 'flow'; hub: string; sources: [string, string, string]; sideLabel: string; artSeed: number }
   | { kind: 'cubes' }
   | { kind: 'map'; leftChip: string; rightChip: string; points: MapPoint[] }
-  | { kind: 'wordmarks'; names: string[]; artSeed: number }
+  | { kind: 'wordmarks'; logos: CardImage[]; artSeed: number }
   | { kind: 'templates'; items: TemplateSlide[] }
   | { kind: 'batches'; tabs: [string, string, string]; artSeed: number }
   | { kind: 'chart'; tabs: ChartTab[]; yLabel: string; xLabel: string; artSeed: number }
@@ -201,6 +204,15 @@ export interface UseCaseContent {
   features: FeatureContent[]
   examples: { title: string; seeAll?: { label: string; href: string }; items: ExampleLink[] }
   stories: { title: string; action: string; items: DemoShop[] }
+  /** Questions at the foot of the page, also published as FAQPage structured data. */
+  faqs: UseCaseFaq[]
+}
+
+export interface UseCaseFaq {
+  question: string
+  answer: string
+  /** The "do you work outside Lagos?" answer, which a location page swaps for its own place's. */
+  aboutLocation?: true
 }
 
 /* ── shared pieces ── */
@@ -313,7 +325,17 @@ const websites: UseCaseContent = {
       navTitle: 'Our work',
       title: 'See what we have built',
       body: 'Every project is built around its own brief, so none of them look like each other. Marque publishes brand guidelines as a live website at one link.',
-      visual: { kind: 'wordmarks', names: ['tomori', 'marque', 'dumpty', 'rayo', 'planes'], artSeed: 5 },
+      visual: {
+        kind: 'wordmarks',
+        logos: [
+          logoImage('tomori.svg', 'Tomori'),
+          logoImage('marque.svg', 'Marque'),
+          logoImage('dumpty.png', 'Dumpty'),
+          logoImage('rayo.svg', 'Rayo'),
+          logoImage('planes.png', 'Planes'),
+        ],
+        artSeed: 5,
+      },
     },
   ],
   examples: {
@@ -325,6 +347,31 @@ const websites: UseCaseContent = {
     action: 'Read the case study',
     items: [WORK.tomori, WORK.marque, WORK.ruffSite],
   },
+  faqs: [
+    {
+      question: 'How much does a custom website cost?',
+      answer: `Starter is ${naira(150000)} and Standard is ${naira(250000)}, one-off, with half paid to start. A larger build with more pages or functionality is quoted after a short discovery call, once the scope is clear.`,
+    },
+    {
+      question: 'How long does a custom website take to build?',
+      answer:
+        'Starter and Standard sites are live in 72 hours once you approve the design. A full custom build takes longer, depending on how much functionality sits behind it, which the discovery call establishes.',
+    },
+    {
+      question: 'Why not just use a template?',
+      answer:
+        'A template is faster to launch and then constrains every decision afterwards. If your site only needs to represent you, a template can be enough. If it needs to do anything specific to your business, custom is cheaper over time.',
+    },
+    {
+      question: 'Can we update the site ourselves after launch?',
+      answer: 'Yes. Every site ships with a CMS admin panel, so routine changes never need a developer.',
+    },
+    {
+      question: 'Do you build websites for businesses outside Lagos?',
+      answer: LOCATION_BODY,
+      aboutLocation: true,
+    },
+  ],
 }
 
 const apps: UseCaseContent = {
@@ -396,6 +443,28 @@ const apps: UseCaseContent = {
     action: 'Read the case study',
     items: [WORK.dumpty, WORK.lazyMeet, WORK.rayo],
   },
+  faqs: [
+    {
+      question: 'When is a custom app worth building?',
+      answer:
+        'When the way you work is specific enough that generic software makes it harder, or when the workaround has become a spreadsheet several people maintain by hand. If an off-the-shelf tool fits, we will tell you.',
+    },
+    {
+      question: 'How much does a custom app cost?',
+      answer:
+        'It is quoted after a discovery call. The main driver is how many distinct workflows the app supports, not the number of screens.',
+    },
+    {
+      question: 'Do you replace software we already pay for?',
+      answer:
+        'Sometimes. More often we build the piece that sits between the tools you already have, because that gap is usually where the manual work lives.',
+    },
+    {
+      question: 'Do you build apps for businesses outside Lagos?',
+      answer: LOCATION_BODY,
+      aboutLocation: true,
+    },
+  ],
 }
 
 const byHand = PLAN_COSTS.free
@@ -479,6 +548,28 @@ const toolsAndSystems: UseCaseContent = {
     action: 'Read the case study',
     items: [WORK.autoFlow, WORK.ruff, WORK.marvy],
   },
+  faqs: [
+    {
+      question: 'What is workflow automation?',
+      answer:
+        'Connecting the tools you already use so data moves between them without anyone re-keying it. The goal is removing manual steps permanently rather than making them faster.',
+    },
+    {
+      question: 'How do you measure whether a system was worth it?',
+      answer:
+        'By hours returned. We establish what the current process costs in time during discovery, and that number is what the finished build is measured against.',
+    },
+    {
+      question: 'Can you build a dashboard from data we already have?',
+      answer:
+        'Usually yes. Most teams already produce the data and lose it across several tools. The work is pulling it into one live view rather than generating anything new.',
+    },
+    {
+      question: 'Do you build tools for businesses outside Lagos?',
+      answer: LOCATION_BODY,
+      aboutLocation: true,
+    },
+  ],
 }
 
 export const USE_CASES_CONTENT: Record<UseCaseSlug, UseCaseContent> = {

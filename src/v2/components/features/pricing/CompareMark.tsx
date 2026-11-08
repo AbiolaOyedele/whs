@@ -1,3 +1,5 @@
+import { Icon } from '@v2/components/ui/Icon'
+
 interface CompareMarkProps {
   included: boolean
   className?: string
@@ -7,13 +9,7 @@ interface CompareMarkProps {
 export function CompareMark({ included, className = 'mt-1 size-5' }: CompareMarkProps) {
   return (
     <>
-      <svg className={className} viewBox="0 0 256 256" fill="none" aria-hidden="true">
-        {included ? (
-          <path d="M44 140 98 194 212 76" stroke="currentColor" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
-        ) : (
-          <path d="M44 128h168" stroke="currentColor" strokeWidth="16" strokeLinecap="round" />
-        )}
-      </svg>
+      <Icon name={included ? 'check' : 'minus'} strokeWidth={2} className={className} />
       <span className="sr-only">{included ? 'Included' : 'Not included'}</span>
     </>
   )

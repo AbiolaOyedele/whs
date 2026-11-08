@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import type { ChoiceOption } from '@v2/content/forms'
 import { FieldError } from './FieldError'
+import { Icon } from '@v2/components/ui/Icon'
 
 interface ChoiceListboxProps {
   id: string
@@ -160,14 +161,7 @@ export function ChoiceListbox({
         >
           <span id={`${id}-value`} className={selected ? '' : 'opacity-60'}>{selected?.label ?? placeholder}</span>
         </button>
-        <svg
-          className="pointer-events-none absolute top-1/2 right-4 size-2 -translate-y-1/2"
-          viewBox="0 0 7 5"
-          fill="none"
-          aria-hidden="true"
-        >
-          <path fill="currentColor" d="M3.5 5 7 0H0z" />
-        </svg>
+        <Icon name="chevronDown" strokeWidth={2} className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2" />
         {open ? (
           <ul
             ref={list}
@@ -193,9 +187,7 @@ export function ChoiceListbox({
               >
                 <span>{option.label}</span>
                 {option.value === value ? (
-                  <svg className="size-3.5 shrink-0" viewBox="0 0 15 11" fill="none" aria-hidden="true">
-                    <path d="M1 5.4 4.9 9.2 13.8.9" stroke="currentColor" strokeWidth="1.7" />
-                  </svg>
+                  <Icon name="check" strokeWidth={2.2} className="size-3.5 shrink-0" />
                 ) : null}
               </li>
             ))}

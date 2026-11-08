@@ -118,6 +118,8 @@ export const CONTACT_PAGE = {
   lead: 'Tell us what is eating your hours: the report someone rebuilds every week, the spreadsheet three people maintain, the thing you keep meaning to automate. We read every enquiry and reply with a concrete next step, usually within one working day. You can also email us at',
   submit: 'Send message',
   successTitle: 'Message sent',
+  /** Shown once an assistant's drafted brief has filled the form in. */
+  pasteNotice: 'We filled the form in from your assistant’s draft. Check it over, then send it.',
 } as const
 
 export const QUOTE_PAGE = {

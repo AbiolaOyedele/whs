@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { SmartLink } from '@v2/components/ui/SmartLink'
+import { Icon } from '@v2/components/ui/Icon'
 
 interface ContentPageProps {
   /** Small line above the title. */
@@ -30,9 +31,7 @@ export function ContentPage({ label, title, intro, heroExtra, back, children }: 
                 href={back.href}
                 className="text-label -ml-1 mb-4 inline-flex min-h-11 items-center gap-2 px-1 text-navy-500 transition-colors hover:text-navy-900"
               >
-                <svg className="size-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M10 3 5 8l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <Icon name="chevronLeft" strokeWidth={2} className="size-3.5" />
                 {back.label}
               </SmartLink>
             ) : null}

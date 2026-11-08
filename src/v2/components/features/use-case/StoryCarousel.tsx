@@ -153,7 +153,7 @@ export function StoryCarousel({ title, action, items }: StoryCarouselProps) {
         >
           {items.map((shop, slide) => (
             <div
-              key={shop.slug}
+              key={shop.href}
               className="c-uc-carousel_slide h-auto"
               onFocusCapture={() => goTo(Math.min(slide, stops().length - 1))}
             >

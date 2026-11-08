@@ -13,7 +13,7 @@ interface WhyPanelProps {
 const TONES: Record<WhyTone, string> = {
   ink: 'bg-charcoal text-white',
   lime: 'bg-pink-500 text-charcoal',
-  slate: 'c-why-blueprint bg-slate-100 text-charcoal',
+  slate: 'bg-slate-100 text-charcoal',
 }
 
 /**

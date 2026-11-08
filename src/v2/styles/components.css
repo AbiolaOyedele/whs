@@ -87,69 +87,6 @@ html.is-ready .c-label.is-inview .c-label_text {
   padding-bottom: 0.08em;
 }
 
-/* ── interactive dot grid ─────────────────────────────────────────── */
-
-.c-interactive-dots {
-  display: grid;
-  grid-template-columns: repeat(var(--cols, 20), 1fr);
-  place-items: center;
-  pointer-events: auto;
-  margin-inline: calc(var(--spacing) * -5);
-}
-
-@media (min-width: 1000px) {
-  .c-interactive-dots {
-    margin-inline: calc(var(--spacing) * -10);
-  }
-}
-
-.c-interactive-dots_dot {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1;
-  border-radius: var(--radius-sm);
-}
-
-.c-interactive-dots_dot::before,
-.c-interactive-dots_dot::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-}
-
-.c-interactive-dots_dot::before {
-  width: calc(var(--spacing) * 8.5);
-  height: calc(var(--spacing) * 8.5);
-  margin: calc(var(--spacing) * -4.25) 0 0 calc(var(--spacing) * -4.25);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-pink-500);
-  mix-blend-mode: screen;
-  opacity: 0.85;
-  transform: scale(0);
-  transition: transform var(--transition-duration-fast) var(--ease);
-}
-
-.c-interactive-dots_dot.is-trail::before {
-  transition-duration: 0.4s;
-}
-
-.c-interactive-dots_dot::after {
-  width: 2px;
-  height: 2px;
-  margin: -1px 0 0 -1px;
-  border-radius: 100%;
-  background-color: var(--color-white);
-}
-
-.c-interactive-dots_dot:where(.slate, .slate *)::after {
-  background-color: var(--color-navy-900);
-}
-
-.c-interactive-dots_dot:is(.is-active, :hover)::before {
-  transform: scale(1);
-}
-
 /* ── rail: an endless row that speeds up with scrolling ───────────── */
 
 .c-rail {

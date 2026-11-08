@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { onReady } from '@v2/lib/page-state'
 import { lockScroll } from '@v2/lib/scroll'
 import { SmartLink } from '@v2/components/ui/SmartLink'
+import { Icon } from '@v2/components/ui/Icon'
 
 const STORAGE_KEY = 'cookie-consent'
 const OPEN_PREFERENCES_EVENT = 'cookie:preferences'
@@ -57,9 +58,7 @@ const SECONDARY = `${BOX_BUTTON} bg-slate-50 text-navy-900 hover:bg-slate-100`
 
 function CloseIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true">
-      <path d="M19.5 4.5l-15 15M4.5 4.5l15 15" stroke="currentColor" strokeWidth={1.5} />
-    </svg>
+    <Icon name="x" strokeWidth={1.5} className="size-4" />
   )
 }
 

@@ -1,6 +1,6 @@
 import { BrandOutlineLogo } from '@v2/components/features/brand/BrandOutlineLogo'
 import { DownloadButton } from '@v2/components/features/brand/DownloadButton'
-import { ArtPanel } from '@v2/components/ui/ArtPanel'
+import { FluidPanel } from '@v2/components/ui/FluidPanel'
 import { Rail } from '@v2/components/ui/Rail'
 import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { brandHero } from '@v2/content/brand'
@@ -27,7 +27,7 @@ export function BrandHero() {
       </div>
       <div>
         <div className="relative flex items-center overflow-hidden rounded-md bg-charcoal max-md:aspect-square md:aspect-700/600">
-          <ArtPanel seed={5} />
+          <FluidPanel seed={5} />
           <div className="relative z-2 w-full overflow-hidden" aria-hidden="true">
             {GUIDES.map((position) => (
               <div key={position} className={`absolute ${position} w-full border-t border-dashed border-white opacity-30`} />

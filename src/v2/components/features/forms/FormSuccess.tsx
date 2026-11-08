@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, type ReactNode } from 'react'
+import { Icon } from '@v2/components/ui/Icon'
 
 interface FormSuccessProps {
   title: string
@@ -23,10 +24,9 @@ export function FormSuccess({ title, message, children }: FormSuccessProps) {
 
   return (
     <div role="status" className="anim-fade-slide-in rounded-lg bg-white p-fluid-md text-navy-900 md:p-fluid-lg">
-      <svg className="mb-6 size-10 text-navy-900" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <circle cx="20" cy="20" r="20" className="fill-pink-500" />
-        <path d="M12.5 20.5 17.5 25.5 28 15" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+      <span aria-hidden="true" className="mb-6 flex size-10 items-center justify-center rounded-full bg-pink-500 text-navy-900">
+        <Icon name="check" strokeWidth={2.2} className="size-5" />
+      </span>
       <h2 ref={heading} tabIndex={-1} className="text-heading-xs outline-none">
         {title}
       </h2>

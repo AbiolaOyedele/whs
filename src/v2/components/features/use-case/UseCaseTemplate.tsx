@@ -1,5 +1,6 @@
 import { Button } from '@v2/components/ui/Button'
 import { SplitTitle } from '@v2/components/ui/SplitTitle'
+import { FaqList } from '@v2/components/features/faq/FaqList'
 import { FeatureCards } from '@v2/components/features/feature-cards/FeatureCards'
 import type { UseCaseContent } from '@v2/content/use-cases'
 import { ExampleCard } from './ExampleCard'
@@ -15,7 +16,7 @@ interface UseCaseTemplateProps {
 /**
  * One page per service: the dark hero with its own animation, a white
  * panel with the sticky feature list and animated cards, then a slate panel
- * with ways to start and a row of case studies.
+ * with ways to start, a row of case studies and common questions.
  */
 export function UseCaseTemplate({ content }: UseCaseTemplateProps) {
   const { examples, stories } = content
@@ -87,6 +88,9 @@ export function UseCaseTemplate({ content }: UseCaseTemplateProps) {
             <div className="container">
               <StoryCarousel title={stories.title} action={stories.action} items={stories.items} />
             </div>
+          </div>
+          <div className="section-spacing container mt-fluid-xl!">
+            <FaqList title="Common questions" faqs={content.faqs} />
           </div>
         </div>
       </div>

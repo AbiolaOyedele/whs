@@ -4,6 +4,7 @@ import { CallToAction } from '@v2/components/features/content-page/CallToAction'
 import { ContentPage, PageSection } from '@v2/components/features/content-page/ContentPage'
 import { NumberedGrid } from '@v2/components/features/content-page/NumberedGrid'
 import { Tag } from '@v2/components/features/content-page/Tag'
+import { Icon } from '@v2/components/ui/Icon'
 
 /** /careers: how the team works, the open roles, and where to go if none fit. */
 export function CareersIndex() {
@@ -47,10 +48,7 @@ export function CareersIndex() {
                   className="text-label inline-flex min-h-11 shrink-0 items-center gap-2 self-start rounded-[100px] bg-slate-50 px-5 leading-none text-navy-900 transition-colors group-focus-within:bg-pink-500 group-hover:bg-pink-500"
                 >
                   {CAREERS_PAGE.viewRole}
-                  <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12h14" />
-                    <path d="m12 5 7 7-7 7" />
-                  </svg>
+                  <Icon name="arrowRight" strokeWidth={2} className="size-3.5" />
                 </span>
                 {/* The card's focus ring: drawn on the card, since the link's own box is the whole card. */}
                 <span

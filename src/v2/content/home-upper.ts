@@ -24,16 +24,6 @@ export const heroCopy = {
 /** The three words that flicker in while the hero is held, in order. */
 export const holdWords = ['Websites', 'Apps', 'Tools'] as const
 
-/* ── product rail ─────────────────────────────────────────────────── */
-
-/** Products WildHands built, each live at <slug>.whstd.com. Shown as text wordmarks. */
-export const demoShops: readonly { slug: string; template: string }[] = [
-  { slug: 'rayo', template: 'Quotes and invoices' },
-  { slug: 'dory', template: 'Personal budgets' },
-  { slug: 'planes', template: 'Tasks with friends' },
-  { slug: 'marque', template: 'Brand guidelines' },
-]
-
 /* ── intro row ────────────────────────────────────────────────────── */
 
 export const introCopy = {

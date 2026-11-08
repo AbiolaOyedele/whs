@@ -21,7 +21,7 @@ export function FeatureVisual({ visual }: FeatureVisualProps) {
     case 'map':
       return <MapCard leftChip={visual.leftChip} rightChip={visual.rightChip} points={visual.points} />
     case 'wordmarks':
-      return <WordmarkCarouselCard names={visual.names} artSeed={visual.artSeed} />
+      return <WordmarkCarouselCard logos={visual.logos} artSeed={visual.artSeed} />
     case 'templates':
       return <TemplateCarouselCard items={visual.items} />
     case 'batches':

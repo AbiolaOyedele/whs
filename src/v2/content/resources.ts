@@ -6,7 +6,6 @@ import type { LivePreviewSlug } from '@/config/previews'
  * word. If a detail is not in those files, it is left out.
  */
 import { site } from '@v2/config/site'
-import type { IconName } from '@v2/components/ui/Icon'
 import type { RichBlock } from '@v2/content/blog'
 
 export interface HelpQuestion {
@@ -19,8 +18,6 @@ export interface HelpGuide {
   title: string
   /** ISO date the case study was last updated on the main site. */
   date: string
-  artSeed: number
-  icon: IconName
   /** Live previews of the project, shown in the write-up (from `previews` in src/content/work). */
   previews: LivePreviewSlug[]
   /** The product's own logo, from public/work-logos. Shown on the card and as the page header. */
@@ -39,8 +36,6 @@ export const HELP_GUIDES: HelpGuide[] = [
     slug: 'dumpty',
     title: 'Dumpty: voice notes that arrive already organised',
     date: UPDATED,
-    artSeed: 11,
-    icon: 'phone',
     previews: ['dumpty', 'dumpty-site'],
     logo: '/work-logos/dumpty.png',
     lede: 'Talk through an idea and get back a clean transcript, tags and a checklist.',
@@ -135,8 +130,6 @@ export const HELP_GUIDES: HelpGuide[] = [
     slug: 'auto-flow',
     title: 'Auto Flow: bulk video generation without the manual loop',
     date: UPDATED,
-    artSeed: 12,
-    icon: 'sparkle',
     previews: ['autoflow'],
     logo: '/work-logos/auto-flow.png',
     lede: 'Point it at a folder of images and it generates every video unattended, three at a time.',
@@ -231,8 +224,6 @@ export const HELP_GUIDES: HelpGuide[] = [
     slug: 'lazy-meet',
     title: 'Lazy Meet: joining the call so you do not have to',
     date: UPDATED,
-    artSeed: 13,
-    icon: 'globe',
     previews: ['lazy-meet'],
     logo: '/work-logos/lazy-meet.png',
     lede: 'Joins your calls at start time, muted and camera off, across three accounts.',
@@ -334,8 +325,6 @@ export const HELP_GUIDES: HelpGuide[] = [
     slug: 'the-ruff-agency',
     title: 'The Ruff Agency: one workspace instead of six tools',
     date: UPDATED,
-    artSeed: 14,
-    icon: 'chart',
     previews: ['fey'],
     logo: '/work-logos/the-ruff-agency.svg',
     lede: 'Clients, contracts, invoices, tasks and a client portal in one shared workspace.',
@@ -422,8 +411,6 @@ export const HELP_GUIDES: HelpGuide[] = [
     slug: 'tomori',
     title: 'Tomori: a shop for hand-dyed Adire, built for a phone',
     date: UPDATED,
-    artSeed: 15,
-    icon: 'bag',
     previews: ['tomori'],
     logo: '/work-logos/tomori.svg',
     lede: 'A quiet, phone-first shop for hand-dyed clothes, and a back office that fits in a pocket.',
@@ -483,8 +470,6 @@ export const HELP_GUIDES: HelpGuide[] = [
     slug: 'marvy',
     title: 'Marvy: course videos filed in one step',
     date: UPDATED,
-    artSeed: 16,
-    icon: 'box',
     previews: ['marvy'],
     logo: '/work-logos/marvy.svg',
     lede: 'Drop a video in and it lands in the right Drive folder, with the right people tagged.',
@@ -536,8 +521,6 @@ export const HELP_GUIDES: HelpGuide[] = [
     slug: 'rayo',
     title: 'Rayo: quotes your client accepts on the page',
     date: UPDATED,
-    artSeed: 17,
-    icon: 'bank',
     previews: ['rayo'],
     logo: '/work-logos/rayo.svg',
     lede: 'Send a quote with options, the client accepts one, and it becomes the invoice.',
@@ -589,8 +572,6 @@ export const HELP_GUIDES: HelpGuide[] = [
     slug: 'dory',
     title: 'Dory: a budget app that always knows what is left',
     date: UPDATED,
-    artSeed: 18,
-    icon: 'chart',
     previews: ['dory'],
     logo: '/work-logos/dory.svg',
     lede: 'Budget, shopping, loans and subscriptions in one place, with what is left always on top.',
@@ -642,8 +623,6 @@ export const HELP_GUIDES: HelpGuide[] = [
     slug: 'planes',
     title: 'Planes: a to-do list you race your friends on',
     date: UPDATED,
-    artSeed: 19,
-    icon: 'qr',
     previews: ['planes'],
     logo: '/work-logos/planes.png',
     lede: 'Swipe to land a task, fly one to a friend, and race your crew on the leaderboard.',
@@ -695,8 +674,6 @@ export const HELP_GUIDES: HelpGuide[] = [
     slug: 'marque',
     title: 'Marque: brand guidelines, made easy',
     date: UPDATED,
-    artSeed: 11,
-    icon: 'globe',
     previews: ['marque-app', 'marque'],
     logo: '/work-logos/marque.svg',
     lede: 'Start from a logo, edit the guide in place, and publish it at one link.',

@@ -10,7 +10,9 @@ import App from '@v2/App'
 import { allPaths, resolveRoute } from '@v2/routes'
 import { SCENES } from '@v2/components/layout/SiteChrome'
 import { categoryByLabel, postBySlug, postFaqs, type BlogPost } from '@v2/content/blog'
-import { articleSchema, breadcrumbSchema, faqPageSchema, type JsonLd } from '@/lib/seo'
+import { getUseCase } from '@v2/content/use-cases'
+import { locationBySlug, serviceLocationContent } from '@v2/content/service-locations'
+import { articleSchema, breadcrumbSchema, faqPageSchema, localBusinessSchema, serviceSchema, type JsonLd } from '@/lib/seo'
 import { publicEnv } from '@/config/env'
 
 export const getStaticPaths = (() =>
@@ -67,9 +69,59 @@ function blogPostJsonLd(post: BlogPost): JsonLd[] {
   ]
 }
 
+/**
+ * Structured data for a service page and its location pages, carried over
+ * from the original /services/<service>/<location> pages: the studio as a
+ * LocalBusiness, the Service itself, the breadcrumb and the page's questions.
+ * On a location page the Service names the place it serves, and its
+ * description carries that place's hand-written context, which is written for
+ * search engines and deliberately not shown on the page.
+ */
+function useCaseJsonLd(serviceSlug: string, locationSlug: string | undefined): JsonLd[] {
+  const service = getUseCase(serviceSlug)
+  if (!service) return []
+  const location = locationSlug ? locationBySlug(locationSlug) : undefined
+  const content = location ? serviceLocationContent(serviceSlug, location.slug) : service
+  if (!content) return []
+
+  const serviceUrl = `${siteUrl}/use-cases/${service.slug}`
+  const url = location ? `${serviceUrl}/${location.slug}` : serviceUrl
+  const node = serviceSchema({
+    name: location ? `${service.label} in ${location.longLabel}` : service.label,
+    description: location ? `${content.meta.description} ${location.localContext}` : content.meta.description,
+    url,
+    siteUrl,
+  })
+
+  return [
+    localBusinessSchema(siteUrl),
+    location
+      ? {
+          ...node,
+          areaServed: {
+            '@type': location.kind === 'country' ? 'Country' : location.kind === 'city' ? 'City' : 'Place',
+            name: location.longLabel,
+            address: { '@type': 'PostalAddress', addressCountry: location.countryCode },
+          },
+        }
+      : node,
+    breadcrumbSchema([
+      { name: 'Home', url: `${siteUrl}/` },
+      { name: service.label, url: serviceUrl },
+      ...(location ? [{ name: location.label, url }] : []),
+    ]),
+    ...(content.faqs.length > 0 ? [faqPageSchema(content.faqs)] : []),
+  ]
+}
+
 const postSlug = /^\/blog\/([^/]+)$/.exec(path)?.[1]
 const post = postSlug ? postBySlug(postSlug) : undefined
-const jsonLd: JsonLd[] = post ? blogPostJsonLd(post) : []
+const useCase = /^\/use-cases\/([^/]+)(?:\/([^/]+))?$/.exec(path)
+const jsonLd: JsonLd[] = post
+  ? blogPostJsonLd(post)
+  : useCase?.[1]
+    ? useCaseJsonLd(useCase[1], useCase[2])
+    : []
 ---
 
 <V2Layout title={route.title} description={route.description} scene={scene} template={template} jsonLd={jsonLd}>

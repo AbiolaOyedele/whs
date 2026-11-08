@@ -9,7 +9,6 @@ import { PHOTOS, type Photo } from '@v2/content/photos'
  * left out, as they are on the main site. Keep `BlogPost`'s original fields
  * and `latestPosts()`: the home page's latest posts row reads them.
  */
-import type { IconName } from '@v2/components/ui/Icon'
 
 /* ── rich text ────────────────────────────────────────────────────── */
 
@@ -84,12 +83,8 @@ export interface BlogPost {
   /** Category labels from BLOG_CATEGORIES, e.g. "Websites". */
   categories: string[]
   excerpt: string
-  /** Seed for the stand-in art. */
-  artSeed: number
   /** "story" posts get the plain card with a wordmark instead of art. None use it yet. */
   kind: 'article' | 'story'
-  /** The pictogram drawn over the art. */
-  icon: IconName
   /** The name a story is about, shown as a text wordmark. */
   wordmark?: string
   author: Author
@@ -107,9 +102,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Websites'],
     excerpt:
       'What to check before hiring a web development agency in Lagos, from portfolio and process to ownership and aftercare.',
-    artSeed: 1,
     kind: 'article',
-    icon: 'globe',
     author: WILDHANDS,
     body: [
       {
@@ -248,9 +241,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Websites'],
     excerpt:
       'What actually drives the cost of an e-commerce site in Nigeria, from platform choice to payment integration and delivery logistics.',
-    artSeed: 2,
     kind: 'article',
-    icon: 'bag',
     author: WILDHANDS,
     body: [
       {
@@ -482,9 +473,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Websites'],
     excerpt:
       'A practical checklist of what every Nigerian business website needs, from essential pages to local payment and trust signals.',
-    artSeed: 3,
     kind: 'article',
-    icon: 'sparkle',
     author: WILDHANDS,
     body: [
       {
@@ -648,9 +637,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Websites'],
     excerpt:
       'A real answer to what drives website cost in Nigeria, the three main scope tiers, and what to check before you accept a quote.',
-    artSeed: 4,
     kind: 'article',
-    icon: 'chart',
     author: WILDHANDS,
     body: [
       {
@@ -892,9 +879,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Websites'],
     excerpt:
       'How to structure a business website for Nigerian customers: essential pages, mobile-first design, trust signals, and local payment integration.',
-    artSeed: 5,
     kind: 'article',
-    icon: 'qr',
     author: WILDHANDS,
     body: [
       {
@@ -1067,9 +1052,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Websites'],
     excerpt:
       'A clear way to decide whether your business needs a website or a web app, with real examples and what each one costs to build and maintain.',
-    artSeed: 6,
     kind: 'article',
-    icon: 'mail',
     author: WILDHANDS,
     body: [
       {
@@ -1228,9 +1211,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Websites'],
     excerpt:
       'A small business website can be live within days once the design is approved and the content is ready. Larger sites take weeks. Here is what sets the pace.',
-    artSeed: 7,
     kind: 'article',
-    icon: 'hourglass',
     author: WILDHANDS,
     body: [
       {
@@ -1356,9 +1337,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Websites', 'Pricing'],
     excerpt:
       'After launch, a website needs its domain renewed yearly, hosting, and changes now and then. Here is what each cost covers in Nigeria and how to budget for it.',
-    artSeed: 8,
     kind: 'article',
-    icon: 'wallet',
     author: WILDHANDS,
     body: [
       {
@@ -1495,9 +1474,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Websites', 'Pricing'],
     excerpt:
       'To take payments on a Nigerian website, open a Paystack or Flutterwave account, verify it and add their checkout. Here is how it works and what it costs.',
-    artSeed: 9,
     kind: 'article',
-    icon: 'creditCard',
     author: WILDHANDS,
     body: [
       {
@@ -1641,9 +1618,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Websites', 'Pricing'],
     excerpt:
       'Shopify works in Nigeria, but you pay a monthly fee in dollars plus an extra cut of each sale made through Paystack. Here is when that is worth paying.',
-    artSeed: 10,
     kind: 'article',
-    icon: 'store',
     author: WILDHANDS,
     body: [
       {
@@ -1771,9 +1746,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Apps', 'Pricing'],
     excerpt:
       'App prices in Nigeria vary widely: one app is a booking tool, another a fintech platform. Here is what drives the cost and how to get a quote you can trust.',
-    artSeed: 11,
     kind: 'article',
-    icon: 'monitorSmartphone',
     author: WILDHANDS,
     body: [
       {
@@ -1905,9 +1878,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Apps'],
     excerpt:
       'For most businesses a web app is the better first build: one version for every phone, no app store fees, no store reviews. Here is when to go native instead.',
-    artSeed: 12,
     kind: 'article',
-    icon: 'phone',
     author: WILDHANDS,
     body: [
       {
@@ -2029,9 +2000,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Tools & Systems'],
     excerpt:
       'Replace a spreadsheet when several people edit it, mistakes cost money, or data is copied between files. Here are the signs, and your options from cheapest up.',
-    artSeed: 13,
     kind: 'article',
-    icon: 'database',
     author: WILDHANDS,
     body: [
       {
@@ -2169,9 +2138,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Websites'],
     excerpt:
       'You can sell on Instagram and WhatsApp without a website, but you own neither. A simple site gives you an address on Google that no platform can switch off.',
-    artSeed: 14,
     kind: 'article',
-    icon: 'messageCircle',
     author: WILDHANDS,
     body: [
       {
@@ -2284,9 +2251,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Tools & Systems'],
     excerpt:
       'An internal tool is software your team uses to run the business, like an admin panel or dashboard. Here are real examples and how to tell if you need one.',
-    artSeed: 15,
     kind: 'article',
-    icon: 'workflow',
     author: WILDHANDS,
     body: [
       {
@@ -2414,9 +2379,7 @@ export const BLOG_POSTS: BlogPost[] = [
     categories: ['Websites'],
     excerpt:
       'Create a free Google Business Profile, verify it, and give Google a website it can read. Here are the steps, and what helps a small business rank higher.',
-    artSeed: 16,
     kind: 'article',
-    icon: 'search',
     author: WILDHANDS,
     body: [
       {
@@ -2620,8 +2583,6 @@ export interface BlogCardData {
   shortDateLabel: string
   labels: string[]
   categorySlugs: BlogCategorySlug[]
-  artSeed: number
-  icon: IconName
   photo: Photo
   kind: BlogPost['kind']
   wordmark: string
@@ -2637,8 +2598,6 @@ export function toBlogCard(post: BlogPost): BlogCardData {
     shortDateLabel: formatPostDate(post.date, 'short'),
     labels: post.categories,
     categorySlugs: post.categories.flatMap((label) => categoryByLabel(label)?.slug ?? []),
-    artSeed: post.artSeed,
-    icon: post.icon,
     photo: post.photo,
     kind: post.kind,
     wordmark: post.wordmark ?? '',

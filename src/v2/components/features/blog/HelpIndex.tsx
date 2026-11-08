@@ -32,8 +32,6 @@ export function HelpIndex({ page = 1 }: HelpIndexProps) {
                   date={guide.date}
                   dateLabel={formatPostDate(guide.date)}
                   labels={[]}
-                  artSeed={guide.artSeed}
-                  icon={guide.icon}
                   logo={guide.logo}
                 />
               ))}

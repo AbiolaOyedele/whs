@@ -443,7 +443,7 @@ html.is-ready .c-use-case .animated-line {
   overflow: hidden;
   padding: 10%;
   border-radius: var(--radius-md);
-  background-color: var(--color-slate-50);
+  background-color: var(--color-white);
   container-type: inline-size;
 }
 

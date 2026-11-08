@@ -164,6 +164,11 @@ const permanentRedirects = (() => {
     add(`/insights/websites/${slug}`, `/blog/${slug}`)
   }
 
+  // The industry pages were unfinished placeholders, never indexed or listed.
+  for (const slug of ['consumer-brands', 'financial-services', 'saas-data-platforms']) {
+    add(`/industries/${slug}`, '/')
+  }
+
   // The job application's old thank-you and video steps. The application now
   // confirms on its own page, and the video step never uploaded anything.
   add('/careers/apply/video', '/careers')

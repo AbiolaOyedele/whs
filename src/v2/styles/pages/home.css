@@ -303,14 +303,7 @@ html.is-ready .animated-line {
   background-color: var(--color-charcoal);
 }
 
-/* Built from scratch: a faint blueprint grid, and a stack that fans out. */
-.c-why-blueprint {
-  background-image:
-    linear-gradient(to right, rgb(19 19 20 / 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(19 19 20 / 0.06) 1px, transparent 1px);
-  background-size: 28px 28px;
-  background-position: -1px -1px;
-}
+/* Built from scratch: a stack that fans out. */
 
 .c-why-fan-card {
   transform: rotate(var(--fan-start, 0deg));

@@ -1,3 +1,5 @@
+import { Icon } from '@v2/components/ui/Icon'
+
 interface FieldErrorProps {
   id: string
   message: string
@@ -10,11 +12,7 @@ interface FieldErrorProps {
 export function FieldError({ id, message }: FieldErrorProps) {
   return (
     <p id={id} className="anim-fade-slide-in mt-2 flex items-start gap-2 text-body-sm text-navy-900">
-      <svg className="mt-px size-4 shrink-0 text-red" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.4" />
-        <path d="M8 4.5v4.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-        <circle cx="8" cy="11.4" r="0.9" fill="currentColor" />
-      </svg>
+      <Icon name="circleAlert" strokeWidth={1.6} className="mt-px size-4 shrink-0 text-red" />
       <span>{message}</span>
     </p>
   )

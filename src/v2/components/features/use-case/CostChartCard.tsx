@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { ArtPanel } from '@v2/components/ui/ArtPanel'
+import { FluidPanel } from '@v2/components/ui/FluidPanel'
 import { ParallaxMedia } from '@v2/components/ui/ParallaxMedia'
 import { SegmentedControls } from '@v2/components/ui/SegmentedControls'
 import type { ChartTab } from '@v2/content/use-cases'
@@ -32,7 +32,7 @@ export function CostChartCard({ tabs, yLabel, xLabel, artSeed }: CostChartCardPr
       className="slate relative flex justify-center gap-6 overflow-hidden rounded-lg bg-charcoal py-10 max-sm:px-6 sm:aspect-707/600"
     >
       <ParallaxMedia>
-        <ArtPanel seed={artSeed} />
+        <FluidPanel seed={artSeed} />
       </ParallaxMedia>
       <SegmentedControls
         tabs={tabs.map((tab) => tab.label)}

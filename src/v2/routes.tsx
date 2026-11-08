@@ -211,8 +211,6 @@ function blogPost(slug: string): ResolvedRoute | null {
         dateLabel={formatPostDate(post.date, 'short')}
         labels={labels}
         author={post.author}
-        artSeed={post.artSeed}
-        icon={post.icon}
         photo={post.photo}
         back={{ label: 'See all posts', href: '/blog' }}
         after={
@@ -245,8 +243,6 @@ function guide(slug: string): ResolvedRoute | null {
         date={entry.date}
         dateLabel={formatPostDate(entry.date, 'short')}
         author={HELP_AUTHOR}
-        artSeed={entry.artSeed}
-        icon={entry.icon}
         logo={entry.logo}
         back={{ label: 'See all work', href: '/resources' }}
         after={
@@ -262,8 +258,6 @@ function guide(slug: string): ResolvedRoute | null {
                   date={related.date}
                   dateLabel={formatPostDate(related.date)}
                   labels={[]}
-                  artSeed={related.artSeed}
-                  icon={related.icon}
                   logo={related.logo}
                   headingLevel="h3"
                 />

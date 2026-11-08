@@ -8,6 +8,7 @@ import { HONEYPOT_FIELD, Honeypot, honeypotValue } from './Honeypot'
 import { postForm } from './submit'
 import { useCheckedForm } from './useCheckedForm'
 import { checkEmail, onlyProblems, type FormValues } from './validation'
+import { Icon } from '@v2/components/ui/Icon'
 
 type NewsletterField = 'email'
 
@@ -36,10 +37,9 @@ export function NewsletterForm({ idPrefix }: NewsletterFormProps) {
   if (form.status === 'success') {
     return (
       <p role="status" className="text-body-md anim-fade-slide-in flex items-start gap-3 text-navy-900">
-        <svg className="mt-0.5 size-5 shrink-0" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-          <circle cx="10" cy="10" r="10" className="fill-pink-500" />
-          <path d="M6 10.3 8.7 13 14 7.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        <span aria-hidden="true" className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-pink-500">
+          <Icon name="check" strokeWidth={2.4} className="size-3" />
+        </span>
         <span>
           <strong className="font-medium">{NEWSLETTER_COPY.successTitle}.</strong> {form.message}
         </span>
