@@ -8,7 +8,6 @@ import { site } from '@v2/config/site'
 import { cardCopy, introCopy, mapChips } from '@v2/content/home-upper'
 import { HeroHome } from './upper/HeroHome'
 import { HomeIntroTitle } from './upper/HomeIntroTitle'
-import { HomeShopRail } from './upper/HomeShopRail'
 
 /** Cities the map marks, three waves of four. */
 const MAP_CITIES: NigeriaCity[] = [
@@ -39,9 +38,7 @@ export function HomeUpper() {
   return (
     <>
       <div data-background-canvas-inview="">
-        <HeroHome>
-          <HomeShopRail />
-        </HeroHome>
+        <HeroHome />
       </div>
 
       <div className="wrapper relative z-above -mt-7.5 -mb-7.5 bg-white md:-mt-15 md:-mb-15">
