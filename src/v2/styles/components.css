@@ -607,3 +607,27 @@ html.is-ready .c-feature-list_item.is-inview {
   display: none;
 }
 }
+
+/* ── live previews (components/ui/LivePreview.tsx) ─────────────────── */
+
+[data-live-preview] .wh-live-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  border: 0;
+  transform-origin: top left;
+  pointer-events: none;
+  opacity: 0;
+}
+
+[data-live-preview] .wh-live-frame[data-loaded] {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-live-preview] .wh-live-frame {
+    transition: opacity 400ms ease-out;
+  }
+}
+

@@ -2,6 +2,8 @@ import { ArtPanel } from '@v2/components/ui/ArtPanel'
 import { Icon, type IconName } from '@v2/components/ui/Icon'
 import { ParallaxMedia } from '@v2/components/ui/ParallaxMedia'
 import { SmartLink } from '@v2/components/ui/SmartLink'
+import { LivePreview } from '@v2/components/ui/LivePreview'
+import type { LivePreviewSlug } from '@/config/previews'
 
 export interface PostCardProps {
   href: string
@@ -13,6 +15,8 @@ export interface PostCardProps {
   labels: string[]
   artSeed: number
   icon: IconName
+  /** A live preview of the project, shown in place of the art (case studies). */
+  preview?: LivePreviewSlug | undefined
   /** Heading level for the title, so the page's outline stays in order. */
   headingLevel?: 'h2' | 'h3'
 }
@@ -22,17 +26,35 @@ export interface PostCardProps {
  * hover, a pictogram over it, then the date, labels and title. An arrow
  * slides in on hover or focus; the whole card is the link.
  */
-export function PostCard({ href, title, date, dateLabel, labels, artSeed, icon, headingLevel = 'h2' }: PostCardProps) {
+export function PostCard({
+  href,
+  title,
+  date,
+  dateLabel,
+  labels,
+  artSeed,
+  icon,
+  preview,
+  headingLevel = 'h2',
+}: PostCardProps) {
   const Heading = headingLevel
   return (
     <div className="group anim-scale relative flex h-full flex-col overflow-hidden rounded-md" data-scroll="">
       <div className="relative flex aspect-464/392 items-center justify-center overflow-hidden">
-        <ParallaxMedia speed={-0.1}>
+        {preview ? (
           <div className="c-blog-art absolute inset-0 group-focus-within:scale-105 group-hover:scale-105">
-            <ArtPanel seed={artSeed} />
+            <LivePreview slug={preview} className="absolute inset-0" />
           </div>
-        </ParallaxMedia>
-        <Icon name={icon} strokeWidth={1} className="relative h-[38%] w-[25%] text-white" />
+        ) : (
+          <>
+            <ParallaxMedia speed={-0.1}>
+              <div className="c-blog-art absolute inset-0 group-focus-within:scale-105 group-hover:scale-105">
+                <ArtPanel seed={artSeed} />
+              </div>
+            </ParallaxMedia>
+            <Icon name={icon} strokeWidth={1} className="relative h-[38%] w-[25%] text-white" />
+          </>
+        )}
       </div>
       <div className="flex grow flex-col gap-3.5 bg-slate-50 p-5 pb-7 slate:bg-white">
         <div className="flex items-center justify-between">

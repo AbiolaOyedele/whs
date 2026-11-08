@@ -226,6 +226,7 @@ function guide(slug: string): ResolvedRoute | null {
         author={HELP_AUTHOR}
         artSeed={entry.artSeed}
         icon={entry.icon}
+        previews={entry.previews}
         back={{ label: 'See all work', href: '/resources' }}
         after={
           <RelatedRow
@@ -242,6 +243,7 @@ function guide(slug: string): ResolvedRoute | null {
                   labels={[]}
                   artSeed={related.artSeed}
                   icon={related.icon}
+                  preview={related.previews[0]}
                   headingLevel="h3"
                 />
               ),

@@ -34,6 +34,7 @@ export function HelpIndex({ page = 1 }: HelpIndexProps) {
                   labels={[]}
                   artSeed={guide.artSeed}
                   icon={guide.icon}
+                  preview={guide.previews[0]}
                 />
               ))}
             </div>
