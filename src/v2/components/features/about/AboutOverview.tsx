@@ -1,7 +1,6 @@
 import { AboutGallery } from '@v2/components/features/about/AboutGallery'
 import { AboutLinks } from '@v2/components/features/about/AboutLinks'
 import { AboutStory } from '@v2/components/features/about/AboutStory'
-import { Label } from '@v2/components/ui/Label'
 import { aboutOverview } from '@v2/content/about'
 import { CANVAS_EVENTS } from '@v2/lib/canvas-events'
 
@@ -21,8 +20,7 @@ export function AboutOverview() {
         <div className="grid gap-x-gutter gap-y-fluid-xl md:grid-cols-12">
           <div className="md:col-start-1 md:col-end-5">
             <div className="flex flex-col max-md:gap-fluid-md md:gap-fluid-sm">
-              <Label>{aboutOverview.label}</Label>
-              <h3 className="text-heading-xs text-balance">{aboutOverview.heading}</h3>
+              <h2 className="text-heading-xs text-balance">{aboutOverview.heading}</h2>
             </div>
           </div>
           <div className="md:col-start-7 md:col-end-12">

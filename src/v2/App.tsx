@@ -13,6 +13,7 @@ import { Header } from '@v2/components/layout/Header'
 import { InitialLoader } from '@v2/components/layout/InitialLoader'
 import { PageHeader, SceneSync } from '@v2/components/layout/SiteChrome'
 import { TransitionProvider } from '@v2/components/layout/TransitionProvider'
+import { preventOrphans } from '@v2/lib/no-orphans'
 import { RouterProvider, normalisePath, useRouterContext } from '@v2/router'
 import { resolveRoute } from '@v2/routes'
 
@@ -24,6 +25,12 @@ function RouteOutlet() {
     document.title = route.title
     document.querySelector('meta[name="description"]')?.setAttribute('content', route.description)
   }, [route.title, route.description])
+
+  // After the page's own effects (titles split into words) have run.
+  useEffect(() => {
+    const timer = window.setTimeout(() => preventOrphans(document.body), 0)
+    return () => window.clearTimeout(timer)
+  }, [pathname])
 
   return route.element
 }

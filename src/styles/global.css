@@ -295,7 +295,13 @@
     text-wrap: balance;
   }
 
-  p {
+  p,
+  li,
+  dd,
+  dt,
+  blockquote,
+  figcaption,
+  label {
     text-wrap: pretty;
   }
 

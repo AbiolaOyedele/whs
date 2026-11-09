@@ -1,4 +1,3 @@
-import { Label } from '@v2/components/ui/Label'
 import { SmartLink } from '@v2/components/ui/SmartLink'
 import { SplitArrow } from '@v2/components/features/home/lower/SplitArrow'
 import { CAPABILITIES, capabilityHref } from '@v2/content/capabilities'
@@ -17,7 +16,7 @@ export function MoreWeBuild({ current }: MoreWeBuildProps) {
   return (
     <nav className="c-feature-list section-spacing grid gap-gutter md:grid-cols-3" aria-label="More we build">
       <div className="md:col-span-1">
-        <Label as="p">More we build</Label>
+        <h2 className="text-heading-sm text-balance">More we build</h2>
       </div>
       <div className="@container md:col-span-2">
         <ul className="c-feature-list_list">

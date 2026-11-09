@@ -11,7 +11,6 @@ interface RolePageProps {
 export function RolePage({ role }: RolePageProps) {
   return (
     <ContentPage
-      label="Careers"
       title={role.title}
       intro={role.summary}
       back={ROLE_PAGE.back}

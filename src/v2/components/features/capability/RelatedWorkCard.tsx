@@ -23,7 +23,9 @@ export function RelatedWorkCard({ guide }: RelatedWorkCardProps) {
         />
       </div>
       <div className="flex grow flex-col gap-3 p-5 pb-7">
-        <div className="flex items-center justify-between gap-4">
+        <h3 className="text-heading-xs text-balance">{guide.title}</h3>
+        <p className="text-body-sm text-navy-500">{guide.lede}</p>
+        <div className="mt-auto flex items-center justify-between gap-4 pt-2">
           <span className="text-label text-navy-500">Case study</span>
           <span
             aria-hidden="true"
@@ -32,8 +34,6 @@ export function RelatedWorkCard({ guide }: RelatedWorkCardProps) {
             <Icon name="arrowRight" />
           </span>
         </div>
-        <h3 className="text-heading-xs text-balance">{guide.title}</h3>
-        <p className="text-body-sm text-navy-500">{guide.lede}</p>
       </div>
       <SmartLink href={`/resources/${guide.slug}`} className="absolute inset-0 z-above rounded-md -outline-offset-2">
         <span className="sr-only">{guide.title}</span>

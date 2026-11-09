@@ -10,8 +10,8 @@ const FAST = 'duration-(--transition-duration-fast) ease-in-out'
 
 /**
  * A tall white tile in the recent work carousel, as on the Work page: the
- * product's logo centred, its industry top left, then a line about the
- * result and a link to its case study. On hover the backing grows 1%, the
+ * product's logo centred, then a line about the result, its industry and a
+ * link to its case study. On hover the backing grows 1%, the
  * logo eases up a touch, the text nudges toward the corner and an arrow
  * slides in.
  */
@@ -22,13 +22,6 @@ export function DesignTile({ tile }: DesignTileProps) {
         className={`absolute inset-0 rounded-md bg-white transition-transform group-focus-within:scale-101 group-hover:scale-101 ${FAST}`}
       />
       <div className="relative z-2 flex aspect-464/392 items-center justify-center overflow-hidden border-b border-slate-100 p-5">
-        <ul
-          className={`text-label absolute top-5 right-5 left-5 flex flex-wrap gap-x-3.5 gap-y-1 text-navy-500 transition-transform group-focus-within:-translate-1 group-hover:-translate-1 ${FAST}`}
-        >
-          {tile.tags.map((tag) => (
-            <li key={tag}>{tag}</li>
-          ))}
-        </ul>
         <img
           src={tile.logo.src}
           alt={tile.logo.alt}
@@ -36,13 +29,18 @@ export function DesignTile({ tile }: DesignTileProps) {
           className={`max-h-[34%] max-w-[46%] object-contain transition-transform group-focus-within:scale-105 group-hover:scale-105 ${FAST}`}
         />
       </div>
-      <div className="relative z-2 flex grow flex-col justify-between gap-3.5 p-5">
+      <div className="relative z-2 flex grow flex-col gap-3.5 p-5">
         <h3
           className={`text-heading-xs transition-transform group-focus-within:-translate-x-1 group-hover:-translate-x-1 ${FAST}`}
         >
           {tile.title}
         </h3>
-        <div className="flex items-center justify-between">
+        <ul className="text-label -mt-1 flex flex-wrap gap-x-3.5 gap-y-1 text-navy-500">
+          {tile.tags.map((tag) => (
+            <li key={tag}>{tag}</li>
+          ))}
+        </ul>
+        <div className="mt-auto flex items-center justify-between">
           <span
             className={`text-body-sm text-navy-500 group-focus-within:-translate-x-1 group-focus-within:translate-y-1 group-hover:-translate-x-1 group-hover:translate-y-1 ${FAST}`}
           >

@@ -1,6 +1,5 @@
 import { Button } from '@v2/components/ui/Button'
 import { Icon } from '@v2/components/ui/Icon'
-import { Label } from '@v2/components/ui/Label'
 import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { CANVAS_EVENTS } from '@v2/lib/canvas-events'
 import { TRUST } from '@v2/content/home-lower'
@@ -23,8 +22,7 @@ export function SecuritySection() {
         <div className="grid grid-cols-1 gap-gutter max-md:gap-y-[40vh] md:grid-cols-2">
           <div className="flex flex-col gap-9">
             <div className="flex max-w-150 flex-col gap-12.5">
-              <Label>{TRUST.label}</Label>
-              <SplitTitle as="p" className="max-md:text-heading-xl md:text-heading-lg">
+              <SplitTitle as="h2" className="max-md:text-heading-xl md:text-heading-lg">
                 {TRUST.title.before} <span className="text-gradient">{TRUST.title.highlight}</span>{' '}
                 {TRUST.title.after}
               </SplitTitle>

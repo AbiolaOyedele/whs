@@ -26,7 +26,6 @@ export interface TrustPoint {
 }
 
 export interface TrustSection {
-  label: string
   /** The title is split so the middle words can carry the gradient. */
   title: { before: string; highlight: string; after: string }
   primary: { label: string; href: string }
@@ -35,7 +34,6 @@ export interface TrustSection {
 }
 
 export const TRUST: TrustSection = {
-  label: 'How we work',
   title: { before: 'Scope first,', highlight: 'price second,', after: 'then we build' },
   primary: { label: 'Request a quote', href: '/request-a-quote' },
   secondary: { label: 'Get in touch', href: '/contact' },

@@ -1,6 +1,5 @@
 import { site } from '@v2/config/site'
 import { Button } from '@v2/components/ui/Button'
-import { Label } from '@v2/components/ui/Label'
 import { LivePreview } from '@v2/components/ui/LivePreview'
 import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { TitleText } from '@v2/components/features/use-case/TitleText'
@@ -19,9 +18,6 @@ export function CapabilityHero({ capability }: CapabilityHeroProps) {
   return (
     <section className="dark relative pt-safe-header pb-fluid-3xl text-white">
       <div className="container relative z-above pt-fluid-xl">
-        <Label as="p" className="[--label-circle-color:var(--color-pink-500)]">
-          What we build
-        </Label>
         <div className="my-5">
           <div className="animated-line" />
         </div>

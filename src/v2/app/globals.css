@@ -206,6 +206,28 @@
     color: var(--color-navy-900);
   }
 
+  /* No orphans: headings (and the paragraphs styled as headings) balance their
+     lines; body copy wraps so the last line is never a single word. */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  [class*='text-heading-'] {
+    text-wrap: balance;
+  }
+
+  p,
+  li,
+  dd,
+  dt,
+  blockquote,
+  figcaption,
+  label {
+    text-wrap: pretty;
+  }
+
   ::selection {
     background-color: var(--color-navy-900);
     color: var(--color-white);

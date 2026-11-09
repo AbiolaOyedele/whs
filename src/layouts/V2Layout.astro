@@ -23,9 +23,11 @@ interface Props {
   template: string
   /** Structured data nodes, one <script type="application/ld+json"> each. */
   jsonLd?: JsonLd[]
+  /** Kept out of search results even after launch. */
+  noindex?: boolean
 }
 
-const { title, description, scene, template, jsonLd = [] } = Astro.props
+const { title, description, scene, template, jsonLd = [], noindex = false } = Astro.props
 
 /**
  * Every v2 page stays out of search results until the site launches. Set to
@@ -50,7 +52,7 @@ const schemas: JsonLd[] = [organizationSchema(siteUrl), webSiteSchema(siteUrl), 
     <link rel="preload" href="/fonts/IBMPlexSans-400.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <Seo title={title} description={description} canonical={canonical} noindex={HIDDEN_UNTIL_LAUNCH} jsonLd={schemas} />
+    <Seo title={title} description={description} canonical={canonical} noindex={HIDDEN_UNTIL_LAUNCH || noindex} jsonLd={schemas} />
     <style is:global>
       :root {
         --font-stand-sans: 'IBM Plex Sans';

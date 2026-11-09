@@ -8,8 +8,8 @@ import { SmartLink } from '@v2/components/ui/SmartLink'
 const COPIED_MS = 2000
 
 type LinkCardProps =
-  | { type: 'email'; label: string; email: string; className?: string; children?: ReactNode }
-  | { type: 'download' | 'link'; label: string; title: string; href: string; className?: string; children?: ReactNode }
+  | { type: 'email'; email: string; className?: string; children?: ReactNode }
+  | { type: 'download' | 'link'; title: string; href: string; className?: string; children?: ReactNode }
 
 async function copyText(text: string): Promise<boolean> {
   try {
@@ -32,13 +32,13 @@ async function copyText(text: string): Promise<boolean> {
 }
 
 /**
- * A tile with a mono label top left and a title in the middle. On hover the
- * fill shrinks a touch, the label slides in and an arrow appears. Email cards
+ * A tile with a title in the middle. On hover the fill shrinks a touch and
+ * an arrow appears top right. Email cards
  * copy the address on click or tap and say so in a tooltip; download and link
  * cards are one big link. `children` replaces the title, e.g. artwork.
  */
 export function LinkCard(props: LinkCardProps) {
-  const { type, label, className = '', children } = props
+  const { type, className = '', children } = props
   const [copied, setCopied] = useState(false)
   const timer = useRef<number | null>(null)
 
@@ -68,11 +68,7 @@ export function LinkCard(props: LinkCardProps) {
   return (
     <div className={`c-link-card anim-scale ${copied ? 'is-copied' : ''} ${className}`} data-type={type} data-scroll="">
       <div className="c-link-card_top">
-        <span className="c-label c-link-card_label" data-scroll="" data-scroll-offset="20%">
-          <span className="c-label_circle" />
-          <span className="c-label_text">{label}</span>
-        </span>
-        <span className="c-icon c-link-card_icon" aria-hidden="true">
+        <span className="c-icon c-link-card_icon ml-auto" aria-hidden="true">
           <Icon name={type === 'download' ? 'download' : 'arrowRight'} className="size-6.5" />
         </span>
       </div>

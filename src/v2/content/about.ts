@@ -13,7 +13,6 @@ export interface AboutHero {
 }
 
 export interface AboutOverview {
-  label: string
   heading: string
   paragraphs: readonly string[]
 }
@@ -39,8 +38,8 @@ export interface AboutStory {
 export type AboutLinkTone = 'lime' | 'ink' | 'white'
 
 export type AboutLinkCard =
-  | { type: 'email'; label: string; email: string; tone: AboutLinkTone }
-  | { type: 'download' | 'link'; label: string; title: string; href: string; tone: AboutLinkTone }
+  | { type: 'email'; email: string; tone: AboutLinkTone }
+  | { type: 'download' | 'link'; title: string; href: string; tone: AboutLinkTone }
 
 export const aboutHero: AboutHero = {
   before: 'To build systems',
@@ -51,7 +50,6 @@ export const aboutHero: AboutHero = {
 }
 
 export const aboutOverview: AboutOverview = {
-  label: 'Who is behind it',
   heading:
     "We started small, solving one team's repetitive work. Today we build the systems that run behind businesses, driven by the same idea.",
   paragraphs: [
@@ -76,7 +74,7 @@ export const aboutStory: AboutStory = {
 }
 
 export const aboutLinkCards: readonly AboutLinkCard[] = [
-  { type: 'email', label: 'Questions', email: site.supportEmail, tone: 'ink' },
-  { type: 'link', label: 'Our work', title: 'See what we ship', href: '/resources', tone: 'lime' },
-  { type: 'link', label: 'Brand assets', title: 'Logo and colours', href: '/brand-assets', tone: 'white' },
+  { type: 'email', email: site.supportEmail, tone: 'ink' },
+  { type: 'link', title: 'See what we ship', href: '/resources', tone: 'lime' },
+  { type: 'link', title: 'Logo and colours', href: '/brand-assets', tone: 'white' },
 ]

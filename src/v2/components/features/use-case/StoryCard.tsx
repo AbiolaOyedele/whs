@@ -8,8 +8,8 @@ interface StoryCardProps {
 }
 
 /**
- * A tall tile for one case study: its tags top left, the product's logo on
- * white in the middle, the title and an arrow below. Hovering nudges the parts
+ * A tall tile for one case study: the product's logo on white, then the
+ * title, its tags and an arrow below. Hovering nudges the parts
  * apart.
  */
 export function StoryCard({ shop, action }: StoryCardProps) {
@@ -17,10 +17,6 @@ export function StoryCard({ shop, action }: StoryCardProps) {
     <div className="group anim-scale relative flex h-full flex-col" data-scroll="">
       <div className="absolute inset-0 rounded-md bg-white transition-transform duration-200 ease-in-out group-focus-within:scale-101 group-hover:scale-101" />
       <div className="relative z-2 flex aspect-464/392 items-center justify-center overflow-hidden border-b border-slate-100 p-5">
-        <ul className="text-label absolute top-5 left-5 flex gap-3.5 text-navy-500 transition-transform duration-200 ease-in-out group-focus-within:-translate-1 group-hover:-translate-1">
-          <li>{shop.trade}</li>
-          <li>{shop.template}</li>
-        </ul>
         <img
           src={shop.logo.src}
           alt={shop.logo.alt}
@@ -28,11 +24,15 @@ export function StoryCard({ shop, action }: StoryCardProps) {
           className="max-h-[34%] max-w-[46%] object-contain transition-transform duration-200 ease-in-out group-focus-within:scale-105 group-hover:scale-105"
         />
       </div>
-      <div className="relative z-2 flex grow flex-col justify-between gap-3.5 p-5">
+      <div className="relative z-2 flex grow flex-col gap-3.5 p-5">
         <h3 className="text-heading-xs transition-transform duration-200 ease-in-out group-focus-within:-translate-x-1 group-hover:-translate-x-1">
           {shop.title}
         </h3>
-        <div className="flex items-center justify-between">
+        <ul className="text-label -mt-1 flex flex-wrap gap-x-3.5 gap-y-1 text-navy-500">
+          <li>{shop.trade}</li>
+          <li>{shop.template}</li>
+        </ul>
+        <div className="mt-auto flex items-center justify-between">
           <span className="text-body-sm text-navy-500 duration-200 ease-in-out group-focus-within:-translate-x-1 group-focus-within:translate-y-1 group-hover:-translate-x-1 group-hover:translate-y-1">
             {action}
           </span>

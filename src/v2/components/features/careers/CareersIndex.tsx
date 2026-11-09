@@ -9,7 +9,7 @@ import { Icon } from '@v2/components/ui/Icon'
 /** /careers: how the team works, the open roles, and where to go if none fit. */
 export function CareersIndex() {
   return (
-    <ContentPage label={CAREERS_PAGE.label} title={CAREERS_PAGE.title} intro={CAREERS_PAGE.intro}>
+    <ContentPage title={CAREERS_PAGE.title} intro={CAREERS_PAGE.intro}>
       <PageSection title={CAREERS_PAGE.rulesTitle}>
         <NumberedGrid items={CAREERS_PAGE.rules} columns={4} numbered={false} />
       </PageSection>

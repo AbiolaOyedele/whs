@@ -14,7 +14,8 @@ export function FeaturedLarge({ post }: FeaturedLargeProps) {
       <div className="group relative z-above overflow-hidden rounded-md bg-charcoal max-md:aspect-4/5 md:h-full md:min-h-[40vw] 4xl:min-h-[895px]">
         <div className="flex h-full flex-col gap-6 p-6">
           <div>
-            <ul className="text-label mb-4 flex flex-wrap gap-x-3.5 gap-y-1.5">
+            <h2 className="text-heading-md text-balance text-white sm:w-3/4">{post.title}</h2>
+            <ul className="text-label mt-4 flex flex-wrap gap-x-3.5 gap-y-1.5">
               <li>
                 <time dateTime={post.date} className="text-white">
                   {post.dateLabel}
@@ -26,7 +27,6 @@ export function FeaturedLarge({ post }: FeaturedLargeProps) {
                 </li>
               ))}
             </ul>
-            <h2 className="text-heading-md text-balance text-white sm:w-3/4">{post.title}</h2>
           </div>
           <div className="grow" />
           <div

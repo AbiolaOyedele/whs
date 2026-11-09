@@ -3,24 +3,22 @@ import { SmartLink } from '@v2/components/ui/SmartLink'
 import { Icon } from '@v2/components/ui/Icon'
 
 interface ContentPageProps {
-  /** Small line above the title. */
-  label: string
   title: string
   intro: string
   /** Extra pieces under the intro (tags, a button). */
   heroExtra?: ReactNode
-  /** A link back up a level, shown above the label. */
+  /** A link back up a level, shown above the title. */
   back?: { label: string; href: string }
   children: ReactNode
 }
 
 /**
  * The pale sheet used by the pages carried over from the original site
- * (careers, a role, the Freelance Hub): label, title and intro across the top,
+ * (careers, a role, the Freelance Hub): title and intro across the top,
  * then the page's sections. Same panel, type and rounded foot as the legal and
  * form pages.
  */
-export function ContentPage({ label, title, intro, heroExtra, back, children }: ContentPageProps) {
+export function ContentPage({ title, intro, heroExtra, back, children }: ContentPageProps) {
   return (
     <div className="slate rounded-b-4xl bg-slate-50 pt-safe-header pb-fluid-4xl text-navy-900">
       <div className="container pt-fluid-lg">
@@ -35,8 +33,7 @@ export function ContentPage({ label, title, intro, heroExtra, back, children }: 
                 {back.label}
               </SmartLink>
             ) : null}
-            <p className="text-label text-navy-500">{label}</p>
-            <h1 className="text-heading-lg anim-transform-opacity mt-4 text-balance">{title}</h1>
+            <h1 className="text-heading-lg anim-transform-opacity text-balance">{title}</h1>
           </div>
           <div className="min-w-0 md:col-span-4 md:self-end">
             <p className="text-body-lg anim-transform-opacity -delay-1 text-balance">{intro}</p>

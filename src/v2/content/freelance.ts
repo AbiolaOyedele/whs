@@ -10,7 +10,6 @@ export const FREELANCE_PAGE = {
     description:
       'Freelance with WildHands. Scoped briefs, direct client contact, no unpaid pitching, thirty-day payment terms.',
   },
-  label: 'Freelance Hub',
   title: 'Work with us, not for us.',
   intro: 'Scoped briefs, direct client contact, and no unpaid pitching. Here is exactly how it runs.',
   applyCta: { label: 'Apply to the pool', href: '#apply' },

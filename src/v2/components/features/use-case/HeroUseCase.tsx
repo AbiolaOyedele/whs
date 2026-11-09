@@ -1,6 +1,5 @@
 import { site } from '@v2/config/site'
 import { Button } from '@v2/components/ui/Button'
-import { Label } from '@v2/components/ui/Label'
 import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { CANVAS_EVENTS } from '@v2/lib/canvas-events'
 import type { HeroVisual, TitlePart } from '@v2/content/use-cases'
@@ -10,18 +9,16 @@ import { TitleText } from './TitleText'
 import { VoiceVisualizer } from './VoiceVisualizer'
 
 interface HeroUseCaseProps {
-  label: string
   title: TitlePart[]
   intro: string
   visual: HeroVisual
 }
 
 /**
- * The dark first screen: the service as a label over a line that draws
- * in, the big title on the left, the pitch and two buttons on the right, then
+ * The dark first screen: a line that draws in, the big title on the left, the pitch and two buttons on the right, then
  * the page's own animation below. Its scroll progress drives the background.
  */
-export function HeroUseCase({ label, title, intro, visual }: HeroUseCaseProps) {
+export function HeroUseCase({ title, intro, visual }: HeroUseCaseProps) {
   return (
     <section
       className="dark relative block pb-[calc(--spacing(18)+var(--spacing-fluid-lg))] text-white"
@@ -31,19 +28,12 @@ export function HeroUseCase({ label, title, intro, visual }: HeroUseCaseProps) {
     >
       <div className="relative z-above flex min-h-svh flex-col justify-end pt-header">
         <div className="container">
-          <div className="grid gap-x-gutter gap-y-fluid-lg sm:grid-cols-12">
-            <div className="sm:col-start-9 sm:col-end-13 lg:col-end-12">
-              <Label as="h1" className="[--label-circle-color:var(--color-pink-500)]">
-                {label}
-              </Label>
-            </div>
-          </div>
           <div className="my-5">
             <div className="animated-line" />
           </div>
           <div className="grid min-h-[50svh] gap-x-gutter gap-y-fluid-lg max-md:pb-fluid-xl sm:grid-cols-12 md:pb-fluid-2xl">
             <div className="sm:col-start-1 sm:col-end-7">
-              <SplitTitle as="h2" className="text-heading-2xl">
+              <SplitTitle as="h1" className="text-heading-2xl">
                 <TitleText parts={title} />
               </SplitTitle>
             </div>

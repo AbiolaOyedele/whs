@@ -124,6 +124,13 @@ const jsonLd: JsonLd[] = post
     : []
 ---
 
-<V2Layout title={route.title} description={route.description} scene={scene} template={template} jsonLd={jsonLd}>
+<V2Layout
+  title={route.title}
+  description={route.description}
+  scene={scene}
+  template={template}
+  jsonLd={jsonLd}
+  noindex={route.noindex ?? false}
+>
   <App client:load path={path} />
 </V2Layout>

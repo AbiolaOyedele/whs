@@ -16,7 +16,6 @@ export const CAREERS_PAGE = {
     title: 'Careers',
     description: 'Open roles at WildHands. Remote-only, async-first, and honest about what the work actually is.',
   },
-  label: 'Careers',
   title: 'Small team, unglamorous problems, real ownership.',
   intro: 'We are remote-only and async-first, and we would rather tell you what the work is than sell you on it.',
   rulesTitle: 'How we work',
@@ -46,7 +45,6 @@ export const ROLE_PAGE = {
 } as const
 
 export const APPLY_PAGE = {
-  title: 'Apply',
   lead: 'A few details and, if you like, your CV. We read every application ourselves and reply either way, usually within a week. Questions first? Email us at',
   submit: 'Send application',
   successTitle: 'Application received',

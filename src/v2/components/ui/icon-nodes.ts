@@ -1555,5 +1555,24 @@ export const ICON_NODES = {
         "d": "M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"
       }
     ]
+  ],
+  "copy": [
+    [
+      "rect",
+      {
+        "width": "14",
+        "height": "14",
+        "x": "8",
+        "y": "8",
+        "rx": "2",
+        "ry": "2"
+      }
+    ],
+    [
+      "path",
+      {
+        "d": "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+      }
+    ]
   ]
 } as const satisfies Record<string, readonly IconElement[]>

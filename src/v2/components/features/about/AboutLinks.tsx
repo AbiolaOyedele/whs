@@ -14,13 +14,12 @@ export function AboutLinks() {
     <div className="c-about-links section-spacing container">
       <ul className="mb-fluid-2xl grid gap-gutter sm:grid-cols-2 md:grid-cols-3">
         {aboutLinkCards.map((card) => (
-          <li key={card.label}>
+          <li key={card.type === 'email' ? card.email : card.href}>
             {card.type === 'email' ? (
-              <LinkCard type="email" label={card.label} email={card.email} className={TONE_CLASS[card.tone]} />
+              <LinkCard type="email" email={card.email} className={TONE_CLASS[card.tone]} />
             ) : (
               <LinkCard
                 type={card.type}
-                label={card.label}
                 title={card.title}
                 href={card.href}
                 className={TONE_CLASS[card.tone]}

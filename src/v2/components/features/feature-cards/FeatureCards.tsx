@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
-import { Label } from '@v2/components/ui/Label'
 import { observeInview } from '@v2/lib/inview'
 import { safeHeaderOffset, scrollToElement } from '@v2/lib/scroll'
 
@@ -73,7 +72,8 @@ export function FeatureCards({ label, mobileHeading, items, className = '' }: Fe
     <div className={`grid gap-gutter md:grid-cols-2 ${className}`}>
       <div>
         <div className="md:sticky md:top-safe-header">
-          <Label className="mb-6 md:mb-12.5">{label}</Label>
+          {/* Named for screen readers only: a visible label here would sit above the list as an eyebrow. */}
+          <h2 className="sr-only">{label}</h2>
           {mobileHeading ? <div className="mb-fluid-2xl md:hidden">{mobileHeading}</div> : null}
           <ul className="max-md:hidden">
             {items.map((item) => (

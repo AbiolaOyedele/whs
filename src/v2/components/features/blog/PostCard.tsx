@@ -21,9 +21,10 @@ export interface PostCardProps {
 }
 
 /**
- * An article card: art that drifts with the scroll and grows a little on
- * hover, a pictogram over it, then the date, labels and title. An arrow
- * slides in on hover or focus; the whole card is the link.
+ * An article card: a photo (or the product's logo on white) that drifts with
+ * the scroll and grows a little on hover, then the title with its date and
+ * labels under it. An arrow slides in on hover or focus; the whole card is
+ * the link.
  */
 export function PostCard({
   href,
@@ -56,7 +57,8 @@ export function PostCard({
         )}
       </div>
       <div className="flex grow flex-col gap-3.5 bg-slate-50 p-5 pb-7 slate:bg-white">
-        <div className="flex items-center justify-between">
+        <Heading className="text-heading-xs">{title}</Heading>
+        <div className="mt-auto flex items-center justify-between">
           <ul className="text-label flex flex-wrap gap-x-3.5 gap-y-1.5">
             <li>
               <time dateTime={date}>{dateLabel}</time>
@@ -77,7 +79,6 @@ export function PostCard({
             <Icon name="arrowRight" />
           </span>
         </div>
-        <Heading className="text-heading-xs">{title}</Heading>
       </div>
       <SmartLink href={href} className="absolute inset-0 z-above rounded-md -outline-offset-2">
         <span className="sr-only">{title}</span>

@@ -23,7 +23,8 @@ export function FeaturedSmall({ post, delay }: FeaturedSmallProps) {
       </div>
       <div className="flex min-w-0 flex-col justify-between gap-0.5">
         <div>
-          <ul className="anim-transform-opacity -delay-1 mb-1 flex flex-wrap gap-x-5 gap-y-1 leading-none">
+          <h2 className="text-heading-2xs line-clamp-3">{post.title}</h2>
+          <ul className="anim-transform-opacity -delay-1 mt-2 flex flex-wrap gap-x-5 gap-y-1 leading-none">
             <li>
               <time dateTime={post.date} className="text-label">
                 {post.shortDateLabel}
@@ -35,7 +36,6 @@ export function FeaturedSmall({ post, delay }: FeaturedSmallProps) {
               </li>
             ))}
           </ul>
-          <h2 className="text-heading-2xs line-clamp-3">{post.title}</h2>
         </div>
         <div
           aria-hidden="true"

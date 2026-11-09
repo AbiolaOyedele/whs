@@ -7,8 +7,6 @@ interface FormPageProps {
   lead: string
   /** Optional extra copy under the intro, in the left column. */
   aside?: ReactNode
-  /** Small line above the title, such as the role being applied for. */
-  eyebrow?: string
   children: ReactNode
 }
 
@@ -17,14 +15,13 @@ interface FormPageProps {
  * job application): title and a short intro with our email on the left, the
  * form on the right. On a phone they stack.
  */
-export function FormPage({ title, lead, aside, eyebrow, children }: FormPageProps) {
+export function FormPage({ title, lead, aside, children }: FormPageProps) {
   return (
     <section className="slate rounded-b-4xl bg-slate-50 pt-safe-header pb-fluid-4xl">
       <div className="container pt-fluid-lg">
         <div className="grid gap-gutter md:grid-cols-12 md:grid-rows-[auto_1fr]">
           <div className="min-w-0 md:col-span-4 md:row-start-1 lg:col-span-3">
-            {eyebrow ? <p className="text-label mb-3 text-navy-500">{eyebrow}</p> : null}
-            <h1 className="text-heading-md mb-4 text-navy-900">{title}</h1>
+            <h1 className="text-heading-md mb-4 text-balance text-navy-900">{title}</h1>
             <div className="wysiwyg wysiwyg-navy">
               <p>
                 {lead} <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>.

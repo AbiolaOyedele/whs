@@ -28,8 +28,9 @@ interface ArticleShellProps {
 }
 
 /**
- * An article page in the reference's layout: a centred header with the date,
- * title and author, a wide art panel that unclips on arrival, then the body
+ * An article page in the reference's layout: a centred header with the title,
+ * then its date, labels and author, a wide photo or logo panel that unclips
+ * on arrival, then the body
  * beside a sticky copy of the title. A navy button to the list sticks to the
  * bottom of the screen on the left while you read.
  */
@@ -55,8 +56,11 @@ export function ArticleShell({
                 <div className="grid gap-gutter max-sm:mb-fluid-xl sm:mb-fluid-4xl lg:grid-cols-12">
                   <div className="lg:col-start-3 lg:col-end-11">
                     <div className="flex flex-col justify-center gap-8.5 text-center">
+                      <SplitTitle as="h1" className="text-heading-xl mx-auto max-w-300 text-balance">
+                        {title}
+                      </SplitTitle>
                       <ul className="text-label flex flex-wrap justify-center gap-x-5 gap-y-2">
-                        <li className="anim-transform-opacity -delay-1">
+                        <li className="anim-transform-opacity -delay-2">
                           <time dateTime={date}>{dateLabel}</time>
                         </li>
                         {labels.map((item) => (
@@ -70,9 +74,6 @@ export function ArticleShell({
                           </li>
                         ))}
                       </ul>
-                      <SplitTitle as="h1" className="text-heading-xl mx-auto max-w-300 text-balance">
-                        {title}
-                      </SplitTitle>
                       <div className="anim-transform-opacity -delay-3 flex justify-center">
                         <AuthorChip author={author} />
                       </div>

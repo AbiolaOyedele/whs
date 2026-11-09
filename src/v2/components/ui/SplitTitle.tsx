@@ -4,6 +4,7 @@ import { useEffect, useRef, type ElementType, type ReactNode } from 'react'
 import { getGsap, motionAllowed, SplitText } from '@v2/lib/gsap'
 import { observeInview } from '@v2/lib/inview'
 import { onReady } from '@v2/lib/page-state'
+import { keepLastWordsTogether } from '@v2/lib/no-orphans'
 
 interface SplitTitleProps {
   as?: ElementType
@@ -38,6 +39,7 @@ export function SplitTitle({ as: Tag = 'h2', className, wrapperClassName = '', c
 
     const split = SplitText.create(heading, { type: 'words', wordsClass: 'word', tag: 'span' })
     const words = split.words
+    keepLastWordsTogether(words)
     let started = false
     let inView = false
     let ready = false

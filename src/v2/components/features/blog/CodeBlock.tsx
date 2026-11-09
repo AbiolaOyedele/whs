@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { Icon } from '@v2/components/ui/Icon'
 
 interface CodeBlockProps {
   code: string
@@ -13,7 +14,7 @@ const LABELS: Record<CopyState, string> = { idle: 'Copy', copied: 'Copied', fail
 const RESET_MS = 2000
 
 /** Writes `text` to the clipboard, falling back to a hidden textarea where the API is missing or blocked. */
-async function copyText(text: string): Promise<boolean> {
+export async function copyText(text: string): Promise<boolean> {
   try {
     await navigator.clipboard.writeText(text)
     return true
@@ -57,10 +58,7 @@ export function CodeBlock({ code, language }: CodeBlockProps) {
       <code>{code}</code>
       <button type="button" className="c-code_copy" onClick={onCopy} aria-label="Copy code to clipboard">
         <span aria-live="polite">{LABELS[state]}</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="shrink-0">
-          <rect x="8" y="8" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="2" />
-          <rect x="3" y="3" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="2" />
-        </svg>
+        <Icon name="copy" strokeWidth={2} className="size-4 shrink-0" />
       </button>
     </pre>
   )

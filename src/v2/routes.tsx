@@ -33,6 +33,8 @@ import { HomeLower } from '@v2/components/features/home/HomeLower'
 import { HomeUpper } from '@v2/components/features/home/HomeUpper'
 import { LegalPage } from '@v2/components/features/legal/LegalPage'
 import { PricingPage } from '@v2/components/features/pricing/PricingPage'
+import { LlmsToolPage } from '@v2/components/features/tools/LlmsToolPage'
+import { LLMS_TOOL } from '@v2/content/tools'
 import { UseCaseTemplate } from '@v2/components/features/use-case/UseCaseTemplate'
 import { CapabilityPage } from '@v2/components/features/capability/CapabilityPage'
 import { CAPABILITY_SLUGS, capabilityBySlug } from '@v2/content/capabilities'
@@ -62,6 +64,8 @@ export interface ResolvedRoute {
   description: string
   element: ReactElement
   notFound?: boolean
+  /** Kept out of search results even after launch. */
+  noindex?: boolean
 }
 
 const DEFAULT_TITLE = `${site.name} | Website & Web App Development in Lagos, Nigeria`
@@ -187,6 +191,13 @@ const STATIC_ROUTES: Record<string, () => ResolvedRoute> = {
     description: `Case studies from ${site.name}: the apps, websites, tools and internal systems we designed and built end to end.`,
     element: <HelpIndex />,
   }),
+  '/tools/llms-txt-generator': () => ({
+    title: titled(LLMS_TOOL.meta.title),
+    description: LLMS_TOOL.meta.description,
+    element: <LlmsToolPage />,
+    // Works, but is not part of the offer right now (see the sitemap filter).
+    noindex: true,
+  }),
   '/blog': () => ({
     title: titled('Insights'),
     description: `${site.name} Insights: what a website costs in Nigeria, how to choose an agency, and what a business website needs.`,
@@ -307,7 +318,7 @@ export function resolveRoute(pathname: string): ResolvedRoute {
         title: titled(`Apply for ${role.title}`),
         description: `Apply for the ${role.title} role at ${site.name}.`,
         element: (
-          <FormPage title={APPLY_PAGE.title} eyebrow={role.title} lead={APPLY_PAGE.lead}>
+          <FormPage title={`Apply for ${role.title}`} lead={APPLY_PAGE.lead}>
             <JobApplicationForm role={role.title} roleSlug={role.slug} />
           </FormPage>
         ),

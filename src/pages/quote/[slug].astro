@@ -2,11 +2,12 @@
 /**
  * The client-facing quote.
  *
- * PIN gate and document in one route, both server-rendered. No island: a
- * client opening a quote on a phone on mobile data should get a readable
- * document immediately, and there is nothing here that needs to react to
- * anything. The PIN form and the accept/decline form are plain form posts, so
- * the page works with JavaScript disabled entirely.
+ * PIN gate and document in one route, both server-rendered. The document has
+ * no island: a client opening a quote on a phone on mobile data should get a
+ * readable document immediately. The gate sits in the shared standalone shell,
+ * whose only script is the fluid background. The PIN form and the
+ * accept/decline form are plain form posts, so the page works with JavaScript
+ * disabled entirely.
  *
  * Strictly on brand, deliberately: the logo, Diagramm for display, IBM Plex for
  * body copy, the lime accent, and the same radius scale as the marketing site.
@@ -17,7 +18,8 @@
  * hiding second would put pricing in the HTML of a page anyone could request.
  */
 import '@/styles/global.css'
-import Logo from '@/components/ui/Logo.astro'
+import StandaloneLayout from '@/layouts/StandaloneLayout.astro'
+import { FlowButton } from '@/components/ui/flow-button'
 import QuoteDocument from '@/components/quote/QuoteDocument.astro'
 import { isAdminConfigured, publicEnv } from '@/config/env'
 import { SITE } from '@/config/site'
@@ -250,104 +252,75 @@ if (quote && totalsReady) {
 }
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#131314" />
-    {/* A client's pricing has no business in a search index.*/}
-    <meta name="robots" content="noindex, nofollow" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link
-      rel="preload"
-      href="/fonts/IBMPlexSans-400.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/Diagramm-Medium.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <title>{quote ? `${quote.projectTitle} | ${SITE.name}` : `Quote | ${SITE.name}`}</title>
-  </head>
+{
+  !unlocked || !quote || !totals ? (
+    <StandaloneLayout title="Your quote">
+      <h1 class="wh-h1-compact mb-2 text-balance">Your quote</h1>
+      <p class="mb-8 text-lg text-pretty text-muted-foreground">
+        {loadError
+          ? loadError
+          : configured
+            ? 'Enter the six-digit code we sent you.'
+            : 'Quotes are not available at the moment. Please email us and we will send yours across.'}
+      </p>
 
-  <body class="bg-background text-foreground">
-    {
-      !unlocked || !quote || !totals ? (
-        /* --- The gate --- */
-        <main class="flex min-h-svh items-center justify-center px-5 py-12">
-          <div class="w-full max-w-md">
-            <Logo variant="mark" class="mb-8 h-7 w-auto" label={SITE.name} />
+      {pinError && (
+        <div
+          role="alert"
+          class="mb-6 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-base"
+        >
+          {pinError}
+        </div>
+      )}
 
-            <h1 class="wh-h1-compact mb-2">Your quote</h1>
-            <p class="mb-8 text-lg text-muted-foreground">
-              {loadError
-                ? loadError
-                : configured
-                  ? 'Enter the six-digit code we sent you.'
-                  : 'Quotes are not available at the moment. Please email us and we will send yours across.'}
-            </p>
-
-            {pinError && (
-              <div
-                role="alert"
-                class="mb-6 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-base"
-              >
-                {pinError}
-              </div>
-            )}
-
-            {configured && (
-              <form method="post" class="flex flex-col gap-6">
-                <div class="flex flex-col gap-2">
-                  <label for="pin" class="text-sm text-muted-foreground">
-                    Access code
-                  </label>
-                  <input
-                    id="pin"
-                    name="pin"
-                    inputmode="numeric"
-                    autocomplete="one-time-code"
-                    pattern="[0-9]{6}"
-                    maxlength="6"
-                    required
-                    class="min-h-14 rounded-xl border border-border bg-card px-4 text-center font-mono text-3xl tracking-[0.3em] outline-none focus-visible:border-foreground"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  class="min-h-14 rounded-full bg-primary px-8 text-lg text-primary-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                >
-                  Open my quote
-                </button>
-              </form>
-            )}
-
-            <p class="mt-8 text-base text-muted-foreground">
-              Lost the code? Email{' '}
-              <a class="underline" href={`mailto:${SITE.email}`}>
-                {SITE.email}
-              </a>{' '}
-              and we will send another.
-            </p>
+      {configured && (
+        <form method="post" class="flex flex-col gap-6">
+          <div class="flex flex-col gap-2">
+            <label for="pin" class="text-sm text-muted-foreground">
+              Access code
+            </label>
+            <input
+              id="pin"
+              name="pin"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              pattern="[0-9]{6}"
+              maxlength="6"
+              required
+              class="min-h-14 w-full rounded-xl border border-border bg-background px-4 text-center font-mono text-2xl tracking-[0.3em] outline-none focus-visible:border-foreground sm:text-3xl"
+            />
           </div>
-        </main>
-      ) : (
-        /* --- The quote. One implementation, shared with the admin preview. --- */
-        <QuoteDocument
-          quote={quote}
-          totals={totals}
-          mode="client"
-          payment={payment}
-          selection={selection}
-        />
-      )
-    }
-  </body>
-</html>
+
+          <FlowButton text="Open my quote" type="submit" variant="accent" size="lg" arrows={false} className="w-full" />
+        </form>
+      )}
+
+      <p class="mt-8 text-base text-pretty text-muted-foreground">
+        Lost the code? Email{' '}
+        <a class="break-all underline" href={`mailto:${SITE.email}`}>
+          {SITE.email}
+        </a>{' '}
+        and we will send another.
+      </p>
+    </StandaloneLayout>
+  ) : (
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#131314" />
+        {/* A client's pricing has no business in a search index.*/}
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="preload" href="/fonts/IBMPlexSans-400.woff2" as="font" type="font/woff2" crossorigin />
+        <link rel="preload" href="/fonts/Diagramm-Medium.woff2" as="font" type="font/woff2" crossorigin />
+        <title>{`${quote.projectTitle} | ${SITE.name}`}</title>
+      </head>
+
+      <body class="bg-background text-foreground">
+        {/* The quote. One implementation, shared with the admin preview. */}
+        <QuoteDocument quote={quote} totals={totals} mode="client" payment={payment} selection={selection} />
+      </body>
+    </html>
+  )
+}

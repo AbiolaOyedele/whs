@@ -27,7 +27,8 @@ export function PostCard({ post }: PostCardProps) {
         </ParallaxMedia>
       </div>
       <div className="flex grow flex-col gap-3.5 bg-slate-50 p-5 pb-7 slate:bg-white">
-        <div className="flex items-center justify-between">
+        <h3 className="text-heading-xs">{post.title}</h3>
+        <div className="mt-auto flex items-center justify-between">
           <ul className="text-label flex flex-wrap gap-x-3.5 gap-y-1">
             <li>
               <time dateTime={post.date}>{DATE_FORMAT.format(new Date(`${post.date}T00:00:00Z`))}</time>
@@ -45,7 +46,6 @@ export function PostCard({ post }: PostCardProps) {
             <SplitArrow />
           </span>
         </div>
-        <h3 className="text-heading-xs">{post.title}</h3>
       </div>
       <SmartLink href={`/blog/${post.slug}`} className="absolute inset-0 z-above rounded-md -outline-offset-2">
         <span className="sr-only">{post.title}</span>

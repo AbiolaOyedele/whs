@@ -14,7 +14,6 @@ export function FreelanceHub() {
   const page = FREELANCE_PAGE
   return (
     <ContentPage
-      label={page.label}
       title={page.title}
       intro={page.intro}
       heroExtra={<Button label={page.applyCta.label} href={page.applyCta.href} />}

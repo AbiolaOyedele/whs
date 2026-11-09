@@ -1,0 +1,56 @@
+---
+/**
+ * Shell for the pages that stand outside the site: a client's quote access
+ * screen, the payment confirmation and the last-resort error page. They match
+ * the v2 site's look (the lime fluid behind a white card, the WHS mark,
+ * Diagramm headings) using the main site's stylesheet, because the quote
+ * document shown on the same route is styled by it.
+ *
+ * No database, no site content and no header: the error page has to render
+ * when those are the things that failed.
+ */
+import '@/styles/global.css'
+import Logo from '@/components/ui/Logo.astro'
+import AnimatedGradient from '@/components/ui/animated-gradient'
+import { SITE } from '@/config/site'
+
+interface Props {
+  /** The page's own title; the site name is added after it. */
+  title: string
+}
+
+const { title } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#131314" />
+    {/* None of these pages belong in a search index: a client's pricing least of all. */}
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/IBMPlexSans-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/Diagramm-Medium.woff2" as="font" type="font/woff2" crossorigin />
+    <title>{title} | {SITE.name}</title>
+  </head>
+
+  <body class="bg-surface-dark text-foreground">
+    <div aria-hidden="true" class="pointer-events-none fixed inset-0">
+      <AnimatedGradient client:load preset="hero" className="absolute inset-0" />
+      <div class="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent"></div>
+    </div>
+
+    <main class="relative flex min-h-svh items-center justify-center px-4 py-12 sm:px-6">
+      <div class="w-full max-w-md rounded-3xl bg-card p-6 shadow-[0_24px_60px_-24px_rgb(0_0_0/0.6)] sm:p-10">
+        <Logo variant="mark" class="mb-8 h-7 w-auto" label={SITE.name} />
+        <slot />
+      </div>
+    </main>
+    <script>
+      import { preventOrphans } from '@v2/lib/no-orphans'
+      preventOrphans(document.body)
+    </script>
+  </body>
+</html>

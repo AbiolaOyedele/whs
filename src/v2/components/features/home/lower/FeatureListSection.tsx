@@ -1,4 +1,3 @@
-import { Label } from '@v2/components/ui/Label'
 import { SmartLink } from '@v2/components/ui/SmartLink'
 import { FEATURE_LINKS, FEATURES_LABEL } from '@v2/content/home-lower'
 import { SplitArrow } from './SplitArrow'
@@ -14,7 +13,7 @@ export function FeatureListSection() {
     <div className="c-home-lower-spacing container">
       <div className="c-feature-list my-fluid-3xl grid gap-gutter md:grid-cols-3">
         <div className="md:col-span-1">
-          <Label>{FEATURES_LABEL}</Label>
+          <h2 className="text-heading-sm text-balance">{FEATURES_LABEL}</h2>
         </div>
         <div className="@container md:col-span-2">
           <ul className="c-feature-list_list">

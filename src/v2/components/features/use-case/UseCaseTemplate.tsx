@@ -23,7 +23,7 @@ export function UseCaseTemplate({ content }: UseCaseTemplateProps) {
 
   return (
     <div className="c-use-case">
-      <HeroUseCase label={content.label} title={content.title} intro={content.intro} visual={content.hero} />
+      <HeroUseCase title={content.title} intro={content.intro} visual={content.hero} />
 
       <div className="relative z-above -mt-7.5 rounded-4xl bg-white md:-mt-15">
         <div className="wrapper bg-white">
