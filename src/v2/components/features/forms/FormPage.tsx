@@ -5,6 +5,8 @@ interface FormPageProps {
   title: string
   /** The intro sentence; the support email link is added after it. */
   lead: string
+  /** Also offer the studio's WhatsApp after the email. */
+  whatsapp?: boolean
   /** Optional extra copy under the intro, in the left column. */
   aside?: ReactNode
   children: ReactNode
@@ -15,7 +17,7 @@ interface FormPageProps {
  * job application): title and a short intro with our email on the left, the
  * form on the right. On a phone they stack.
  */
-export function FormPage({ title, lead, aside, children }: FormPageProps) {
+export function FormPage({ title, lead, whatsapp = false, aside, children }: FormPageProps) {
   return (
     <section className="slate rounded-b-4xl bg-white pt-safe-header pb-fluid-4xl">
       <div className="container pt-fluid-lg">
@@ -24,7 +26,16 @@ export function FormPage({ title, lead, aside, children }: FormPageProps) {
             <h1 className="text-heading-md mb-4 text-balance text-navy-900">{title}</h1>
             <div className="wysiwyg wysiwyg-navy">
               <p>
-                {lead} <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>.
+                {lead} <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>
+                {whatsapp ? (
+                  <>
+                    , or message us on WhatsApp at{' '}
+                    <a href={site.whatsapp.url} target="_blank" rel="noopener noreferrer">
+                      {site.whatsapp.display}
+                    </a>
+                  </>
+                ) : null}
+                .
               </p>
             </div>
           </div>

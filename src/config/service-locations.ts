@@ -55,8 +55,8 @@ export const SERVICE_LOCATIONS: readonly ServiceLocation[] = [
 
 /**
  * Places that used to have pages, and where their old addresses now go: the
- * Lagos districts fold into Lagos, everywhere else goes to the service's own
- * page (null), which answers "do you work outside Lagos?" in its questions.
+ * Lagos districts fold into Lagos, and everywhere else (null) goes to the page
+ * for clients outside Nigeria.
  */
 export const RETIRED_LOCATIONS: Readonly<Record<string, string | null>> = {
   lekki: 'lagos',

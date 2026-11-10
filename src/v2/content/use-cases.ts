@@ -259,7 +259,7 @@ const TALK_LINK: ExampleLink = {
 }
 
 const LOCATION_BODY =
-  'We are based in Lagos and build for businesses across Nigeria and Africa. Most of the process runs over calls, so location is not a barrier.'
+  'We are based in Lagos and build for businesses across Nigeria. Most of the process runs over calls and messages, so we are open to working with businesses outside Nigeria too. Our page for clients outside Nigeria sets out how.'
 
 const why = (highlight: string): TitlePart[] => [
   { text: `Why ${site.name} for ` },

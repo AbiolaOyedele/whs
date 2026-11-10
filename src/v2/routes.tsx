@@ -39,6 +39,8 @@ import { LLMS_TOOL } from '@v2/content/tools'
 import { UseCaseTemplate } from '@v2/components/features/use-case/UseCaseTemplate'
 import { CapabilityPage } from '@v2/components/features/capability/CapabilityPage'
 import { WhatWeBuildIndex } from '@v2/components/features/capability/WhatWeBuildIndex'
+import { OutsideNigeriaPage } from '@v2/components/features/outside/OutsideNigeriaPage'
+import { OUTSIDE_NIGERIA } from '@v2/content/outside-nigeria'
 import { CAPABILITY_SLUGS, capabilityBySlug } from '@v2/content/capabilities'
 import { Button } from '@v2/components/ui/Button'
 import {
@@ -127,6 +129,11 @@ const STATIC_ROUTES: Record<string, () => ResolvedRoute> = {
     description: `Every website, app and tool ${site.name} builds, from a one-page site to jobs that run on their own, each with its own page.`,
     element: <WhatWeBuildIndex />,
   }),
+  '/outside-nigeria': () => ({
+    title: titled(OUTSIDE_NIGERIA.meta.title),
+    description: OUTSIDE_NIGERIA.meta.description,
+    element: <OutsideNigeriaPage />,
+  }),
   '/about': () => ({
     title: titled('About'),
     description: `${site.name} is a Lagos-based studio building custom websites, apps and internal tools for businesses across Nigeria and Africa.`,
@@ -141,7 +148,7 @@ const STATIC_ROUTES: Record<string, () => ResolvedRoute> = {
     title: titled('Get in touch'),
     description: 'Tell WildHands about your project. We reply to every enquiry, usually within one working day.',
     element: (
-      <FormPage title={CONTACT_PAGE.title} lead={CONTACT_PAGE.lead}>
+      <FormPage title={CONTACT_PAGE.title} lead={CONTACT_PAGE.lead} whatsapp>
         <ContactForm />
       </FormPage>
     ),
@@ -150,7 +157,7 @@ const STATIC_ROUTES: Record<string, () => ResolvedRoute> = {
     title: titled(QUOTE_PAGE.title),
     description: "Tell us what you're building and we come back with a scoped quote within a working day. Nothing here is binding.",
     element: (
-      <FormPage title={QUOTE_PAGE.title} lead={QUOTE_PAGE.lead} aside={<QuoteAside />}>
+      <FormPage title={QUOTE_PAGE.title} lead={QUOTE_PAGE.lead} whatsapp aside={<QuoteAside />}>
         <QuoteForm />
       </FormPage>
     ),

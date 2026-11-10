@@ -1,3 +1,4 @@
+import { site } from '@v2/config/site'
 import { logoImage, type CardImage } from '@v2/content/photos'
 import { GRACE_DAYS, PLANS, TRIAL_DAYS, type PlanId } from '@v2/content/pricing'
 
@@ -56,7 +57,7 @@ const STANDARD = planPrice('growth')
 export const heroCopy = {
   /** The headline, one entry per line, broken where the owner set it. */
   titleLines: ['We build the', 'website and tools your', 'business runs on.'],
-  body: `Websites live in 72 hours from ${naira(STARTER.price)}. Apps and automations that take the copying, chasing and checking off your plate. You own all of it.`,
+  body: `Websites live in 72 hours from ${naira(STARTER.price)}. Apps and automations that take the copying, chasing and checking off your plate. You get full access to all of it.`,
   primary: 'Book a call',
   secondary: { label: 'See our work', href: '/resources' },
   cursorHint: 'Click and hold',
@@ -85,9 +86,9 @@ export const whyCopy = {
   },
   own: {
     id: 'yours-to-keep',
-    navTitle: 'Yours to keep',
-    title: 'You own all of it, and you meet who builds it.',
-    body: 'Your domain is registered in your name. You get every login on day one, and the code is yours. The people you meet on the call are the people who build it. And if an off-the-shelf tool already does the job, we will tell you.',
+    navTitle: 'Full access',
+    title: 'Full access to all of it, from the person who builds it.',
+    body: `You get full access to everything we build: the site, the app or the tool, the code and everything in it. ${site.name} is run by ${site.founder} in Lagos, and the person you talk to is the person who builds it. And if an off-the-shelf tool already does the job, we will tell you.`,
   },
 } as const satisfies Record<string, WhyCopy>
 
@@ -158,7 +159,7 @@ export const scratchCard = {
 /* ── card: what you own ───────────────────────────────────────────── */
 
 export const ownCard = {
-  rows: ['The site', 'The domain', 'The code', 'Everything on it'],
-  owner: 'Yours',
-  footer: 'Built by the people in your pitch',
+  rows: ['The site', 'The app or tool', 'The code', 'Everything in it'],
+  owner: 'Full access',
+  footer: 'Built by the person you talk to',
 } as const

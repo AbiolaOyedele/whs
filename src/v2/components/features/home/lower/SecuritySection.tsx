@@ -26,6 +26,7 @@ export function SecuritySection() {
                 {TRUST.title.before} {TRUST.title.highlight}{' '}
                 {TRUST.title.after}
               </SplitTitle>
+              <p className="text-body-md max-w-110 text-pretty">{TRUST.note}</p>
             </div>
             <div className="flex flex-wrap gap-4">
               <Button

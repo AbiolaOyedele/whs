@@ -124,14 +124,14 @@ const permanentRedirects = (() => {
   add('/insights', '/blog')
 
   // Services and the service-by-location pages. Retired places go to Lagos or
-  // to the service's own page, from both their original and their v2 address.
+  // to the page for clients outside Nigeria, from both their original and v2 address.
   for (const service of ['websites', 'apps', 'tools-and-systems']) {
     add(`/services/${service}`, `/use-cases/${service}`)
     for (const location of SERVICE_LOCATIONS) {
       add(`/services/${service}/${location.slug}`, `/use-cases/${service}/${location.slug}`)
     }
     for (const [slug, target] of Object.entries(RETIRED_LOCATIONS)) {
-      const destination = target ? `/use-cases/${service}/${target}` : `/use-cases/${service}`
+      const destination = target ? `/use-cases/${service}/${target}` : '/outside-nigeria'
       add(`/services/${service}/${slug}`, destination)
       add(`/use-cases/${service}/${slug}`, destination)
     }

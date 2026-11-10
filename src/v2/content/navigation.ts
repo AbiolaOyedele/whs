@@ -35,6 +35,7 @@ export const FOOTER_COLUMNS: { title: string; links: NavLink[] }[] = [
       { label: 'Work', href: '/resources' },
       { label: 'Insights', href: '/blog' },
       { label: 'About us', href: '/about' },
+      { label: 'Clients outside Nigeria', href: '/outside-nigeria' },
       { label: 'Careers', href: '/careers' },
       { label: 'Freelance Hub', href: '/freelance-hub' },
       { label: 'Request a quote', href: '/request-a-quote' },

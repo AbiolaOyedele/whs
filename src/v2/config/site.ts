@@ -8,6 +8,10 @@ export const site = {
   name: PLATFORM_NAME,
   company: { name: 'WildHands', url: 'https://whstd.com' },
   supportEmail: 'hello@whstd.com',
+  /** Who runs the studio; named where a visitor wants to know who they will talk to. */
+  founder: 'Abiola Oyedele',
+  /** The studio's first number in src/config/site.ts, as a WhatsApp chat link. */
+  whatsapp: { display: '+234 703 855 3563', url: 'https://wa.me/2347038553563' },
   appUrl: 'https://whstd.com',
   /** Primary header button: "Get in touch". */
   signUpUrl: '/contact',
@@ -29,6 +33,7 @@ const SLATE_PAGES = [
   '/brand-assets',
   '/privacy',
   '/terms-of-service',
+  '/outside-nigeria',
 ]
 
 /** Which header scheme each page wears. */

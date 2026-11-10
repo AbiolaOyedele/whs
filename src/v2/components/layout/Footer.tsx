@@ -36,7 +36,14 @@ export function Footer() {
               ))}
               <div className="col-span-2 flex flex-col gap-6">
                 <p className="text-heading-sm max-w-180 text-balance">
-                  Tell us what is eating your hours. We will show you what a system built for it looks like.
+                  Tell us what is eating your hours. We will show you what a tool built for it looks like.
+                </p>
+                <p className="text-body-md">
+                  {site.name} is run by {site.founder} in Lagos. Message us on WhatsApp at{' '}
+                  <a href={site.whatsapp.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
+                    {site.whatsapp.display}
+                  </a>
+                  .
                 </p>
                 <div className="flex flex-wrap gap-4">
                   <Button label="Get in touch" variant="pink" href={site.signUpUrl} />

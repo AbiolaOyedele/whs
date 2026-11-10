@@ -28,6 +28,8 @@ export interface TrustPoint {
 export interface TrustSection {
   /** The title is split so the middle words can carry the gradient. */
   title: { before: string; highlight: string; after: string }
+  /** Who the visitor will be talking to. */
+  note: string
   primary: { label: string; href: string }
   secondary: { label: string; href: string }
   points: TrustPoint[]
@@ -36,7 +38,8 @@ export interface TrustSection {
 export const TRUST: TrustSection = {
   title: { before: 'Scope first,', highlight: 'price second,', after: 'then we build' },
   primary: { label: 'Request a quote', href: '/request-a-quote' },
-  secondary: { label: 'Get in touch', href: '/contact' },
+  note: `${site.name} is run by ${site.founder} in Lagos. The person on the call is the person who builds it.`,
+  secondary: { label: 'Chat on WhatsApp', href: site.whatsapp.url },
   points: [
     {
       icon: 'phoneCall',

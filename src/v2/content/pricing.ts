@@ -233,8 +233,8 @@ export const FAQS: Faq[] = [
     ],
   },
   {
-    question: 'Do I own the website?',
-    answer: ['Yes. You own the site, the domain and everything on it.'],
+    question: 'Do I get access to everything you build?',
+    answer: ['Yes. You get full access to the site and everything in it.'],
   },
   {
     question: 'What about my domain?',
