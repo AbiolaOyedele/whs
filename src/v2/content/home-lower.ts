@@ -86,8 +86,8 @@ export const SHOWCASE_TITLE = `Built by ${site.name}`
  * Only products WildHands built, each under the service it shows best, from
  * the `services` and summary in src/content/work. Marque is listed as Apps
  * and Websites there; it sits under Websites because what it makes is a
- * published site. Dumpty, Marvy, Auto Flow and The Ruff Agency list Apps and
- * Tools & Systems; Dumpty is a product people use, so it sits under Apps.
+ * published site. Marvy, Auto Flow and The Ruff Agency list Apps and
+ * Tools & Systems.
  */
 export const SHOWCASE_TABS: ShowcaseTab[] = [
   {
@@ -112,13 +112,6 @@ export const SHOWCASE_TABS: ShowcaseTab[] = [
   {
     label: 'Apps',
     cards: [
-      {
-        logo: logoImage('dumpty.png', 'Dumpty'),
-        title: 'Dumpty, voice notes already organised',
-        description: 'Talk through an idea and get back a clean transcript, tags and a checklist.',
-        href: '/resources/dumpty',
-        linkLabel: VISIT,
-      },
       {
         logo: logoImage('rayo.svg', 'Rayo'),
         title: 'Rayo, quotes accepted on the page',
@@ -152,13 +145,6 @@ export const SHOWCASE_TABS: ShowcaseTab[] = [
   {
     label: 'Tools & Systems',
     cards: [
-      {
-        logo: logoImage('the-ruff-agency.svg', 'The Ruff Agency'),
-        title: 'The Ruff Agency, one workspace instead of six tools',
-        description: 'Clients, contracts, invoices, tasks and a client portal in one shared workspace.',
-        href: '/resources/the-ruff-agency',
-        linkLabel: VISIT,
-      },
       {
         logo: logoImage('auto-flow.png', 'Auto Flow'),
         title: 'Auto Flow, video batches unattended',
@@ -197,14 +183,6 @@ export const DESIGNS_SECTION = {
 
 /** Every product in src/content/work (Beam excepted), in its `order`: industry and outcome. */
 export const DESIGN_TILES: ShopDesignTile[] = [
-  {
-    name: 'Dumpty',
-    logo: logoImage('dumpty.png', 'Dumpty'),
-    tags: ['Consumer product'],
-    title: 'Raw voice goes in. A titled, tagged idea with a set of next steps comes out.',
-    href: '/resources/dumpty',
-    linkLabel: VISIT,
-  },
   {
     name: 'Auto Flow',
     logo: logoImage('auto-flow.png', 'Auto Flow'),

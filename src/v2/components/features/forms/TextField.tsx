@@ -63,7 +63,7 @@ export function TextField({
         ) : null}
       </label>
       {hint ? (
-        <p id={hintId} className="text-body-sm -mt-1 mb-2 text-navy-500">
+        <p id={hintId} className="text-body-sm -mt-1 mb-2 text-navy-900">
           {hint}
         </p>
       ) : null}

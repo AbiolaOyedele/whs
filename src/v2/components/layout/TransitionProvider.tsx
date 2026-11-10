@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, type ReactNode } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
+import { motionAllowed } from '@v2/lib/gsap'
 import { CANVAS_READY_EVENT, PAGE_CLASS, READY_EVENT, html } from '@v2/lib/page-state'
 import { scrollToTop, startScroll, stopScroll } from '@v2/lib/scroll'
 
@@ -9,6 +10,8 @@ import { scrollToTop, startScroll, stopScroll } from '@v2/lib/scroll'
 const LEAVE_MS = 300
 /** The loader gives up waiting for the 3D background after this long. */
 const LOADER_TIMEOUT_MS = 1000
+/** The logo intro on the loader (loader.css) finishes, with a short hold, by this point. */
+const INTRO_MS = 1300
 
 export const PAGE_LEAVE_EVENT = 'page:leave'
 
@@ -34,7 +37,12 @@ export function usePageTransition(): TransitionContextValue {
 
 function markReady(): void {
   const root = html()
-  root.classList.remove(PAGE_CLASS.initialLoading, PAGE_CLASS.leaving, PAGE_CLASS.changing, PAGE_CLASS.transitioning)
+  root.classList.remove(
+    PAGE_CLASS.initialLoading,
+    PAGE_CLASS.leaving,
+    PAGE_CLASS.changing,
+    PAGE_CLASS.transitioning
+  )
   root.classList.add(PAGE_CLASS.ready)
   window.dispatchEvent(new CustomEvent(READY_EVENT))
 }
@@ -53,18 +61,33 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const root = html()
     requestAnimationFrame(() => root.classList.add(PAGE_CLASS.firstLoaded))
+    // The page opens once the background is ready (or the wait gives up) and the logo intro has played.
     let done = false
+    let backgroundReady = false
+    let introPlayed = false
     const finish = () => {
-      if (done) return
+      if (done || !backgroundReady || !introPlayed) return
       done = true
       markReady()
     }
-    window.addEventListener(CANVAS_READY_EVENT, finish, { once: true })
-    const timer = window.setTimeout(finish, LOADER_TIMEOUT_MS)
+    const onBackground = () => {
+      backgroundReady = true
+      finish()
+    }
+    window.addEventListener(CANVAS_READY_EVENT, onBackground, { once: true })
+    const timer = window.setTimeout(onBackground, LOADER_TIMEOUT_MS)
+    const introTimer = window.setTimeout(
+      () => {
+        introPlayed = true
+        finish()
+      },
+      motionAllowed() ? INTRO_MS : 0
+    )
     void startScroll()
     return () => {
-      window.removeEventListener(CANVAS_READY_EVENT, finish)
+      window.removeEventListener(CANVAS_READY_EVENT, onBackground)
       window.clearTimeout(timer)
+      window.clearTimeout(introTimer)
     }
   }, [])
 
@@ -105,7 +128,7 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
         router.push(href)
       }, LEAVE_MS)
     },
-    [router],
+    [router]
   )
 
   return <TransitionContext.Provider value={{ navigate }}>{children}</TransitionContext.Provider>

@@ -20,7 +20,7 @@ export function StoryCard({ href, title, wordmark, headingLevel = 'h2' }: StoryC
     <div className="group anim-scale relative flex h-full flex-col" data-scroll="">
       <div
         aria-hidden="true"
-        className="absolute inset-0 rounded-md bg-slate-100 transition-transform duration-200 ease-in-out group-focus-within:scale-101 group-hover:scale-101"
+        className="absolute inset-0 rounded-md bg-white transition-transform duration-200 ease-in-out group-focus-within:scale-101 group-hover:scale-101"
       />
       <div className="relative z-2 flex aspect-464/392 items-center justify-center overflow-hidden p-5">
         <span className="c-blog-wordmark" aria-hidden="true">
@@ -32,7 +32,7 @@ export function StoryCard({ href, title, wordmark, headingLevel = 'h2' }: StoryC
           {title}
         </Heading>
         <div className="flex items-center justify-between">
-          <span className="text-body-sm text-navy-500 transition-transform duration-200 ease-in-out group-focus-within:-translate-x-1 group-focus-within:translate-y-1 group-hover:-translate-x-1 group-hover:translate-y-1">
+          <span className="text-body-sm text-navy-900 transition-transform duration-200 ease-in-out group-focus-within:-translate-x-1 group-focus-within:translate-y-1 group-hover:-translate-x-1 group-hover:translate-y-1">
             Read story
           </span>
           <span

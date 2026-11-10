@@ -23,15 +23,15 @@ export function PlanCard({ plan, featured }: PlanCardProps) {
         </div>
       ) : null}
       <div
-        className={`flex h-full flex-col rounded-b-md bg-slate-50 max-sm:gap-10 max-sm:p-6 sm:gap-15 sm:p-gutter ${featured ? '' : 'rounded-t-md'}`}
+        className={`flex h-full flex-col rounded-b-md bg-white max-sm:gap-10 max-sm:p-6 sm:gap-15 sm:p-gutter ${featured ? '' : 'rounded-t-md'}`}
       >
         <div>
           <h3 className="text-heading-xs">{plan.name}</h3>
-          <p className="text-navy-500">{plan.tagline}</p>
+          <p className="text-navy-900">{plan.tagline}</p>
         </div>
         <div>
           <p className="max-md:text-heading-xl md:text-heading-lg">
-            {plan.monthlyKobo > 0 ? formatNaira(plan.monthlyKobo) : PRICE_CARD.noFee} <span className="text-body-md whitespace-nowrap text-navy-500 lg:mt-1 lg:block">{plan.monthlyKobo > 0 ? PER_MONTH : ''}</span>
+            {plan.monthlyKobo > 0 ? formatNaira(plan.monthlyKobo) : PRICE_CARD.noFee} <span className="text-body-md whitespace-nowrap text-navy-900 lg:mt-1 lg:block">{plan.monthlyKobo > 0 ? PER_MONTH : ''}</span>
           </p>
         </div>
         <div>
@@ -41,7 +41,7 @@ export function PlanCard({ plan, featured }: PlanCardProps) {
                 <span className="text-navy-900">
                   <TickIcon />
                 </span>
-                <span className="text-navy-500">{line}</span>
+                <span className="text-navy-900">{line}</span>
               </li>
             ))}
           </ul>

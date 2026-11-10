@@ -35,7 +35,7 @@ export function CheckboxField({ id, name, children, value, onChange, required = 
             aria-required={required || undefined}
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? errorId : undefined}
-            className="peer absolute inset-0 size-5 cursor-pointer appearance-none rounded-[4px] bg-white outline outline-slate-300 transition-colors checked:bg-navy-900 checked:outline-navy-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-500 aria-[invalid=true]:outline-red"
+            className="peer absolute inset-0 size-5 cursor-pointer appearance-none rounded-[4px] bg-white outline outline-charcoal transition-colors checked:bg-navy-900 checked:outline-navy-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-900 aria-[invalid=true]:outline-red"
           />
           <Icon name="check" strokeWidth={3} className="pointer-events-none absolute inset-0 m-auto size-3 text-pink-500 opacity-0 transition-opacity peer-checked:opacity-100" />
         </span>

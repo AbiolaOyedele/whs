@@ -29,8 +29,7 @@ atAGlance:
     value: '3 to 12 market sites on one model'
   - label: 'Common constraint'
     value: 'Campaign velocity outpacing publishing capacity'
-relatedWork:
-  - 'dumpty'
+relatedWork: []
 placeholder: true
 ---
 

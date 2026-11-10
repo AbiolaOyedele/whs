@@ -21,13 +21,13 @@ export function PlanCompare() {
           {PLANS.map((plan) => (
             <div
               key={plan.id}
-              className="text-body-md col-span-2 flex items-center justify-center text-center text-navy-500"
+              className="text-body-md col-span-2 flex items-center justify-center text-center text-navy-900"
             >
               {plan.name}
             </div>
           ))}
         </div>
-        <hr className="my-9 border-slate-200" />
+        <hr className="my-9 border-charcoal" />
         <div className="grid grid-cols-12 gap-gutter">
           <div className="col-span-4">
             <h3 className="text-heading-xs">{COMPARE_PRICE_LABEL}</h3>
@@ -35,7 +35,7 @@ export function PlanCompare() {
           {PLANS.map((plan) => (
             <div
               key={plan.id}
-              className="text-heading-xs col-span-2 flex items-center justify-center text-center text-navy-500"
+              className="text-heading-xs col-span-2 flex items-center justify-center text-center text-navy-900"
             >
               {plan.monthlyKobo > 0 ? formatNaira(plan.monthlyKobo) : PRICE_CARD.noFee}
             </div>
@@ -43,7 +43,7 @@ export function PlanCompare() {
         </div>
         {COMPARE_GROUPS.map((group) => (
           <Fragment key={group.title}>
-            <hr className="my-9 border-slate-200" />
+            <hr className="my-9 border-charcoal" />
             <div className="mb-6 grid grid-cols-12 gap-gutter">
               <div className="col-span-4">
                 <h3 className="text-heading-xs">{group.title}</h3>
@@ -58,7 +58,7 @@ export function PlanCompare() {
                   {row.values.map((value, index) => (
                     <div
                       key={PLANS[index]?.id ?? index}
-                      className="col-span-2 flex justify-center text-center text-navy-500"
+                      className="col-span-2 flex justify-center text-center text-navy-900"
                     >
                       <CompareCell value={value} />
                     </div>

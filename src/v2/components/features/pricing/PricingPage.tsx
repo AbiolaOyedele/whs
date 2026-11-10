@@ -31,14 +31,14 @@ export function PricingPage() {
             <PlanCompare />
           </div>
         </section>
-        <section className="slate rounded-4xl bg-slate-50 max-md:py-fluid-xl md:py-fluid-2xl">
+        <section className="slate rounded-4xl bg-white max-md:py-fluid-xl md:py-fluid-2xl">
           <div className={`container ${SECTION}`}>
             <div className="mb-10 grid gap-gutter md:mb-fluid-4xl md:grid-cols-12">
               <div className="md:col-span-6 md:col-start-7 md:row-start-1">
                 <SplitTitle className="text-heading-xl">
                   {CALCULATOR.title.line}
                   <br />
-                  <span className="text-gradient">{CALCULATOR.title.highlight}</span>
+                  {CALCULATOR.title.highlight}
                 </SplitTitle>
               </div>
               <div className="md:col-span-4 md:row-start-1">
@@ -50,7 +50,7 @@ export function PricingPage() {
             <CostCalculator />
           </div>
           <div className="container">
-            <hr className="border-slate-300 max-md:my-fluid-xl md:my-fluid-3xl" />
+            <hr className="border-charcoal max-md:my-fluid-xl md:my-fluid-3xl" />
           </div>
           <div className={`container ${SECTION}`}>
             <PricingFaqs />

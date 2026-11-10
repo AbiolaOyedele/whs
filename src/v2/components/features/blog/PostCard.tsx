@@ -56,7 +56,7 @@ export function PostCard({
           </div>
         )}
       </div>
-      <div className="flex grow flex-col gap-3.5 bg-slate-50 p-5 pb-7 slate:bg-white">
+      <div className="flex grow flex-col gap-3.5 bg-white p-5 pb-7 slate:bg-white">
         <Heading className="text-heading-xs">{title}</Heading>
         <div className="mt-auto flex items-center justify-between">
           <ul className="text-label flex flex-wrap gap-x-3.5 gap-y-1.5">
@@ -66,7 +66,7 @@ export function PostCard({
             {labels.map((label) => (
               <li
                 key={label}
-                className="text-navy-500 transition-all duration-200 ease-in-out group-hover:text-navy-900"
+                className="text-navy-900 transition-all duration-200 ease-in-out group-hover:text-navy-900"
               >
                 {label}
               </li>

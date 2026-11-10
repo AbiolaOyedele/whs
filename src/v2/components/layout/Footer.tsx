@@ -1,7 +1,6 @@
 import { site } from '@v2/config/site'
-import { FOOTER_COLUMNS, LEGAL_LINKS, LIVE_SOCIALS } from '@v2/content/navigation'
+import { FOOTER_COLUMNS, LEGAL_LINKS } from '@v2/content/navigation'
 import { Button } from '@v2/components/ui/Button'
-import { SocialIcon } from '@v2/components/ui/Icon'
 import { SmartLink } from '@v2/components/ui/SmartLink'
 import { CookiePreferencesButton } from '@v2/components/layout/CookieBanner'
 
@@ -20,22 +19,10 @@ export function Footer() {
       <div className="transition-blur relative">
         <div className="z-above relative container flex flex-col max-md:gap-12 max-md:pt-7 md:gap-30 md:pt-10">
           <div className="grid max-md:gap-10 md:grid-cols-2 md:gap-gutter">
-            <div>
-              <ul className="flex gap-4">
-                {LIVE_SOCIALS.map((social) => (
-                  <li key={social.label}>
-                    <a href={social.href} className="inline-flex min-h-11 min-w-11 items-center justify-start">
-                      <span className="sr-only">{social.label}</span>
-                      <SocialIcon name={social.label} />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="grid grid-cols-2 gap-x-gutter max-md:gap-y-32.5 md:gap-y-50">
+            <div className="grid grid-cols-2 gap-x-gutter max-md:gap-y-32.5 md:col-start-2 md:gap-y-50">
               {FOOTER_COLUMNS.map((column) => (
                 <div key={column.title}>
-                  <h2 className="text-body-sm mb-5 opacity-65">{column.title}</h2>
+                  <h2 className="text-body-sm mb-5">{column.title}</h2>
                   <ul className="flex flex-col gap-2">
                     {column.links.map((link) => (
                       <li key={link.href}>
@@ -53,7 +40,7 @@ export function Footer() {
                 </p>
                 <div className="flex flex-wrap gap-4">
                   <Button label="Get in touch" variant="pink" href={site.signUpUrl} />
-                  <Button label="Request a quote" variant="glass" href={site.signInUrl} />
+                  <Button label="Request a quote" variant="outline" href={site.signInUrl} />
                 </div>
               </div>
             </div>

@@ -9,7 +9,7 @@ import { LIVE_PREVIEWS, type LivePreviewSlug } from '@/config/previews'
 export function CaseStudyPreview({ slug }: { slug: LivePreviewSlug }) {
   return (
     <figure className="not-first:mt-fluid-xl not-last:mb-fluid-xl">
-      <figcaption className="text-label mb-4 text-navy-500">{LIVE_PREVIEWS[slug].caption}</figcaption>
+      <figcaption className="text-label mb-4 text-navy-900">{LIVE_PREVIEWS[slug].caption}</figcaption>
       <LivePreview slug={slug} className="relative aspect-4/5 w-full rounded-md md:aspect-8/5" />
     </figure>
   )

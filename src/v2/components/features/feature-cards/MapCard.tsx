@@ -14,10 +14,6 @@ export interface MapPoint {
 }
 
 export interface MapCardProps {
-  /** Top-left chip, e.g. "Payments : card, transfer, USSD". */
-  leftChip: string
-  /** Top-right chip; truncates with an ellipsis. */
-  rightChip: string
   points: MapPoint[]
 }
 
@@ -25,7 +21,7 @@ export interface MapCardProps {
 const WAVE_MS = 2967
 const WAVES = 3
 /** Dot colour of the land, from the reference. */
-const LAND = '#dedee2'
+const LAND = '#131314'
 
 /** Splits the points into three waves (fewer if there are only one or two). */
 function toWaves(points: MapPoint[]): MapPoint[][] {
@@ -76,12 +72,12 @@ function drawLand(canvas: HTMLCanvasElement): void {
 }
 
 /**
- * A light slate card holding a hex-dot map of Nigeria. Pink bursts of dots
+ * A white card holding a hex-dot map of Nigeria. Pink bursts of dots
  * bloom over the given places in three waves, each with a small navy name
- * tag that rises in, then the wave fades and the next one starts. Two mono
- * chips sit on top. Still and showing the first wave when motion is reduced.
+ * tag that rises in, then the wave fades and the next one starts. Still and
+ * showing the first wave when motion is reduced.
  */
-export function MapCard({ leftChip, rightChip, points }: MapCardProps) {
+export function MapCard({ points }: MapCardProps) {
   const host = useRef<HTMLDivElement>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
   const [tick, setTick] = useState(0)
@@ -136,17 +132,9 @@ export function MapCard({ leftChip, rightChip, points }: MapCardProps) {
 
   return (
     <div className="c-map-card relative">
-      <div className="absolute top-3 left-3 z-2 @2xl/feature-card:top-6 @2xl/feature-card:left-6">
-        <span className="text-label rounded-sm bg-navy-900 p-2 text-white">{leftChip}</span>
-      </div>
-      <div className="absolute right-3 bottom-3 left-3 z-2 @2xl/feature-card:top-6 @2xl/feature-card:right-6 @2xl/feature-card:bottom-auto @2xl/feature-card:left-auto @2xl/feature-card:max-w-1/2">
-        <span className="text-label block overflow-hidden rounded-sm bg-white p-2 text-nowrap text-ellipsis text-navy-900">
-          {rightChip}
-        </span>
-      </div>
       <div
         ref={host}
-        className="relative overflow-hidden rounded-lg bg-slate-50 max-sm:aspect-square sm:aspect-707/600"
+        className="relative overflow-hidden rounded-lg bg-white max-sm:aspect-square sm:aspect-707/600"
         role="img"
         aria-label={`Map of Nigeria marking ${points.map((p) => p.label).join(', ')}`}
       >
@@ -177,7 +165,7 @@ export function MapCard({ leftChip, rightChip, points }: MapCardProps) {
                     <span
                       key={point.label}
                       aria-hidden="true"
-                      className={`c-map-tag absolute rounded-[4px] bg-navy-900 px-1.5 py-[3px] font-mono text-[11px] leading-none tracking-wide text-nowrap text-white uppercase ${
+                      className={`c-map-tag absolute rounded-[4px] bg-navy-900 px-1.5 py-[3px] text-[12px] leading-none tracking-[0.01em] text-nowrap text-white ${
                         point.x > 72 ? '-is-left' : ''
                       }`}
                       style={{ left: `${point.x}%`, top: `${point.y}%`, ['--map-i' as string]: index } as CSSProperties}

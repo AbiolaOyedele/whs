@@ -58,7 +58,7 @@
 /* The panel behind is white too, so a hairline keeps the card's edge. */
 .c-about-links .c-link-card.-white::before {
   background-color: var(--color-white);
-  box-shadow: inset 0 0 0 1px var(--color-slate-300);
+  box-shadow: inset 0 0 0 1px var(--color-charcoal);
 }
 
 /* ── hero: a dark layer that closes in to a card over a light copy ── */
@@ -113,7 +113,7 @@
   position: absolute;
   inset: 0;
   z-index: var(--z-index-below);
-  background-color: var(--color-slate-50);
+  background-color: var(--color-white);
   pointer-events: auto !important;
 }
 

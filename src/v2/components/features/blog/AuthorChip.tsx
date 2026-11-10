@@ -15,7 +15,7 @@ export function AuthorChip({ author }: AuthorChipProps) {
       <p className="text-body-md">
         {author.name}
         <br />
-        <span className="text-navy-500">{author.role}</span>
+        <span className="text-navy-900">{author.role}</span>
       </p>
     </div>
   )

@@ -9,12 +9,12 @@ export function GuideQuestions({ questions }: GuideQuestionsProps) {
   if (questions.length === 0) return null
   return (
     <section className="not-first:mt-fluid-xl" aria-labelledby="guide-questions">
-      <h2 className="text-heading-sm mb-8" id="guide-questions">
+      <h2 className="text-heading-lg mb-8 max-w-[9ch]" id="guide-questions">
         Common questions
       </h2>
       <dl className="flex flex-col gap-8">
         {questions.map((item) => (
-          <div key={item.q} className="border-t border-slate-300 pt-6">
+          <div key={item.q} className="border-t border-charcoal pt-6">
             <dt className="text-heading-xs text-balance">{item.q}</dt>
             <dd className="text-body-md mt-3">{item.a}</dd>
           </div>

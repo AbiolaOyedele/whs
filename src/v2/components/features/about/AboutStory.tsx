@@ -11,7 +11,7 @@ export function AboutStory() {
             <h2 className="text-heading-lg">
               {aboutStory.headingLead}
               <br />
-              <span className="text-gradient">{aboutStory.headingHighlight}</span>
+              {aboutStory.headingHighlight}
             </h2>
           </div>
         </div>

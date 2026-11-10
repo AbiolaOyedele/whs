@@ -18,8 +18,8 @@ interface CategoryTabsProps {
 
 // The shared SegmentedControls look, with links in place of buttons so each category has its own address.
 const TAB =
-  'relative z-[1] flex min-h-11 shrink-0 cursor-pointer scroll-mx-1 items-center justify-center rounded-sm bg-transparent px-5 py-2 text-center text-body-md text-navy-900 transition-colors duration-200 aria-[current=page]:text-white ' +
-  "before:absolute before:inset-0 before:z-below before:scale-90 before:rounded-sm before:bg-slate-100 before:opacity-0 before:transition-all before:duration-200 before:ease-(--ease) before:content-[''] not-slate:before:bg-slate-200 not-aria-[current=page]:hover:before:scale-100 not-aria-[current=page]:hover:before:opacity-100"
+  'relative z-[1] flex min-h-11 shrink-0 cursor-pointer scroll-mx-1 items-center justify-center rounded-sm bg-transparent px-5 py-2 text-center text-body-md text-navy-900 transition-colors duration-200 aria-[current=page]:text-navy-900 ' +
+  "before:absolute before:inset-0 before:z-below before:scale-90 before:rounded-sm before:bg-pink-100 before:opacity-0 before:transition-all before:duration-200 before:ease-(--ease) before:content-[''] not-aria-[current=page]:hover:before:scale-100 not-aria-[current=page]:hover:before:opacity-100"
 
 /**
  * The blog's category filter: segmented tabs on a pill track, a navy block
@@ -62,11 +62,11 @@ export function CategoryTabs({ tabs, selected, onSelect }: CategoryTabsProps) {
 
   return (
     <div className="inline-flex max-w-full flex-col">
-      <ul ref={list} className="no-scrollbar relative inline-flex shrink-0 flex-nowrap gap-0 overflow-x-auto overflow-y-hidden overscroll-none rounded-sm bg-slate-50 p-1 slate:bg-white">
+      <ul ref={list} className="no-scrollbar relative inline-flex shrink-0 flex-nowrap gap-0 overflow-x-auto overflow-y-hidden overscroll-none rounded-sm bg-white p-1 slate:bg-white">
         <li
           ref={indicator}
           aria-hidden="true"
-          className="pointer-events-none absolute rounded-sm bg-navy-500 transition-[left,width,top,height] duration-200 ease-out"
+          className="pointer-events-none absolute rounded-sm bg-pink-500 transition-[left,width,top,height] duration-200 ease-out"
         />
         {tabs.map((tab, index) => (
           <li key={tab.href} className="flex shrink-0">

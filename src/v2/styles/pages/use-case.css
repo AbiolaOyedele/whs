@@ -33,20 +33,6 @@
   }
 }
 
-.c-use-case .animated-line {
-  width: 100%;
-  height: 1px;
-  background-color: var(--color-white);
-  opacity: 0.2;
-  transform: scaleX(0);
-  transform-origin: 0;
-  transition: transform var(--transition-duration-slowest) var(--ease);
-}
-
-html.is-ready .c-use-case .animated-line {
-  transform: scale(1);
-}
-
 /* ── hero: voice bars ── */
 
 .c-voice-visualizer {
@@ -109,12 +95,11 @@ html.is-ready .c-use-case .animated-line {
   place-items: center;
   aspect-ratio: 1;
   max-height: 2.75rem;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: clamp(0.65rem, 0.55rem + 0.35vw, 0.95rem);
   font-weight: 400;
   line-height: 1.07;
   letter-spacing: var(--tracking-tight);
-  text-transform: uppercase;
 }
 
 @media not all and (min-width: 1000px) {
@@ -240,182 +225,60 @@ html.is-ready .c-use-case .animated-line {
   }
 }
 
-/* ── hero: photo / video tiles ── */
+/* ── feature cards: the moving parts of the illustrations ── */
 
-.c-media-transform {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: var(--grid-gutter);
-}
-
-@media (max-width: 720px) {
-  .c-media-transform {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .c-media-transform_item:nth-child(n + 5) {
-    display: none;
-  }
-}
-
-.c-media-transform_item {
-  border: 1px solid;
-  transition: color var(--transition-duration-fast) var(--ease);
-}
-
-.c-media-transform_item.is-white {
-  color: var(--color-white);
-}
-
-.c-media-transform_item.is-pink {
-  color: var(--color-pink-500);
-}
-
-.c-media-transform_svg-wrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1;
-}
-
-.c-media-transform_svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.c-media-transform_morph {
-  stroke: currentColor;
-}
-
-/* ── feature card: order flow ── */
-
-.c-uc-flow_link {
-  stroke: var(--color-navy-500);
-  stroke-width: 1;
-}
-
-.c-uc-flow_dot {
-  fill: var(--color-pink-500);
-  opacity: 0;
-}
-
-.c-uc-flow.is-playing .c-uc-flow_dot {
-  animation: uc-flow-travel 2.4s var(--ease-in-out) infinite;
-  animation-delay: var(--delay, 0s);
-}
-
-@keyframes uc-flow-travel {
+/* A dot running down a link, from one box to the next. */
+@keyframes uc-link-drop {
   0% {
     opacity: 0;
-    transform: translate(var(--x1), var(--y1));
+    transform: translateY(0);
   }
-  10% {
+  15%,
+  80% {
     opacity: 1;
   }
-  45% {
-    opacity: 1;
-    transform: translate(var(--x2), var(--y2));
-  }
-  55%,
   100% {
     opacity: 0;
-    transform: translate(var(--x2), var(--y2));
+    transform: translateY(var(--uc-drop, 20px));
   }
 }
 
-.c-uc-flow_hub {
-  transition: transform 0.2s var(--ease);
-}
-
-.c-uc-flow.is-playing .c-uc-flow_hub {
-  animation: uc-flow-pulse 0.8s var(--ease-in-out) infinite;
-  animation-delay: 0.48s;
-}
-
-@keyframes uc-flow-pulse {
-  0%,
-  60%,
-  100% {
-    transform: scale(1);
-  }
-  75% {
-    transform: scale(1.06);
-  }
-}
-
-/* ── feature card: template carousel (the reference's GPU carousel) ── */
-
-.c-uc-gpu-carousel_container {
-  position: relative;
-  display: flex;
-  aspect-ratio: 707 / 600;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: var(--radius-lg);
-  background-color: var(--color-slate-50);
-}
-
-.c-uc-gpu-carousel_list {
-  position: relative;
-  width: 80%;
-  height: 100%;
-}
-
-@media (min-width: 700px) {
-  .c-uc-gpu-carousel_list {
-    width: 70%;
-  }
-}
-
-.c-uc-gpu-carousel_item {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  transform-origin: 50%;
-}
-
-.c-uc-gpu-carousel_card {
-  position: relative;
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: calc(var(--spacing) * 5);
-  overflow: hidden;
-  padding: calc(var(--spacing) * 2.5);
-  border-radius: var(--radius-md);
-  background-color: var(--color-white);
-}
-
-.c-uc-gpu-carousel_card_logo {
-  display: flex;
-  flex: 0 0 30%;
-  aspect-ratio: 1;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: var(--radius-md);
-  background-color: var(--color-slate-200);
-}
-
-.c-uc-gpu-carousel_card_content {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--spacing) * 2);
-}
-
-.c-uc-gpu-carousel_card_overlay {
-  position: absolute;
-  inset: 0;
-  background-color: var(--color-slate-50);
+.c-uc-link-dot {
   opacity: 0;
-  pointer-events: none;
+  animation: uc-link-drop 1.2s var(--ease-in-out) infinite;
 }
 
-/* ── feature card: demo-shop wordmarks (the reference's logo carousel) ── */
+.c-uc-feed-dot {
+  --uc-drop: 16px;
+  opacity: 0;
+  animation: uc-link-drop 0.7s var(--ease-in-out) both;
+}
 
-.c-uc-logo-carousel_container {
+/* A dashboard number arriving once its dot has landed. */
+.c-uc-value-in {
+  animation: uc-value-in 0.35s var(--ease-out) 0.55s both;
+}
+
+@keyframes uc-value-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .c-uc-link-dot,
+  .c-uc-feed-dot,
+  .c-uc-value-in {
+    animation: none;
+  }
+}
+
+/* ── feature card: product wheel ── */
+
+.c-uc-products {
   position: relative;
+  isolation: isolate;
   display: flex;
   aspect-ratio: 707 / 600;
   align-items: center;
@@ -425,35 +288,30 @@ html.is-ready .c-use-case .animated-line {
   background-color: var(--color-charcoal);
 }
 
-.c-uc-logo-carousel_list {
+@media not all and (min-width: 700px) {
+  .c-uc-products {
+    aspect-ratio: 1;
+  }
+}
+
+.c-uc-products_list {
   position: relative;
   z-index: 2;
-  width: 33.3333%;
+  width: 86%;
   height: 100%;
 }
 
-.c-uc-logo-carousel_item {
-  position: absolute;
-  left: 0;
-  display: flex;
-  width: 100%;
-  aspect-ratio: 1;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  padding: 10%;
-  border-radius: var(--radius-md);
-  background-color: var(--color-white);
-  container-type: inline-size;
+@media (min-width: 700px) {
+  .c-uc-products_list {
+    width: 70%;
+  }
 }
 
-/* ── feature card: cost chart ── */
-
-.c-uc-chart_line {
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.c-uc-products_item {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  transform-origin: 50%;
 }
 
 /* ── demo-shop carousel (the reference's tile carousel) ── */

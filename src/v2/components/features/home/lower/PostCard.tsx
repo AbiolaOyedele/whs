@@ -26,7 +26,7 @@ export function PostCard({ post }: PostCardProps) {
           </div>
         </ParallaxMedia>
       </div>
-      <div className="flex grow flex-col gap-3.5 bg-slate-50 p-5 pb-7 slate:bg-white">
+      <div className="flex grow flex-col gap-3.5 bg-white p-5 pb-7 slate:bg-white">
         <h3 className="text-heading-xs">{post.title}</h3>
         <div className="mt-auto flex items-center justify-between">
           <ul className="text-label flex flex-wrap gap-x-3.5 gap-y-1">
@@ -34,7 +34,7 @@ export function PostCard({ post }: PostCardProps) {
               <time dateTime={post.date}>{DATE_FORMAT.format(new Date(`${post.date}T00:00:00Z`))}</time>
             </li>
             {post.categories.map((category) => (
-              <li key={category} className={`text-navy-500 transition-all group-hover:text-navy-900 ${FAST}`}>
+              <li key={category} className={`text-navy-900 transition-all group-hover:text-navy-900 ${FAST}`}>
                 {category}
               </li>
             ))}

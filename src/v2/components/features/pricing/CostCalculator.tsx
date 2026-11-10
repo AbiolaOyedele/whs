@@ -74,20 +74,20 @@ export function CostCalculator() {
   return (
     <div className="@container grid gap-12.5 md:grid-cols-12 md:gap-gutter">
       <div className="max-md:order-2 md:col-span-5">
-        <div className="flex flex-col rounded-md bg-slate-50 p-8.5 slate:bg-white max-sm:p-6">
+        <div className="flex flex-col rounded-md bg-white p-8.5 slate:bg-white max-sm:p-6">
           <h3 className="text-body-md text-center">{CALCULATOR.totalHeading}</h3>
           <p className="text-heading-xl mt-7.5 text-center tabular-nums" aria-live="polite">
             {priceText(nowKobo)}
           </p>
-          <p className="text-body-sm mt-4 text-center text-navy-500">
+          <p className="text-body-sm mt-4 text-center text-navy-900">
             {CALCULATOR.onSales} {formatNaira(budgetKobo)}
           </p>
           <div className="mt-25 max-sm:mt-12.5">
             <div className="flex justify-between gap-4">
-              <span className="text-label text-navy-900 opacity-60">{CALCULATOR.details}</span>
-              <span className="text-label text-right text-navy-900 opacity-60">{CALCULATOR.estimate}</span>
+              <span className="text-label text-navy-900">{CALCULATOR.details}</span>
+              <span className="text-label text-right text-navy-900">{CALCULATOR.estimate}</span>
             </div>
-            <hr className="my-4 border-slate-200" />
+            <hr className="my-4 border-charcoal" />
             <div className="flex flex-col gap-1">
               {rows.map((row) => (
                 <div key={row.label} className="flex justify-between gap-4">
@@ -106,13 +106,13 @@ export function CostCalculator() {
                 </span>
               </div>
             </div>
-            <hr className="my-4 border-slate-200" />
+            <hr className="my-4 border-charcoal" />
             <p className="text-body-sm" aria-live="polite">
               {CALCULATOR.cheapest} <strong className="font-semibold">{fit?.name ?? ''}</strong>,{' '}
               {fit && fit.monthlyKobo > 0 ? formatNaira(fit.monthlyKobo) : 'quoted after a discovery call'}
               {CALCULATOR.perMonth}
             </p>
-            <p className="text-label mt-6 opacity-60">{CALCULATOR.footnote}</p>
+            <p className="text-label mt-6">{CALCULATOR.footnote}</p>
           </div>
         </div>
       </div>

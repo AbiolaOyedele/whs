@@ -13,13 +13,13 @@ export function pageHref(basePath: string, page: number): string {
 }
 
 const ARROW =
-  'button group relative isolate inline-flex shrink-0 items-center justify-center overflow-hidden rounded-sm bg-slate-50 text-navy-900 slate:bg-white max-md:size-11 md:size-8.5'
+  'button group relative isolate inline-flex shrink-0 items-center justify-center overflow-hidden rounded-sm bg-white text-navy-900 slate:bg-white max-md:size-11 md:size-8.5'
 
 function ArrowFill() {
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-slate-100 opacity-0 transition-[transform,opacity] duration-200 ease-(--ease) [transform:scale3d(0.9,0.7,1)] group-hover:opacity-100 group-hover:[transform:scale3d(1,1,1)] group-disabled:opacity-0 slate:bg-slate-300"
+      className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-pink-100 opacity-0 transition-[transform,opacity] duration-200 ease-(--ease) [transform:scale3d(0.9,0.7,1)] group-hover:opacity-100 group-hover:[transform:scale3d(1,1,1)] group-disabled:opacity-0"
     />
   )
 }

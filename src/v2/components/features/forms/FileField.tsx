@@ -60,13 +60,13 @@ export function FileField({ id, name, label, hint, required = false, onChange, e
           </>
         ) : null}
       </p>
-      <p id={hintId} className="text-body-sm -mt-1 mb-2 text-navy-500">
+      <p id={hintId} className="text-body-sm -mt-1 mb-2 text-navy-900">
         {hint}
       </p>
       <label
         htmlFor={id}
         data-invalid={error ? '' : undefined}
-        className="relative flex min-h-[55px] cursor-pointer flex-wrap items-center gap-x-4 gap-y-2 rounded-sm bg-white px-4 py-2.5 outline-1 outline-transparent transition-[outline-color] focus-within:outline-navy-500 data-invalid:outline-red"
+        className="relative flex min-h-[55px] cursor-pointer flex-wrap items-center gap-x-4 gap-y-2 rounded-sm bg-white px-4 py-2.5 outline-1 outline-transparent transition-[outline-color] focus-within:outline-navy-900 data-invalid:outline-red"
       >
         <input
           id={id}
@@ -82,11 +82,11 @@ export function FileField({ id, name, label, hint, required = false, onChange, e
         />
         <span
           aria-hidden="true"
-          className="text-label inline-flex min-h-9 items-center rounded-sm bg-slate-100 px-3.5 leading-none text-navy-900"
+          className="text-label inline-flex min-h-9 items-center rounded-sm bg-white px-3.5 leading-none text-navy-900"
         >
           {file ? 'Change file' : 'Choose file'}
         </span>
-        <span className="text-body-sm min-w-0 break-all text-navy-500" aria-live="polite">
+        <span className="text-body-sm min-w-0 break-all text-navy-900" aria-live="polite">
           {file ? `${file.name} (${sizeLabel(file.size)})` : 'No file chosen'}
         </span>
       </label>

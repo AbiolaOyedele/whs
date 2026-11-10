@@ -103,7 +103,7 @@ export function LlmsTxtGenerator() {
 
       {status === 'done' && result ? (
         <div className="anim-fade-slide-in">
-          <p role="status" className="text-body-md mb-4 text-navy-500">
+          <p role="status" className="text-body-md mb-4 text-navy-900">
             {LLMS_TOOL.found(result.discovered, result.included)}
           </p>
           <div data-wysiwyg-root="" className="max-h-120 overflow-auto rounded-sm">

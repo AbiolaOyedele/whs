@@ -81,8 +81,8 @@ export function FeatureCards({ label, mobileHeading, items, className = '' }: Fe
                 <a
                   href={`#${item.id}`}
                   onClick={(event) => jump(event, item.id)}
-                  className={`text-heading-md transition-colors duration-200 hover:text-navy-900 ${
-                    active === item.id ? 'text-navy-900' : 'text-slate-300'
+                  className={`text-heading-md text-navy-900 ${
+                    active === item.id ? 'underline decoration-pink-500 decoration-4 underline-offset-8' : ''
                   }`}
                 >
                   {item.navTitle}

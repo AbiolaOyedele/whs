@@ -32,7 +32,7 @@ export function FeaturedSmall({ post, delay }: FeaturedSmallProps) {
             </li>
             {post.labels.slice(0, 1).map((label) => (
               <li key={label}>
-                <span className="text-label text-navy-500">{label}</span>
+                <span className="text-label text-navy-900">{label}</span>
               </li>
             ))}
           </ul>

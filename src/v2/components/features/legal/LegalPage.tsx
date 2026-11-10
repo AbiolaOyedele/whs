@@ -13,13 +13,13 @@ interface LegalPageProps {
  */
 export function LegalPage({ document }: LegalPageProps) {
   return (
-    <div className="slate rounded-b-4xl bg-slate-50 pt-safe-header pb-fluid-4xl">
+    <div className="slate rounded-b-4xl bg-white pt-safe-header pb-fluid-4xl">
       <div className="container pt-fluid-lg">
         <div className="grid gap-x-gutter gap-y-fluid-2xl md:grid-cols-12">
           <div className="min-w-0 md:col-start-1 md:col-end-6">
             <div className="flex flex-col gap-fluid-lg md:sticky md:top-safe-header">
               <h1 className="text-heading-lg">{document.title}</h1>
-              <p className="text-label text-navy-500">
+              <p className="text-label text-navy-900">
                 Last updated <time dateTime={document.updated}>{formatPostDate(document.updated)}</time>
               </p>
               <RichContent blocks={document.intro} />

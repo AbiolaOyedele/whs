@@ -12,7 +12,7 @@ export function HomeLower() {
   return (
     <>
       <SecuritySection />
-      <div className="slate c-home-lower-panel -mt-7.5 bg-slate-50 md:-mt-15">
+      <div className="slate c-home-lower-panel -mt-7.5 bg-white md:-mt-15">
         <DesignsSection />
         <FeatureListSection />
         <LatestPosts />

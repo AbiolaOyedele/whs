@@ -27,61 +27,26 @@ export interface TitlePart {
   highlight?: boolean
 }
 
-/* ── chart lines (an illustration of time spent; the chart prints no figures) ── */
-
-export interface PlanCost {
-  name: string
-  /** Where the line starts: the effort before anything runs. */
-  monthly: number
-  /** How steeply the line climbs as the weeks go by. */
-  fee: number
-}
-
-/**
- * Doing the work by hand starts at nothing and keeps climbing. A dashboard or
- * an automation costs effort up front and then little or nothing after. Only
- * the shape is drawn: the chart carries no amounts.
- */
-export const PLAN_COSTS = {
-  free: { name: 'By hand', monthly: 0, fee: 0.03 },
-  starter: { name: 'Dashboard', monthly: 6000, fee: 0.008 },
-  growth: { name: 'Automated', monthly: 9000, fee: 0 },
-} as const satisfies Record<string, PlanCost>
-
-/** The point at which two lines meet. */
-export function breakEven(a: PlanCost, b: PlanCost): number {
-  return Math.round((b.monthly - a.monthly) / (a.fee - b.fee))
-}
-
 const naira = (value: number) => `₦${value.toLocaleString('en-NG')}`
 
 /* ── case studies and project cards (from src/content/work) ── */
 
-export type TemplateGlyph = 'default' | 'glow' | 'blush' | 'haven' | 'oak'
-
-export interface TemplateSlide {
-  glyph: TemplateGlyph
+/** A product we have built: its logo, its name and what it does in one line. */
+export interface ProductSlide {
+  logo: CardImage
   name: string
-  bestFor: string
+  line: string
 }
 
-/** Apps we have built, one per layout sketch. */
-const APP_SLIDES: Record<TemplateGlyph, TemplateSlide> = {
-  default: { glyph: 'default', name: 'Rayo', bestFor: 'Quotes the client accepts on the page' },
-  glow: { glyph: 'glow', name: 'Dumpty', bestFor: 'Voice notes that arrive already organised' },
-  blush: { glyph: 'blush', name: 'Lazy Meet', bestFor: 'Joins your calls muted, camera off' },
-  haven: { glyph: 'haven', name: 'Dory', bestFor: 'A budget that always knows what is left' },
-  oak: { glyph: 'oak', name: 'Planes', bestFor: 'A to-do list you race your friends on' },
-}
-
-/** Tools and systems we have built, one per layout sketch. */
-const TOOL_SLIDES: Record<TemplateGlyph, TemplateSlide> = {
-  default: { glyph: 'default', name: 'Marvy', bestFor: 'Course videos filed in one step' },
-  glow: { glyph: 'glow', name: 'Lazy Meet', bestFor: 'Joins your calls muted, camera off' },
-  blush: { glyph: 'blush', name: 'Dumpty', bestFor: 'Ideas filed, tagged and turned into next steps' },
-  haven: { glyph: 'haven', name: 'Auto Flow', bestFor: 'Bulk video generation, unattended' },
-  oak: { glyph: 'oak', name: 'The Ruff Agency', bestFor: 'One workspace instead of six tools' },
-}
+/** Products from the case studies, for the product carousels. */
+const PRODUCTS = {
+  tomori: { logo: logoImage('tomori.svg', 'Tomori'), name: 'Tomori', line: 'A shop for hand-dyed Adire, built for a phone' },
+  marque: { logo: logoImage('marque.svg', 'Marque'), name: 'Marque', line: 'Brand guidelines published at one link' },
+  rayo: { logo: logoImage('rayo.svg', 'Rayo'), name: 'Rayo', line: 'Quotes the client accepts on the page' },
+  planes: { logo: logoImage('planes.png', 'Planes'), name: 'Planes', line: 'A to-do list you race your friends on' },
+  lazyMeet: { logo: logoImage('lazy-meet.png', 'Lazy Meet'), name: 'Lazy Meet', line: 'Joins your calls muted, camera off' },
+  dory: { logo: logoImage('dory.svg', 'Dory'), name: 'Dory', line: 'A budget that always knows what is left' },
+} satisfies Record<string, ProductSlide>
 
 export interface DemoShop {
   client: string
@@ -109,7 +74,6 @@ const WORK = {
   tomori: workStory('tomori', 'tomori.svg', 'Tomori', 'E-commerce', 'Websites', 'Tomori: a shop for hand-dyed Adire, built for a phone'),
   marque: workStory('marque', 'marque.svg', 'Marque', 'Creative tooling', 'Websites', 'Marque: brand guidelines, made easy'),
   ruffSite: workStory('the-ruff-agency', 'the-ruff-agency.svg', 'The Ruff Agency', 'Agency operations', 'Websites', 'The Ruff Agency: one workspace instead of six tools'),
-  dumpty: workStory('dumpty', 'dumpty.png', 'Dumpty', 'Consumer product', 'Apps', 'Dumpty: voice notes that arrive already organised'),
   lazyMeet: workStory('lazy-meet', 'lazy-meet.png', 'Lazy Meet', 'Productivity', 'Apps', 'Lazy Meet: joining the call so you do not have to'),
   rayo: workStory('rayo', 'rayo.svg', 'Rayo', 'Business tools', 'Apps', 'Rayo: quotes your client accepts on the page'),
   autoFlow: workStory('auto-flow', 'auto-flow.png', 'Auto Flow', 'Creative tooling', 'Tools & Systems', 'Auto Flow: bulk video generation without the manual loop'),
@@ -154,23 +118,55 @@ export type HeroVisual =
       sequence: string[][]
       mobileSequence: string[][]
     }
-  | { kind: 'media' }
 
-export interface ChartTab {
-  /** The plan being weighed against the one below it. */
+/** One piece of a site's launch list, with a short note on what it is. */
+export interface ChecklistItem {
   label: string
-  /** Two plans, drawn blue then pink. */
-  plans: [PlanCost, PlanCost]
+  detail: string
+}
+
+/** One stage of how a project starts. */
+export interface ProcessStep {
+  icon: IconName
+  title: string
+  detail: string
+}
+
+/** One automated tool's run: what it does, step by step, and how the run ends. */
+export interface AutomationRun {
+  product: string
+  logo: CardImage
+  steps: string[]
+  done: string
+}
+
+/** How long one piece of work takes, for the before-and-after bars. */
+export interface TimeBar {
+  label: string
+  minutes: number
+  note: string
 }
 
 export type FeatureVisual =
-  | { kind: 'flow'; hub: string; sources: [string, string, string]; sideLabel: string; artSeed: number }
-  | { kind: 'cubes' }
-  | { kind: 'map'; leftChip: string; rightChip: string; points: MapPoint[] }
-  | { kind: 'wordmarks'; logos: CardImage[]; artSeed: number }
-  | { kind: 'templates'; items: TemplateSlide[] }
-  | { kind: 'batches'; tabs: [string, string, string]; artSeed: number }
-  | { kind: 'chart'; tabs: ChartTab[]; yLabel: string; xLabel: string; artSeed: number }
+  | { kind: 'checklist'; address: string; items: ChecklistItem[]; artSeed: number }
+  | { kind: 'cms-edit'; artSeed: number }
+  | { kind: 'local-checkout'; artSeed: number }
+  | { kind: 'products'; items: ProductSlide[]; artSeed: number }
+  | { kind: 'workflow'; artSeed: number }
+  | { kind: 'process'; steps: [ProcessStep, ProcessStep, ProcessStep]; artSeed: number }
+  | { kind: 'dashboard'; artSeed: number }
+  | { kind: 'automation'; runs: AutomationRun[]; artSeed: number }
+  | {
+      kind: 'hours'
+      product: string
+      logo: CardImage
+      task: string
+      before: TimeBar
+      after: TimeBar
+      returned: string
+      artSeed: number
+    }
+  | { kind: 'map'; points: MapPoint[] }
 
 export interface FeatureContent {
   id: string
@@ -196,7 +192,8 @@ export interface UseCaseContent {
   label: string
   title: TitlePart[]
   intro: string
-  hero: HeroVisual
+  /** The animation under the hero, if the page has one. */
+  hero?: HeroVisual
   /** Line beside "Why … for …?" on wide screens. */
   lede: string
   why: TitlePart[]
@@ -294,10 +291,15 @@ const websites: UseCaseContent = {
       title: 'Everything a site needs, built in',
       body: 'Every site ships with a CMS admin panel, search engine crawl rules, an XML sitemap, AI search visibility setup and simple website analytics.',
       visual: {
-        kind: 'flow',
-        hub: 'Website',
-        sources: ['CMS', 'Sitemap', 'Analytics'],
-        sideLabel: '1 build',
+        kind: 'checklist',
+        address: 'yourbusiness.ng',
+        items: [
+          { label: 'CMS admin panel', detail: 'Edit any page yourself' },
+          { label: 'Crawl rules', detail: 'robots.txt' },
+          { label: 'XML sitemap', detail: 'sitemap.xml' },
+          { label: 'AI search visibility', detail: 'Set up for AI answers' },
+          { label: 'Website analytics', detail: 'Visits and where they came from' },
+        ],
         artSeed: 2,
       },
     },
@@ -306,19 +308,14 @@ const websites: UseCaseContent = {
       navTitle: 'Built from scratch',
       title: 'Designed for what you publish',
       body: 'Nothing is adapted from a site built for someone else. Editing is part of the build, so routine changes never need a developer.',
-      visual: { kind: 'cubes' },
+      visual: { kind: 'cms-edit', artSeed: 6 },
     },
     {
       id: 'local-realities',
       navTitle: 'Built for Nigeria',
       title: 'Built for local realities',
       body: 'Every site accounts for local hosting, payment and connectivity realities, not just international defaults. We are based in Lagos and build for businesses across Nigeria and Africa.',
-      visual: {
-        kind: 'map',
-        leftChip: 'Studio : Lagos',
-        rightChip: 'Clients : Nigeria and Africa',
-        points: CITIES,
-      },
+      visual: { kind: 'local-checkout', artSeed: 1 },
     },
     {
       id: 'our-work',
@@ -326,14 +323,8 @@ const websites: UseCaseContent = {
       title: 'See what we have built',
       body: 'Every project is built around its own brief, so none of them look like each other. Marque publishes brand guidelines as a live website at one link.',
       visual: {
-        kind: 'wordmarks',
-        logos: [
-          logoImage('tomori.svg', 'Tomori'),
-          logoImage('marque.svg', 'Marque'),
-          logoImage('dumpty.png', 'Dumpty'),
-          logoImage('rayo.svg', 'Rayo'),
-          logoImage('planes.png', 'Planes'),
-        ],
+        kind: 'products',
+        items: [PRODUCTS.marque, PRODUCTS.tomori, PRODUCTS.rayo, PRODUCTS.planes],
         artSeed: 5,
       },
     },
@@ -401,16 +392,17 @@ const apps: UseCaseContent = {
       navTitle: 'Your workflow',
       title: 'Built around the real process',
       body: 'Software your team or your customers log into, built for a job off-the-shelf tools do not quite do. Often it is the piece between the tools you already have, where the manual work lives.',
-      visual: { kind: 'cubes' },
+      visual: { kind: 'workflow', artSeed: 6 },
     },
     {
       id: 'shaped-by-the-problem',
       navTitle: 'Shaped by the problem',
       title: 'No two apps alike',
-      body: 'Every app here started as a workflow someone was doing by hand. Dumpty replaced the note that never got tidied up. Lazy Meet replaced the five clicks before every call.',
+      body: 'Every app here started as a workflow someone was doing by hand. Lazy Meet replaced the five clicks before every call.',
       visual: {
-        kind: 'templates',
-        items: [APP_SLIDES.glow, APP_SLIDES.blush, APP_SLIDES.default, APP_SLIDES.haven, APP_SLIDES.oak],
+        kind: 'products',
+        items: [PRODUCTS.lazyMeet, PRODUCTS.rayo, PRODUCTS.dory, PRODUCTS.planes],
+        artSeed: 1,
       },
     },
     {
@@ -418,7 +410,15 @@ const apps: UseCaseContent = {
       navTitle: 'How the work runs',
       title: 'Discovery, proposal, quote',
       body: 'A discovery call first, to find out what is actually costing you time. Then a scoped proposal written around that brief. Then one price for the work in front of us.',
-      visual: { kind: 'batches', tabs: ['Discovery', 'Proposal', 'Quote'], artSeed: 3 },
+      visual: {
+        kind: 'process',
+        steps: [
+          { icon: 'phoneCall', title: 'Discovery call', detail: 'What is costing you time' },
+          { icon: 'fileText', title: 'Written proposal', detail: 'Scoped around your brief' },
+          { icon: 'receipt', title: 'One price', detail: 'For the work in front of us' },
+        ],
+        artSeed: 3,
+      },
     },
     {
       id: 'where-we-work',
@@ -427,8 +427,6 @@ const apps: UseCaseContent = {
       body: LOCATION_BODY,
       visual: {
         kind: 'map',
-        leftChip: 'Studio : Lagos',
-        rightChip: 'Clients : Nigeria and Africa',
         points: CITIES,
       },
     },
@@ -441,7 +439,7 @@ const apps: UseCaseContent = {
   stories: {
     title: `Apps built by ${site.name}`,
     action: 'Read the case study',
-    items: [WORK.dumpty, WORK.lazyMeet, WORK.rayo],
+    items: [WORK.lazyMeet, WORK.rayo],
   },
   faqs: [
     {
@@ -467,10 +465,6 @@ const apps: UseCaseContent = {
   ],
 }
 
-const byHand = PLAN_COSTS.free
-const dashboard = PLAN_COSTS.starter
-const automated = PLAN_COSTS.growth
-
 const toolsAndSystems: UseCaseContent = {
   slug: 'tools-and-systems',
   meta: {
@@ -488,7 +482,6 @@ const toolsAndSystems: UseCaseContent = {
   ],
   intro:
     'Dashboards that put the numbers in one place, and automation that connects the tools you already pay for, so nobody re-keys data between them.',
-  hero: { kind: 'media' },
   lede: 'For teams rebuilding the same report, or re-keying the same data, every week.',
   why: why('tools and systems?'),
   featuresLabel: 'What you get',
@@ -498,7 +491,7 @@ const toolsAndSystems: UseCaseContent = {
       navTitle: 'Dashboards',
       title: 'The numbers in one place',
       body: 'Most teams already produce the data and lose it across several tools. The work is pulling it into one live view, instead of rebuilding the same report every week.',
-      visual: { kind: 'cubes' },
+      visual: { kind: 'dashboard', artSeed: 2 },
     },
     {
       id: 'automation',
@@ -506,8 +499,33 @@ const toolsAndSystems: UseCaseContent = {
       title: 'Manual steps, removed for good',
       body: 'Auto Flow turned a supervised afternoon of clicking into an unattended half-hour. Marvy files each course video in the right Drive folder and tags the right reviewers.',
       visual: {
-        kind: 'templates',
-        items: [TOOL_SLIDES.haven, TOOL_SLIDES.oak, TOOL_SLIDES.default],
+        kind: 'automation',
+        runs: [
+          {
+            product: 'Marvy',
+            logo: logoImage('marvy.svg', 'Marvy'),
+            steps: [
+              'New video: BIO101 week 3',
+              'Course and week read from the file name',
+              'Filed in Drive: BIO101, Week 3',
+              'Video and its audio uploaded',
+              'Reviewers tagged in a comment',
+            ],
+            done: 'Filed and tagged, nobody clicked a thing',
+          },
+          {
+            product: 'Auto Flow',
+            logo: logoImage('auto-flow.png', 'Auto Flow'),
+            steps: [
+              'Folder of 24 images picked',
+              'Each image uploaded and prompted',
+              'Three videos generating at once',
+              'Every finished video downloaded',
+            ],
+            done: 'Whole batch done in about half an hour',
+          },
+        ],
+        artSeed: 5,
       },
     },
     {
@@ -516,13 +534,13 @@ const toolsAndSystems: UseCaseContent = {
       title: 'Judged on the time it gives back',
       body: 'During discovery we work out how many hours the current process costs, and the finished build is measured against that number. If we cannot answer how much time it saves, it was not worth building.',
       visual: {
-        kind: 'chart',
-        tabs: [
-          { label: 'Dashboard', plans: [byHand, dashboard] },
-          { label: 'Automation', plans: [byHand, automated] },
-        ],
-        yLabel: 'Hours spent',
-        xLabel: 'Weeks running',
+        kind: 'hours',
+        product: 'Auto Flow',
+        logo: logoImage('auto-flow.png', 'Auto Flow'),
+        task: 'One 24-image batch',
+        before: { label: 'By hand', minutes: 120, note: 'About 2 hours, supervised' },
+        after: { label: 'With Auto Flow', minutes: 30, note: 'About 30 minutes, unattended' },
+        returned: 'About 90 minutes back, every batch',
         artSeed: 4,
       },
     },
@@ -533,8 +551,6 @@ const toolsAndSystems: UseCaseContent = {
       body: LOCATION_BODY,
       visual: {
         kind: 'map',
-        leftChip: 'Studio : Lagos',
-        rightChip: 'Clients : Nigeria and Africa',
         points: CITIES,
       },
     },

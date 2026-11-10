@@ -3,10 +3,9 @@ import { FEATURE_LINKS, FEATURES_LABEL } from '@v2/content/home-lower'
 import { SplitArrow } from './SplitArrow'
 
 /**
- * Label on the left, every built-in feature in two columns on the right.
- * Each row slides in as it scrolls into view, so rows arrive one after
- * another; on a wide screen with a mouse, the hovered row lights up and its
- * text and arrow draw toward each other.
+ * Label on the left, every built-in feature in two columns on the right,
+ * ruled in ink. On a wide screen with a mouse, the hovered row lights up and
+ * its text and arrow draw toward each other.
  */
 export function FeatureListSection() {
   return (
@@ -18,7 +17,7 @@ export function FeatureListSection() {
         <div className="@container md:col-span-2">
           <ul className="c-feature-list_list">
             {FEATURE_LINKS.map((feature) => (
-              <li key={feature.label} className="c-feature-list_item" data-scroll="">
+              <li key={feature.label} className="c-feature-list_item">
                 <SmartLink href={feature.href} className="c-feature-list_link">
                   <span className="c-feature-list_link_label">{feature.label}</span>
                   <span className="c-feature-list_link_icon" aria-hidden="true">

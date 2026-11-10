@@ -87,7 +87,7 @@ function NotFoundPage() {
     <div className="flex min-h-svh flex-col justify-center pt-safe-header pb-fluid-4xl text-white">
       <div className="container flex flex-col gap-8.5 pt-fluid-lg">
         <h1 className="text-heading-xl">
-          Nothing <span className="text-gradient">here</span>
+          Nothing here
         </h1>
         <div className="flex flex-col gap-7.5">
           <p className="text-body-md anim-transform-opacity -delay-1 max-w-84">
@@ -163,7 +163,7 @@ const STATIC_ROUTES: Record<string, () => ResolvedRoute> = {
     title: titled('Brand assets'),
     description: `How to use the ${site.name} logo in articles, videos and marketing, and how to ask us for the files.`,
     element: (
-      <div className="c-brand-assets slate rounded-b-4xl bg-slate-50 pt-safe-header pb-fluid-3xl">
+      <div className="c-brand-assets slate rounded-b-4xl bg-white pt-safe-header pb-fluid-3xl">
         <div className="container pt-fluid-lg">
           <BrandHero />
         </div>

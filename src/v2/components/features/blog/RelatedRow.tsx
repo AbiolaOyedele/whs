@@ -14,7 +14,7 @@ interface RelatedRowProps {
  */
 export function RelatedRow({ title, seeAllHref, cards }: RelatedRowProps) {
   return (
-    <section className="slate overflow-hidden rounded-b-4xl bg-slate-50 pb-fluid-3xl" aria-labelledby="related-title">
+    <section className="slate overflow-hidden rounded-b-4xl bg-white pb-fluid-3xl" aria-labelledby="related-title">
       <div className="container mt-fluid-2xl">
         <div className="mb-fluid-lg flex items-center justify-between gap-gutter">
           <h2 id="related-title" className="text-heading-sm">

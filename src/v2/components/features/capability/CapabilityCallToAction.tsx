@@ -14,15 +14,15 @@ export function CapabilityCallToAction({ subject }: CapabilityCallToActionProps)
       aria-labelledby="capability-cta"
     >
       <h2 id="capability-cta" className="text-heading-md max-w-200 text-balance">
-        Let’s talk about <span className="text-gradient">{subject}</span>
+        Let’s talk about {subject}
       </h2>
-      <p className="text-body-md mt-5 max-w-160 text-white/70">
+      <p className="text-body-md mt-5 max-w-160 text-white">
         Tell us where it hurts. We start with a discovery call, then send a written plan and one price worked out from
         that scope. If an off-the-shelf tool already does the job, we will tell you.
       </p>
       <div className="mt-8 flex flex-wrap gap-4">
         <Button label="Get in touch" href={site.signUpUrl} />
-        <Button label="Request a quote" href={site.signInUrl} variant="white" />
+        <Button label="Request a quote" href={site.signInUrl} variant="outline" />
       </div>
     </section>
   )

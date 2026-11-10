@@ -54,7 +54,7 @@ describe('text', () => {
 
 describe('list', () => {
   it('renders the committed list when nothing is overridden', () => {
-    expect(list('home.hero.logos')).toEqual(['Dumpty', 'Auto Flow', 'Lazy Meet', 'The Ruff Agency'])
+    expect(list('home.hero.logos')).toEqual(['Auto Flow', 'Lazy Meet', 'The Ruff Agency'])
   })
 
   it('accepts an array override', async () => {
@@ -69,7 +69,7 @@ describe('list', () => {
 
   it('falls back rather than rendering an empty strip', async () => {
     await reload({ 'home.hero.logos': [] })
-    expect(list('home.hero.logos')).toHaveLength(4)
+    expect(list('home.hero.logos')).toHaveLength(3)
   })
 })
 

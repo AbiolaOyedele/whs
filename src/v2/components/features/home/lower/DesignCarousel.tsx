@@ -22,9 +22,9 @@ const DRAG_THRESHOLD = 5
 const WHEEL_GESTURE_GAP_MS = 150
 
 const ARROW_BUTTON =
-  'button group relative isolate inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-sm bg-slate-50 text-navy-900 slate:bg-white disabled:cursor-default disabled:opacity-50 md:h-13.5 md:w-13.5 max-md:h-10.5 max-md:w-10.5'
+  'button group relative isolate inline-flex cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-sm bg-white text-navy-900 slate:bg-white disabled:cursor-default disabled:opacity-50 md:h-13.5 md:w-13.5 max-md:h-10.5 max-md:w-10.5'
 const ARROW_FILL =
-  'pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-slate-100 opacity-0 transition-[transform,opacity] duration-200 ease-(--ease) [transform:scale3d(0.9,0.7,1)] slate:bg-slate-300 group-hover:opacity-100 group-hover:[transform:scale3d(1,1,1)] group-disabled:opacity-0 group-disabled:[transform:scale3d(0.9,0.7,1)]'
+  'pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-pink-100 opacity-0 transition-[transform,opacity] duration-200 ease-(--ease) [transform:scale3d(0.9,0.7,1)] group-hover:opacity-100 group-hover:[transform:scale3d(1,1,1)] group-disabled:opacity-0 group-disabled:[transform:scale3d(0.9,0.7,1)]'
 
 interface DragState {
   pointerId: number

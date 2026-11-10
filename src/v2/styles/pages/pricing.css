@@ -5,7 +5,7 @@
    and transparent so the whole strip takes a tap; only the track is drawn. */
 
 .c-range {
-  --range-empty: var(--color-slate-50);
+  --range-empty: var(--color-pink-100);
   appearance: none;
   -webkit-appearance: none;
   height: calc(var(--spacing) * 11);
@@ -95,7 +95,7 @@
 }
 
 .c-pricing-number:focus {
-  outline-color: var(--color-navy-500);
+  outline-color: var(--color-navy-900);
 }
 
 /* Phone comparison: the plan tabs share the full width, like the reference's `grow` tabs. */

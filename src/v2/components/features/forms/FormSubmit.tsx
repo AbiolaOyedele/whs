@@ -26,7 +26,7 @@ export function FormSubmit({ label, busy = false, privacyNote = true }: FormSubm
         <span className="text-label inline-block leading-none">{busy ? FORM_COPY.sending : label}</span>
       </button>
       {privacyNote ? (
-        <p className="text-body-sm mt-4 text-navy-500 [&_a]:underline">
+        <p className="text-body-sm mt-4 text-navy-900 [&_a]:underline">
           {FORM_COPY.privacyLead} <SmartLink href="/privacy">{FORM_COPY.privacyLink}</SmartLink>.
         </p>
       ) : null}

@@ -17,7 +17,7 @@ interface FormPageProps {
  */
 export function FormPage({ title, lead, aside, children }: FormPageProps) {
   return (
-    <section className="slate rounded-b-4xl bg-slate-50 pt-safe-header pb-fluid-4xl">
+    <section className="slate rounded-b-4xl bg-white pt-safe-header pb-fluid-4xl">
       <div className="container pt-fluid-lg">
         <div className="grid gap-gutter md:grid-cols-12 md:grid-rows-[auto_1fr]">
           <div className="min-w-0 md:col-span-4 md:row-start-1 lg:col-span-3">

@@ -32,7 +32,7 @@ export function RolePage({ role }: RolePageProps) {
         <PageSection title={ROLE_PAGE.needTitle} id="what-we-need">
           <ul className="flex flex-col gap-4">
             {role.requirements.map((item) => (
-              <li key={item} className="text-body-md flex gap-3 border-t border-slate-300 pt-4">
+              <li key={item} className="text-body-md flex gap-3 border-t border-charcoal pt-4">
                 <span aria-hidden="true" className="mt-2.5 size-1.5 shrink-0 rounded-full bg-navy-900" />
                 <span>{item}</span>
               </li>
@@ -49,7 +49,7 @@ export function RolePage({ role }: RolePageProps) {
           </ul>
         </PageSection>
       </div>
-      <div className="border-t border-slate-300 pt-fluid-lg">
+      <div className="border-t border-charcoal pt-fluid-lg">
         <Button label={ROLE_PAGE.applyAgain} href={applyPath(role.slug)} variant="navy" />
       </div>
     </ContentPage>

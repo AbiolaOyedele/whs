@@ -112,7 +112,7 @@ export function BlogExplorer({ posts, featured }: BlogExplorerProps) {
 
   return (
     <>
-      <div className="slate bg-slate-50">
+      <div className="slate bg-white">
         <div className="container">
           <header className="mb-fluid-lg h-safe-header">
             <h1 className="sr-only">Insights</h1>
@@ -140,7 +140,7 @@ export function BlogExplorer({ posts, featured }: BlogExplorerProps) {
           </div>
         </div>
       </div>
-      <div className="bg-slate-50 py-fluid-3xl">
+      <div className="bg-white py-fluid-3xl">
         <div className="container flex justify-center">
           <Pagination basePath="/blog" current={shown.page} total={totalPages} />
         </div>

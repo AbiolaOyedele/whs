@@ -1,8 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { Button } from '@v2/components/ui/Button'
-import { MenuIcon } from '@v2/components/ui/Icon'
 import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { heroCopy, holdWords } from '@v2/content/home-upper'
 import { site } from '@v2/config/site'
@@ -10,7 +9,6 @@ import { CANVAS_EVENTS } from '@v2/lib/canvas-events'
 import { getGsap, motionAllowed } from '@v2/lib/gsap'
 import { HeroHoldWords } from './HeroHoldWords'
 import { HeroCursor } from './HeroCursor'
-import { PlayIcon } from './PlayIcon'
 import type { ReactNode } from 'react'
 
 /** A full hold fills the cursor ring in this many seconds. */
@@ -26,7 +24,7 @@ const CURSOR_LERP = 0.2
 const ACTIVE_CLASS = 'is-hero-hold-active'
 
 /** Elements that keep the normal pointer and never start a hold. */
-const NO_HOLD = '[data-hero-cursor-hide], [data-hero-hold-trigger], button, a, [role="button"], input, select, textarea, label'
+const NO_HOLD = '[data-hero-cursor-hide], button, a, [role="button"], input, select, textarea, label'
 
 interface HeroHomeProps {
   /** The logo rail and dot grid, which sit inside the hero like the reference. */
@@ -37,15 +35,12 @@ interface HeroHomeProps {
  * The home hero. On a mouse, a ring follows the pointer; pressing and holding
  * anywhere fills the ring over nine seconds, hides the page chrome, tells the
  * 3D background to react and flickers three words in one after another.
- * On touch, a round button toggles the same thing and a tap anywhere ends it.
  */
 export function HeroHome({ children }: HeroHomeProps) {
   const root = useRef<HTMLDivElement>(null)
   const cursor = useRef<HTMLDivElement>(null)
   const progress = useRef<SVGCircleElement>(null)
   const words = useRef<HTMLDivElement>(null)
-  const finishRef = useRef<() => void>(() => {})
-  const [holding, setHolding] = useState(false)
 
   useEffect(() => {
     const host = root.current
@@ -67,7 +62,6 @@ export function HeroHome({ children }: HeroHomeProps) {
     resetRing()
 
     let isHolding = false
-    let tapSession = false
     let desktop = false
     let moved = false
     let shouldHide = false
@@ -79,8 +73,6 @@ export function HeroHome({ children }: HeroHomeProps) {
     let setY: ((value: number) => void) | null = null
     let ringTween: gsap.core.Tween | null = null
     let sequence: gsap.core.Timeline | null = null
-    let globalListening = false
-    let globalRaf: number | null = null
 
     const hideLetters = () => letterGroups.forEach((letters) => gsap.set(letters, { opacity: 0 }))
     hideLetters()
@@ -115,39 +107,9 @@ export function HeroHome({ children }: HeroHomeProps) {
       return timeline
     }
 
-    const stopGlobal = () => {
-      if (globalRaf !== null) {
-        window.cancelAnimationFrame(globalRaf)
-        globalRaf = null
-      }
-      if (globalListening) {
-        document.removeEventListener('pointerdown', onGlobalPointerDown, true)
-        globalListening = false
-      }
-    }
-
-    const onGlobalPointerDown = (event: PointerEvent) => {
-      if (!isHolding || !tapSession || !event.isPrimary) return
-      if ((event.target as Element | null)?.closest('[data-hero-hold-trigger]')) return
-      finish()
-    }
-
-    const startGlobal = () => {
-      if (desktop || globalListening || globalRaf !== null) return
-      // Wait a frame so the tap that started the hold does not end it.
-      globalRaf = window.requestAnimationFrame(() => {
-        globalRaf = null
-        if (desktop || !isHolding || globalListening) return
-        document.addEventListener('pointerdown', onGlobalPointerDown, true)
-        globalListening = true
-      })
-    }
-
-    const start = (fromTap: boolean) => {
+    const start = () => {
       if (isHolding) return
       isHolding = true
-      tapSession = fromTap
-      setHolding(true)
       cursorEl.classList.add('is-holding')
       cursorEl.classList.remove('is-hidden')
       document.documentElement.classList.add(ACTIVE_CLASS)
@@ -158,7 +120,6 @@ export function HeroHome({ children }: HeroHomeProps) {
       hideLetters()
       sequence = buildSequence()
       sequence.play(0)
-      if (fromTap) startGlobal()
       ringTween = gsap.to(ring, {
         strokeDashoffset: 0,
         duration: HOLD_SECONDS,
@@ -176,18 +137,14 @@ export function HeroHome({ children }: HeroHomeProps) {
       sequence?.kill()
       sequence = null
       isHolding = false
-      tapSession = false
-      setHolding(false)
       resetRing()
       document.documentElement.classList.remove(ACTIVE_CLASS)
-      stopGlobal()
       cursorEl.classList.remove('is-holding')
       refreshCursor()
       window.dispatchEvent(new CustomEvent(CANVAS_EVENTS.holdEnd))
       letterGroups.forEach((letters) => gsap.killTweensOf(letters))
       hideLetters()
     }
-    finishRef.current = finish
 
     // A filter or transform on an ancestor (the page transition wrapper) makes
     // `position: fixed` relative to that ancestor, so offset by where it sits.
@@ -229,7 +186,6 @@ export function HeroHome({ children }: HeroHomeProps) {
 
     const onModeChange = () => {
       if (fine.matches && !desktop) {
-        stopGlobal()
         enableDesktop()
       } else if (!fine.matches && desktop) {
         disableDesktop()
@@ -256,7 +212,7 @@ export function HeroHome({ children }: HeroHomeProps) {
       if (!desktop || event.button !== 0 || !event.isPrimary) return
       if ((event.target as Element | null)?.closest(NO_HOLD)) return
       event.preventDefault()
-      start(false)
+      start()
     }
 
     const onPointerUp = () => {
@@ -276,13 +232,6 @@ export function HeroHome({ children }: HeroHomeProps) {
       cursorEl.classList.add('is-hidden')
     }
 
-    const trigger = host.querySelector<HTMLButtonElement>('[data-hero-hold-trigger="mobile"]')
-    const onTriggerClick = (event: MouseEvent) => {
-      event.preventDefault()
-      if (isHolding) finish()
-      else start(true)
-    }
-
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') finish()
     }
@@ -292,7 +241,6 @@ export function HeroHome({ children }: HeroHomeProps) {
     host.addEventListener('pointerup', onPointerUp)
     host.addEventListener('pointercancel', onPointerCancel)
     host.addEventListener('pointerleave', onPointerLeave)
-    trigger?.addEventListener('click', onTriggerClick)
     window.addEventListener('keydown', onKeyDown)
     fine.addEventListener('change', onModeChange)
     onModeChange()
@@ -300,13 +248,11 @@ export function HeroHome({ children }: HeroHomeProps) {
     return () => {
       finish()
       disableDesktop()
-      stopGlobal()
       host.removeEventListener('pointermove', onPointerMove)
       host.removeEventListener('pointerdown', onPointerDown)
       host.removeEventListener('pointerup', onPointerUp)
       host.removeEventListener('pointercancel', onPointerCancel)
       host.removeEventListener('pointerleave', onPointerLeave)
-      trigger?.removeEventListener('click', onTriggerClick)
       window.removeEventListener('keydown', onKeyDown)
       fine.removeEventListener('change', onModeChange)
       document.documentElement.classList.remove(ACTIVE_CLASS)
@@ -323,26 +269,6 @@ export function HeroHome({ children }: HeroHomeProps) {
     >
       <div className="pointer-events-none sticky top-0 left-0">
         <HeroHoldWords ref={words} words={holdWords} />
-        {/* Pinned to the bottom of the screen through the sticky parent: the page's
-            transition wrapper has a filter, which stops position: fixed working here. */}
-        <div className="absolute inset-x-0 top-0 h-svh md:hidden">
-          <div
-            className="absolute right-(--grid-margin) bottom-(--grid-margin) left-(--grid-margin)"
-            data-hero-hold-only-active=""
-          >
-            <Button
-              label={heroCopy.close}
-              variant="pink"
-              className="w-full [&_svg]:rotate-45"
-              onClick={() => finishRef.current()}
-              trailing={
-                <span className="pointer-events-none relative inline-flex size-5 items-center justify-center">
-                  <MenuIcon />
-                </span>
-              }
-            />
-          </div>
-        </div>
       </div>
 
       <HeroCursor ref={cursor} progressRef={progress} hint={heroCopy.cursorHint} />
@@ -353,28 +279,9 @@ export function HeroHome({ children }: HeroHomeProps) {
       >
         <div className="container">
           <div className="grid items-end gap-x-gutter gap-y-fluid-lg sm:grid-cols-12">
-            <div className="anim-transform-opacity md:hidden">
-              <div className="inline-block rounded-sm border border-slate-50/15">
-                <button
-                  type="button"
-                  data-hero-hold-trigger="mobile"
-                  aria-pressed={holding}
-                  className="button group relative isolate inline-flex size-15 items-center justify-center gap-2 overflow-hidden rounded-sm bg-charcoal/35 text-white backdrop-blur-lg"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-charcoal/50 opacity-0 transition-[transform,opacity] duration-200 ease-(--ease) [transform:scale3d(0.9,0.7,1)] group-hover:opacity-100 group-hover:[transform:scale3d(1,1,1)]"
-                  />
-                  <span className="sr-only">{heroCopy.mobileTrigger}</span>
-                  <span className="pointer-events-none relative inline-flex size-3 items-center justify-center">
-                    <PlayIcon />
-                  </span>
-                </button>
-              </div>
-            </div>
             <div className="sm:col-start-1 sm:col-end-7" data-hero-cursor-hide="">
-              <SplitTitle as="h1" className="text-heading-2xl">
-                {heroCopy.title.before} <span className="text-gradient">{heroCopy.title.highlight}</span>{' '}
+              <SplitTitle as="h1" glow className="text-heading-2xl">
+                {heroCopy.title.before} {heroCopy.title.highlight}{' '}
                 {heroCopy.title.after}
               </SplitTitle>
             </div>
@@ -388,7 +295,7 @@ export function HeroHome({ children }: HeroHomeProps) {
                     <Button label={heroCopy.primary} variant="pink" href={site.signUpUrl} />
                   </div>
                   <div className="anim-transform-opacity -delay-3">
-                    <Button label={heroCopy.secondary.label} variant="glass" href={heroCopy.secondary.href} />
+                    <Button label={heroCopy.secondary.label} variant="outline" href={heroCopy.secondary.href} />
                   </div>
                 </div>
               </div>

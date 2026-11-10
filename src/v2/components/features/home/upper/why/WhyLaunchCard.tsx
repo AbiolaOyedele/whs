@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react'
 import { launchCard } from '@v2/content/home-upper'
-import { motionAllowed } from '@v2/lib/gsap'
 import { useRevealOnce } from './useRevealOnce'
 import { WhyPanel } from './WhyPanel'
 
@@ -22,20 +21,20 @@ function stepDelay(index: number, count: number): number {
 }
 
 /**
- * Lime panel: the hours from an approved design to a live website count up
- * to 72 while a track fills under the three steps, each step lighting as the
- * fill reaches it. Shows the finished state at once with reduced motion.
+ * Lime panel, the card's one lime: the hours from an approved design to a
+ * live website count up to 72 while a solid ink line runs over the dashed
+ * one under the three steps, each step filling as the line reaches it.
  */
 export function WhyLaunchCard() {
-  const [ref, revealed] = useRevealOnce<HTMLDivElement>()
+  const [ref, stage] = useRevealOnce<HTMLDivElement>()
   const count = useRef<HTMLSpanElement>(null)
   const { hours, steps } = launchCard
 
   useEffect(() => {
     const el = count.current
-    if (!el || !revealed) return
-    if (!motionAllowed()) {
-      el.textContent = String(hours)
+    if (!el || stage === 'static') return
+    if (stage === 'waiting') {
+      el.textContent = '0'
       return
     }
     let frame = 0
@@ -47,44 +46,40 @@ export function WhyLaunchCard() {
     }
     frame = window.requestAnimationFrame(tick)
     return () => window.cancelAnimationFrame(frame)
-  }, [revealed, hours])
+  }, [stage, hours])
 
   return (
-    <WhyPanel tone="lime" revealed={revealed} panelRef={ref} className="justify-between gap-8">
-      <p className="self-start">
-        <span className="text-label inline-block rounded-sm bg-charcoal px-2 py-1.5 text-pink-500">{launchCard.chip}</span>
-      </p>
-
+    <WhyPanel tone="lime" stage={stage} panelRef={ref} className="justify-between gap-10">
       <div className="flex flex-col items-start">
         <p className="sr-only">
           {hours} {launchCard.unit} {launchCard.caption}.
         </p>
         <p aria-hidden="true" className="flex items-end gap-3">
           <span ref={count} className="c-why-display text-[clamp(6rem,30cqw,12rem)] tabular-nums">
-            0
+            {hours}
           </span>
           <span className="c-why-display mb-[0.6em] text-[clamp(1.5rem,5cqw,2.25rem)]">{launchCard.unit}</span>
         </p>
-        <p aria-hidden="true" className="text-body-md max-w-80 text-charcoal/75">
+        <p aria-hidden="true" className="text-body-md max-w-80">
           {launchCard.caption}
         </p>
       </div>
 
-      <ol className="relative grid grid-cols-3 gap-2 pt-7">
-        <span aria-hidden="true" className="absolute top-[7px] right-[7px] left-[7px] h-0.5 rounded-full bg-charcoal/15">
-          <span className="c-why-track block h-full rounded-full bg-charcoal" />
+      <ol className="relative grid grid-cols-3 gap-2 pt-8">
+        <span aria-hidden="true" className="absolute top-[7px] right-2 left-2 border-t-2 border-dashed border-charcoal">
+          <span className="c-why-track absolute -top-0.5 right-0 left-0 block h-0.5 bg-charcoal" />
         </span>
         {steps.map((step, index) => (
           <li
             key={step}
-            className={`text-body-sm relative flex flex-col gap-2 ${
+            className={`text-body-sm relative flex flex-col ${
               index === 0 ? 'items-start text-left' : index === steps.length - 1 ? 'items-end text-right' : 'items-center text-center'
             }`}
           >
             <span
               aria-hidden="true"
               style={{ ['--why-delay' as string]: `${stepDelay(index, steps.length)}ms` }}
-              className="c-why-node absolute -top-7 size-4 rounded-full border-2 border-charcoal bg-pink-500"
+              className="c-why-node absolute -top-8 size-4 rounded-full border-2 border-charcoal bg-charcoal"
             />
             <span className="max-w-32">{step}</span>
           </li>

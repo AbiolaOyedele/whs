@@ -44,16 +44,6 @@ const SITE: LivePreview['sizes'] = {
 }
 
 export const LIVE_PREVIEWS = {
-  dumpty: {
-    label: 'The Dumpty app recording an idea and returning it as a tidy, tagged note.',
-    caption: 'The app',
-    sizes: APP,
-  },
-  'dumpty-site': {
-    label: 'The Dumpty website’s homepage.',
-    caption: 'The website',
-    sizes: SITE,
-  },
   autoflow: {
     label: 'Auto Flow working through a folder of images, three videos at a time.',
     caption: 'The app',

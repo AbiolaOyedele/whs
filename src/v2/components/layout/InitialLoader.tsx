@@ -1,6 +1,9 @@
 import { LogoMark } from '@v2/components/ui/LogoMark'
 
-/** Charcoal screen with the rocking logo mark, shown until the page is ready. */
+/**
+ * The first-load intro: the "whs." mark on ink, its letters rising in and the
+ * lime dot popping in (loader.css), then the screen slides up off the page.
+ */
 export function InitialLoader() {
   return (
     <div className="c-initial-loader" aria-hidden="true">

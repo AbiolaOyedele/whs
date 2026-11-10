@@ -1,6 +1,5 @@
 import gsap from 'gsap'
 import { Flip } from 'gsap/Flip'
-import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin'
 import { SplitText } from 'gsap/SplitText'
 
 let registered = false
@@ -8,7 +7,7 @@ let registered = false
 /** GSAP with the plugins this site uses, registered once on the client. */
 export function getGsap(): typeof gsap {
   if (!registered && typeof window !== 'undefined') {
-    gsap.registerPlugin(Flip, ScrambleTextPlugin, SplitText)
+    gsap.registerPlugin(Flip, SplitText)
     registered = true
   }
   return gsap

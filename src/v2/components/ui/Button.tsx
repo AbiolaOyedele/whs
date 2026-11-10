@@ -3,19 +3,30 @@
 import type { ReactNode } from 'react'
 import { SmartLink } from '@v2/components/ui/SmartLink'
 
-export type ButtonVariant = 'pink' | 'navy' | 'slate' | 'glass' | 'light' | 'white'
+export type ButtonVariant = 'pink' | 'navy' | 'slate' | 'outline' | 'light' | 'white'
 
 /**
  * Resting surface, the colour the hover circle floods with, and the label
- * colour once flooded. Same pairings as the main site's flow buttons: lime
- * floods to ink, ink floods to lime, light surfaces flood to ink.
+ * colour once flooded. Lime floods to white so it stays visible on dark and
+ * green backgrounds, ink floods to lime, light surfaces flood to ink.
  */
 const VARIANTS: Record<ButtonVariant, { base: string; circle: string; hoverText: string }> = {
-  pink: { base: 'bg-pink-500 text-charcoal', circle: 'bg-charcoal', hoverText: 'hover:text-white' },
+  pink: {
+    base: 'bg-pink-500 text-charcoal',
+    circle: 'bg-white',
+    // The ink outline keeps the white-flooded button visible on white panels.
+    hoverText:
+      'hover:text-charcoal hover:outline hover:outline-1 hover:-outline-offset-1 hover:outline-charcoal',
+  },
   navy: { base: 'bg-navy-900 text-white', circle: 'bg-pink-500', hoverText: 'hover:text-charcoal' },
-  slate: { base: 'bg-slate-200 text-navy-900', circle: 'bg-charcoal', hoverText: 'hover:text-white' },
-  glass: { base: 'bg-charcoal/35 backdrop-blur-lg text-white', circle: 'bg-white', hoverText: 'hover:text-charcoal' },
-  light: { base: 'bg-slate-50 slate:bg-white text-navy-900', circle: 'bg-charcoal', hoverText: 'hover:text-white' },
+  slate: { base: 'bg-white text-navy-900', circle: 'bg-charcoal', hoverText: 'hover:text-white' },
+  // The partner to a filled button: an ink outline on light panels, a white one on dark.
+  outline: {
+    base: 'bg-transparent text-navy-900 ring-1 ring-current ring-inset dark:text-white',
+    circle: 'bg-navy-900 dark:bg-white',
+    hoverText: 'hover:text-white dark:hover:text-charcoal',
+  },
+  light: { base: 'bg-white text-navy-900', circle: 'bg-charcoal', hoverText: 'hover:text-white' },
   white: { base: 'bg-white text-navy-900', circle: 'bg-charcoal', hoverText: 'hover:text-white' },
 }
 
@@ -24,7 +35,7 @@ const VARIANTS: Record<ButtonVariant, { base: string; circle: string; hoverText:
 const BASE =
   'button group relative isolate inline-flex items-center justify-center gap-2 overflow-hidden font-sans font-medium ' +
   'rounded-[100px] transition-all duration-[600ms] ease-[cubic-bezier(0.23,1,0.32,1)] hover:rounded-[12px] active:scale-[0.97] ' +
-  'md:min-h-13.5 md:px-7 max-md:min-h-11 max-md:px-5'
+  'min-h-13 px-6 text-[17px] md:min-h-16 md:px-9 md:text-lg'
 
 function FlowArrow({ className }: { className: string }) {
   return (

@@ -78,7 +78,7 @@
 }
 
 [data-wysiwyg-root] .c-code:focus-visible {
-  outline: 2px solid var(--color-navy-500);
+  outline: 2px solid var(--color-navy-900);
   outline-offset: 2px;
 }
 
@@ -94,7 +94,7 @@
   padding: 0.35rem 0.65rem;
   border: none;
   border-radius: var(--radius-sm);
-  background-color: #54565f;
+  background-color: var(--color-charcoal);
   color: var(--color-white);
   font-family: var(--font-sans);
   font-size: 0.75rem;
@@ -150,7 +150,7 @@
 }
 
 [data-wysiwyg-root] .c-rich-table:focus-visible {
-  outline: 2px solid var(--color-navy-500);
+  outline: 2px solid var(--color-navy-900);
   outline-offset: 2px;
 }
 
@@ -169,7 +169,7 @@
 [data-wysiwyg-root] .c-rich-table caption {
   caption-side: bottom;
   padding-top: calc(var(--spacing) * 3);
-  color: var(--color-navy-500);
+  color: var(--color-navy-900);
   font-size: 14px;
   text-align: left;
 }

@@ -43,11 +43,10 @@ lookElsewhereWhen:
   - 'An existing tool genuinely does the job'
   - 'The need is visibility rather than a workflow'
 relatedWork:
-  - 'dumpty'
   - 'lazy-meet'
 ---
 
-Every app here started as a workflow someone was doing by hand. Dumpty replaced the note that never got tidied up. Lazy Meet replaced the five clicks before every call. The shape of the build always follows the shape of the problem, which is why none of them look like each other.
+Every app here started as a workflow someone was doing by hand. Lazy Meet replaced the five clicks before every call. The shape of the build always follows the shape of the problem, which is why none of them look like each other.
 
 ## How the work runs
 

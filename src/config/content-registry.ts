@@ -78,7 +78,7 @@ export const CONTENT_REGISTRY: readonly ContentEntry[] = [
     label: 'Products in the strip',
     help: 'One per line. These are things WildHands built, not client logos.',
     type: 'list',
-    defaultValue: ['Dumpty', 'Auto Flow', 'Lazy Meet', 'The Ruff Agency'],
+    defaultValue: ['Auto Flow', 'Lazy Meet', 'The Ruff Agency'],
   },
 
   {

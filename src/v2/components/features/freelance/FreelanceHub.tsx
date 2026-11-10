@@ -32,7 +32,7 @@ export function FreelanceHub() {
             <h2 id="apply-title" className="text-heading-sm">
               {page.applyTitle}
             </h2>
-            <p className="text-body-md mt-3 text-navy-500">{page.applyLead}</p>
+            <p className="text-body-md mt-3 text-navy-900">{page.applyLead}</p>
           </div>
           <div className="min-w-0 md:col-span-8 lg:col-span-7 lg:col-start-5">
             <FreelanceApplicationForm />
@@ -43,7 +43,7 @@ export function FreelanceHub() {
       <section aria-labelledby="freelance-faq-title">
         <div className="grid gap-gutter md:grid-cols-2">
           <div>
-            <h2 id="freelance-faq-title" className="text-heading-sm">
+            <h2 id="freelance-faq-title" className="text-heading-xl max-w-[9ch] md:sticky md:top-32">
               {page.faqTitle}
             </h2>
           </div>
@@ -59,12 +59,12 @@ export function FreelanceHub() {
         </div>
       </section>
 
-      <div className="grid gap-gutter rounded-lg bg-slate-100 p-fluid-md md:grid-cols-2 md:p-fluid-lg">
+      <div className="grid gap-gutter rounded-lg bg-white p-fluid-md md:grid-cols-2 md:p-fluid-lg">
         <section aria-labelledby="freelance-email-title">
           <h2 id="freelance-email-title" className="text-heading-xs">
             {page.email.title}
           </h2>
-          <p className="text-body-md mt-3 text-navy-500">{page.email.body}</p>
+          <p className="text-body-md mt-3 text-navy-900">{page.email.body}</p>
           <a
             href={`mailto:${page.email.address}`}
             className="text-body-md mt-2 inline-flex min-h-11 items-center underline underline-offset-4"
@@ -72,11 +72,11 @@ export function FreelanceHub() {
             {page.email.address}
           </a>
         </section>
-        <section aria-labelledby="freelance-newsletter-title" className="max-md:border-t max-md:border-slate-300 max-md:pt-fluid-md">
+        <section aria-labelledby="freelance-newsletter-title" className="max-md:border-t max-md:border-charcoal max-md:pt-fluid-md">
           <h2 id="freelance-newsletter-title" className="text-heading-xs">
             {page.newsletter.title}
           </h2>
-          <p className="text-body-md mt-3 mb-5 text-navy-500">{page.newsletter.body}</p>
+          <p className="text-body-md mt-3 mb-5 text-navy-900">{page.newsletter.body}</p>
           <NewsletterForm idPrefix="freelance-news" />
         </section>
       </div>

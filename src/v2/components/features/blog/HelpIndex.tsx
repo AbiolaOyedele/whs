@@ -15,7 +15,7 @@ export function HelpIndex({ page = 1 }: HelpIndexProps) {
 
   return (
     <div className="overflow-hidden rounded-b-4xl">
-      <div className="slate bg-slate-50">
+      <div className="slate bg-white">
         <div className="container">
           <div className="mb-fluid-xl grid gap-gutter pt-safe-header md:grid-cols-12">
             <div className="md:col-span-8">
@@ -39,7 +39,7 @@ export function HelpIndex({ page = 1 }: HelpIndexProps) {
           </div>
         </div>
       </div>
-      <div className="bg-slate-50 py-fluid-3xl">
+      <div className="bg-white py-fluid-3xl">
         <div className="container flex justify-center">
           <Pagination basePath="/resources" current={page} total={totalPages} />
         </div>

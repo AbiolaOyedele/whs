@@ -2,547 +2,516 @@
 
 /* In the components layer, like the reference: utility classes on an element win over these. */
 @layer components {
-/* ── hero "click and hold" ────────────────────────────────────────── */
+  /* ── hero "click and hold" ────────────────────────────────────────── */
 
-[data-hero-hold-hide] {
-  transition:
-    opacity 0.25s var(--ease),
-    visibility 0.25s var(--ease);
-}
-
-html.is-hero-hold-active [data-hero-hold-hide] {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-[data-hero-hold-only-active] {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition:
-    opacity 0.25s var(--ease),
-    visibility 0.25s var(--ease);
-}
-
-html.is-hero-hold-active [data-hero-hold-only-active] {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-/* ── section label: a dot that wipes in, then the text slides in ──── */
-
-.c-label {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--spacing) * 2);
-}
-
-.c-label_circle {
-  width: calc(var(--spacing) * 1.5);
-  height: calc(var(--spacing) * 1.5);
-  background-color: var(--label-circle-color, currentColor);
-  clip-path: inset(100% round var(--radius-sm));
-  transition: clip-path var(--transition-duration-fast) var(--ease) var(--transition-duration);
-}
-
-html.is-ready .c-label.is-inview .c-label_circle {
-  clip-path: inset(0% round var(--radius-sm));
-}
-
-.c-label_text {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.07;
-  font-weight: 400;
-  letter-spacing: var(--tracking-tight);
-  text-transform: uppercase;
-  opacity: 0;
-  transform: translateX(10px);
-  transition-property: transform, opacity;
-  transition-duration: var(--transition-duration);
-  transition-delay: var(--transition-duration);
-  transition-timing-function: var(--ease);
-}
-
-html.is-ready .c-label.is-inview .c-label_text {
-  opacity: 1;
-  transform: none;
-}
-
-/* ── split title: hidden until its words flicker in ───────────────── */
-
-.c-split-title {
-  display: block;
-  opacity: 0;
-}
-
-.c-split-title .word {
-  display: inline-block;
-}
-
-.c-split-title .text-gradient .word {
-  margin-bottom: -0.08em;
-  padding-bottom: 0.08em;
-}
-
-/* ── rail: an endless row that speeds up with scrolling ───────────── */
-
-.c-rail {
-  display: block;
-  overflow: hidden;
-}
-
-.c-rail:not(.is-initialized) {
-  width: 100%;
-  max-width: calc(var(--spacing) * 500);
-  margin-inline: auto;
-  padding-inline: var(--grid-margin);
-}
-
-.c-rail_container {
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-}
-
-.c-rail_pattern {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--spacing) * 12);
-  padding-right: calc(var(--spacing) * 12);
-}
-
-@media (min-width: 700px) {
-  .c-rail_pattern {
-    gap: calc(var(--spacing) * 20);
-    padding-right: calc(var(--spacing) * 20);
+  [data-hero-hold-hide] {
+    transition:
+      opacity 0.25s var(--ease),
+      visibility 0.25s var(--ease);
   }
-}
 
-.c-rail.-tile .c-rail_pattern {
-  gap: var(--grid-gutter);
-  padding-right: var(--grid-gutter);
-}
-
-.c-rail:not(.is-initialized) .c-rail_pattern {
-  justify-content: space-between;
-  gap: 0;
-  width: 100%;
-  padding-right: 0;
-}
-
-.c-rail.-tile:not(.is-initialized) .c-rail_pattern {
-  justify-content: center;
-  gap: var(--grid-gutter);
-}
-
-/* ── accordion ────────────────────────────────────────────────────── */
-
-.c-accordion {
-  --accordion-background: var(--color-slate-50);
-  --accordion-button-background: var(--color-white);
-  --accordion-button-hover: var(--color-slate-100);
-  margin-block: calc(var(--spacing) * 3.5);
-  border-radius: var(--radius-sm);
-  background-color: var(--accordion-background);
-}
-
-.c-accordion:where(.slate, .slate *) {
-  --accordion-background: var(--color-white);
-  --accordion-button-background: var(--color-slate-50);
-}
-
-@media (min-width: 1000px) {
-  .c-accordion {
-    margin-block: calc(var(--spacing) * 5);
-  }
-}
-
-.c-accordion_summary {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--spacing) * 5);
-  padding: calc(var(--spacing) * 6);
-  cursor: pointer;
-  list-style: none;
-}
-
-.c-accordion_summary::-webkit-details-marker {
-  display: none;
-}
-
-.c-accordion_summary_title {
-  flex-grow: 1;
-  font-family: var(--font-sans);
-  font-size: var(--text-fluid-heading-2xs);
-  line-height: 1.35;
-  font-weight: 400;
-  letter-spacing: var(--tracking-tight);
-}
-
-.c-accordion_summary_button {
-  position: relative;
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: calc(var(--spacing) * 8.5);
-  height: calc(var(--spacing) * 8.5);
-  border-radius: var(--radius-sm);
-  background-color: var(--accordion-button-background);
-}
-
-.c-accordion_summary_button::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-sm);
-  background-color: var(--accordion-button-hover);
-  opacity: 0;
-  transform: scale(0.3);
-  transition-property: transform, opacity;
-  transition-duration: var(--transition-duration-fast);
-  transition-timing-function: var(--ease);
-}
-
-.c-accordion_summary:is(:hover, :focus-within) .c-accordion_summary_button::before {
-  opacity: 1;
-  transform: none;
-}
-
-.c-accordion[open] .c-plus-icon,
-.c-accordion.is-open .c-plus-icon {
-  transform: rotate(45deg);
-}
-
-.c-accordion_content {
-  padding: calc(var(--spacing) * 6) calc(var(--spacing) * 6) calc(var(--spacing) * 10);
-}
-
-/* ── link card: tile with a hover shrink and a sliding label ──────── */
-
-.c-link-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 360 / 198;
-  padding: var(--spacing-fluid-md);
-}
-
-@media (min-width: 1000px) {
-  .c-link-card {
-    aspect-ratio: 464 / 350;
-  }
-}
-
-.c-link-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-md);
-  background-color: var(--color-slate-50);
-}
-
-.c-link-card_title {
-  position: relative;
-  z-index: 2;
-  font-family: var(--font-sans);
-  font-size: var(--text-fluid-heading-xs);
-  line-height: 1.35;
-  font-weight: 400;
-  letter-spacing: var(--tracking-tight);
-}
-
-.c-link-card_top {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-fluid-sm);
-  width: 100%;
-  padding: calc(var(--spacing) * 3.5) calc(var(--spacing) * 4.5);
-}
-
-.c-link-card_link {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  border-radius: var(--radius-md);
-}
-
-@media (hover: hover) {
-  .c-link-card::before {
-    transition: transform var(--transition-duration-fast) var(--ease-in-out);
-  }
-  .c-link-card:is(:hover, :focus-within)::before {
-    transform: scale(0.98);
-  }
-  .c-link-card:is(:hover, :focus-within) .c-link-card_title {
-    text-decoration: underline;
-  }
-  .c-link-card_icon {
+  html.is-hero-hold-active [data-hero-hold-hide] {
     opacity: 0;
-    transform: translateX(5px);
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* ── section label: a dot that wipes in, then the text slides in ──── */
+
+  .c-label {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--spacing) * 2);
+  }
+
+  .c-label_circle {
+    width: calc(var(--spacing) * 1.5);
+    height: calc(var(--spacing) * 1.5);
+    background-color: var(--label-circle-color, currentColor);
+    clip-path: inset(100% round var(--radius-sm));
+    transition: clip-path var(--transition-duration-fast) var(--ease) var(--transition-duration);
+  }
+
+  html.is-ready .c-label.is-inview .c-label_circle {
+    clip-path: inset(0% round var(--radius-sm));
+  }
+
+  .c-label_text {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.3;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    opacity: 0;
+    transform: translateX(10px);
+    transition-property: transform, opacity;
+    transition-duration: var(--transition-duration);
+    transition-delay: var(--transition-duration);
+    transition-timing-function: var(--ease);
+  }
+
+  html.is-ready .c-label.is-inview .c-label_text {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ── split title: hidden until its words flicker in ───────────────── */
+
+  .c-split-title {
+    display: block;
+    opacity: 0;
+  }
+
+  .c-split-title .word {
+    display: inline-block;
+  }
+
+  /* ── rail: an endless row that speeds up with scrolling ───────────── */
+
+  .c-rail {
+    display: block;
+    overflow: hidden;
+  }
+
+  .c-rail:not(.is-initialized) {
+    width: 100%;
+    max-width: calc(var(--spacing) * 500);
+    margin-inline: auto;
+    padding-inline: var(--grid-margin);
+  }
+
+  .c-rail_container {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  .c-rail_pattern {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--spacing) * 12);
+    padding-right: calc(var(--spacing) * 12);
+  }
+
+  @media (min-width: 700px) {
+    .c-rail_pattern {
+      gap: calc(var(--spacing) * 20);
+      padding-right: calc(var(--spacing) * 20);
+    }
+  }
+
+  .c-rail.-tile .c-rail_pattern {
+    gap: var(--grid-gutter);
+    padding-right: var(--grid-gutter);
+  }
+
+  .c-rail:not(.is-initialized) .c-rail_pattern {
+    justify-content: space-between;
+    gap: 0;
+    width: 100%;
+    padding-right: 0;
+  }
+
+  .c-rail.-tile:not(.is-initialized) .c-rail_pattern {
+    justify-content: center;
+    gap: var(--grid-gutter);
+  }
+
+  /* ── accordion ────────────────────────────────────────────────────── */
+
+  .c-accordion {
+    --accordion-background: var(--color-white);
+    --accordion-button-background: var(--color-white);
+    --accordion-button-hover: var(--color-pink-100);
+    margin-block: calc(var(--spacing) * 3.5);
+    border-radius: var(--radius-sm);
+    background-color: var(--accordion-background);
+  }
+
+  .c-accordion:where(.slate, .slate *) {
+    --accordion-background: var(--color-white);
+    --accordion-button-background: var(--color-white);
+  }
+
+  @media (min-width: 1000px) {
+    .c-accordion {
+      margin-block: calc(var(--spacing) * 5);
+    }
+  }
+
+  .c-accordion_summary {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--spacing) * 5);
+    padding: calc(var(--spacing) * 6);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .c-accordion_summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .c-accordion_summary_title {
+    flex-grow: 1;
+    font-family: var(--font-sans);
+    font-size: var(--text-fluid-heading-2xs);
+    line-height: 1.35;
+    font-weight: 400;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .c-accordion_summary_button {
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: calc(var(--spacing) * 8.5);
+    height: calc(var(--spacing) * 8.5);
+    border-radius: var(--radius-sm);
+    background-color: var(--accordion-button-background);
+  }
+
+  .c-accordion_summary_button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-sm);
+    background-color: var(--accordion-button-hover);
+    opacity: 0;
+    transform: scale(0.3);
+    transition-property: transform, opacity;
+    transition-duration: var(--transition-duration-fast);
+    transition-timing-function: var(--ease);
+  }
+
+  .c-accordion_summary:is(:hover, :focus-within) .c-accordion_summary_button::before {
+    opacity: 1;
+    transform: none;
+  }
+
+  .c-accordion[open] .c-plus-icon,
+  .c-accordion.is-open .c-plus-icon {
+    transform: rotate(45deg);
+  }
+
+  .c-accordion_content {
+    padding: calc(var(--spacing) * 6) calc(var(--spacing) * 6) calc(var(--spacing) * 10);
+  }
+
+  /* ── link card: tile with a hover shrink and a sliding label ──────── */
+
+  .c-link-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 360 / 198;
+    padding: var(--spacing-fluid-md);
+  }
+
+  @media (min-width: 1000px) {
+    .c-link-card {
+      aspect-ratio: 464 / 350;
+    }
+  }
+
+  .c-link-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-md);
+    background-color: var(--color-white);
+  }
+
+  .c-link-card_title {
+    position: relative;
+    z-index: 2;
+    font-family: var(--font-sans);
+    font-size: var(--text-fluid-heading-xs);
+    line-height: 1.35;
+    font-weight: 400;
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .c-link-card_top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-fluid-sm);
+    width: 100%;
+    padding: calc(var(--spacing) * 3.5) calc(var(--spacing) * 4.5);
+  }
+
+  .c-link-card_link {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: var(--radius-md);
+  }
+
+  @media (hover: hover) {
+    .c-link-card::before {
+      transition: transform var(--transition-duration-fast) var(--ease-in-out);
+    }
+    .c-link-card:is(:hover, :focus-within)::before {
+      transform: scale(0.98);
+    }
+    .c-link-card:is(:hover, :focus-within) .c-link-card_title {
+      text-decoration: underline;
+    }
+    .c-link-card_icon {
+      opacity: 0;
+      transform: translateX(5px);
+      transition-property: opacity, transform;
+      transition-duration: var(--transition-duration-fast);
+      transition-timing-function: var(--ease-in-out);
+    }
+    .c-link-card:is(:hover, :focus-within) .c-link-card_icon {
+      opacity: 1;
+      transform: translate(-5px, 5px);
+    }
+    .c-link-card_label {
+      transition: transform var(--transition-duration-fast) var(--ease-in-out);
+    }
+    .c-link-card:is(:hover, :focus-within) .c-link-card_label {
+      transform: translate(5px, 5px);
+    }
+  }
+
+  /* ── link card extras: the copy button and its tooltip ─────────────── */
+
+  .c-link-card_button {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+  }
+
+  .c-link-card_copy {
+    position: absolute;
+    bottom: calc(var(--spacing) * 3.5);
+    left: 50%;
+    z-index: 2;
+    display: inline-block;
+    padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2.5);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-white);
+    color: var(--color-navy-900);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.3;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translate(-50%, 20px);
+    transition-property: transform, opacity, background-color;
+    transition-duration: var(--transition-duration);
+    transition-timing-function: var(--ease);
+    pointer-events: none;
+  }
+
+  .c-link-card:is(:hover, :focus-within) .c-link-card_copy.-copy {
+    opacity: 1;
+    transform: translate(-50%);
+  }
+
+  .c-link-card.is-copied .c-link-card_copy.-copy {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+
+  .c-link-card.is-copied .c-link-card_copy.-copied {
+    background-color: var(--color-pink-500);
+    opacity: 1;
+    transform: translate(-50%);
+  }
+
+  /* ── feature list: rows that slide apart on hover ─────────────────── */
+
+  .c-feature-list_list {
+    display: grid;
+    column-gap: calc(var(--spacing) * 4);
+  }
+
+  @container (min-width: 36rem) {
+    .c-feature-list_list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* Always visible: the rows used to wait for scroll and left a blank band. */
+  .c-feature-list_item {
+    position: relative;
+  }
+
+  .c-feature-list_item::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--color-charcoal);
+    transition-property: transform, opacity;
+    transition-duration: var(--transition-duration-fast);
+    transition-timing-function: var(--ease-in-out);
+  }
+
+  .c-feature-list_link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 44px;
+    padding-block: calc(var(--spacing) * 3.5);
+  }
+
+  @media (min-width: 700px) {
+    .c-feature-list_link {
+      padding-block: calc(var(--spacing) * 5);
+    }
+  }
+
+  .c-feature-list_link::before {
+    content: '';
+    position: absolute;
+    inset: -1px 0 0;
+    border-radius: var(--radius-md);
+    background-color: var(--color-white);
+    opacity: 0;
+    transform: scale(0.95, 0.7);
     transition-property: opacity, transform;
     transition-duration: var(--transition-duration-fast);
     transition-timing-function: var(--ease-in-out);
   }
-  .c-link-card:is(:hover, :focus-within) .c-link-card_icon {
-    opacity: 1;
-    transform: translate(-5px, 5px);
+
+  .c-feature-list_link_label {
+    position: relative;
+    z-index: 1;
+    display: block;
+    font-family: var(--font-sans);
+    font-size: var(--text-fluid-heading-xs);
+    line-height: 1.35;
+    font-weight: 400;
+    letter-spacing: var(--tracking-tight);
   }
-  .c-link-card_label {
-    transition: transform var(--transition-duration-fast) var(--ease-in-out);
-  }
-  .c-link-card:is(:hover, :focus-within) .c-link-card_label {
-    transform: translate(5px, 5px);
-  }
-}
 
-/* ── link card extras: the copy button and its tooltip ─────────────── */
-
-.c-link-card_button {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-}
-
-.c-link-card_copy {
-  position: absolute;
-  bottom: calc(var(--spacing) * 3.5);
-  left: 50%;
-  z-index: 2;
-  display: inline-block;
-  padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2.5);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-white);
-  color: var(--color-navy-900);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.07;
-  font-weight: 400;
-  letter-spacing: var(--tracking-tight);
-  text-transform: uppercase;
-  white-space: nowrap;
-  opacity: 0;
-  transform: translate(-50%, 20px);
-  transition-property: transform, opacity, background-color;
-  transition-duration: var(--transition-duration);
-  transition-timing-function: var(--ease);
-  pointer-events: none;
-}
-
-.c-link-card:is(:hover, :focus-within) .c-link-card_copy.-copy {
-  opacity: 1;
-  transform: translate(-50%);
-}
-
-.c-link-card.is-copied .c-link-card_copy.-copy {
-  opacity: 0;
-  transform: translate(-50%, 20px);
-}
-
-.c-link-card.is-copied .c-link-card_copy.-copied {
-  background-color: var(--color-pink-500);
-  opacity: 1;
-  transform: translate(-50%);
-}
-
-/* ── feature list: rows that slide apart on hover ─────────────────── */
-
-.c-feature-list_list {
-  display: grid;
-  column-gap: calc(var(--spacing) * 4);
-}
-
-@container (min-width: 36rem) {
-  .c-feature-list_list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.c-feature-list_item {
-  position: relative;
-  opacity: 0;
-  transform: translateX(10px);
-  transition-property: transform, opacity;
-  transition-duration: 0.4s;
-  transition-timing-function: var(--ease-in-out);
-}
-
-html.is-ready .c-feature-list_item.is-inview {
-  opacity: 1;
-  transform: none;
-}
-
-.c-feature-list_item::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background-color: var(--color-slate-200);
-  transition-property: transform, opacity;
-  transition-duration: var(--transition-duration-fast);
-  transition-timing-function: var(--ease-in-out);
-}
-
-.c-feature-list_link {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 44px;
-  padding-block: calc(var(--spacing) * 3.5);
-}
-
-@media (min-width: 700px) {
-  .c-feature-list_link {
-    padding-block: calc(var(--spacing) * 5);
-  }
-}
-
-.c-feature-list_link::before {
-  content: '';
-  position: absolute;
-  inset: -1px 0 0;
-  border-radius: var(--radius-md);
-  background-color: var(--color-white);
-  opacity: 0;
-  transform: scale(0.95, 0.7);
-  transition-property: opacity, transform;
-  transition-duration: var(--transition-duration-fast);
-  transition-timing-function: var(--ease-in-out);
-}
-
-.c-feature-list_link_label {
-  position: relative;
-  z-index: 1;
-  display: block;
-  font-family: var(--font-sans);
-  font-size: var(--text-fluid-heading-xs);
-  line-height: 1.35;
-  font-weight: 400;
-  letter-spacing: var(--tracking-tight);
-}
-
-.c-feature-list_link_icon {
-  position: relative;
-  z-index: 1;
-  display: block;
-  flex-shrink: 0;
-}
-
-@media (hover: hover) and (min-width: 1000px) {
-  .c-feature-list_item:is(:hover, :focus-within)::before,
-  .c-feature-list_item:has(+ .c-feature-list_item + .c-feature-list_item:hover)::before {
-    opacity: 0;
-    transform: scaleX(0.95);
-  }
-  .c-feature-list_link:is(:hover, :focus-visible)::before {
-    opacity: 1;
-    transform: none;
-  }
-  .c-feature-list_link_label,
   .c-feature-list_link_icon {
-    transition: transform var(--transition-duration-fast) var(--ease-in-out);
+    position: relative;
+    z-index: 1;
+    display: block;
+    flex-shrink: 0;
   }
-  .c-feature-list_link:is(:hover, :focus-visible) .c-feature-list_link_label {
-    transform: translateX(15px);
+
+  @media (hover: hover) and (min-width: 1000px) {
+    .c-feature-list_item:is(:hover, :focus-within)::before,
+    .c-feature-list_item:has(+ .c-feature-list_item + .c-feature-list_item:hover)::before {
+      opacity: 0;
+      transform: scaleX(0.95);
+    }
+    .c-feature-list_link:is(:hover, :focus-visible)::before {
+      opacity: 1;
+      transform: none;
+    }
+    .c-feature-list_link_label,
+    .c-feature-list_link_icon {
+      transition: transform var(--transition-duration-fast) var(--ease-in-out);
+    }
+    .c-feature-list_link:is(:hover, :focus-visible) .c-feature-list_link_label {
+      transform: translateX(15px);
+    }
+    .c-feature-list_link:is(:hover, :focus-visible) .c-feature-list_link_icon {
+      transform: translateX(-15px);
+    }
   }
-  .c-feature-list_link:is(:hover, :focus-visible) .c-feature-list_link_icon {
-    transform: translateX(-15px);
-  }
-}
 
-/* ── pagination ───────────────────────────────────────────────────── */
+  /* ── pagination ───────────────────────────────────────────────────── */
 
-.c-pagination {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: calc(var(--spacing) * 6);
-  padding: 10px;
-  border-radius: var(--radius-sm);
-  background-color: var(--color-white);
-}
-
-.c-pagination_list {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.c-pagination_link {
-  display: inline-block;
-  min-width: 20px;
-  padding: var(--spacing);
-  font-family: var(--font-sans);
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: 0.01em;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
-}
-
-@media (min-width: 1000px) {
-  .c-pagination_link {
-    font-size: 17px;
-  }
-}
-
-@media (min-width: 2000px) {
-  .c-pagination_link {
-    font-size: 18px;
-  }
-}
-
-/* Phones: a full 44px tap area around each number. */
-@media (max-width: 999px) {
-  .c-pagination_link {
+  .c-pagination {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 44px;
-    min-height: 44px;
+    gap: calc(var(--spacing) * 6);
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-white);
   }
-}
 
-@media (hover: hover) {
-  .c-pagination_link:hover,
-  .c-pagination_link[aria-current='page'] {
-    text-decoration: underline;
+  .c-pagination_list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-}
 
-/* ── images that fade in once loaded ──────────────────────────────── */
+  .c-pagination_link {
+    display: inline-block;
+    min-width: 20px;
+    padding: var(--spacing);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
 
-.c-fade-image {
-  opacity: 0;
-  transition: opacity 0.3s var(--ease);
-}
+  @media (min-width: 1000px) {
+    .c-pagination_link {
+      font-size: 17px;
+    }
+  }
 
-.c-fade-image.is-loaded {
-  opacity: 1;
-}
+  @media (min-width: 2000px) {
+    .c-pagination_link {
+      font-size: 18px;
+    }
+  }
 
-.no-scrollbar {
-  scrollbar-width: none;
-}
+  /* Phones: a full 44px tap area around each number. */
+  @media (max-width: 999px) {
+    .c-pagination_link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
+  @media (hover: hover) {
+    .c-pagination_link:hover,
+    .c-pagination_link[aria-current='page'] {
+      text-decoration: underline;
+    }
+  }
+
+  /* ── images that fade in once loaded ──────────────────────────────── */
+
+  .c-fade-image {
+    opacity: 0;
+    transition: opacity 0.3s var(--ease);
+  }
+
+  .c-fade-image.is-loaded {
+    opacity: 1;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* ── live previews (components/ui/LivePreview.tsx) ─────────────────── */
@@ -567,4 +536,3 @@ html.is-ready .c-feature-list_item.is-inview {
     transition: opacity 400ms ease-out;
   }
 }
-

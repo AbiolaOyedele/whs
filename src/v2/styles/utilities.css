@@ -151,52 +151,15 @@
 }
 
 @utility text-label {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.07;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.3;
   font-weight: 400;
-  letter-spacing: var(--tracking-tight);
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 @utility font-secondary {
   font-family: var(--font-secondary);
-}
-
-/* Lime on a word or two inside a heading. On dark backgrounds the words are
-   lime. On light panels (.slate, or a white or slate-50 fill, unless a .dark
-   section sits in between) lime text is unreadable, so the words stay ink and
-   WildHands lime sits behind them like a highlighter. Split titles fade each
-   word in on its own, so there the highlight rides on each word (wider side
-   shadows close the gaps between words) instead of on the whole phrase. */
-@utility text-gradient {
-  background-image: linear-gradient(to right in oklab, var(--color-pink-500), var(--color-purple-100));
-  color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-  &:where(.slate, .slate *, .bg-white, .bg-white *, .bg-slate-50, .bg-slate-50 *, .c-about-story, .c-about-story *):not(:where(.dark, .dark *)) {
-    color: var(--color-charcoal);
-    background-image: none;
-    background-color: var(--color-pink-500);
-    -webkit-background-clip: border-box;
-    background-clip: border-box;
-    /* Side shadows, not padding, widen the highlight so the words wrap exactly as they do on dark. */
-    box-shadow:
-      -0.08em 0 0 var(--color-pink-500),
-      0.08em 0 0 var(--color-pink-500);
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-  }
-  &:where(.slate, .slate *, .bg-white, .bg-white *, .bg-slate-50, .bg-slate-50 *, .c-about-story, .c-about-story *):not(:where(.dark, .dark *)):has(.word) {
-    background-color: transparent;
-    box-shadow: none;
-  }
-  &:where(.slate, .slate *, .bg-white, .bg-white *, .bg-slate-50, .bg-slate-50 *, .c-about-story, .c-about-story *):not(:where(.dark, .dark *)) .word {
-    background-color: var(--color-pink-500);
-    box-shadow:
-      -0.14em 0 0 var(--color-pink-500),
-      0.14em 0 0 var(--color-pink-500);
-  }
 }
 
 /* ── form fields ──────────────────────────────────────────────────── */
@@ -206,7 +169,7 @@
   height: 55px;
   padding-inline: calc(var(--spacing) * 4);
   border-radius: var(--radius-sm);
-  background-color: var(--color-slate-50);
+  background-color: var(--color-white);
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.35;
@@ -218,7 +181,7 @@
     background-color: var(--color-white);
   }
   &:focus {
-    outline-color: var(--color-navy-500);
+    outline-color: var(--color-navy-900);
   }
   &:user-invalid {
     outline-color: var(--color-red);
@@ -252,10 +215,11 @@
 @utility anim-transform-opacity {
   --first-hit-delay: 0s;
   opacity: 0;
-  transform: translateY(40px);
+  transform: translateY(28px);
   transition-property: transform, opacity;
   transition-duration: var(--transition-duration-slower);
-  transition-timing-function: var(--ease);
+  /* GSAP's power4.out, as on the Dooja front page. */
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
   html.is-ready & {
     opacity: 1;
     transform: none;
@@ -346,14 +310,14 @@
   /* Ink links with a WildHands lime underline on light panels; lime text on dark below. */
   --tw-prose-links: var(--color-navy-900);
   --tw-prose-bold: var(--color-navy-900);
-  --tw-prose-counters: var(--color-navy-500);
+  --tw-prose-counters: var(--color-navy-900);
   --tw-prose-bullets: var(--color-navy-900);
   --tw-prose-quotes: var(--color-navy-900);
-  --tw-prose-quote-borders: var(--color-slate-100);
-  --tw-prose-hr: var(--color-slate-200);
+  --tw-prose-quote-borders: var(--color-charcoal);
+  --tw-prose-hr: var(--color-charcoal);
   --tw-prose-code: var(--color-navy-900);
-  --tw-prose-th-borders: var(--color-slate-300);
-  --tw-prose-td-borders: var(--color-slate-200);
+  --tw-prose-th-borders: var(--color-charcoal);
+  --tw-prose-td-borders: var(--color-charcoal);
 }
 
 .wysiwyg-navy:where(.dark, .dark *) {
@@ -452,7 +416,7 @@
 .wysiwyg code:not(:where(pre *)) {
   border-radius: var(--radius-sm);
   padding: calc(var(--spacing) * 0.5);
-  background-color: var(--color-slate-50);
+  background-color: var(--color-white);
   font-weight: 400;
 }
 
@@ -490,13 +454,13 @@
 
 .wysiwyg th,
 .wysiwyg td {
-  border: 1px solid var(--color-slate-300);
+  border: 1px solid var(--color-charcoal);
   text-align: left;
   vertical-align: top;
   padding: 0.5rem 0.75rem;
 }
 
 .wysiwyg th {
-  background-color: var(--color-slate-50);
+  background-color: var(--color-white);
   font-weight: 600;
 }

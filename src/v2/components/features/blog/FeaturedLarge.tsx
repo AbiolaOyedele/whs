@@ -22,7 +22,7 @@ export function FeaturedLarge({ post }: FeaturedLargeProps) {
                 </time>
               </li>
               {post.labels.map((label) => (
-                <li key={label} className="text-white/70">
+                <li key={label} className="text-white">
                   {label}
                 </li>
               ))}

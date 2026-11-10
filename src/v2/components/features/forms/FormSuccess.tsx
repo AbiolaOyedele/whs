@@ -30,7 +30,7 @@ export function FormSuccess({ title, message, children }: FormSuccessProps) {
       <h2 ref={heading} tabIndex={-1} className="text-heading-xs outline-none">
         {title}
       </h2>
-      <p className="text-body-md mt-3 max-w-160 text-navy-500">{message}</p>
+      <p className="text-body-md mt-3 max-w-160 text-navy-900">{message}</p>
       {children ? <div className="mt-8 flex flex-wrap gap-3">{children}</div> : null}
     </div>
   )

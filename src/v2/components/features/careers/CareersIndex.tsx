@@ -16,7 +16,7 @@ export function CareersIndex() {
 
       <PageSection title={CAREERS_PAGE.openTitle} id="open-positions">
         {ROLES.length === 0 ? (
-          <p className="text-body-md text-navy-500">{CAREERS_PAGE.none}</p>
+          <p className="text-body-md text-navy-900">{CAREERS_PAGE.none}</p>
         ) : (
           <ul className="flex flex-col gap-4">
             {ROLES.map((role) => (
@@ -33,7 +33,7 @@ export function CareersIndex() {
                       {role.title}
                     </SmartLink>
                   </h3>
-                  <p className="text-body-md mt-3 max-w-160 text-navy-500">{role.summary}</p>
+                  <p className="text-body-md mt-3 max-w-160 text-navy-900">{role.summary}</p>
                   <ul className="mt-5 flex flex-wrap gap-2" aria-label="Role details">
                     <li>
                       <Tag>{role.level}</Tag>
@@ -45,7 +45,7 @@ export function CareersIndex() {
                 </div>
                 <span
                   aria-hidden="true"
-                  className="text-label inline-flex min-h-11 shrink-0 items-center gap-2 self-start rounded-[100px] bg-slate-50 px-5 leading-none text-navy-900 transition-colors group-focus-within:bg-pink-500 group-hover:bg-pink-500"
+                  className="text-label inline-flex min-h-11 shrink-0 items-center gap-2 self-start rounded-[100px] bg-white px-5 leading-none text-navy-900 transition-colors group-focus-within:bg-pink-500 group-hover:bg-pink-500"
                 >
                   {CAREERS_PAGE.viewRole}
                   <Icon name="arrowRight" strokeWidth={2} className="size-3.5" />
@@ -53,7 +53,7 @@ export function CareersIndex() {
                 {/* The card's focus ring: drawn on the card, since the link's own box is the whole card. */}
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 rounded-lg outline-2 outline-offset-2 outline-transparent group-has-[a:focus-visible]:outline-navy-500"
+                  className="pointer-events-none absolute inset-0 rounded-lg outline-2 outline-offset-2 outline-transparent group-has-[a:focus-visible]:outline-navy-900"
                 />
               </li>
             ))}

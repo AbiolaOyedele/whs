@@ -4,35 +4,34 @@ import { scratchCard } from '@v2/content/home-upper'
 import { useRevealOnce } from './useRevealOnce'
 import { WhyPanel } from './WhyPanel'
 
-/** Where each card lands when the stack fans out: left, centre, right. */
-const FAN = ['c-why-fan-left', 'c-why-fan-centre', 'c-why-fan-right'] as const
-
 /**
- * A blueprint-grid panel with three products WildHands built for three very
- * different businesses. They start as one neat stack and fan out side by
- * side, each showing its logo and its industry.
+ * Three products WildHands built for three very different businesses, set
+ * like a contents page: each real logo beside its industry and what it
+ * does, one row each, ruled off in ink.
  */
 export function WhyScratchCard() {
-  const [ref, revealed] = useRevealOnce<HTMLDivElement>()
+  const [ref, stage] = useRevealOnce<HTMLDivElement>()
 
   return (
-    <WhyPanel tone="slate" revealed={revealed} panelRef={ref} className="justify-between gap-6">
-      <p className="self-start">
-        <span className="text-label inline-block rounded-sm bg-charcoal px-2 py-1.5 text-white">{scratchCard.chip}</span>
-      </p>
-      <ul className="relative mx-auto aspect-[5/3] w-full max-w-[560px]">
+    <WhyPanel tone="white" stage={stage} panelRef={ref} className="justify-center">
+      <ul>
         {scratchCard.products.map((product, index) => (
           <li
             key={product.name}
-            className={`c-why-fan-card absolute top-1/2 left-1/2 flex aspect-[4/5] w-[33%] -translate-x-1/2 -translate-y-1/2 flex-col rounded-md bg-white p-3 shadow-[0_18px_40px_-18px_rgb(19_19_20/0.45)] sm:p-4 ${
-              FAN[index] ?? ''
-            }`}
+            data-why-step=""
+            style={{ ['--why-step' as string]: index }}
+            className="grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)] items-center gap-5 border-charcoal py-6 not-first:border-t first:pt-0 last:pb-0 sm:gap-8 sm:py-8"
           >
-            <span className="flex grow items-center justify-center">
-              <img src={product.logo.src} alt={product.logo.alt} className="max-h-9 max-w-[78%] object-contain sm:max-h-12" />
+            <span className="flex h-12 items-center sm:h-14">
+              <img
+                src={product.logo.src}
+                alt={product.logo.alt}
+                className="h-9 w-auto max-w-full object-contain object-left sm:h-11"
+              />
             </span>
-            <span className="text-label border-t border-slate-100 pt-2 text-center text-navy-500 sm:pt-3">
-              {product.industry}
+            <span className="flex flex-col gap-1.5">
+              <span className="c-why-display text-[clamp(1.25rem,4.5cqw,1.625rem)]">{product.industry}</span>
+              <span className="text-body-sm">{product.what}</span>
             </span>
           </li>
         ))}

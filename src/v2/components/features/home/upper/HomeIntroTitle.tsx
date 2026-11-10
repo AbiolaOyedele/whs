@@ -7,7 +7,7 @@ export function HomeIntroTitle({ className = '' }: { className?: string }) {
     <SplitTitle as="p" className={`text-heading-xl ${className}`}>
       {introCopy.title.before}
       <br />
-      <span className="text-gradient">{introCopy.title.highlight}</span>
+      {introCopy.title.highlight}
     </SplitTitle>
   )
 }

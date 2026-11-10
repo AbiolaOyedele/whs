@@ -3,6 +3,7 @@ import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { FaqList } from '@v2/components/features/faq/FaqList'
 import { FeatureCards } from '@v2/components/features/feature-cards/FeatureCards'
 import type { UseCaseContent } from '@v2/content/use-cases'
+import { evenCards } from '@v2/lib/even-cards'
 import { ExampleCard } from './ExampleCard'
 import { FeatureVisual } from './FeatureVisual'
 import { HeroUseCase } from './HeroUseCase'
@@ -25,10 +26,10 @@ export function UseCaseTemplate({ content }: UseCaseTemplateProps) {
     <div className="c-use-case">
       <HeroUseCase title={content.title} intro={content.intro} visual={content.hero} />
 
-      <div className="relative z-above -mt-7.5 rounded-4xl bg-white md:-mt-15">
+      <div className="z-above relative -mt-7.5 rounded-4xl bg-white md:-mt-15">
         <div className="wrapper bg-white">
           <div className="section-spacing container">
-            <div className="mb-fluid-3xl grid gap-gutter max-md:hidden md:grid-cols-2">
+            <div className="mb-fluid-3xl gap-gutter grid max-md:hidden md:grid-cols-2">
               <div className="max-w-120 text-balance">
                 <p className="text-heading-xs">{content.lede}</p>
               </div>
@@ -57,31 +58,20 @@ export function UseCaseTemplate({ content }: UseCaseTemplateProps) {
           </div>
         </div>
 
-        <div className="slate wrapper relative z-above -mt-7.5 bg-slate-50 md:-mt-15">
-          <div className="container mb-fluid-xl">
-            <div className="flex flex-col gap-12.5">
+        <div className="slate wrapper z-above relative -mt-7.5 bg-white md:-mt-15">
+          <div className="container">
+            <div className="mb-fluid-lg flex flex-wrap items-end justify-between gap-6">
               <SplitTitle as="h2" className="text-heading-xl">
                 {examples.title}
               </SplitTitle>
+              {examples.seeAll ? (
+                <Button label={examples.seeAll.label} href={examples.seeAll.href} variant="light" />
+              ) : null}
             </div>
-          </div>
-          <div className="section-spacing mt-fluid-xl!">
-            <div className="container">
-              <div className="@container">
-                <div className="mb-fluid-lg flex items-center justify-between">
-                  <div />
-                  {examples.seeAll ? (
-                    <div>
-                      <Button label={examples.seeAll.label} href={examples.seeAll.href} variant="light" />
-                    </div>
-                  ) : null}
-                </div>
-                <div className="grid gap-gutter @2xl:grid-cols-2">
-                  {examples.items.map((item) => (
-                    <ExampleCard key={item.title} item={item} />
-                  ))}
-                </div>
-              </div>
+            <div className="gap-gutter grid md:grid-cols-2">
+              {evenCards(examples.items).map((item) => (
+                <ExampleCard key={item.title} item={item} />
+              ))}
             </div>
           </div>
           <div className="section-spacing mt-fluid-xl! overflow-clip pb-4">
@@ -89,7 +79,7 @@ export function UseCaseTemplate({ content }: UseCaseTemplateProps) {
               <StoryCarousel title={stories.title} action={stories.action} items={stories.items} />
             </div>
           </div>
-          <div className="section-spacing container mt-fluid-xl!">
+          <div className="section-spacing mt-fluid-xl! container">
             <FaqList title="Common questions" faqs={content.faqs} />
           </div>
         </div>

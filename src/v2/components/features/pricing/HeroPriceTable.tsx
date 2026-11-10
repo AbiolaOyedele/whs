@@ -24,12 +24,12 @@ export function HeroPriceTable() {
   return (
     <div className="relative z-above flex w-full max-w-md grow flex-col justify-between gap-gutter pb-12.5 xl:max-w-lg">
       <div className="anim-transform-opacity -delay-2 flex grow flex-col justify-center">
-        <div className="w-full rounded-sm bg-slate-50 p-6">
+        <div className="w-full rounded-sm bg-white p-6">
           <h2 className="text-heading-xs mb-6 text-center">{PRICE_CARD.title}</h2>
           <div>
             <div className="mb-4 flex justify-between">
-              <h3 className="text-label opacity-60">{PRICE_CARD.planHeading}</h3>
-              <p className="text-label opacity-60">{PRICE_CARD.priceHeading}</p>
+              <h3 className="text-label">{PRICE_CARD.planHeading}</h3>
+              <p className="text-label">{PRICE_CARD.priceHeading}</p>
             </div>
             <ul className="space-y-2" aria-live="polite">
               {PLANS.map((plan) => (
@@ -41,18 +41,18 @@ export function HeroPriceTable() {
                         ? formatNaira(quoteCycle(plan, cycle.months, cycle.discount).subtotalKobo)
                         : PRICE_CARD.noFee}
                     </span>
-                    <span className="text-navy-900 opacity-60">{plan.monthlyKobo > 0 ? unit : ''}</span>
+                    <span className="text-navy-900">{plan.monthlyKobo > 0 ? unit : ''}</span>
                   </span>
                 </li>
               ))}
             </ul>
-            <p className="text-label mt-6 opacity-60">{note}</p>
+            <p className="text-label mt-6">{note}</p>
           </div>
-          <hr className="my-6 border-slate-200" />
+          <hr className="my-6 border-charcoal" />
           <div>
             <div className="mb-4 flex justify-between">
-              <h3 className="text-label opacity-60">{PRICE_CARD.feeSection}</h3>
-              <p className="text-label opacity-60">{PRICE_CARD.feeHeading}</p>
+              <h3 className="text-label">{PRICE_CARD.feeSection}</h3>
+              <p className="text-label">{PRICE_CARD.feeHeading}</p>
             </div>
             <ul className="space-y-2">
               {PLANS.map((plan) => (
@@ -62,7 +62,7 @@ export function HeroPriceTable() {
                     {plan.feeBps > 0 ? (
                       <>
                         <span>{formatPercent(plan.feeBps)}</span>
-                        <span className="text-navy-900 opacity-60"> of the price</span>
+                        <span className="text-navy-900"> of the price</span>
                       </>
                     ) : (
                       PRICE_CARD.noFee
@@ -71,7 +71,7 @@ export function HeroPriceTable() {
                 </li>
               ))}
             </ul>
-            <p className="text-label mt-6 opacity-60">{PRICE_CARD.feeNote}</p>
+            <p className="text-label mt-6">{PRICE_CARD.feeNote}</p>
           </div>
         </div>
       </div>

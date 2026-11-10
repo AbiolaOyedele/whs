@@ -31,7 +31,7 @@ export function RangeField({ id, label, hint, min, max, step, value, onChange, v
           <label id={`${id}-label`} htmlFor={id} className="input-label">
             {label}
           </label>
-          <p className="text-body-sm text-navy-900 opacity-60">{hint}</p>
+          <p className="text-body-sm text-navy-900">{hint}</p>
         </div>
         {aside}
       </div>

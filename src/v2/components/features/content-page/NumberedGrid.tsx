@@ -18,14 +18,14 @@ export function NumberedGrid({ items, columns = 3, numbered = true }: NumberedGr
   return (
     <List className={`grid gap-x-gutter gap-y-fluid-md ${COLUMNS[columns]}`}>
       {items.map((item, index) => (
-        <li key={item.title} className="anim-scale border-t border-slate-300 pt-5" data-scroll="">
+        <li key={item.title} className="anim-scale border-t border-charcoal pt-5" data-scroll="">
           {numbered ? (
-            <span className="text-label text-navy-500 tabular-nums" aria-hidden="true">
+            <span className="text-label text-navy-900 tabular-nums" aria-hidden="true">
               {String(index + 1).padStart(2, '0')}
             </span>
           ) : null}
           <h3 className={`text-heading-2xs text-balance ${numbered ? 'mt-3' : ''}`}>{item.title}</h3>
-          <p className="text-body-md mt-2 text-navy-500">{item.body}</p>
+          <p className="text-body-md mt-2 text-navy-900">{item.body}</p>
         </li>
       ))}
     </List>

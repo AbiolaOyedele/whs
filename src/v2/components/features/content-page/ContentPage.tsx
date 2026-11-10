@@ -20,14 +20,14 @@ interface ContentPageProps {
  */
 export function ContentPage({ title, intro, heroExtra, back, children }: ContentPageProps) {
   return (
-    <div className="slate rounded-b-4xl bg-slate-50 pt-safe-header pb-fluid-4xl text-navy-900">
+    <div className="slate rounded-b-4xl bg-white pt-safe-header pb-fluid-4xl text-navy-900">
       <div className="container pt-fluid-lg">
         <header className="grid gap-x-gutter gap-y-6 md:grid-cols-12">
           <div className="min-w-0 md:col-span-8">
             {back ? (
               <SmartLink
                 href={back.href}
-                className="text-label -ml-1 mb-4 inline-flex min-h-11 items-center gap-2 px-1 text-navy-500 transition-colors hover:text-navy-900"
+                className="text-label -ml-1 mb-4 inline-flex min-h-11 items-center gap-2 px-1 text-navy-900 transition-colors hover:text-navy-900"
               >
                 <Icon name="chevronLeft" strokeWidth={2} className="size-3.5" />
                 {back.label}
@@ -62,7 +62,7 @@ export function PageSection({ title, id, lead, children }: PageSectionProps) {
       <h2 id={headingId} className="text-heading-sm text-balance">
         {title}
       </h2>
-      {lead ? <p className="text-body-md mt-3 max-w-160 text-navy-500">{lead}</p> : null}
+      {lead ? <p className="text-body-md mt-3 max-w-160 text-navy-900">{lead}</p> : null}
       <div className="mt-fluid-lg">{children}</div>
     </section>
   )

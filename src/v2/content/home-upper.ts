@@ -17,8 +17,6 @@ export const heroCopy = {
   primary: 'Talk to Us',
   secondary: { label: 'See Our Work', href: '/resources' },
   cursorHint: 'Click and hold',
-  mobileTrigger: 'Play the intro',
-  close: 'Close',
 } as const
 
 /** The three words that flicker in while the hero is held, in order. */
@@ -95,7 +93,7 @@ export const whyCopy = {
 /* ── card: the written proposal ───────────────────────────────────── */
 
 export const proposalCard = {
-  label: 'Written proposal',
+  label: 'Written proposal, agreed before work starts',
   project: `${STANDARD.name} website`,
   inLabel: 'In scope',
   inScope: [
@@ -109,14 +107,13 @@ export const proposalCard = {
   outScope: ['Pages past 4, quoted separately'],
   priceLabel: 'Fixed price',
   price: naira(STANDARD.price),
-  depositLabel: 'Deposit to start',
+  depositLabel: 'Half to start',
   deposit: naira(STANDARD.deposit),
 } as const
 
 /* ── card: design first, then live in 72 hours ────────────────────── */
 
 export const launchCard = {
-  chip: 'Starter and Standard websites',
   hours: TRIAL_DAYS,
   unit: 'hours',
   caption: 'from approved design to a live site',
@@ -130,21 +127,36 @@ export interface ScratchProduct {
   logo: CardImage
   /** The product's industry, from src/content/work. */
   industry: string
+  /** What it does, in a line, from the product's summary in src/content/work. */
+  what: string
 }
 
 export const scratchCard = {
-  chip: 'Three businesses, three builds',
   products: [
-    { name: 'Tomori', logo: logoImage('tomori.svg', 'Tomori'), industry: 'E-commerce' },
-    { name: 'Rayo', logo: logoImage('rayo.svg', 'Rayo'), industry: 'Business tools' },
-    { name: 'The Ruff Agency', logo: logoImage('the-ruff-agency.svg', 'The Ruff Agency'), industry: 'Agency operations' },
+    {
+      name: 'Tomori',
+      logo: logoImage('tomori.svg', 'Tomori'),
+      industry: 'E-commerce',
+      what: 'A phone-first shop for hand-dyed clothes',
+    },
+    {
+      name: 'Rayo',
+      logo: logoImage('rayo.svg', 'Rayo'),
+      industry: 'Business tools',
+      what: 'Quotes your client accepts on the page',
+    },
+    {
+      name: 'The Ruff Agency',
+      logo: logoImage('the-ruff-agency.svg', 'The Ruff Agency'),
+      industry: 'Agency operations',
+      what: 'Clients, contracts and invoices in one workspace',
+    },
   ] satisfies ScratchProduct[],
 } as const
 
 /* ── card: what you own ───────────────────────────────────────────── */
 
 export const ownCard = {
-  label: 'Who owns it',
   rows: ['The site', 'The domain', 'The code', 'Everything on it'],
   owner: 'Yours',
   footer: 'Built by the people in your pitch',

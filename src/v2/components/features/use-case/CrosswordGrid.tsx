@@ -115,7 +115,7 @@ function buildGrid(rows: number, cols: number, words: string[], acrossOnly: bool
 }
 
 /**
- * A wide grid of mono letters under the hero with words hidden in it. Every
+ * A wide grid of letters under the hero with words hidden in it. Every
  * few seconds a pink bar wipes across the next group of words while stray
  * letters keep changing. Decoration only, so screen readers skip it.
  */

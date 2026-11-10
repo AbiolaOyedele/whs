@@ -3,7 +3,7 @@ import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { DESIGN_TILES, DESIGNS_SECTION } from '@v2/content/home-lower'
 import { DesignCarousel } from './DesignCarousel'
 
-/** Two-line title, then the carousel of recent projects. */
+/** Three-line title, then the carousel of recent projects. */
 export function DesignsSection() {
   const { title } = DESIGNS_SECTION
   return (
@@ -11,10 +11,12 @@ export function DesignsSection() {
       <div className="c-home-lower-spacing container">
         <div className="flex flex-col gap-12.5">
           <Label className="sr-only">{DESIGNS_SECTION.label}</Label>
-          <SplitTitle as="p" className="text-heading-xl">
-            {title.before} <span className="text-gradient">{title.highlight}</span>
-            <br />
-            {title.after}
+          <SplitTitle
+            as="p"
+            wrapperClassName="max-w-150"
+            className="max-md:text-heading-xl md:text-heading-lg text-balance"
+          >
+            {title.before} {title.highlight} {title.after}
           </SplitTitle>
         </div>
       </div>

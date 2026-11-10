@@ -78,8 +78,8 @@ export const CAPABILITIES: Capability[] = [
     title: [{ text: 'A site built to' }, { text: 'convert visitors', highlight: true }],
     intro:
       'A focused site that represents you and gives visitors a clear path to contact. Designed from scratch around what your business publishes, not adapted from a theme.',
-    preview: 'dumpty-site',
-    previewNote: 'The Dumpty website, designed and built by WildHands.',
+    preview: 'marque',
+    previewNote: 'The Marque website, designed and built by WildHands.',
     whatItIs: {
       statement: 'A strong, simple presence and a clear path to contact.',
       body: 'A marketing site is the right fit when people need to understand what you do and get in touch. We design the structure, the content model and the page templates around what you actually publish, and every site accounts for local hosting, payment and connectivity realities, not just international defaults.',
@@ -131,7 +131,7 @@ export const CAPABILITIES: Capability[] = [
         body: 'Starter and Standard sites go live in 72 hours. A bigger site is quoted after the discovery call.',
       },
     ],
-    related: ['dumpty', 'marque', 'tomori'],
+    related: ['marque', 'tomori', 'the-ruff-agency'],
   },
   {
     slug: 'full-custom-builds',
@@ -335,7 +335,7 @@ export const CAPABILITIES: Capability[] = [
         body: 'We set up what search engines and AI assistants need to read the site. We do not promise rankings.',
       },
     ],
-    related: ['tomori', 'marque', 'dumpty'],
+    related: ['tomori', 'marque', 'the-ruff-agency'],
   },
   {
     slug: 'website-analytics',
@@ -571,8 +571,8 @@ export const CAPABILITIES: Capability[] = [
     title: [{ text: 'Software built around' }, { text: 'how you work', highlight: true }],
     intro:
       'Software your team or your customers log into, built for a job that off-the-shelf tools do not quite do.',
-    preview: 'dumpty',
-    previewNote: 'Dumpty, designed and built by WildHands.',
+    preview: 'planes',
+    previewNote: 'Planes, designed and built by WildHands.',
     whatItIs: {
       statement: 'Worth building when generic software makes the work harder.',
       body: 'We build web apps around your real workflow, so the software fits the process instead of the process bending to the software. The best sign an app is worth building is a spreadsheet that three people maintain and everybody is slightly afraid of. If an off-the-shelf tool fits, we will tell you.',
@@ -594,19 +594,9 @@ export const CAPABILITIES: Capability[] = [
         body: 'Planes runs from one codebase on the web and as a desktop app, with an Android app alongside.',
       },
       {
-        icon: 'zap',
-        title: 'Works without signal',
-        body: 'Dumpty saves ideas on the phone and syncs them when the connection returns.',
-      },
-      {
         icon: 'lock',
         title: 'Private by default',
         body: 'Data sits under row-level security, so each person reads only what is theirs.',
-      },
-      {
-        icon: 'sparkle',
-        title: 'AI where it earns its place',
-        body: 'Dumpty turns a raw voice note into a titled, tagged idea with next steps.',
       },
     ],
     howWeBuild: [
@@ -621,7 +611,7 @@ export const CAPABILITIES: Capability[] = [
         body: 'The shape of the build follows the shape of the problem, which is why none of our apps look like each other.',
       },
     ],
-    related: ['dumpty', 'planes', 'dory'],
+    related: ['rayo', 'planes', 'dory'],
   },
   {
     slug: 'internal-tools',

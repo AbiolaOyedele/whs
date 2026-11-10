@@ -48,7 +48,7 @@ export function ArticleShell({
 }: ArticleShellProps) {
   return (
     <>
-      <div className="slate bg-slate-50 pb-1">
+      <div className="slate bg-white pb-1">
         <div className="container">
           <div className="relative pt-safe-header">
             <article className="mt-fluid-3xl max-md:mb-fluid-2xl md:mb-fluid-4xl">
@@ -67,7 +67,7 @@ export function ArticleShell({
                           <li key={item.href} className="anim-transform-opacity -delay-2">
                             <SmartLink
                               href={item.href}
-                              className="relative text-navy-500 before:absolute before:-inset-x-2 before:-inset-y-4 before:content-[''] hover:underline"
+                              className="relative text-navy-900 before:absolute before:-inset-x-2 before:-inset-y-4 before:content-[''] hover:underline"
                             >
                               {item.label}
                             </SmartLink>
@@ -113,7 +113,7 @@ export function ArticleShell({
               </div>
             </div>
           </div>
-          <hr className="border-slate-300 max-md:my-fluid-xl md:mt-fluid-3xl" />
+          <hr className="border-charcoal max-md:my-fluid-xl md:mt-fluid-3xl" />
         </div>
       </div>
       {after}

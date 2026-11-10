@@ -212,7 +212,7 @@ export function HeroAbout() {
 
   const titleWords = (
     <>
-      {aboutHero.before} <span className="text-gradient">{aboutHero.highlight}</span> {aboutHero.after}
+      {aboutHero.before} {aboutHero.highlight} {aboutHero.after}
     </>
   )
 

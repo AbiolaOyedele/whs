@@ -1,18 +1,19 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { FluidPanel } from '@v2/components/ui/FluidPanel'
+import { ParallaxMedia } from '@v2/components/ui/ParallaxMedia'
 import { getGsap, motionAllowed } from '@v2/lib/gsap'
 import { observeInview } from '@v2/lib/inview'
-import type { TemplateSlide } from '@v2/content/use-cases'
-import { TemplateGlyph } from './TemplateGlyph'
+import type { ProductSlide } from '@v2/content/use-cases'
 
-interface TemplateCarouselCardProps {
-  items: TemplateSlide[]
+interface ProductCarouselCardProps {
+  items: ProductSlide[]
+  artSeed: number
 }
 
-/** Centre card full size; neighbours smaller and washed out; edges smaller still. */
-const SCALE = [1, 0.85, 0.65] as const
-const OVERLAY = [0, 0.3, 0.6] as const
+/** Centre card full size; its neighbours smaller; the ones past them smaller still. */
+const SCALE = [1, 0.85, 0.7] as const
 const ADVANCE_EVERY = 2500
 const DURATION = 0.6
 const EASE = 'power2.inOut'
@@ -25,11 +26,13 @@ function level(offset: number): 0 | 1 | 2 {
 }
 
 /**
- * A vertical wheel of template cards on a light panel. Every 2.5 seconds it
- * rolls up one: the middle card is full size, the ones around it shrink and
- * fade. Copies at both ends make it loop without a jump.
+ * A vertical wheel of real products over the art, each card carrying the
+ * product's own logo, its name and what it does in one line. Every 2.5
+ * seconds it rolls up one; the middle card is full size and the ones around
+ * it shrink. Copies at both ends make it loop without a jump. Used for "see
+ * what we have built" and "no two apps alike".
  */
-export function TemplateCarouselCard({ items }: TemplateCarouselCardProps) {
+export function ProductCarouselCard({ items, artSeed }: ProductCarouselCardProps) {
   const list = useRef<HTMLDivElement>(null)
   const nodes = useRef<(HTMLDivElement | null)[]>([])
   const count = items.length
@@ -47,7 +50,6 @@ export function TemplateCarouselCard({ items }: TemplateCarouselCardProps) {
     if (!host) return
     const gsap = getGsap()
     const all = nodes.current.slice(0, loop.length)
-    const overlayOf = (node: HTMLDivElement | null) => node?.querySelector<HTMLElement>('[data-overlay]') ?? null
 
     if (count <= 1) {
       const only = all[0]
@@ -76,24 +78,19 @@ export function TemplateCarouselCard({ items }: TemplateCarouselCardProps) {
       all.forEach((node, index) => {
         if (!node) return
         const offset = index - current
-        const step = level(offset)
-        const top = centreY(offset, listHeight) - itemHeight / 2
-        const overlay = overlayOf(node)
-        const last = index === all.length - 1
-        if (animate) {
-          gsap.to(node, { top, scale: SCALE[step], duration: DURATION, ease: EASE, overwrite: true })
-          if (overlay)
-            gsap.to(overlay, {
-              opacity: OVERLAY[step],
-              duration: DURATION,
-              ease: EASE,
-              overwrite: true,
-              ...(last && done ? { onComplete: done } : {}),
-            })
-        } else {
-          gsap.set(node, { top, scale: SCALE[step] })
-          if (overlay) gsap.set(overlay, { opacity: OVERLAY[step] })
+        const vars = { top: centreY(offset, listHeight) - itemHeight / 2, scale: SCALE[level(offset)] }
+        if (!animate) {
+          gsap.set(node, vars)
+          return
         }
+        const last = index === all.length - 1
+        gsap.to(node, {
+          ...vars,
+          duration: DURATION,
+          ease: EASE,
+          overwrite: true,
+          ...(last && done ? { onComplete: done } : {}),
+        })
       })
       if (!animate) done?.()
     }
@@ -142,31 +139,39 @@ export function TemplateCarouselCard({ items }: TemplateCarouselCardProps) {
   }, [count, loop.length])
 
   return (
-    <div className="c-uc-gpu-carousel_container">
-      <div ref={list} className="c-uc-gpu-carousel_list">
+    <div className="c-uc-products">
+      <ParallaxMedia className="rounded-[inherit]">
+        <FluidPanel seed={artSeed} />
+      </ParallaxMedia>
+      <div ref={list} className="c-uc-products_list">
         {loop.map((item, index) => {
           if (!item) return null
           const clone = count > 1 && (index < CLONES || index >= CLONES + count)
           return (
             <div
-              key={`${item.glyph}-${index}`}
+              key={`${item.name}-${index}`}
               ref={(node) => {
                 nodes.current[index] = node
               }}
-              className="c-uc-gpu-carousel_item"
+              className="c-uc-products_item"
               aria-hidden={clone ? 'true' : undefined}
             >
-              <div className="c-uc-gpu-carousel_card">
-                <div className="c-uc-gpu-carousel_card_logo">
-                  <TemplateGlyph name={item.glyph} className="size-[70%]" />
+              <div className="flex w-full items-center gap-4 rounded-md bg-white p-2.5 sm:gap-5">
+                <div className="flex aspect-square w-[30%] shrink-0 items-center justify-center rounded-md border border-navy-900 bg-white">
+                  <img
+                    src={item.logo.src}
+                    alt=""
+                    draggable={false}
+                    loading="lazy"
+                    className="size-[64%] object-contain"
+                  />
                 </div>
-                <div className="c-uc-gpu-carousel_card_content">
-                  <h3 className="text-heading-2xs sm:text-heading-xs">{item.name}</h3>
-                  <p className="text-balance text-navy-500 max-sm:text-[12px] max-sm:leading-[1.3] max-sm:tracking-[0.01em] sm:text-body-sm">
-                    {item.bestFor}
+                <div className="flex min-w-0 flex-col gap-1.5 sm:gap-2">
+                  <p className="text-heading-2xs text-balance sm:text-heading-xs">{item.name}</p>
+                  <p className="text-pretty text-navy-900 max-sm:text-[12px] max-sm:leading-[1.3] max-sm:tracking-[0.01em] sm:text-body-sm">
+                    {item.line}
                   </p>
                 </div>
-                <div data-overlay="" className="c-uc-gpu-carousel_card_overlay" />
               </div>
             </div>
           )
