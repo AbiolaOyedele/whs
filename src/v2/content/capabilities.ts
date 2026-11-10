@@ -860,7 +860,7 @@ export const CAPABILITIES: Capability[] = [
         body: 'Transactional email through Resend, and a WhatsApp bot that sends task updates.',
       },
       {
-        icon: 'sparkle',
+        icon: 'bot',
         title: 'AI models',
         body: 'Claude, Gemini and Deepgram, used where they remove real work.',
       },

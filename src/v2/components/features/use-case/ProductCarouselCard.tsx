@@ -168,7 +168,7 @@ export function ProductCarouselCard({ items, artSeed }: ProductCarouselCardProps
                 </div>
                 <div className="flex min-w-0 flex-col gap-1.5 sm:gap-2">
                   <p className="text-heading-2xs text-balance sm:text-heading-xs">{item.name}</p>
-                  <p className="text-pretty text-navy-900 max-sm:text-[12px] max-sm:leading-[1.3] max-sm:tracking-[0.01em] sm:text-body-sm">
+                  <p className="text-pretty text-navy-900 max-sm:text-[14px] max-sm:leading-[1.3] max-sm:tracking-[0.01em] sm:text-body-sm">
                     {item.line}
                   </p>
                 </div>

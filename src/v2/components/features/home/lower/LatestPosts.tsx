@@ -15,7 +15,7 @@ export function LatestPosts() {
     <div className="c-home-lower-spacing container">
       <div className="mb-fluid-lg flex items-center justify-between gap-4">
         <h2 className="text-heading-sm">{BLOG_ROW.title}</h2>
-        <Button label={BLOG_ROW.seeAll.label} href={BLOG_ROW.seeAll.href} variant="light" className="shrink-0" />
+        <Button label={BLOG_ROW.seeAll.label} href={BLOG_ROW.seeAll.href} variant="outline" className="shrink-0" />
       </div>
       <div className="no-scrollbar gap-gutter max-md:-mx-(--grid-margin) max-md:flex max-md:snap-x max-md:snap-mandatory max-md:scroll-pl-(--grid-margin) max-md:overflow-x-auto max-md:px-(--grid-margin) max-md:pb-gutter md:grid md:grid-cols-3">
         {posts.map((post) => (

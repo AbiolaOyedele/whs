@@ -448,17 +448,12 @@ html.is-changing .c-header_nav_dropdown {
   position: absolute;
   inset: 0;
   border-radius: var(--radius-sm);
-  background-color: var(--color-charcoal);
+  background-color: var(--color-pink-100);
   opacity: 0;
   transform: scale(0.9, 0.7);
   transition-property: opacity, transform;
   transition-duration: var(--transition-duration-fast);
   transition-timing-function: var(--ease);
-}
-
-.is-current-page .c-header_nav_dropdown_link_icon,
-.is-current-page .c-header_mobile_menu_dropdown_link_icon {
-  color: var(--color-white);
 }
 
 .is-current-page .c-header_nav_dropdown_link_icon::before,
@@ -468,9 +463,6 @@ html.is-changing .c-header_nav_dropdown {
 }
 
 @media (hover: hover) {
-  .c-header_nav_dropdown_link:is(:hover, :focus-visible) .c-header_nav_dropdown_link_icon {
-    color: var(--color-white);
-  }
   .c-header_nav_dropdown_link:is(:hover, :focus-visible) .c-header_nav_dropdown_link_icon::before {
     opacity: 1;
     transform: none;
@@ -639,8 +631,7 @@ html.has-menu-mobile-open .c-header_mobile_menu_scroll {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--grid-gutter);
+  gap: 12px;
   pointer-events: auto;
   transform: translate3d(0, calc(100% + var(--grid-margin)), 0);
   transition: transform var(--transition-duration-fast) var(--ease);

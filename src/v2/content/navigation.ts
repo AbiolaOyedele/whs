@@ -1,6 +1,6 @@
 import { site } from '@v2/config/site'
 
-export type NavIcon = 'shirt' | 'sparkle' | 'home' | 'calendar' | 'mail'
+export type NavIcon = 'globe' | 'monitorSmartphone' | 'workflow' | 'calendar' | 'mail'
 
 export interface NavLink {
   label: string
@@ -10,9 +10,9 @@ export interface NavLink {
 
 /** The three services, one page each (the use-case template). */
 export const USE_CASES: NavLink[] = [
-  { label: 'Websites', href: '/use-cases/websites', icon: 'home' },
-  { label: 'Apps', href: '/use-cases/apps', icon: 'sparkle' },
-  { label: 'Tools & Systems', href: '/use-cases/tools-and-systems', icon: 'shirt' },
+  { label: 'Websites', href: '/use-cases/websites', icon: 'globe' },
+  { label: 'Apps', href: '/use-cases/apps', icon: 'monitorSmartphone' },
+  { label: 'Tools & Systems', href: '/use-cases/tools-and-systems', icon: 'workflow' },
 ]
 
 /** Same order as the main site's header: Services (the dropdown), Work, About, Insights. */

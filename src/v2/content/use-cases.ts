@@ -107,17 +107,7 @@ const CITIES: MapPoint[] = [
 
 /* ── page shape ── */
 
-export type HeroVisual =
-  | { kind: 'voice' }
-  | {
-      kind: 'crossword'
-      /** Longest first is best; vertical and diagonal words need 5 letters or fewer. */
-      words: string[]
-      mobileWords: string[]
-      /** Groups highlighted together, in turn. */
-      sequence: string[][]
-      mobileSequence: string[][]
-    }
+export type HeroVisual = { kind: 'voice' }
 
 /** One piece of a site's launch list, with a short note on what it is. */
 export interface ChecklistItem {
@@ -376,13 +366,7 @@ const apps: UseCaseContent = {
   title: [{ text: 'Software built around' }, { text: 'how you actually work', highlight: true }],
   intro:
     'An app is worth building when the way you work is specific enough that generic software makes it harder. We build around your real workflow, so the software fits the process.',
-  hero: {
-    kind: 'crossword',
-    words: ['WORKFLOW', 'SOFTWARE', 'CUSTOM', 'PORTAL', 'TOOLS', 'APPS', 'TEAM'],
-    mobileWords: ['TOOLS', 'APPS', 'TEAM'],
-    sequence: [['TOOLS', 'TEAM'], ['APPS', 'PORTAL'], ['CUSTOM'], ['WORKFLOW'], ['SOFTWARE']],
-    mobileSequence: [['TOOLS'], ['APPS'], ['TEAM']],
-  },
+
   lede: 'Custom web apps and internal tools, for teams whose workflow does not fit off-the-shelf software.',
   why: why('apps?'),
   featuresLabel: 'What you get',
@@ -518,7 +502,8 @@ const toolsAndSystems: UseCaseContent = {
             logo: logoImage('auto-flow.png', 'Auto Flow'),
             steps: [
               'Folder of 24 images picked',
-              'Each image uploaded and prompted',
+              'A prompt written for each image',
+              'Each image uploaded to Flow',
               'Three videos generating at once',
               'Every finished video downloaded',
             ],

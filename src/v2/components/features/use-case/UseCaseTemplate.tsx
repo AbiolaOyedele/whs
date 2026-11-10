@@ -7,7 +7,7 @@ import { evenCards } from '@v2/lib/even-cards'
 import { ExampleCard } from './ExampleCard'
 import { FeatureVisual } from './FeatureVisual'
 import { HeroUseCase } from './HeroUseCase'
-import { StoryCarousel } from './StoryCarousel'
+import { StoryCard } from './StoryCard'
 import { TitleText } from './TitleText'
 
 interface UseCaseTemplateProps {
@@ -65,7 +65,7 @@ export function UseCaseTemplate({ content }: UseCaseTemplateProps) {
                 {examples.title}
               </SplitTitle>
               {examples.seeAll ? (
-                <Button label={examples.seeAll.label} href={examples.seeAll.href} variant="light" />
+                <Button label={examples.seeAll.label} href={examples.seeAll.href} variant="outline" />
               ) : null}
             </div>
             <div className="gap-gutter grid md:grid-cols-2">
@@ -74,9 +74,14 @@ export function UseCaseTemplate({ content }: UseCaseTemplateProps) {
               ))}
             </div>
           </div>
-          <div className="section-spacing mt-fluid-xl! overflow-clip pb-4">
-            <div className="container">
-              <StoryCarousel title={stories.title} action={stories.action} items={stories.items} />
+          <div className="section-spacing mt-fluid-xl! container">
+            <SplitTitle as="h2" className="text-heading-xl mb-fluid-lg max-w-[13ch]">
+              {stories.title}
+            </SplitTitle>
+            <div className="gap-gutter grid md:grid-cols-2">
+              {evenCards(stories.items).map((shop) => (
+                <StoryCard key={shop.href} shop={shop} action={stories.action} />
+              ))}
             </div>
           </div>
           <div className="section-spacing mt-fluid-xl! container">

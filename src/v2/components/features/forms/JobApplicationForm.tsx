@@ -92,7 +92,7 @@ export function JobApplicationForm({ role, roleSlug }: JobApplicationFormProps) 
     return (
       <FormSuccess title={APPLY_PAGE.successTitle} message={APPLY_PAGE.successBody}>
         <Button label={APPLY_PAGE.otherRoles.label} href={APPLY_PAGE.otherRoles.href} variant="pink" />
-        <Button label={APPLY_PAGE.writing.label} href={APPLY_PAGE.writing.href} variant="slate" />
+        <Button label={APPLY_PAGE.writing.label} href={APPLY_PAGE.writing.href} variant="outline" />
       </FormSuccess>
     )
   }

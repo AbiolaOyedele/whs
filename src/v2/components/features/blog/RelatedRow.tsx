@@ -20,7 +20,7 @@ export function RelatedRow({ title, seeAllHref, cards }: RelatedRowProps) {
           <h2 id="related-title" className="text-heading-sm">
             {title}
           </h2>
-          <Button label="See all" variant="light" href={seeAllHref} className="shrink-0" />
+          <Button label="See all" variant="outline" href={seeAllHref} className="shrink-0" />
         </div>
         <div className="c-related no-scrollbar gap-gutter max-md:flex max-md:snap-x max-md:snap-mandatory max-md:overflow-x-auto max-md:pb-gutter md:grid md:grid-cols-3">
           {cards.map((card) => (

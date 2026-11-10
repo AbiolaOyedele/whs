@@ -3,7 +3,6 @@ import { Button } from '@v2/components/ui/Button'
 import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { CANVAS_EVENTS } from '@v2/lib/canvas-events'
 import type { HeroVisual, TitlePart } from '@v2/content/use-cases'
-import { CrosswordGrid } from './CrosswordGrid'
 import { TitleText } from './TitleText'
 import { VoiceVisualizer } from './VoiceVisualizer'
 
@@ -55,15 +54,6 @@ export function HeroUseCase({ title, intro, visual }: HeroUseCaseProps) {
         <div className="container">
           <VoiceVisualizer />
         </div>
-      ) : null}
-      {visual?.kind === 'crossword' ? (
-        <CrosswordGrid
-          className="container"
-          words={visual.words}
-          mobileWords={visual.mobileWords}
-          sequence={visual.sequence}
-          mobileSequence={visual.mobileSequence}
-        />
       ) : null}
     </section>
   )

@@ -27,7 +27,7 @@ export function VisualStage({ artSeed, label, children }: VisualStageProps) {
       <ParallaxMedia className="rounded-[inherit]">
         <FluidPanel seed={artSeed} />
       </ParallaxMedia>
-      <div className="relative z-2 w-full max-w-[460px] text-navy-900">{children}</div>
+      <div className="relative z-2 w-full max-w-[460px] text-navy-900 sm:max-w-[520px] md:max-w-[460px]">{children}</div>
     </div>
   )
 }

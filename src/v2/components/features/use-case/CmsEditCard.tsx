@@ -101,7 +101,7 @@ export function CmsEditCard({ artSeed }: CmsEditCardProps) {
           title={
             <>
               <Icon name="globe" className="size-4 shrink-0" />
-              <span className="truncate">yourrestaurant.ng/menu</span>
+              <span className="truncate">yoursite.ng/menu</span>
             </>
           }
         >

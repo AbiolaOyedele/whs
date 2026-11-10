@@ -250,7 +250,7 @@ export function Header({ scheme, fixed = false }: HeaderProps) {
                     <div className="c-header_nav_dropdown_button">
                       <Button
                         label="See our work"
-                        variant="pink"
+                        variant="inkOutline"
                         href="/resources"
                         className="w-full"
                       />
@@ -303,9 +303,9 @@ export function Header({ scheme, fixed = false }: HeaderProps) {
             <div className="c-header_nav_buttons">
               <Button
                 label="Request a quote"
-                variant="slate"
+                variant="outline"
                 href={site.signInUrl}
-                className="max-md:hidden"
+                className="dark max-md:hidden"
               />
               <Button
                 label="Get in touch"
@@ -375,7 +375,7 @@ export function Header({ scheme, fixed = false }: HeaderProps) {
                           <li className="pt-2">
                             <Button
                               label="See our work"
-                              variant="pink"
+                              variant="inkOutline"
                               href="/resources"
                               className="w-full"
                             />
@@ -400,25 +400,17 @@ export function Header({ scheme, fixed = false }: HeaderProps) {
               </ul>
               <div className="c-header_mobile_menu_buttons">
                 <Button
-                  label="Request a quote"
-                  variant="slate"
-                  href={site.signInUrl}
-                  className="w-full bg-white!"
+                  label="Get in touch"
+                  variant="pink"
+                  href={site.signUpUrl}
+                  className="w-full"
                 />
                 <Button
-                  label="See our work"
-                  variant="light"
-                  href="/resources"
-                  className="w-full bg-white!"
+                  label="Request a quote"
+                  variant="inkOutline"
+                  href={site.signInUrl}
+                  className="w-full"
                 />
-                <div className="col-span-2 min-[400px]:hidden">
-                  <Button
-                    label="Get in touch"
-                    variant="pink"
-                    href={site.signUpUrl}
-                    className="w-full"
-                  />
-                </div>
               </div>
             </div>
           </div>

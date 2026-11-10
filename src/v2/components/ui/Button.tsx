@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react'
 import { SmartLink } from '@v2/components/ui/SmartLink'
 
-export type ButtonVariant = 'pink' | 'navy' | 'slate' | 'outline' | 'light' | 'white'
+export type ButtonVariant = 'pink' | 'navy' | 'slate' | 'outline' | 'inkOutline' | 'light' | 'white'
 
 /**
  * Resting surface, the colour the hover circle floods with, and the label
@@ -25,6 +25,12 @@ const VARIANTS: Record<ButtonVariant, { base: string; circle: string; hoverText:
     base: 'bg-transparent text-navy-900 ring-1 ring-current ring-inset dark:text-white',
     circle: 'bg-navy-900 dark:bg-white',
     hoverText: 'hover:text-white dark:hover:text-charcoal',
+  },
+  // The outline for a white panel that sits inside a dark section, such as the mobile menu.
+  inkOutline: {
+    base: 'bg-transparent text-navy-900 ring-1 ring-current ring-inset',
+    circle: 'bg-navy-900',
+    hoverText: 'hover:text-white',
   },
   light: { base: 'bg-white text-navy-900', circle: 'bg-charcoal', hoverText: 'hover:text-white' },
   white: { base: 'bg-white text-navy-900', circle: 'bg-charcoal', hoverText: 'hover:text-white' },
