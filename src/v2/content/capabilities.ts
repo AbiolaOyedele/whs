@@ -178,7 +178,7 @@ export const CAPABILITIES: Capability[] = [
         body: 'A CMS admin panel, crawl rules, an XML sitemap, AI search visibility setup and simple website analytics.',
       },
       {
-        icon: 'globe',
+        icon: 'mapPin',
         title: 'Built for local realities',
         body: 'Local hosting, payment and connectivity are planned for, not just international defaults.',
       },
@@ -297,7 +297,7 @@ export const CAPABILITIES: Capability[] = [
         body: 'Every public page listed, built from the site itself so new pages are included.',
       },
       {
-        icon: 'shield',
+        icon: 'search',
         title: 'Crawl rules',
         body: 'A robots.txt that keeps private areas such as the admin out of search and points crawlers to the sitemap.',
       },
@@ -532,7 +532,7 @@ export const CAPABILITIES: Capability[] = [
         body: 'Who is doing what, with updates sent to WhatsApp for people who live in messaging.',
       },
       {
-        icon: 'globe',
+        icon: 'panelsTopLeft',
         title: 'A client portal',
         body: 'The same records, a different view: read-only or collaborative, depending on what each client is given.',
       },
@@ -638,7 +638,7 @@ export const CAPABILITIES: Capability[] = [
     ],
     youGet: [
       {
-        icon: 'check',
+        icon: 'bell',
         title: 'Quiet by default',
         body: 'The usual case asks nothing. The tool speaks up only when something looks wrong, and then asks one clear question.',
       },
@@ -718,7 +718,7 @@ export const CAPABILITIES: Capability[] = [
         body: 'Takings, costs and profit in the same place.',
       },
       {
-        icon: 'download',
+        icon: 'fileText',
         title: 'Reports to print',
         body: 'A daily report, one day at a time, to print or download.',
       },

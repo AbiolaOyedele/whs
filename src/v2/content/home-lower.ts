@@ -39,22 +39,22 @@ export const TRUST: TrustSection = {
   secondary: { label: 'Get in touch', href: '/contact' },
   points: [
     {
-      icon: 'lock',
+      icon: 'phoneCall',
       title: 'Discovery call',
       body: 'We learn what is broken and what it is costing you in time.',
     },
     {
-      icon: 'bank',
+      icon: 'fileText',
       title: 'Scoped proposal',
       body: 'A written plan for your brief, with what is in scope and what is out.',
     },
     {
-      icon: 'globe',
+      icon: 'receipt',
       title: 'Custom quote',
       body: 'One price, worked out from that scope. The price follows the scope, not the other way around.',
     },
     {
-      icon: 'shield',
+      icon: 'handshake',
       title: 'Honest about fit',
       body: 'If an off-the-shelf tool already does the job, we will tell you. We will also tell you if we are not the right fit.',
     },

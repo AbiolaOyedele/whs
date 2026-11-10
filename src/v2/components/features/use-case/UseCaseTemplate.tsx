@@ -1,12 +1,11 @@
-import { Button } from '@v2/components/ui/Button'
 import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { FaqList } from '@v2/components/features/faq/FaqList'
 import { FeatureCards } from '@v2/components/features/feature-cards/FeatureCards'
 import type { UseCaseContent } from '@v2/content/use-cases'
 import { evenCards } from '@v2/lib/even-cards'
-import { ExampleCard } from './ExampleCard'
 import { FeatureVisual } from './FeatureVisual'
 import { HeroUseCase } from './HeroUseCase'
+import { StartHereRow } from './StartHereRow'
 import { StoryCard } from './StoryCard'
 import { TitleText } from './TitleText'
 
@@ -60,19 +59,7 @@ export function UseCaseTemplate({ content }: UseCaseTemplateProps) {
 
         <div className="slate wrapper z-above relative -mt-7.5 bg-white md:-mt-15">
           <div className="container">
-            <div className="mb-fluid-lg flex flex-wrap items-end justify-between gap-6">
-              <SplitTitle as="h2" className="text-heading-xl">
-                {examples.title}
-              </SplitTitle>
-              {examples.seeAll ? (
-                <Button label={examples.seeAll.label} href={examples.seeAll.href} variant="outline" />
-              ) : null}
-            </div>
-            <div className="gap-gutter grid md:grid-cols-2">
-              {evenCards(examples.items).map((item) => (
-                <ExampleCard key={item.title} item={item} />
-              ))}
-            </div>
+            <StartHereRow title={examples.title} items={evenCards(examples.items)} />
           </div>
           <div className="section-spacing mt-fluid-xl! container">
             <SplitTitle as="h2" className="text-heading-xl mb-fluid-lg max-w-[13ch]">

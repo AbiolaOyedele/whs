@@ -189,7 +189,7 @@ export interface UseCaseContent {
   why: TitlePart[]
   featuresLabel: string
   features: FeatureContent[]
-  examples: { title: string; seeAll?: { label: string; href: string }; items: ExampleLink[] }
+  examples: { title: string; items: ExampleLink[] }
   stories: { title: string; action: string; items: DemoShop[] }
   /** Questions at the foot of the page, also published as FAQPage structured data. */
   faqs: UseCaseFaq[]
@@ -229,6 +229,15 @@ const APP_CASE_LINK: ExampleLink = {
   body: 'Lazy Meet joins your Google Meet calls at start time, muted and camera off, across three accounts.',
   action: 'Read the case study',
   href: '/resources/lazy-meet',
+}
+
+const TOOLS_CASE_LINK: ExampleLink = {
+  image: logoImage('auto-flow.png', 'Auto Flow'),
+  icon: 'chart',
+  title: 'Read a case study',
+  body: 'Auto Flow runs a 24-image batch in about half an hour, unattended. By hand it took roughly two hours.',
+  action: 'Read the case study',
+  href: '/resources/auto-flow',
 }
 
 const INSIGHTS_LINK: ExampleLink = {
@@ -321,7 +330,7 @@ const websites: UseCaseContent = {
   ],
   examples: {
     title: 'Start here',
-    items: [QUOTE_LINK, WEBSITE_OFFER_LINK, INSIGHTS_LINK, TALK_LINK],
+    items: [TALK_LINK, QUOTE_LINK, WEBSITE_OFFER_LINK, INSIGHTS_LINK],
   },
   stories: {
     title: `Websites built by ${site.name}`,
@@ -417,8 +426,7 @@ const apps: UseCaseContent = {
   ],
   examples: {
     title: 'Start here',
-    seeAll: { label: 'See all', href: '/blog' },
-    items: [QUOTE_LINK, APP_CASE_LINK, INSIGHTS_LINK, TALK_LINK],
+    items: [TALK_LINK, QUOTE_LINK, APP_CASE_LINK, INSIGHTS_LINK],
   },
   stories: {
     title: `Apps built by ${site.name}`,
@@ -542,7 +550,7 @@ const toolsAndSystems: UseCaseContent = {
   ],
   examples: {
     title: 'Start here',
-    items: [TALK_LINK],
+    items: [TALK_LINK, QUOTE_LINK, TOOLS_CASE_LINK, INSIGHTS_LINK],
   },
   stories: {
     title: `Systems built by ${site.name}`,
