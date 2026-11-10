@@ -22,6 +22,8 @@ export function ShowcaseCard({ card }: ShowcaseCardProps) {
       <img
         src={card.logo.src}
         alt={card.logo.alt}
+        loading="lazy"
+        decoding="async"
         className={`h-10 w-auto max-w-40 self-start object-contain object-left transition-transform group-focus-within:scale-105 group-hover:scale-105 md:h-12 ${FAST}`}
       />
       <div className="flex grow flex-col gap-2">

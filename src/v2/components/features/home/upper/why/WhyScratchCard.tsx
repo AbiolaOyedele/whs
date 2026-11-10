@@ -26,6 +26,8 @@ export function WhyScratchCard() {
               <img
                 src={product.logo.src}
                 alt={product.logo.alt}
+                loading="lazy"
+                decoding="async"
                 className="h-9 w-auto max-w-full object-contain object-left sm:h-11"
               />
             </span>

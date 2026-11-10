@@ -3,6 +3,7 @@ import { LogoMark } from '@v2/components/ui/LogoMark'
 import { ParallaxMedia } from '@v2/components/ui/ParallaxMedia'
 import { SmartLink } from '@v2/components/ui/SmartLink'
 import type { Photo } from '@v2/content/photos'
+import { Picture } from '@v2/components/ui/Picture'
 
 export interface PostCardProps {
   href: string
@@ -43,12 +44,12 @@ export function PostCard({
         {photo ? (
           <ParallaxMedia speed={-0.1}>
             <div className="c-blog-art absolute inset-0 group-focus-within:scale-105 group-hover:scale-105">
-              <img src={photo.src} alt={photo.alt} className="size-full object-cover" />
+              <Picture src={photo.src} alt={photo.alt} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="size-full object-cover" />
             </div>
           </ParallaxMedia>
         ) : logo ? (
           <div className="c-blog-art absolute inset-0 flex items-center justify-center bg-white group-focus-within:scale-105 group-hover:scale-105">
-            <img src={logo} alt="" className="max-h-[34%] max-w-[46%] object-contain" />
+            <img src={logo} alt="" loading="lazy" decoding="async" className="max-h-[34%] max-w-[46%] object-contain" />
           </div>
         ) : (
           <div className="c-blog-art absolute inset-0 flex items-center justify-center bg-white group-focus-within:scale-105 group-hover:scale-105">

@@ -1,6 +1,7 @@
 import type { BlogCardData } from '@v2/content/blog'
 import { Icon } from '@v2/components/ui/Icon'
 import { SmartLink } from '@v2/components/ui/SmartLink'
+import { Picture } from '@v2/components/ui/Picture'
 
 interface FeaturedSmallProps {
   post: BlogCardData
@@ -15,9 +16,10 @@ export function FeaturedSmall({ post, delay }: FeaturedSmallProps) {
   return (
     <div className={`group anim-transform-opacity relative flex gap-gutter ${DELAY[delay]}`}>
       <div className="relative flex aspect-square w-1/3 shrink-0">
-        <img
+        <Picture
           src={post.photo.src}
           alt={post.photo.alt}
+          sizes="(min-width: 768px) 12vw, 33vw"
           className="absolute inset-0 size-full rounded-md object-cover transition-transform duration-200 ease-in-out group-focus-within:scale-102 group-hover:scale-105"
         />
       </div>

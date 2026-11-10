@@ -2,6 +2,7 @@ import type { BlogCardData } from '@v2/content/blog'
 import { Icon } from '@v2/components/ui/Icon'
 import { ParallaxMedia } from '@v2/components/ui/ParallaxMedia'
 import { SmartLink } from '@v2/components/ui/SmartLink'
+import { Picture } from '@v2/components/ui/Picture'
 
 interface FeaturedLargeProps {
   post: BlogCardData
@@ -38,7 +39,7 @@ export function FeaturedLarge({ post }: FeaturedLargeProps) {
         </div>
         <ParallaxMedia speed={-0.1} className="z-below">
           <div className="c-blog-art absolute inset-0 group-hover:scale-105">
-            <img src={post.photo.src} alt={post.photo.alt} className="size-full object-cover" />
+            <Picture src={post.photo.src} alt={post.photo.alt} sizes="(min-width: 768px) 66vw, 100vw" className="size-full object-cover" priority />
             {/* Keeps the white date and title readable over the photo. */}
             <div className="absolute inset-0 bg-linear-to-b from-black/70 via-black/20 to-black/40" />
           </div>

@@ -19,6 +19,8 @@ export function DesignTile({ tile }: DesignTileProps) {
       <img
         src={tile.logo.src}
         alt={tile.logo.alt}
+        loading="lazy"
+        decoding="async"
         draggable={false}
         className={`h-10 w-auto max-w-40 self-start object-contain object-left transition-transform group-focus-within:scale-105 group-hover:scale-105 md:h-12 ${FAST}`}
       />

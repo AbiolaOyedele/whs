@@ -2,6 +2,7 @@ import { ParallaxMedia } from '@v2/components/ui/ParallaxMedia'
 import { SmartLink } from '@v2/components/ui/SmartLink'
 import type { BlogPost } from '@v2/content/blog'
 import { SplitArrow } from './SplitArrow'
+import { Picture } from '@v2/components/ui/Picture'
 
 interface PostCardProps {
   post: BlogPost
@@ -22,7 +23,7 @@ export function PostCard({ post }: PostCardProps) {
       <div className="relative flex aspect-464/392 items-center justify-center overflow-hidden">
         <ParallaxMedia speed={-0.1}>
           <div className="absolute inset-0 transition-transform duration-(--transition-duration-slow) ease-in-out group-focus-within:scale-105 group-hover:scale-105">
-            <img src={post.photo.src} alt={post.photo.alt} className="size-full object-cover" />
+            <Picture src={post.photo.src} alt={post.photo.alt} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="size-full object-cover" />
           </div>
         </ParallaxMedia>
       </div>

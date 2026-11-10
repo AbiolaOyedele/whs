@@ -10,7 +10,8 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build",
+    "build": "node scripts/optimize-images.mjs --check && astro check && astro build",
+    "images": "node scripts/optimize-images.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "typecheck": "astro check",

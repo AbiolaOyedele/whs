@@ -1,5 +1,6 @@
 import { ParallaxMedia } from '@v2/components/ui/ParallaxMedia'
 import { aboutGallery, type AboutGalleryItem } from '@v2/content/about'
+import { Picture } from '@v2/components/ui/Picture'
 
 const SPAN: Record<AboutGalleryItem['span'], { cell: string; frame: string }> = {
   one: { cell: 'col-span-1 md:col-span-1', frame: 'max-md:aspect-square md:aspect-(--aspect-ratio)' },
@@ -21,7 +22,12 @@ export function AboutGallery() {
                 style={{ ['--aspect-ratio' as string]: String(item.ratio) }}
               >
                 <ParallaxMedia speed={item.speed}>
-                  <img src={item.photo.src} alt={item.photo.alt} className="absolute inset-0 size-full object-cover" />
+                  <Picture
+                    src={item.photo.src}
+                    alt={item.photo.alt}
+                    sizes={item.span === 'full' ? '100vw' : '(min-width: 768px) 50vw, 100vw'}
+                    className="absolute inset-0 size-full object-cover"
+                  />
                 </ParallaxMedia>
               </div>
             </div>

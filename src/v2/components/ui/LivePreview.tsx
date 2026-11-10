@@ -42,6 +42,7 @@ export function LivePreview({ slug, device: pinned, className = '' }: LivePrevie
 
     let device = deviceFor()
     let near = false
+    let pageLoaded = document.readyState === 'complete'
     const frame = () => element.querySelector('iframe')
 
     const fit = () => {
@@ -76,7 +77,7 @@ export function LivePreview({ slug, device: pinned, className = '' }: LivePrevie
       const next = deviceFor()
       if (next !== device) {
         device = next
-        if (near) {
+        if (near && pageLoaded) {
           unmount()
           mount()
         }
@@ -85,17 +86,27 @@ export function LivePreview({ slug, device: pinned, className = '' }: LivePrevie
     })
     resizeObserver.observe(element)
 
+    // A preview is a whole app (up to a few megabytes), so it waits for the
+    // page's own text, photos and fonts to finish first, even at the top of
+    // the page. Until then the box shows its ink fill.
+    const onPageLoad = () => {
+      pageLoaded = true
+      if (near) mount()
+    }
+    if (!pageLoaded) window.addEventListener('load', onPageLoad, { once: true })
+
     const intersectionObserver = new IntersectionObserver(
       ([entry]) => {
         near = entry?.isIntersecting ?? false
-        if (near) mount()
-        else unmount()
+        if (near && pageLoaded) mount()
+        else if (!near) unmount()
       },
       { rootMargin: '100% 0px' },
     )
     intersectionObserver.observe(element)
 
     return () => {
+      window.removeEventListener('load', onPageLoad)
       resizeObserver.disconnect()
       intersectionObserver.disconnect()
       unmount()

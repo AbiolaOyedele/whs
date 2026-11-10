@@ -6,6 +6,7 @@ import { SplitTitle } from '@v2/components/ui/SplitTitle'
 import { AuthorChip } from '@v2/components/features/blog/AuthorChip'
 import { Button } from '@v2/components/ui/Button'
 import type { Photo } from '@v2/content/photos'
+import { Picture } from '@v2/components/ui/Picture'
 
 interface ArticleShellProps {
   title: string
@@ -82,13 +83,13 @@ export function ArticleShell({
                 </div>
                 {photo ? (
                   <div className="anim-image-clip-path relative mb-fluid-lg overflow-hidden rounded-md">
-                    <img src={photo.src} alt={photo.alt} className="aspect-4/3 w-full object-cover md:aspect-2/1" />
+                    <Picture src={photo.src} alt={photo.alt} sizes="(min-width: 1280px) 1200px, 100vw" className="aspect-4/3 w-full object-cover md:aspect-2/1" priority />
                   </div>
                 ) : logo ? (
                   <div className="anim-image-clip-path relative mb-fluid-lg flex justify-center overflow-hidden rounded-md bg-white py-fluid-2xl">
                     <div className="relative aspect-880/744 w-[50%] max-w-180">
                       <div className="flex h-full w-full items-center justify-center">
-                        <img src={logo} alt="" className="m-auto max-h-1/2 max-w-3/4 object-contain" />
+                        <img src={logo} alt="" decoding="async" className="m-auto max-h-1/2 max-w-3/4 object-contain" />
                       </div>
                     </div>
                   </div>
