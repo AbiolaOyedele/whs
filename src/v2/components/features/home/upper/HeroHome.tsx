@@ -279,13 +279,16 @@ export function HeroHome({ children }: HeroHomeProps) {
       >
         <div className="container">
           <div className="grid items-end gap-x-gutter gap-y-fluid-lg sm:grid-cols-12">
-            <div className="sm:col-start-1 sm:col-end-7" data-hero-cursor-hide="">
-              <SplitTitle as="h1" glow className="text-heading-2xl">
-                {heroCopy.title.before} {heroCopy.title.highlight}{' '}
-                {heroCopy.title.after}
+            <div className="sm:col-span-12 lg:col-end-9" data-hero-cursor-hide="">
+              <SplitTitle as="h1" glow className="text-heading-2xl max-sm:text-[clamp(26px,7.6vw,34px)]">
+                {heroCopy.titleLines.map((line) => (
+                  <span key={line} className="block">
+                    {line}
+                  </span>
+                ))}
               </SplitTitle>
             </div>
-            <div className="sm:col-start-9 sm:col-end-13 lg:col-end-12" data-hero-cursor-hide="">
+            <div className="sm:col-span-12 lg:col-start-9 lg:col-end-13" data-hero-cursor-hide="">
               <div className="flex max-w-100 flex-col gap-7.5">
                 <div className="wysiwyg wysiwyg-navy anim-transform-opacity text-balance [&_p]:text-body-md!">
                   <p>{heroCopy.body}</p>

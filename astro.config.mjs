@@ -106,7 +106,7 @@ const emptyInsightCategories = (() => {
  * placeholder insight categories), and a static build needs every source path
  * spelled out anyway.
  */
-const { SERVICE_LOCATIONS } = await import('./src/config/service-locations.ts')
+const { SERVICE_LOCATIONS, RETIRED_LOCATIONS } = await import('./src/config/service-locations.ts')
 
 const permanentRedirects = (() => {
   /** @type {Record<string, { status: 301, destination: string }>} */
@@ -123,11 +123,17 @@ const permanentRedirects = (() => {
   add('/work', '/resources')
   add('/insights', '/blog')
 
-  // Services and the service-by-location pages.
+  // Services and the service-by-location pages. Retired places go to Lagos or
+  // to the service's own page, from both their original and their v2 address.
   for (const service of ['websites', 'apps', 'tools-and-systems']) {
     add(`/services/${service}`, `/use-cases/${service}`)
     for (const location of SERVICE_LOCATIONS) {
       add(`/services/${service}/${location.slug}`, `/use-cases/${service}/${location.slug}`)
+    }
+    for (const [slug, target] of Object.entries(RETIRED_LOCATIONS)) {
+      const destination = target ? `/use-cases/${service}/${target}` : `/use-cases/${service}`
+      add(`/services/${service}/${slug}`, destination)
+      add(`/use-cases/${service}/${slug}`, destination)
     }
   }
 

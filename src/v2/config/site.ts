@@ -33,5 +33,7 @@ const SLATE_PAGES = [
 
 /** Which header scheme each page wears. */
 export function pageScheme(pathname: string): Scheme {
+  // The What we build list is a light page; each of its pages is dark.
+  if (pathname === '/what-we-build') return 'slate'
   return SLATE_PAGES.some((page) => pathname === page || pathname.startsWith(`${page}/`)) ? 'slate' : 'dark'
 }

@@ -42,19 +42,19 @@ export type AboutLinkCard =
   | { type: 'download' | 'link'; title: string; href: string; tone: AboutLinkTone }
 
 export const aboutHero: AboutHero = {
-  before: 'To build systems',
+  before: 'To build tools',
   highlight: 'that give people',
   after: 'their time back.',
   label: 'Our mission',
-  intro: `${site.name} builds custom websites, web apps and internal tools for businesses in Lagos, Nigeria and across Africa. Built around how you actually work, not a template.`,
+  intro: `${site.name} builds custom websites, web apps and tools for your team, for businesses in Lagos, Nigeria and across Africa. Built around how you really work, not a template.`,
 }
 
 export const aboutOverview: AboutOverview = {
   heading:
-    "We started small, solving one team's repetitive work. Today we build the systems that run behind businesses, driven by the same idea.",
+    "We started small, taking one team's repetitive work off their hands. Today we build the websites, apps and tools that run behind businesses, with the same idea.",
   paragraphs: [
-    'We judge every system we build by how much time it saves you. You can see that in the work we ship and in how we scope a project, from first call to launch.',
-    'Every engagement starts with a discovery call, to learn what is broken and what it is costing you in time. Then a written plan for your brief, with what is in scope and what is out, and one price worked out from that scope.',
+    'We judge everything we build by how much time it saves you. Auto Flow is one example: a batch that took about 2 hours by hand now runs in about 30 minutes on its own.',
+    'Every project starts with a discovery call, to learn what is broken and what it is costing you in time. Then a written plan for your brief, with what we will build and what we will not, and one price for that work.',
     "We're based in Lagos, working with businesses across Nigeria and the wider African market.",
   ],
 }
@@ -68,8 +68,8 @@ export const aboutGallery: readonly AboutGalleryItem[] = [
 export const aboutStory: AboutStory = {
   headingLead: 'Why we built',
   headingHighlight: site.name,
-  lead: 'WildHands exists because most teams lose hours every week to work a system could do in seconds.',
-  body: 'We would rather build the system once than watch anyone rebuild the same report again. Your hours should go into the work only you can do.',
+  lead: 'WildHands exists because most teams lose hours every week to work a computer could do in seconds.',
+  body: 'We would rather build the tool once than watch anyone rebuild the same report again. Your hours should go into the work only you can do.',
   cta: { label: 'Talk to us', href: '/contact' },
 }
 

@@ -27,12 +27,12 @@ export function HeroUseCase({ title, intro, visual }: HeroUseCaseProps) {
       <div className="relative z-above flex min-h-svh flex-col justify-end pt-header">
         <div className="container">
           <div className="grid min-h-[50svh] gap-x-gutter gap-y-fluid-lg max-md:pb-fluid-xl sm:grid-cols-12 md:pb-fluid-2xl">
-            <div className="sm:col-start-1 sm:col-end-7">
-              <SplitTitle as="h1" glow className="text-heading-2xl">
+            <div className="sm:col-span-12 lg:col-end-9">
+              <SplitTitle as="h1" glow className="text-heading-2xl max-w-[11em] max-sm:text-[34px]">
                 <TitleText parts={title} />
               </SplitTitle>
             </div>
-            <div className="sm:col-start-9 sm:col-end-13 lg:col-end-12">
+            <div className="sm:col-span-12 lg:col-start-9 lg:col-end-13">
               <div className="flex max-w-100 flex-col gap-7.5">
                 <div className="wysiwyg wysiwyg-navy wysiwyg-p:text-body-md! anim-transform-opacity text-balance">
                   <p>{intro}</p>

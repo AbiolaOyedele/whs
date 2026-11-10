@@ -24,9 +24,9 @@ export const SITE = {
   name: 'WildHands',
   /** Used in <title> suffixes and Organization JSON-LD. */
   legalName: 'WildHands',
-  tagline: 'Custom solutions that give you your time back.',
+  tagline: 'We build the tools that give business owners their time back.',
   description:
-    'WildHands builds custom websites, web apps and internal tools for businesses in Lagos, Nigeria and across Africa. Built around how you actually work, not a template.',
+    'WildHands builds websites, apps and small tools for businesses in Nigeria and across Africa, so the copying, chasing and checking stops eating your day. Websites go live in 72 hours from ₦150,000.',
   /**
    * Canonical origin. Everything user-facing — canonical tags, sitemap.xml,
    * robots.txt, Open Graph — reads PUBLIC_SITE_URL, not this; this is the value

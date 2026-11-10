@@ -1,9 +1,7 @@
 /**
  * The service-by-location pages: one per service and place, such as
- * /use-cases/websites/lekki. They carry over the original site's
- * /services/<service>/<location> pages (3 services by 29 places), which exist
- * so a business searching for "custom website design in Lekki" finds a page
- * that names their area.
+ * /use-cases/websites/lagos. Only places we can speak for honestly have one;
+ * see src/config/service-locations.ts for the list and the retired places.
  *
  * Each page is the service's own page with the place in its title, a hero
  * line written for that place, and that place's answer to "do you build for

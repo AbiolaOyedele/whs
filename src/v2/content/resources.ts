@@ -2,8 +2,9 @@ import type { LivePreviewSlug } from '@/config/previews'
 /**
  * Work: the WildHands case studies, one per project in the main site's
  * `src/content/work/*.md`, ordered by each entry's `order`. Each body is that
- * entry's sections, numbers and outcome, then its Markdown body, word for
- * word. If a detail is not in those files, it is left out.
+ * entry's sections, numbers and outcome, then its Markdown body, reworded in
+ * plain English for business owners. If a detail is not in those files, it is
+ * left out.
  */
 import { site } from '@v2/config/site'
 import type { RichBlock } from '@v2/content/blog'
@@ -54,23 +55,23 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'A cross-platform desktop app that drives the Flow interface directly. It takes a folder of images, a prompt template (or per-image prompts written by Gemini from the image itself), and runs the whole batch. Progress is written to CSV as it goes, so an interrupted run picks up where it stopped instead of reprocessing everything.',
+        text: 'A desktop app for Mac and Windows that works the Flow website for you. You give it a folder of images and a prompt, or let Gemini write a prompt for each image from the picture itself, and it runs the whole batch. It saves its progress as it goes, so an interrupted run picks up where it stopped instead of starting again.',
       },
       {
         type: 'h2',
-        text: 'Pipelining, not queueing',
+        text: 'Overlapping, not waiting in line',
       },
       {
         type: 'p',
-        text: 'The obvious build runs one image at a time and spends most of its life waiting. This one starts uploading the next image once the current generation passes 20%, keeping up to three in flight, and parallelises every download at the end. That is where the time saving actually comes from.',
+        text: 'The obvious build does one image at a time and spends most of its life waiting. This one starts uploading the next image once the current video is 20% done, keeps up to 3 going at once, and downloads them all together at the end. That is where the time saving really comes from.',
       },
       {
         type: 'h2',
-        text: 'Knowing when a generation is done',
+        text: 'Knowing when a video is done',
       },
       {
         type: 'p',
-        text: 'Flow shows a live percentage overlay that simply vanishes on completion. Polling for the absence of an element is fragile: a network stall or a UI flicker reads as success. Completion is confirmed two ways instead: the overlay has to disappear and the finished video has to appear in the media picker with a valid ID. Failed generations are caught and retried once.',
+        text: 'Flow shows a live percentage that simply disappears when a video is finished. Waiting for something to disappear is unreliable: a slow connection or a flicker on screen can look like success. So the app checks two things instead. The percentage has to disappear, and the finished video has to show up in the library. If a video fails, it is caught and tried once more.',
       },
       {
         type: 'h2',
@@ -81,7 +82,7 @@ export const HELP_GUIDES: HelpGuide[] = [
         items: [
           [
             {
-              text: '~3×',
+              text: 'About 3×',
               strong: true,
             },
             ': Faster per batch',
@@ -91,7 +92,7 @@ export const HELP_GUIDES: HelpGuide[] = [
               text: '3',
               strong: true,
             },
-            ': Generations in flight at once',
+            ': Videos generating at once',
           ],
         ],
       },
@@ -109,11 +110,11 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'h2',
-        text: 'Two frontends, one automation core',
+        text: 'Two versions, one engine',
       },
       {
         type: 'p',
-        text: 'The same automation logic is wired to two interfaces (a PyWebView app for the Python build and an Electron app for the Node build), so the tool can be packaged for macOS and Windows without maintaining two behaviours. A second mode downloads every video from an existing Flow project link, which turned out to be the feature people reached for most after the first batch.',
+        text: 'The same engine sits behind two versions of the app, so it can be packaged for Mac and Windows without two sets of behaviour to keep in step. A second mode downloads every video from an existing Flow project link. After the first batch, that turned out to be the feature people used most.',
       },
       {
         type: 'h2',
@@ -121,7 +122,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'The Electron build contains a half-finished engine pointing at Higgsfield, another video platform. It does not work, and it is staying that way. Higgsfield actively detects browser automation and refuses authenticated access; the standard workaround is to strip the automation flag with stealth launch flags, which would breach their terms of service. The selectors were written. The bypass was not.',
+        text: 'One version contains a half-finished engine for Higgsfield, another video platform. It does not work, and it is staying that way. Higgsfield blocks software that works its website for you from signing in. The usual workaround is to disguise that software, which would break their terms of service. The groundwork was written. The workaround was not.',
       },
     ],
     faqs: [],
@@ -148,7 +149,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'A desktop app that connects up to three Google accounts over OAuth, stores each refresh token encrypted in the system keychain, and checks every connected calendar every five minutes for meetings with a Meet link. Each account gets its own isolated browser session, so signing in to one never disturbs another.',
+        text: 'A desktop app that connects up to 3 Google accounts with sign in with Google, keeps each account’s sign-in locked away on your computer, and checks every calendar every 5 minutes for meetings with a Meet link. Each account gets its own separate browser, so signing in to one never disturbs another.',
       },
       {
         type: 'h2',
@@ -156,7 +157,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'At join time it opens the meeting in that account session, confirms the microphone toggle reads as off, confirms the camera toggle reads as off, clicks Join, then verifies the in-call interface actually appeared. A native notification follows, with a button to bring the window forward.',
+        text: 'At join time it opens the meeting in that account, checks the microphone is off, checks the camera is off, clicks Join, then checks the call really opened. A notification follows, with a button to bring the window forward.',
       },
       {
         type: 'h2',
@@ -164,7 +165,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'Google changes the Meet interface without notice, so every selector lives in one file. If either toggle state cannot be confirmed, the join is abandoned before the button is clicked. The app will occasionally skip a meeting after a Google redesign. It will never join one with your microphone live.',
+        text: 'Google changes the Meet screen without notice, so the app checks before it acts. If it cannot confirm the microphone and camera are both off, it does not click Join. The app will sometimes skip a meeting after Google changes the screen. It will never join one with your microphone live.',
       },
       {
         type: 'h2',
@@ -185,7 +186,7 @@ export const HELP_GUIDES: HelpGuide[] = [
               text: '5 min',
               strong: true,
             },
-            ': Calendar poll interval',
+            ': Between calendar checks',
           ],
         ],
       },
@@ -207,7 +208,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'Not every meeting arrives as a calendar invite, so links can be pasted in directly and either scheduled once or repeated weekly. Out-of-office days are respected, the join lead time is configurable (a minute early or exactly on the hour), and optional reminders fire beforehand for the calls you do want to prepare for.',
+        text: 'Not every meeting arrives as a calendar invite, so links can be pasted in directly and either scheduled once or repeated weekly. Out-of-office days are respected, you choose when it joins (a minute early or exactly on the hour), and optional reminders go off beforehand for the calls you do want to prepare for.',
       },
       {
         type: 'h2',
@@ -215,14 +216,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: [
-          'The Google integration requests ',
-          {
-            text: 'calendar.readonly',
-            code: true,
-          },
-          ' and nothing more. The app never writes to a calendar, never creates events, and never touches anything outside the meeting links it needs to open.',
-        ],
+        text: 'The app asks Google for permission to read your calendars and nothing more. It never writes to a calendar, never creates events, and never touches anything outside the meeting links it needs to open.',
       },
     ],
     faqs: [],
@@ -241,7 +235,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'Agencies run on scattered infrastructure. Clients live in a spreadsheet, invoices in a separate system, payment tracking in someone head, and project handoffs in email. Growing the business means buying another tool, and teams work in silos because there is nowhere central to see who is doing what.',
+        text: 'Agencies run on scattered tools. Clients live in a spreadsheet, invoices in another app, payment tracking in someone’s head, and project handoffs in email. Growing the business means buying another tool, and people work apart because there is nowhere central to see who is doing what.',
       },
       {
         type: 'h2',
@@ -249,15 +243,15 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'A workspace where contacts, contracts, invoices and tasks all sit together, and every member sees the same data gated by their role. Clients get their own portal on a workspace subdomain with independent credentials: the same records, a different view, read-only or collaborative depending on what they are given.',
+        text: 'A workspace where contacts, contracts, invoices and tasks all sit together, and each team member sees the same records, limited to what their role allows. Clients get their own area at its own web address, with their own sign-in: the same records, a different view, read only or able to work on them, depending on what they are given.',
       },
       {
         type: 'h2',
-        text: 'The hard part: two access patterns, one database',
+        text: 'The hard part: letting a team in safely',
       },
       {
         type: 'p',
-        text: 'Team access had to be added to a schema whose policies assumed a single owner, across more than twenty tables, without a single existing read path breaking. The answer was two SECURITY DEFINER functions that resolve workspace membership once, referenced from permissive policies everywhere else. Postgres ORs permissive policies together, so the original owner-only check and the new member check coexist: adding a teammate can only ever grant access, never revoke it.',
+        text: 'The workspace was first built for one owner. Adding a team meant changing who could see what across more than 20 kinds of records, without breaking anything that already worked. We added one check for who belongs to the workspace and used it everywhere. The original owner check still stands beside it, so each person only sees what they are allowed to see, and adding a teammate can only ever give access, never take it away.',
       },
       {
         type: 'h2',
@@ -265,7 +259,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'Invoices carry their own lifecycle from draft through sent to paid, with customisable templates, and settle through Stripe or Paystack depending on where the client is. Transactional email runs on Resend, and a WhatsApp bot pushes task updates to people who live in messaging rather than dashboards.',
+        text: 'Invoices move from draft to sent to paid, with templates you can change, and clients pay through Stripe or Paystack depending on where they are. Emails send themselves through Resend, and a WhatsApp bot sends task updates to people who live in messaging rather than dashboards.',
       },
       {
         type: 'h2',
@@ -276,17 +270,10 @@ export const HELP_GUIDES: HelpGuide[] = [
         items: [
           [
             {
-              text: '88',
-              strong: true,
-            },
-            ': Database migrations shipped',
-          ],
-          [
-            {
               text: '20+',
               strong: true,
             },
-            ': Tables under row-level security',
+            ': Kinds of records, each locked to the right people',
           ],
         ],
       },
@@ -308,7 +295,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'An admin-only playground generates marketing assets through DALL-E 3 and Gemini, with a reference-image workflow and prompt review before anything is produced. A separate vault holds legal, brand and finance documents with a visibility model that decides which portals can see what, so a contract shared with one client is not quietly readable by another.',
+        text: 'A private area for the agency’s admins makes marketing images with DALL-E 3 and Gemini, two AI image tools. You add reference images and check the instructions before anything is made. A separate vault holds legal, brand and finance documents, and you choose which client can see each one, so a contract shared with one client is not quietly readable by another.',
       },
     ],
     faqs: [],
@@ -327,7 +314,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'TOMORI makes hand-dyed Adire and Ankara bubu dresses, pants and two-piece sets. Most shoppers find a piece on Instagram or WhatsApp, on a phone, on mobile data. Marketplaces bury the clothes between phone cases, stock themes cover them in badges and countdowns, and selling through DMs leaves orders, payments and stock in one person’s head.',
+        text: 'TOMORI makes hand-dyed Adire and Ankara bubu dresses, pants and two-piece sets. Most shoppers find a piece on Instagram or WhatsApp, on a phone, on mobile data. Marketplaces bury the clothes between phone cases, ready-made shop designs cover them in badges and countdowns, and selling through DMs leaves orders, payments and stock in one person’s head.',
       },
       {
         type: 'h2',
@@ -343,15 +330,15 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'The owner runs the shop alone, between packing orders and answering messages, so the admin is written for a shop owner rather than a developer. Every section says what it is for in a few words, times read “3 hours ago”, and every empty screen says what will show up there.',
+        text: 'The owner runs the shop alone, between packing orders and answering messages, so the back office is written for a shop owner rather than a developer. Every section says what it is for in a few words, times read “3 hours ago”, and every empty screen says what will show up there.',
       },
       {
         type: 'h2',
-        text: 'The parts most shop admins do not have',
+        text: 'The parts most shop back offices do not have',
       },
       {
         type: 'p',
-        text: 'At a market she picks a piece by its code and the shop makes a QR code the customer pays through on their own phone. Bags left unpaid for twenty minutes are listed so she can follow up. Visitors are counted on the shop itself, with no ad trackers. QR codes printed on delivery bags report every scan and can be pointed somewhere new after printing. Takings, costs and discount codes live in the same place.',
+        text: 'At a market she picks a piece by its code and the shop makes a QR code the customer pays through on their own phone. Bags left unpaid for 20 minutes are listed so she can follow up. Visitors are counted on the shop itself, with no ad trackers. QR codes printed on delivery bags report every scan and can be pointed somewhere new after printing. Takings, costs and discount codes live in the same place.',
       },
       {
         type: 'h2',
@@ -359,7 +346,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'The interface keeps to deep navy, white and one soft lilac for the main button, so the brightest thing on screen is always the fabric. No countdowns and no “only 2 left”.',
+        text: 'The design keeps to deep navy, white and one soft lilac for the main button, so the brightest thing on screen is always the fabric. No countdowns and no “only 2 left”.',
       },
       {
         type: 'h2',
@@ -394,7 +381,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'Marvy reads the course code and week from the filename, finds the folder, checks the person has access and that the video is not already there, then uploads the video with its matching audio. The @mention comments come from the tag sheet and post as whoever is signed in, so it is always clear who did what. Every video then sits on one board with the team’s own statuses, through to final render.',
+        text: 'Marvy reads the course code and week from the filename, finds the folder, checks the person has access and that the video is not already there, then uploads the video with its matching audio. The comments that tag reviewers come from the tag sheet and post as whoever is signed in, so it is always clear who did what. Every video then sits on one board with the team’s own statuses, through to final render.',
       },
       {
         type: 'h2',
@@ -402,7 +389,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'The happy path asks nothing. Marvy only speaks up when something looks wrong, and then asks one clear question. A near match is shown, never accepted, and nothing it does can delete anything in Drive.',
+        text: 'The usual case asks nothing. Marvy only speaks up when something looks wrong, and then asks one clear question. A near match is shown, never accepted, and nothing it does can delete anything in Drive.',
       },
       {
         type: 'h2',
@@ -410,7 +397,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'It runs entirely on the computer it is installed on, with no server and no tracking; the only thing it talks to is Google. The window works from 375 pixels wide to full screen, because people keep it docked beside After Effects between renders.',
+        text: 'It runs entirely on the computer it is installed on, with no server and no tracking; the only thing it talks to is Google. The window works small or full screen, because people keep it open beside After Effects between renders.',
       },
       {
         type: 'h2',
@@ -551,11 +538,11 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'h2',
-        text: 'One codebase, three places',
+        text: 'One build, three places',
       },
       {
         type: 'p',
-        text: 'One Next.js codebase runs Planes on the web and as a desktop app, with an Android app alongside.',
+        text: 'One build runs Planes on the web and as a desktop app, with an Android app alongside.',
       },
       {
         type: 'h2',
@@ -598,7 +585,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'Every guide starts from a twelve-section template with 29 block types, edited right where they sit, with undo and redo, an asset library and a Brand panel for the logo, palette, type, motion, icons and cover.',
+        text: 'Every guide starts from a 12-section template with 29 kinds of block, edited right where they sit, with undo and redo, an asset library and a Brand panel for the logo, palette, type, motion, icons and cover.',
       },
       {
         type: 'h2',
@@ -606,7 +593,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'A finished guide goes live at its own address, with sidebar navigation, search, one section per page and a Markdown export.',
+        text: 'A finished guide goes live at its own address, with a side menu, search, one section per page and a plain-text export.',
       },
       {
         type: 'h2',
@@ -614,7 +601,7 @@ export const HELP_GUIDES: HelpGuide[] = [
       },
       {
         type: 'p',
-        text: 'Marque runs signed out, saving in the browser. Signing in saves to an account, syncs across tabs and devices, and offers to move the brands already made into it.',
+        text: 'Marque works before you sign in, saving in your browser. Sign in and your work saves to an account, stays in step across tabs and devices, and the brands you already made can move into it.',
       },
       {
         type: 'h2',

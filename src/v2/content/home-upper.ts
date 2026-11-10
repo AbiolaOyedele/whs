@@ -10,14 +10,6 @@ import { GRACE_DAYS, PLANS, TRIAL_DAYS, type PlanId } from '@v2/content/pricing'
 
 /* ── hero ─────────────────────────────────────────────────────────── */
 
-export const heroCopy = {
-  /** Split around the gradient word: before, gradient, after. */
-  title: { before: 'Custom solutions that give you', highlight: 'your time', after: 'back.' },
-  body: 'A Lagos-based studio building custom websites, web apps and internal tools for teams done doing repetitive work by hand. We work with businesses across Nigeria and the wider African market.',
-  primary: 'Talk to Us',
-  secondary: { label: 'See Our Work', href: '/resources' },
-  cursorHint: 'Click and hold',
-} as const
 
 /** The three words that flicker in while the hero is held, in order. */
 export const holdWords = ['Websites', 'Apps', 'Tools'] as const
@@ -25,8 +17,8 @@ export const holdWords = ['Websites', 'Apps', 'Tools'] as const
 /* ── intro row ────────────────────────────────────────────────────── */
 
 export const introCopy = {
-  lead: 'Websites, web apps and internal tools for businesses in Lagos, Nigeria and across Africa.',
-  title: { before: 'Built around how you work,', highlight: 'not a template' },
+  lead: 'For businesses in Nigeria and across Africa that have outgrown WhatsApp and the notebook.',
+  title: { before: 'Less copying, less chasing,', highlight: 'more time for the work that pays' },
 } as const
 
 /* ── "Why WildHands": the sticky list and each card's words ───────── */
@@ -61,6 +53,15 @@ function planPrice(id: PlanId): PlanPrice {
 const STARTER = planPrice('starter')
 const STANDARD = planPrice('growth')
 
+export const heroCopy = {
+  /** The headline, one entry per line, broken where the owner set it. */
+  titleLines: ['We build the', 'website and tools your', 'business runs on.'],
+  body: `Websites live in 72 hours from ${naira(STARTER.price)}. Apps and automations that take the copying, chasing and checking off your plate. You own all of it.`,
+  primary: 'Book a call',
+  secondary: { label: 'See our work', href: '/resources' },
+  cursorHint: 'Click and hold',
+} as const
+
 export const whyCopy = {
   price: {
     id: 'priced-up-front',
@@ -79,14 +80,14 @@ export const whyCopy = {
     id: 'built-from-scratch',
     navTitle: 'Built from scratch',
     title: 'Built around your business, never a theme.',
-    body: 'The structure, the content and the screens are designed for what your business actually does, which is why a clothes shop, a quoting tool and an agency workspace come out nothing alike. Accessibility is checked in CI as we build, not audited once at the end.',
+    body: 'The pages and screens are designed for what your business actually does, which is why a clothes shop, a quoting tool and an agency workspace come out nothing alike.',
     action: { label: 'See our work', href: '/resources' },
   },
   own: {
     id: 'yours-to-keep',
     navTitle: 'Yours to keep',
     title: 'You own all of it, and you meet who builds it.',
-    body: 'The site, the domain, the code and everything on it are yours. The people you meet in the pitch are the people who build your project. And if an off-the-shelf tool already does the job, we will tell you.',
+    body: 'Your domain is registered in your name. You get every login on day one, and the code is yours. The people you meet on the call are the people who build it. And if an off-the-shelf tool already does the job, we will tell you.',
   },
 } as const satisfies Record<string, WhyCopy>
 
@@ -98,8 +99,8 @@ export const proposalCard = {
   inLabel: 'In scope',
   inScope: [
     'Up to 4 pages',
-    'Admin dashboard to edit text, images and prices',
-    'Analytics in plain English',
+    'A dashboard to change words, photos and prices',
+    'See who visited and what they clicked',
     'Copywriting from a 15-minute call',
     '3 rounds of edits',
   ],

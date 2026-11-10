@@ -7,6 +7,7 @@
  * prerender) and by `App` (which element to render for the current path).
  */
 import type { ReactElement } from 'react'
+import { SITE } from '@/config/site'
 import { site } from '@v2/config/site'
 import { AboutOverview } from '@v2/components/features/about/AboutOverview'
 import { HeroAbout } from '@v2/components/features/about/HeroAbout'
@@ -37,6 +38,7 @@ import { LlmsToolPage } from '@v2/components/features/tools/LlmsToolPage'
 import { LLMS_TOOL } from '@v2/content/tools'
 import { UseCaseTemplate } from '@v2/components/features/use-case/UseCaseTemplate'
 import { CapabilityPage } from '@v2/components/features/capability/CapabilityPage'
+import { WhatWeBuildIndex } from '@v2/components/features/capability/WhatWeBuildIndex'
 import { CAPABILITY_SLUGS, capabilityBySlug } from '@v2/content/capabilities'
 import { Button } from '@v2/components/ui/Button'
 import {
@@ -69,8 +71,7 @@ export interface ResolvedRoute {
 }
 
 const DEFAULT_TITLE = `${site.name} | Website & Web App Development in Lagos, Nigeria`
-const DEFAULT_DESCRIPTION =
-  'WildHands builds custom websites, web apps and internal tools for businesses in Lagos, Nigeria and across Africa. Built around how you actually work, not a template.'
+const DEFAULT_DESCRIPTION = SITE.description
 
 const BLOG_PAGES = Math.max(1, Math.ceil(BLOG_POSTS.length / POSTS_PER_PAGE))
 const HELP_PAGES = Math.max(1, Math.ceil(HELP_GUIDES.length / POSTS_PER_PAGE))
@@ -120,6 +121,11 @@ const STATIC_ROUTES: Record<string, () => ResolvedRoute> = {
         <HomeLower />
       </>
     ),
+  }),
+  '/what-we-build': () => ({
+    title: titled('What we build'),
+    description: `Every website, app and tool ${site.name} builds, from a one-page site to jobs that run on their own, each with its own page.`,
+    element: <WhatWeBuildIndex />,
   }),
   '/about': () => ({
     title: titled('About'),

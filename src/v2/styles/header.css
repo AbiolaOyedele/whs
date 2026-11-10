@@ -87,11 +87,13 @@ html.is-changing.has-header-fixed-visible .c-header.is-fixed {
   transition: color var(--transition-duration-fast) var(--ease);
 }
 
+/* The fixed header floats over every section, so its logo sits on the same
+   ink pill as the nav and the Menu button and never runs into page text. */
 .c-header.is-fixed .c-header_logo {
-  color: var(--color-navy-900);
-}
-
-.c-header.is-fixed.is-over-dark .c-header_logo {
+  align-self: stretch;
+  padding-inline: calc(var(--spacing) * 3.5);
+  border-radius: var(--radius-sm);
+  background: rgb(19 19 20 / 0.92);
   color: var(--color-white);
 }
 
@@ -319,6 +321,11 @@ html.has-menu-dropdown-open .c-header_logo_text {
 
 .c-header.is-fixed .c-header_nav_buttons .button.bg-white:hover {
   background-color: var(--color-white) !important;
+}
+
+/* The outlined button floats over page content too, so it takes the ink fill. */
+.c-header.is-fixed .c-header_nav_buttons .button.bg-transparent {
+  background-color: rgb(19 19 20 / 0.92) !important;
 }
 
 /* ── dropdowns ────────────────────────────────────────────────────── */

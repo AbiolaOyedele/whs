@@ -78,7 +78,7 @@ const WORK = {
   rayo: workStory('rayo', 'rayo.svg', 'Rayo', 'Business tools', 'Apps', 'Rayo: quotes your client accepts on the page'),
   autoFlow: workStory('auto-flow', 'auto-flow.png', 'Auto Flow', 'Creative tooling', 'Tools & Systems', 'Auto Flow: bulk video generation without the manual loop'),
   ruff: workStory('the-ruff-agency', 'the-ruff-agency.svg', 'The Ruff Agency', 'Agency operations', 'Tools & Systems', 'The Ruff Agency: one workspace instead of six tools'),
-  marvy: workStory('marvy', 'marvy.svg', 'Marvy', 'Internal tools', 'Tools & Systems', 'Marvy: course videos filed in one step'),
+  marvy: workStory('marvy', 'marvy.svg', 'Marvy', 'Team tools', 'Tools & Systems', 'Marvy: course videos filed in one step'),
 } as const
 
 /* ── map (Nigerian cities placed on MapCard's 0–100 grid of the country) ── */
@@ -208,7 +208,7 @@ const QUOTE_LINK: ExampleLink = {
   image: coverImage(PHOTOS.startQuote),
   icon: 'bag',
   title: 'Request a quote',
-  body: 'Send a short brief. We reply with a written plan and one price, worked out from that scope.',
+  body: 'Send a short brief. We reply with a written plan and one price for that work.',
   action: 'Request a quote',
   href: '/request-a-quote',
 }
@@ -217,7 +217,7 @@ const WEBSITE_OFFER_LINK: ExampleLink = {
   image: coverImage(PHOTOS.service72Hours),
   icon: 'chart',
   title: 'The 72-hour website',
-  body: `Starter at ${naira(150000)} or Standard at ${naira(250000)}. The design is approved before any code, and the site is live in 72 hours.`,
+  body: `Starter at ${naira(150000)} or Standard at ${naira(250000)}. You approve the design before we build, and the site is live in 72 hours.`,
   action: 'See pricing',
   href: '/pricing',
 }
@@ -271,33 +271,33 @@ const why = (highlight: string): TitlePart[] => [
 const websites: UseCaseContent = {
   slug: 'websites',
   meta: {
-    title: 'Custom Website Design in Lagos, Nigeria',
+    title: 'Custom website design in Lagos, Nigeria',
     description:
-      'Websites built from scratch around what you publish. Marketing sites that convert and full custom builds, designed in Lagos for businesses across Nigeria and Africa.',
+      'Websites built from scratch around your business. Simple sites that bring in enquiries, and bigger builds that take orders and payments, made in Lagos for Nigeria and Africa.',
   },
   label: 'Websites',
   title: [{ text: 'Websites built' }, { text: 'from scratch', highlight: true }, { text: 'around your business' }],
   intro:
-    'We build websites around your business, rather than fitting you into a theme. The structure, the content model and the page templates are designed for what you actually publish.',
+    'We build websites around your business, rather than fitting you into a theme. Every page is planned around what you sell and what you need to say.',
   hero: { kind: 'voice' },
-  lede: 'Marketing sites that convert, and full custom builds for businesses that need the site to do more.',
+  lede: 'Simple sites that bring in enquiries, and bigger builds for when the site needs to take orders or payments.',
   why: why('websites?'),
   featuresLabel: 'What you get',
   features: [
     {
       id: 'ships-with',
-      navTitle: 'What ships with it',
+      navTitle: 'What comes with it',
       title: 'Everything a site needs, built in',
-      body: 'Every site ships with a CMS admin panel, search engine crawl rules, an XML sitemap, AI search visibility setup and simple website analytics.',
+      body: 'Every site is set up so Google can read each page and AI assistants get a plain summary of you. Standard and bigger sites add a dashboard to edit words and photos, and visitor numbers.',
       visual: {
         kind: 'checklist',
         address: 'yourbusiness.ng',
         items: [
-          { label: 'CMS admin panel', detail: 'Edit any page yourself' },
-          { label: 'Crawl rules', detail: 'robots.txt' },
-          { label: 'XML sitemap', detail: 'sitemap.xml' },
-          { label: 'AI search visibility', detail: 'Set up for AI answers' },
-          { label: 'Website analytics', detail: 'Visits and where they came from' },
+          { label: 'Edit it yourself', detail: 'Change words and photos' },
+          { label: 'Private pages hidden', detail: 'Kept out of search' },
+          { label: 'Page list for Google', detail: 'Every public page' },
+          { label: 'Summary for AI', detail: 'Set up for AI answers' },
+          { label: 'Visitor numbers', detail: 'Visits and where they came from' },
         ],
         artSeed: 2,
       },
@@ -306,14 +306,14 @@ const websites: UseCaseContent = {
       id: 'built-custom',
       navTitle: 'Built from scratch',
       title: 'Designed for what you publish',
-      body: 'Nothing is adapted from a site built for someone else. Editing is part of the build, so routine changes never need a developer.',
+      body: 'Nothing is copied from a site built for someone else. Editing is part of the build, so routine changes never need a developer.',
       visual: { kind: 'cms-edit', artSeed: 6 },
     },
     {
       id: 'local-realities',
       navTitle: 'Built for Nigeria',
-      title: 'Built for local realities',
-      body: 'Every site accounts for local hosting, payment and connectivity realities, not just international defaults. We are based in Lagos and build for businesses across Nigeria and Africa.',
+      title: 'Built for how Nigeria works',
+      body: 'We plan for how your customers really shop: on a phone, often on mobile data, paying by card, transfer or USSD through Paystack. We are based in Lagos and build for businesses across Nigeria and Africa.',
       visual: { kind: 'local-checkout', artSeed: 1 },
     },
     {
@@ -340,12 +340,12 @@ const websites: UseCaseContent = {
   faqs: [
     {
       question: 'How much does a custom website cost?',
-      answer: `Starter is ${naira(150000)} and Standard is ${naira(250000)}, one-off, with half paid to start. A larger build with more pages or functionality is quoted after a short discovery call, once the scope is clear.`,
+      answer: `Starter is ${naira(150000)} and Standard is ${naira(250000)}, one-off, with half paid to start. A larger build with more pages or features is quoted after a short discovery call, once we know what you need.`,
     },
     {
       question: 'How long does a custom website take to build?',
       answer:
-        'Starter and Standard sites are live in 72 hours once you approve the design. A full custom build takes longer, depending on how much functionality sits behind it, which the discovery call establishes.',
+        'Starter and Standard sites are live in 72 hours once you approve the design. A full custom build takes longer, depending on how much it has to do. We work that out on the discovery call.',
     },
     {
       question: 'Why not just use a template?',
@@ -354,7 +354,7 @@ const websites: UseCaseContent = {
     },
     {
       question: 'Can we update the site ourselves after launch?',
-      answer: 'Yes. Every site ships with a CMS admin panel, so routine changes never need a developer.',
+      answer: 'Yes. Standard and bigger sites come with a simple dashboard where you change words and photos yourself, so routine changes never need a developer.',
     },
     {
       question: 'Do you build websites for businesses outside Lagos?',
@@ -367,31 +367,31 @@ const websites: UseCaseContent = {
 const apps: UseCaseContent = {
   slug: 'apps',
   meta: {
-    title: 'Custom web apps and internal tools',
+    title: 'Custom web apps and tools for your team',
     description:
-      'Custom web apps and internal tools built around how your team actually works, rather than how off-the-shelf software assumes you do.',
+      'Custom web apps and tools for your team, built around how you really work, rather than how off-the-shelf software assumes you do.',
   },
   label: 'Apps',
   title: [{ text: 'Software built around' }, { text: 'how you actually work', highlight: true }],
   intro:
-    'An app is worth building when the way you work is specific enough that generic software makes it harder. We build around your real workflow, so the software fits the process.',
+    'An app is worth building when the way you work is specific enough that generic software makes it harder. We build around how you really work, so the software fits you.',
 
-  lede: 'Custom web apps and internal tools, for teams whose workflow does not fit off-the-shelf software.',
+  lede: 'Custom web apps and tools for your team, when the way you work does not fit off-the-shelf software.',
   why: why('apps?'),
   featuresLabel: 'What you get',
   features: [
     {
       id: 'your-workflow',
-      navTitle: 'Your workflow',
+      navTitle: 'How you work',
       title: 'Built around the real process',
-      body: 'Software your team or your customers log into, built for a job off-the-shelf tools do not quite do. Often it is the piece between the tools you already have, where the manual work lives.',
+      body: 'Software your team or your customers sign in to, built for a job off-the-shelf tools do not quite do. Often it is the piece between the tools you already have, where someone is copying things by hand.',
       visual: { kind: 'workflow', artSeed: 6 },
     },
     {
       id: 'shaped-by-the-problem',
       navTitle: 'Shaped by the problem',
       title: 'No two apps alike',
-      body: 'Every app here started as a workflow someone was doing by hand. Lazy Meet replaced the five clicks before every call.',
+      body: 'Every app here started as a job someone was doing by hand. Lazy Meet replaced the 5 clicks before every call.',
       visual: {
         kind: 'products',
         items: [PRODUCTS.lazyMeet, PRODUCTS.rayo, PRODUCTS.dory, PRODUCTS.planes],
@@ -401,13 +401,13 @@ const apps: UseCaseContent = {
     {
       id: 'how-the-work-runs',
       navTitle: 'How the work runs',
-      title: 'Discovery, proposal, quote',
-      body: 'A discovery call first, to find out what is actually costing you time. Then a scoped proposal written around that brief. Then one price for the work in front of us.',
+      title: 'Call, plan, price',
+      body: 'A discovery call first, to find out what is really costing you time. Then a written plan of what we will build. Then one price for that work.',
       visual: {
         kind: 'process',
         steps: [
           { icon: 'phoneCall', title: 'Discovery call', detail: 'What is costing you time' },
-          { icon: 'fileText', title: 'Written proposal', detail: 'Scoped around your brief' },
+          { icon: 'fileText', title: 'Written plan', detail: 'What we will build' },
           { icon: 'receipt', title: 'One price', detail: 'For the work in front of us' },
         ],
         artSeed: 3,
@@ -442,7 +442,7 @@ const apps: UseCaseContent = {
     {
       question: 'How much does a custom app cost?',
       answer:
-        'It is quoted after a discovery call. The main driver is how many distinct workflows the app supports, not the number of screens.',
+        'We quote after a discovery call. What moves the price most is how many different jobs the app does, not the number of screens.',
     },
     {
       question: 'Do you replace software we already pay for?',
@@ -460,21 +460,21 @@ const apps: UseCaseContent = {
 const toolsAndSystems: UseCaseContent = {
   slug: 'tools-and-systems',
   meta: {
-    title: 'Dashboards and workflow automation',
+    title: 'Dashboards and jobs that run on their own',
     description:
-      'Dashboards that show what is actually happening, and automation that removes the manual steps between the tools you already use.',
+      'Dashboards that show what is really happening, and repetitive jobs that run on their own between the tools you already use.',
   },
   label: 'Tools & Systems',
   title: [
     { text: 'Dashboards', highlight: true },
     { text: 'and' },
-    { text: 'automation', highlight: true },
+    { text: 'tools', highlight: true },
     { text: 'that give you' },
     { text: 'your time back' },
   ],
   intro:
-    'Dashboards that put the numbers in one place, and automation that connects the tools you already pay for, so nobody re-keys data between them.',
-  lede: 'For teams rebuilding the same report, or re-keying the same data, every week.',
+    'Dashboards that put your numbers in one place. Repetitive jobs that run on their own, so nobody copies the same details from one tool to another.',
+  lede: 'For teams that rebuild the same report, or copy the same details, every week.',
   why: why('tools and systems?'),
   featuresLabel: 'What you get',
   features: [
@@ -482,14 +482,14 @@ const toolsAndSystems: UseCaseContent = {
       id: 'dashboards',
       navTitle: 'Dashboards',
       title: 'The numbers in one place',
-      body: 'Most teams already produce the data and lose it across several tools. The work is pulling it into one live view, instead of rebuilding the same report every week.',
+      body: 'Most teams already have the numbers, spread across several tools. The work is pulling them into one live view, instead of rebuilding the same report every week.',
       visual: { kind: 'dashboard', artSeed: 2 },
     },
     {
       id: 'automation',
-      navTitle: 'Automation',
+      navTitle: 'Jobs that run themselves',
       title: 'Manual steps, removed for good',
-      body: 'Auto Flow turned a supervised afternoon of clicking into an unattended half-hour. Marvy files each course video in the right Drive folder and tags the right reviewers.',
+      body: 'Auto Flow turned about 2 hours of watched clicking into 30 minutes that run on their own. Marvy files each course video in the right Drive folder and tags the right reviewers.',
       visual: {
         kind: 'automation',
         runs: [
@@ -525,7 +525,7 @@ const toolsAndSystems: UseCaseContent = {
       id: 'hours-returned',
       navTitle: 'Hours returned',
       title: 'Judged on the time it gives back',
-      body: 'During discovery we work out how many hours the current process costs, and the finished build is measured against that number. If we cannot answer how much time it saves, it was not worth building.',
+      body: 'On the discovery call we work out how many hours the current way costs you, and we measure the finished build against that number. If we cannot say how much time it saves, it was not worth building.',
       visual: {
         kind: 'hours',
         product: 'Auto Flow',
@@ -553,7 +553,7 @@ const toolsAndSystems: UseCaseContent = {
     items: [TALK_LINK, QUOTE_LINK, TOOLS_CASE_LINK, INSIGHTS_LINK],
   },
   stories: {
-    title: `Systems built by ${site.name}`,
+    title: `Tools built by ${site.name}`,
     action: 'Read the case study',
     items: [WORK.autoFlow, WORK.ruff, WORK.marvy],
   },
@@ -561,17 +561,17 @@ const toolsAndSystems: UseCaseContent = {
     {
       question: 'What is workflow automation?',
       answer:
-        'Connecting the tools you already use so data moves between them without anyone re-keying it. The goal is removing manual steps permanently rather than making them faster.',
+        'It means the repetitive job runs on its own. We connect the tools you already use, so details move between them without anyone typing them in again. The goal is to remove the manual step for good, not to make it faster.',
     },
     {
-      question: 'How do you measure whether a system was worth it?',
+      question: 'How do you know if it was worth building?',
       answer:
-        'By hours returned. We establish what the current process costs in time during discovery, and that number is what the finished build is measured against.',
+        'By the hours it gives back. On the discovery call we work out what the current way costs you in time, and we measure the finished build against that number.',
     },
     {
-      question: 'Can you build a dashboard from data we already have?',
+      question: 'Can you build a dashboard from numbers we already have?',
       answer:
-        'Usually yes. Most teams already produce the data and lose it across several tools. The work is pulling it into one live view rather than generating anything new.',
+        'Usually yes. Most teams already have the numbers, spread across several tools. The work is pulling them into one live view, not typing anything in again.',
     },
     {
       question: 'Do you build tools for businesses outside Lagos?',

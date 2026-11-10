@@ -48,7 +48,7 @@ export const GET: APIRoute = () => {
     '',
     ...services.map((service) => line(service.label, `/use-cases/${service.slug}`, service.meta.description)),
     '',
-    `Each service also has a page for every place we serve, at /use-cases/<service>/<place>: ${places}.`,
+    `Each service also has a page for Lagos, where we are based, at /use-cases/<service>/<place>: ${places}. We work with businesses elsewhere in Nigeria and outside it over calls.`,
     '',
     '## What we build',
     '',

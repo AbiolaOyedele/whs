@@ -54,15 +54,15 @@ export interface Capability {
 }
 
 const SAMPLE_NOTE =
-  'A sample shop on example data, in WildHands colours. It follows the admin panels we have built for real shops.'
+  'A sample shop on example data, in WildHands colours. It follows the back offices we have built for real shops.'
 
 const DISCOVERY: CapabilityStep = {
   title: 'Discovery call',
   body: 'We learn what is broken and what it is costing you in time.',
 }
 const PROPOSAL: CapabilityStep = {
-  title: 'Scoped proposal',
-  body: 'A written plan for your brief, with what is in scope and what is out.',
+  title: 'Written plan',
+  body: 'A written plan for your brief, with what we will build and what we will not.',
 }
 
 export const CAPABILITIES: Capability[] = [
@@ -71,44 +71,44 @@ export const CAPABILITIES: Capability[] = [
     label: 'Marketing sites',
     subject: 'your marketing site',
     meta: {
-      title: 'Marketing Websites in Lagos, Nigeria',
+      title: 'Marketing websites in Lagos, Nigeria',
       description:
-        'A focused website built from scratch to represent your business and turn visitors into enquiries. Starter and Standard sites are live in 72 hours.',
+        'A website built from scratch to show what your business does and bring in enquiries. Starter and Standard sites are live in 72 hours.',
     },
-    title: [{ text: 'A site built to' }, { text: 'convert visitors', highlight: true }],
+    title: [{ text: 'A site that turns' }, { text: 'visitors into enquiries', highlight: true }],
     intro:
-      'A focused site that represents you and gives visitors a clear path to contact. Designed from scratch around what your business publishes, not adapted from a theme.',
+      'A clear site that shows what you do and makes it easy to contact you. We design it from scratch around your business, not from a theme.',
     preview: 'marque',
     previewNote: 'The Marque website, designed and built by WildHands.',
     whatItIs: {
-      statement: 'A strong, simple presence and a clear path to contact.',
-      body: 'A marketing site is the right fit when people need to understand what you do and get in touch. We design the structure, the content model and the page templates around what you actually publish, and every site accounts for local hosting, payment and connectivity realities, not just international defaults.',
+      statement: 'A clear, simple site and an easy way to get in touch.',
+      body: 'A marketing site is the right fit when people need to understand what you do and then contact you. We plan every page around what you actually put on your site. We also plan for how people here use the web, such as customers opening your site on a phone, on mobile data.',
     },
     whoFor: [
-      'You need a strong public presence',
-      'The goal is to turn visitors into enquiries',
-      'Your content changes now and then, not every hour',
+      'You need a clear place online for your business',
+      'You want visitors to call, message or email you',
+      'Your words and prices change now and then, not every hour',
     ],
     youGet: [
       {
         icon: 'monitorSmartphone',
-        title: 'A custom responsive site',
+        title: 'A site made for you',
         body: 'Designed for your business and built to work on every screen, phones first.',
       },
       {
         icon: 'cms',
-        title: 'A CMS admin panel',
-        body: 'Change words and pictures yourself. Routine changes never need a developer.',
+        title: 'Edit it yourself',
+        body: 'On Standard, a simple dashboard where you change words and photos yourself, with no developer needed.',
       },
       {
         icon: 'search',
-        title: 'Search and AI visibility',
-        body: 'Search engine crawl rules, an XML sitemap and AI search visibility setup, from day one.',
+        title: 'Easy to find on Google',
+        body: 'Google can read every page from day one, and AI assistants get a plain summary of what you do.',
       },
       {
         icon: 'chart',
-        title: 'Simple website analytics',
-        body: 'How many people came, where from, and what they looked at.',
+        title: 'See who visits',
+        body: 'On Standard: how many people came, where from, and what they looked at.',
       },
       {
         icon: 'clock',
@@ -120,11 +120,11 @@ export const CAPABILITIES: Capability[] = [
       DISCOVERY,
       {
         title: 'Design first',
-        body: 'You see the design and approve it before any code is written. Starter includes 2 rounds of edits and Standard includes 3.',
+        body: 'You see the design and approve it before we build anything. Starter includes 2 rounds of edits and Standard includes 3.',
       },
       {
         title: 'Build',
-        body: 'Pay the deposit, half the price, to start. We build the site from scratch, with editing set up so you can make routine changes yourself.',
+        body: 'Pay the deposit, half the price, to start. We build the site from scratch. On Standard, we set it up so you can change words and photos yourself.',
       },
       {
         title: 'Live',
@@ -138,29 +138,29 @@ export const CAPABILITIES: Capability[] = [
     label: 'Full custom builds',
     subject: 'your custom build',
     meta: {
-      title: 'Custom Website Builds in Lagos, Nigeria',
+      title: 'Custom website builds in Lagos, Nigeria',
       description:
-        'More pages and more functionality, for businesses whose website has to sell, take payments or run a back office. Built from scratch in Lagos.',
+        'More pages and more features, for a business whose website has to sell, take payments or run a back office. Built from scratch in Lagos.',
     },
     title: [{ text: 'A website that does' }, { text: 'more than represent you', highlight: true }],
     intro:
-      'More pages and more functionality, for a business that needs the site to do real work: take orders and payments, run a catalogue, or carry a back office behind it.',
+      'More pages and more features, for a business that needs the site to do real work: take orders and payments, show a catalogue, or run a back office behind it.',
     preview: 'tomori',
     previewNote: 'The Tomori shop, designed and built by WildHands.',
     whatItIs: {
-      statement: 'Built for what you publish, and for what the site has to do.',
-      body: 'A full custom build starts from your content and your workflow, not a theme. Tomori is one: a phone-first shop for hand-dyed Adire with a Paystack checkout that takes card, transfer or USSD, delivery fees shown before anyone pays, and a back office the owner runs from her own phone.',
+      statement: 'Built for what you sell, and for what the site has to do.',
+      body: 'A full custom build starts from your products and how you work, not a theme. Tomori is one: a shop for hand-dyed Adire, built for a phone. Its Paystack checkout takes card, transfer or USSD. Delivery fees show before anyone pays. The owner runs the back office from her own phone.',
     },
     whoFor: [
       'The site needs to take orders or payments',
-      'What you publish does not fit a template',
+      'What you sell does not fit a template',
       'Your team will run it day to day, without a developer',
     ],
     youGet: [
       {
         icon: 'layers',
-        title: 'Pages designed for your content',
-        body: 'Templates and a content model built around what you publish, not adapted from someone else’s site.',
+        title: 'Pages made for what you sell',
+        body: 'Every page is planned around your products and your words, not copied from someone else’s site.',
       },
       {
         icon: 'creditCard',
@@ -170,17 +170,17 @@ export const CAPABILITIES: Capability[] = [
       {
         icon: 'layoutDashboard',
         title: 'A back office for your team',
-        body: 'An admin written for the person running the business, not for a developer.',
+        body: 'Your back office, on your phone or laptop, written for the person running the business.',
       },
       {
         icon: 'listChecks',
-        title: 'Everything a site ships with',
-        body: 'A CMS admin panel, crawl rules, an XML sitemap, AI search visibility setup and simple website analytics.',
+        title: 'Everything a site comes with',
+        body: 'A simple dashboard to change words and photos, pages Google can read, a summary for AI assistants, and visitor numbers.',
       },
       {
         icon: 'mapPin',
-        title: 'Built for local realities',
-        body: 'Local hosting, payment and connectivity are planned for, not just international defaults.',
+        title: 'Built for how Nigeria works',
+        body: 'Planned for customers on phones and mobile data, paying in naira by card, transfer or USSD.',
       },
     ],
     howWeBuild: [
@@ -188,43 +188,43 @@ export const CAPABILITIES: Capability[] = [
       PROPOSAL,
       {
         title: 'Custom quote',
-        body: 'One price, worked out from that scope. The price follows the scope, not the other way around.',
+        body: 'One price, worked out from that plan. The price follows the work, not the other way around.',
       },
       {
         title: 'Build and hand over',
-        body: 'Editing is part of the build, not an add-on, so routine changes never need a developer.',
+        body: 'Editing is part of the build, not an extra, so routine changes never need a developer.',
       },
     ],
     related: ['tomori', 'the-ruff-agency', 'marque'],
   },
   {
     slug: 'cms-admin-panel',
-    label: 'CMS admin panel',
-    subject: 'your admin panel',
+    label: 'Edit your site yourself',
+    subject: 'editing your own site',
     meta: {
-      title: 'CMS Admin Panels for Business Websites',
+      title: 'A dashboard to edit your own website',
       description:
-        'Every WildHands site ships with an admin panel written for the person running the business: change words and pictures, preview them, then publish.',
+        'Change the words and photos on your site yourself, from a simple dashboard written for the person running the business. Check it in a preview, then publish.',
     },
     title: [{ text: 'Change your site' }, { text: 'without a developer', highlight: true }],
     intro:
-      'Every site we build ships with an admin panel written for the person running the business. Change any words or pictures, see them in a live preview, and publish when you are ready.',
+      'We give you a simple dashboard where you change words and photos yourself. You see each change in a preview, and publish it when you are ready.',
     preview: 'wh-cms',
     previewNote: SAMPLE_NOTE,
     whatItIs: {
-      statement: 'Editing is part of the build, not an add-on.',
-      body: 'We set up the content model so routine changes never need a developer. Each section says what it is for in a few words, every empty screen says what will show up there, and your changes stay private until you choose to publish them.',
+      statement: 'Editing is part of the build, not an extra.',
+      body: 'We set it up so routine changes never need a developer. Each section says what it is for in a few words. Every empty screen says what will show up there. Your changes stay private until you choose to publish them.',
     },
     whoFor: [
       'You update prices, photos or wording yourself',
       'You want to check a change before customers see it',
-      'You would rather not file a ticket for every edit',
+      'You would rather not message a developer for every edit',
     ],
     youGet: [
       {
         icon: 'penTool',
         title: 'Words and pictures',
-        body: 'Headings, paragraphs, buttons and photos, edited in plain-language fields beside a live preview.',
+        body: 'Headings, paragraphs, buttons and photos, edited in plain boxes beside a live preview.',
       },
       {
         icon: 'eye',
@@ -244,7 +244,7 @@ export const CAPABILITIES: Capability[] = [
       {
         icon: 'phone',
         title: 'Runs from a phone',
-        body: 'The Tomori owner runs her whole shop, admin included, from her own phone.',
+        body: 'The Tomori owner runs her whole shop, back office included, from her own phone.',
       },
     ],
     howWeBuild: [
@@ -254,11 +254,11 @@ export const CAPABILITIES: Capability[] = [
       },
       {
         title: 'Name things in your words',
-        body: 'Fields are labelled the way your business talks, so the admin reads like your shop, not a database.',
+        body: 'Every box is labelled the way your business talks, so the dashboard reads like your shop, not like software.',
       },
       {
         title: 'Build it with the site',
-        body: 'The admin is built alongside the site, so its preview shows the real pages, not an approximation.',
+        body: 'We build the dashboard alongside the site, so its preview shows your real pages.',
       },
       {
         title: 'Hand over',
@@ -269,66 +269,66 @@ export const CAPABILITIES: Capability[] = [
   },
   {
     slug: 'search-visibility',
-    label: 'Search and AI visibility',
-    subject: 'your search setup',
+    label: 'Getting found in search',
+    subject: 'getting found in search',
     meta: {
-      title: 'Search and AI Visibility Setup',
+      title: 'Getting found on Google and AI assistants',
       description:
-        'Crawl rules, an XML sitemap and AI search visibility setup on every WildHands site, so search engines and AI assistants can read what your business does.',
+        'Every WildHands site is set up so Google and other search engines can read each page, and AI assistants can read a plain summary of what your business does.',
     },
     title: [{ text: 'Set up to be found' }, { text: 'from day one', highlight: true }],
     intro:
-      'Every site we build ships with search engine crawl rules, an XML sitemap and AI search visibility setup, so search engines and AI assistants can read what your business does.',
+      'Every site we build is set up so Google can find each page, and AI assistants can read a plain summary of what your business does.',
     preview: 'wh-search',
     previewNote: SAMPLE_NOTE,
     whatItIs: {
-      statement: 'The groundwork search engines and AI assistants read first.',
-      body: 'Crawl rules tell search engines which pages to read and which to skip, such as the admin. The XML sitemap lists every public page. AI search visibility setup gives AI assistants a plain summary of the business. Page titles and descriptions are fields you can edit yourself. None of it guarantees a ranking, and we will not promise you one.',
+      statement: 'The groundwork Google and AI assistants read first.',
+      body: 'We tell search engines which pages to read and which to skip, such as your dashboard. We give them a list of every public page. AI assistants get a plain summary of the business. You can edit page titles and descriptions yourself. None of it guarantees a ranking, and we will not promise you one.',
     },
     whoFor: [
       'You are launching a new site',
-      'Your current site has no sitemap or crawl rules',
+      'Your current site was never set up for search engines',
       'You want AI assistants to be able to read what you do',
     ],
     youGet: [
       {
         icon: 'sitemap',
-        title: 'An XML sitemap',
-        body: 'Every public page listed, built from the site itself so new pages are included.',
+        title: 'A list of every page',
+        body: 'Search engines get a list of every public page, made from the site itself, so new pages are added.',
       },
       {
         icon: 'search',
-        title: 'Crawl rules',
-        body: 'A robots.txt that keeps private areas such as the admin out of search and points crawlers to the sitemap.',
+        title: 'Private pages kept out',
+        body: 'Your dashboard and other private pages stay out of search results.',
       },
       {
         icon: 'bot',
-        title: 'AI search visibility setup',
-        body: 'A plain-text summary of the business, in the llms.txt format, for AI assistants to read.',
+        title: 'A summary for AI',
+        body: 'A plain-text summary of your business, written for AI assistants to read.',
       },
       {
         icon: 'fileText',
         title: 'Titles and descriptions',
-        body: 'Edited in the admin panel, with a preview of how the page shows in search and in shared links.',
+        body: 'Edited in your dashboard, with a preview of how the page looks on Google and in shared links.',
       },
       {
         icon: 'mapPin',
         title: 'Business details',
-        body: 'Your name, location and contact details marked up so search engines can read them.',
+        body: 'Your name, location and contact details set out so search engines can read them.',
       },
     ],
     howWeBuild: [
       {
         title: 'Part of every build',
-        body: 'Crawl rules, the sitemap and the AI summary ship with the site. They are not an add-on.',
+        body: 'The page list, the private-page rules and the AI summary come with the site. They are not an extra.',
       },
       {
         title: 'Kept current',
-        body: 'The sitemap is generated from the site’s own pages, so nobody has to remember to update it.',
+        body: 'The page list updates itself from the site’s own pages, so nobody has to remember to do it.',
       },
       {
         title: 'Yours to edit',
-        body: 'Titles and descriptions sit in the admin panel, next to the rest of your content.',
+        body: 'Titles and descriptions sit in your dashboard, next to the rest of your words and photos.',
       },
       {
         title: 'Honest about results',
@@ -339,12 +339,12 @@ export const CAPABILITIES: Capability[] = [
   },
   {
     slug: 'website-analytics',
-    label: 'Simple website analytics',
-    subject: 'your analytics',
+    label: 'See who visits your site',
+    subject: 'your visitor numbers',
     meta: {
-      title: 'Simple Website Analytics, No Ad Trackers',
+      title: 'Simple visitor numbers, no ad trackers',
       description:
-        'Visitors counted on your own site with no ad trackers: who is browsing now, where they came from, what they looked at, and when the site is busiest.',
+        'See how many people visited your site and what they looked at, with no ad trackers: who is browsing now, where they came from and when the site is busiest.',
     },
     title: [{ text: 'Know who visits,' }, { text: 'without ad trackers', highlight: true }],
     intro:
@@ -353,12 +353,12 @@ export const CAPABILITIES: Capability[] = [
     previewNote: SAMPLE_NOTE,
     whatItIs: {
       statement: 'The few numbers that matter, in plain words.',
-      body: 'Simple website analytics ships with every site we build. It answers the questions a business owner actually asks: how many people came, where from, on what device, and what they did once they arrived. Times are shown in Lagos time, and it sits in the same admin panel as everything else.',
+      body: 'Visitor numbers come with Standard. They answer the questions a business owner actually asks: how many people came, where from, on what device, and what they did once they arrived. Times are shown in Lagos time, and the numbers sit in the same dashboard as everything else.',
     },
     whoFor: [
       'You want to know whether the site is working',
       'You would rather not put ad trackers on your customers',
-      'You do not have time to learn a big analytics tool',
+      'You do not have time to learn charts you cannot read',
     ],
     youGet: [
       {
@@ -398,16 +398,16 @@ export const CAPABILITIES: Capability[] = [
         body: 'Visits are recorded by the site itself, with no ad trackers.',
       },
       {
-        title: 'In the admin',
-        body: 'The numbers sit in the same admin panel you already use for the site.',
+        title: 'In your dashboard',
+        body: 'The numbers sit in the same dashboard you already use for the site.',
       },
       {
         title: 'Labelled as answers',
-        body: 'Each view reads as an answer, such as “Browsing now”, not as a metric name.',
+        body: 'Each number reads as an answer, such as “Browsing now”, not as a technical name.',
       },
       {
         title: 'Only what you use',
-        body: 'We add the views your business needs and leave out the rest.',
+        body: 'We add the numbers your business needs and leave out the rest.',
       },
     ],
     related: ['tomori'],
@@ -417,18 +417,18 @@ export const CAPABILITIES: Capability[] = [
     label: 'Quotes and invoices',
     subject: 'your quotes and invoices',
     meta: {
-      title: 'Quote and Invoice Generator',
+      title: 'Quote and invoice generator',
       description:
         'Quotes your client accepts on the page, and an invoice that fills itself from the accepted option. Built by WildHands in Lagos.',
     },
     title: [{ text: 'Quotes your client' }, { text: 'accepts on the page', highlight: true }],
     intro:
-      'Send a quote with options. The client picks one, watches the total update and accepts it, and the accepted option becomes the invoice, with nothing retyped.',
+      'Send a quote with options. The client picks one, watches the total update and accepts it. The accepted option becomes the invoice, with nothing retyped.',
     preview: 'rayo',
     previewNote: 'Rayo, designed and built by WildHands, on sample data.',
     whatItIs: {
       statement: 'One set of numbers, from quote to paid.',
-      body: 'Most freelancers and small studios write a quote in one document, then rebuild the same numbers in an invoice once the client agrees. We build quoting and invoicing that carries the numbers through: your logo, bank details and terms already on the invoice, a ledger of what is paid, part paid and overdue, and PDFs when you need them.',
+      body: 'Most freelancers and small studios write a quote in one document, then rebuild the same numbers in an invoice once the client agrees. We build quoting and invoicing that carries the numbers through. Your logo, bank details and terms are already on the invoice. A ledger shows what is paid, part paid and overdue, and you get PDFs when you need them.',
     },
     whoFor: [
       'Freelancers and small studios',
@@ -459,12 +459,12 @@ export const CAPABILITIES: Capability[] = [
       {
         icon: 'mail',
         title: 'PDFs and email',
-        body: 'Documents export as PDFs, and the mail goes out on your behalf.',
+        body: 'Documents save as PDFs, and emails go out on your behalf.',
       },
       {
         icon: 'creditCard',
         title: 'Paystack or Stripe',
-        body: 'Invoices can settle through Paystack or Stripe, depending on where the client is.',
+        body: 'Clients pay invoices through Paystack or Stripe, depending on where they are.',
       },
     ],
     howWeBuild: [
@@ -482,7 +482,7 @@ export const CAPABILITIES: Capability[] = [
       },
       {
         title: 'Connected to how you get paid',
-        body: 'Payment, PDFs and email are wired in, so a quote can go all the way to paid.',
+        body: 'Payment, PDFs and email are connected, so a quote can go all the way to paid.',
       },
     ],
     related: ['rayo', 'the-ruff-agency'],
@@ -492,18 +492,18 @@ export const CAPABILITIES: Capability[] = [
     label: 'Client management dashboard',
     subject: 'your client workspace',
     meta: {
-      title: 'Client Management Dashboards',
+      title: 'Client management dashboards',
       description:
-        'Contacts, contracts, invoices and tasks in one workspace your team shares, with a portal where each client sees their own records.',
+        'Contacts, contracts, invoices and tasks in one place your team shares, with a private area where each client sees only their own records.',
     },
     title: [{ text: 'Every client,' }, { text: 'in one workspace', highlight: true }],
     intro:
-      'Contacts, contracts, invoices and tasks in one place your whole team can see, with a portal where each client sees their own records.',
+      'Contacts, contracts, invoices and tasks in one place your whole team can see, with a private area where each client sees only their own records.',
     preview: 'fey',
     previewNote: 'The Ruff Agency’s workspace, designed and built by WildHands.',
     whatItIs: {
       statement: 'One workspace instead of six tools that do not know about each other.',
-      body: 'Clients in a spreadsheet, invoices in another system and handoffs in email means nobody can see who is doing what. For The Ruff Agency we built one workspace where contacts, contracts, invoices and tasks sit together, every member sees the same data gated by their role, and each client gets a portal on its own address with its own sign-in.',
+      body: 'Clients in a spreadsheet, invoices somewhere else and handoffs in email means nobody can see who is doing what. For The Ruff Agency we built one place where contacts, contracts, invoices and tasks sit together. Each team member sees only what their role allows. Each client gets their own area, at its own web address, with its own sign-in.',
     },
     whoFor: [
       'Agencies and service businesses',
@@ -519,7 +519,7 @@ export const CAPABILITIES: Capability[] = [
       {
         icon: 'fileText',
         title: 'Contracts and documents',
-        body: 'A vault that decides which client portals can see which document.',
+        body: 'A safe place for documents, where you choose which client can see each one.',
       },
       {
         icon: 'receipt',
@@ -533,28 +533,28 @@ export const CAPABILITIES: Capability[] = [
       },
       {
         icon: 'panelsTopLeft',
-        title: 'A client portal',
-        body: 'The same records, a different view: read-only or collaborative, depending on what each client is given.',
+        title: 'A client area',
+        body: 'Clients see the same records your team sees, read only or able to work on them, depending on what you give them.',
       },
       {
         icon: 'lock',
         title: 'Access by role',
-        body: 'Each member sees what their role allows, enforced in the database itself.',
+        body: 'Each person only sees what they are allowed to see. A contract shared with one client stays hidden from the others.',
       },
     ],
     howWeBuild: [
       DISCOVERY,
       {
-        title: 'One database, two views',
-        body: 'Your team and your clients read the same records through different doors, so nothing is copied between them.',
+        title: 'One set of records, two views',
+        body: 'Your team and your clients see the same records from different sides, so nothing is copied between them.',
       },
       {
-        title: 'Access in the database',
-        body: 'Who sees what is enforced with row-level security, not just hidden in the interface.',
+        title: 'Locked down properly',
+        body: 'Who sees what is checked behind the scenes, not just hidden on the screen.',
       },
       {
-        title: 'Shipped in stages',
-        body: 'The Ruff Agency has shipped 88 database migrations and is still shipping.',
+        title: 'Built in stages',
+        body: 'The Ruff Agency has been built in stages, and we are still adding to it.',
       },
     ],
     related: ['the-ruff-agency', 'rayo'],
@@ -564,39 +564,39 @@ export const CAPABILITIES: Capability[] = [
     label: 'Custom web apps',
     subject: 'your web app',
     meta: {
-      title: 'Custom Web App Development in Lagos, Nigeria',
+      title: 'Custom web app development in Lagos, Nigeria',
       description:
-        'Software your team or your customers log into, built around how you work, for a job off-the-shelf tools do not quite do.',
+        'Software your team or your customers sign in to, built around how you work, for a job off-the-shelf tools do not quite do.',
     },
     title: [{ text: 'Software built around' }, { text: 'how you work', highlight: true }],
     intro:
-      'Software your team or your customers log into, built for a job that off-the-shelf tools do not quite do.',
+      'Software your team or your customers sign in to, built for a job that off-the-shelf tools do not quite do.',
     preview: 'planes',
     previewNote: 'Planes, designed and built by WildHands.',
     whatItIs: {
-      statement: 'Worth building when generic software makes the work harder.',
-      body: 'We build web apps around your real workflow, so the software fits the process instead of the process bending to the software. The best sign an app is worth building is a spreadsheet that three people maintain and everybody is slightly afraid of. If an off-the-shelf tool fits, we will tell you.',
+      statement: 'Worth building when ready-made software makes the work harder.',
+      body: 'We build web apps around how you really work, so the software fits you instead of you bending to fit the software. A good sign an app is worth building: a spreadsheet that three people keep up and everybody is slightly afraid of. If an off-the-shelf tool fits, we will tell you.',
     },
     whoFor: [
-      'Your team needs something to log into to do the work',
+      'Your team needs something to sign in to and do the work',
       'The process is specific to how your business runs',
       'Off-the-shelf software almost fits, but not quite',
     ],
     youGet: [
       {
         icon: 'workflow',
-        title: 'Built around your workflow',
-        body: 'Every app here started as a workflow someone was doing by hand.',
+        title: 'Built around how you work',
+        body: 'Every app here started as a job someone was doing by hand. Lazy Meet replaced the five clicks before every call.',
       },
       {
         icon: 'monitorSmartphone',
         title: 'Web, desktop or phone',
-        body: 'Planes runs from one codebase on the web and as a desktop app, with an Android app alongside.',
+        body: 'Planes is one build that runs on the web and as a desktop app, with an Android app alongside.',
       },
       {
         icon: 'lock',
         title: 'Private by default',
-        body: 'Data sits under row-level security, so each person reads only what is theirs.',
+        body: 'Each person only sees what they are allowed to see, checked behind the scenes, not just hidden on screen.',
       },
     ],
     howWeBuild: [
@@ -604,7 +604,7 @@ export const CAPABILITIES: Capability[] = [
       PROPOSAL,
       {
         title: 'Custom quote',
-        body: 'What moves the number is how many distinct workflows the app supports, not how many screens it has.',
+        body: 'What moves the price is how many different jobs the app does, not how many screens it has.',
       },
       {
         title: 'Build',
@@ -615,21 +615,21 @@ export const CAPABILITIES: Capability[] = [
   },
   {
     slug: 'internal-tools',
-    label: 'Internal-facing tools',
-    subject: 'your internal tool',
+    label: 'Tools for your team',
+    subject: 'your team’s tool',
     meta: {
-      title: 'Internal Tools for Business Teams',
+      title: 'Tools for your team',
       description:
-        'Tools built for one specific workflow and the people who live with it every day, so the routine runs itself and only asks when something looks wrong.',
+        'A tool built for one job your team repeats every day, so the routine runs on its own and only asks you when something looks wrong.',
     },
     title: [{ text: 'Tools for the job' }, { text: 'your team does all day', highlight: true }],
     intro:
-      'Built for one specific workflow and the people who have to live with it every day, so the routine runs itself.',
+      'Built for one job and the people who do it every day, so the routine runs on its own.',
     preview: 'marvy',
     previewNote: 'Marvy, designed and built by WildHands.',
     whatItIs: {
-      statement: 'The same routine, twenty times a sitting, done in one step.',
-      body: 'A course-production team was finding a Google Drive folder by hand for every video, dragging the file in and pasting four comments to tag reviewers. Marvy reads the course and week from the file name, finds the folder, uploads the video with its audio and tags the right people. That is what an internal tool is for: one routine your team repeats, done properly.',
+      statement: 'The same routine, 20 times a sitting, done in one step.',
+      body: 'A course-production team was finding a Google Drive folder by hand for every video, dragging the file in and pasting four comments to tag reviewers. Marvy reads the course and week from the file name, finds the folder, uploads the video with its audio and tags the right people. That is what a tool for your team is for: one routine your team repeats, done properly.',
     },
     whoFor: [
       'A task your team repeats many times a day',
@@ -650,7 +650,7 @@ export const CAPABILITIES: Capability[] = [
       {
         icon: 'monitorSmartphone',
         title: 'Runs where your team works',
-        body: 'Marvy runs on the team’s own computers, with no server and no tracking, from 375 pixels wide to full screen.',
+        body: 'Marvy runs on the team’s own computers, with no server and no tracking, in a small window or full screen.',
       },
       {
         icon: 'users',
@@ -683,18 +683,18 @@ export const CAPABILITIES: Capability[] = [
     label: 'Live dashboards',
     subject: 'your dashboard',
     meta: {
-      title: 'Live Business Dashboards',
+      title: 'Live business dashboards',
       description:
-        'The numbers that matter in one live view instead of rebuilt every week, pulled from data your business already produces.',
+        'The numbers that matter in one live view, instead of rebuilt every week, pulled from records your business already keeps.',
     },
     title: [{ text: 'The numbers that matter,' }, { text: 'in one place', highlight: true }],
     intro:
-      'Data visibility and live tracking, so the numbers that matter are in one place instead of rebuilt every week.',
+      'The numbers that matter, up to date and in one place, instead of rebuilt by hand every week.',
     preview: 'wh-dashboard',
     previewNote: SAMPLE_NOTE,
     whatItIs: {
       statement: 'How is it going, and what do I do next?',
-      body: 'Most teams already produce the data and lose it across several tools. The work is pulling it into one live view rather than generating anything new. A good dashboard answers how the business is doing first, then what needs doing next.',
+      body: 'Most teams already have the numbers, spread across several tools. The work is pulling them into one live view, not typing anything in again. A good dashboard answers how the business is doing first, then what needs doing next.',
     },
     whoFor: [
       'The same report gets rebuilt from scratch every week',
@@ -724,17 +724,17 @@ export const CAPABILITIES: Capability[] = [
       },
       {
         icon: 'database',
-        title: 'From data you already have',
+        title: 'From records you already keep',
         body: 'Pulled from the tools and records you already keep, not typed in again.',
       },
     ],
     howWeBuild: [
       {
         title: 'Count the hours',
-        body: 'We start by working out how many hours the current reporting costs, because that is what the build is measured against.',
+        body: 'We start by working out how many hours your current reports cost, because that is what the build is measured against.',
       },
       {
-        title: 'Find the data',
+        title: 'Find the numbers',
         body: 'We trace where each number lives today and pull it into one view.',
       },
       {
@@ -750,52 +750,52 @@ export const CAPABILITIES: Capability[] = [
   },
   {
     slug: 'workflow-automation',
-    label: 'Workflow automation',
-    subject: 'your automation',
+    label: 'Jobs that run on their own',
+    subject: 'the jobs you repeat',
     meta: {
-      title: 'Workflow Automation for Businesses',
+      title: 'Repetitive jobs that run on their own',
       description:
-        'Automation that removes the manual steps between your tools for good. Judged by the hours it gives back.',
+        'We take the repeated steps between your tools off your hands for good, so the job runs on its own. Judged by the hours it gives back.',
     },
     title: [{ text: 'Remove the manual steps' }, { text: 'for good', highlight: true }],
     intro:
-      'Automation that removes the manual steps in your day permanently. The goal is removing the step, not doing it faster.',
+      'The repetitive job runs on its own, for good. The goal is removing the step, not doing it faster.',
     preview: 'autoflow',
     previewNote: 'Auto Flow, designed and built by WildHands.',
     whatItIs: {
       statement: 'The same clicks, done for you, unattended.',
-      body: 'Auto Flow drives Google Flow through a whole folder of images: upload, generate, download, with nobody at the keyboard. A 24-image batch that took roughly two hours of supervised clicking now runs in about half an hour, unattended. That is the test for every automation we build: the hours it gives back.',
+      body: 'Auto Flow works through a whole folder of images in Google Flow: upload, generate, download, with nobody at the keyboard. A 24-image batch that took about 2 hours of watched clicking now runs in about 30 minutes, unattended. That is how we judge every job like this we take on: the hours it gives back.',
     },
     whoFor: [
       'Someone repeats the same clicks all day',
-      'Data is re-keyed by hand between tools',
-      'The process is stable enough to automate',
+      'Someone copies the same details from one tool to another',
+      'The job is done the same way every time',
     ],
     youGet: [
       {
         icon: 'bot',
-        title: 'Runs unattended',
-        body: 'Start it and walk away. Auto Flow keeps up to three generations in flight at once.',
+        title: 'Runs on its own',
+        body: 'Start it and walk away. Auto Flow keeps up to 3 videos generating at once.',
       },
       {
         icon: 'repeat',
         title: 'Picks up where it stopped',
-        body: 'Progress is saved as it goes, so an interrupted run resumes instead of starting again.',
+        body: 'Progress is saved as it goes, so an interrupted run carries on instead of starting again.',
       },
       {
         icon: 'badgeCheck',
         title: 'Checks its own work',
-        body: 'A step counts as done only when it can be confirmed two ways. Failures are caught and retried once.',
+        body: 'A step counts as done only when it can be confirmed two ways. If a step fails, it is caught and tried once more.',
       },
       {
         icon: 'shield',
         title: 'Within the rules',
-        body: 'We will not build automation that breaks a platform’s terms of service.',
+        body: 'We will not build anything that breaks a platform’s terms of service.',
       },
       {
         icon: 'hourglass',
         title: 'Measured in hours',
-        body: 'We find out what the process costs in time first, and measure the build against it.',
+        body: 'We find out what the job costs in time first, and measure the build against it.',
       },
     ],
     howWeBuild: [
@@ -805,12 +805,12 @@ export const CAPABILITIES: Capability[] = [
         body: 'We write down the routine exactly as it runs today, including the steps people forget they do.',
       },
       {
-        title: 'Build and verify',
+        title: 'Build and check',
         body: 'Each step is checked as it runs, so a hiccup reads as a failure, never as a success.',
       },
       {
         title: 'Measure',
-        body: 'The finished build is measured against the hours the old process cost.',
+        body: 'The finished build is measured against the hours the old way cost.',
       },
     ],
     related: ['auto-flow', 'marvy', 'lazy-meet'],
@@ -820,21 +820,21 @@ export const CAPABILITIES: Capability[] = [
     label: 'Connecting the tools you use',
     subject: 'connecting your tools',
     meta: {
-      title: 'Connecting the Tools Your Business Uses',
+      title: 'Connecting the tools your business uses',
       description:
-        'Paystack, Stripe, Google, WhatsApp, email and more, connected so data moves between them without anyone re-keying it.',
+        'Paystack, Stripe, Google, WhatsApp, email and more, connected so your tools talk to each other and you stop copying between them.',
     },
     title: [{ text: 'Your tools,' }, { text: 'talking to each other', highlight: true }],
     intro:
-      'We connect the tools you already pay for, so data moves between them without anyone re-keying it.',
+      'We connect the tools you already pay for, so they talk to each other and you stop copying between them.',
     preview: 'lazy-meet',
-    previewNote: 'Lazy Meet, designed and built by WildHands. It reads up to three Google calendars.',
+    previewNote: 'Lazy Meet, designed and built by WildHands. It reads up to 3 Google calendars.',
     whatItIs: {
       statement: 'The gap between your tools is where the manual work lives.',
-      body: 'Often we do not replace the software you already pay for. We build the piece that sits between those tools, because that gap is usually where someone is copying data by hand. Lazy Meet reads three Google calendars and joins each call on time, muted, without anyone opening a link.',
+      body: 'Often we do not replace the software you already pay for. We build the piece that sits between those tools, because that gap is usually where someone is copying things by hand. Lazy Meet reads 3 Google calendars and joins each call on time, muted, without anyone opening a link.',
     },
     whoFor: [
-      'Data is copied by hand from one tool to another',
+      'Someone copies details by hand from one tool to another',
       'You pay for tools that do not know about each other',
       'Your team lives in WhatsApp more than in dashboards',
     ],
@@ -857,31 +857,31 @@ export const CAPABILITIES: Capability[] = [
       {
         icon: 'messageCircle',
         title: 'Email and WhatsApp',
-        body: 'Transactional email through Resend, and a WhatsApp bot that sends task updates.',
+        body: 'Emails that send themselves through Resend, and a WhatsApp bot that sends task updates.',
       },
       {
         icon: 'bot',
-        title: 'AI models',
-        body: 'Claude, Gemini and Deepgram, used where they remove real work.',
+        title: 'AI tools',
+        body: 'Claude, Gemini and Deepgram (which turns speech into text), used where they take real work off you.',
       },
       {
         icon: 'lock',
         title: 'Only the access needed',
-        body: 'Lazy Meet asks for read-only calendar access and nothing more, and keeps its keys encrypted in the system keychain.',
+        body: 'Lazy Meet can only read your calendars, never change them, and keeps its sign-in details locked away on your computer.',
       },
     ],
     howWeBuild: [
       {
         title: 'List the tools',
-        body: 'Everything you use today, and where data moves between them by hand.',
+        body: 'Everything you use today, and where details are copied between them by hand.',
       },
       {
         title: 'Find the gap',
         body: 'We build the missing piece rather than replacing what already works.',
       },
       {
-        title: 'Ask for least access',
-        body: 'Each connection asks only for what it needs to do its job.',
+        title: 'Ask for as little as possible',
+        body: 'Each connection asks only for the access it needs to do its job.',
       },
       {
         title: 'Fail safe',

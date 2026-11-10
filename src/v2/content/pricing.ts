@@ -49,8 +49,8 @@ export const PLANS: PricingPlan[] = [
     feeBps: 5000,
     highlights: [
       'Everything in Starter, up to 4 pages',
-      'Admin dashboard to edit text, images, prices and announcements',
-      'Analytics in plain English: visitors, top pages, where they came from',
+      'A simple dashboard where you change text, photos, prices and announcements',
+      'See how many people visited, what they looked at and where they came from',
       'Copywriting from a 15-minute call',
       '3 rounds of edits',
     ],
@@ -68,7 +68,7 @@ export const PLANS: PricingPlan[] = [
       'Larger websites, past 4 pages',
       'Built around how you actually work',
       'Quoted after a discovery call',
-      'Written scope before work starts',
+      'A written plan before work starts',
     ],
     cta: 'Talk to us',
     compareCta: 'Talk to us',
@@ -76,29 +76,29 @@ export const PLANS: PricingPlan[] = [
   {
     id: 'free',
     name: 'Tools',
-    tagline: 'Dashboards and automation',
+    tagline: 'Dashboards and jobs done for you',
     monthlyKobo: 0,
     feeBps: 0,
     highlights: [
       'Dashboards that put the numbers in one place',
-      'Automation between the tools you already use',
-      'Judged on hours returned',
+      'Your tools talk to each other, so you stop copying between them',
+      'Judged on the hours it gives back',
       'Quoted after a discovery call',
-      'Written scope before work starts',
+      'A written plan before work starts',
     ],
     cta: 'Talk to us',
     compareCta: 'Talk to us',
   },
 ]
 
-/** The plan most people choose: it gets the pink tab and the pink button. */
+/** The plan we recommend: it gets the pink tab and the pink button. */
 export const TRIAL_PLAN: PlanId = 'growth'
 /** Hours from approved design to a live site, on Starter and Standard. */
 export const TRIAL_DAYS = 72
 /** Hours you have to approve the design before any code is written. */
 export const GRACE_DAYS = 24
 /** The pink tab above the featured plan's card. */
-export const TRIAL_TAB = 'Most popular'
+export const TRIAL_TAB = 'Recommended'
 /** Printed after a fixed price. */
 export const PER_MONTH = 'one-off'
 /** No VAT is added to these prices. */
@@ -120,7 +120,7 @@ export type Cycle = (typeof CYCLES)[number]
 
 export const HERO = {
   title: { highlight: 'Live', rest: 'in 72 hours, priced up front' },
-  body: 'A website for your business for one fixed price, with half paid to start. You approve the design within 24 hours, before any code is written. Apps, internal tools and larger builds are quoted after a discovery call.',
+  body: 'A website for your business for one fixed price, with half paid to start. You approve the design within 24 hours, before we build anything. Apps, tools for your team and larger builds are quoted after a discovery call.',
   primary: 'Get in touch',
   secondary: 'Request a quote',
 } as const
@@ -158,25 +158,25 @@ export const COMPARE_GROUPS: CompareGroup[] = [
   {
     title: 'The website',
     rows: [
-      { label: 'Pages', values: ['1', 'Up to 4', 'Per scope', 'Per scope'] },
-      { label: 'Mobile-ready', values: [true, true, 'Per scope', 'Per scope'] },
-      { label: 'WhatsApp and contact buttons', values: [true, true, 'Per scope', 'Per scope'] },
-      { label: 'Hosted and connected to your domain', values: [true, true, 'Per scope', 'Per scope'] },
+      { label: 'Pages', values: ['1', 'Up to 4', 'As quoted', 'As quoted'] },
+      { label: 'Mobile-ready', values: [true, true, 'As quoted', 'As quoted'] },
+      { label: 'WhatsApp and contact buttons', values: [true, true, 'As quoted', 'As quoted'] },
+      { label: 'Hosted and connected to your domain', values: [true, true, 'As quoted', 'As quoted'] },
     ],
   },
   {
     title: 'Running it yourself',
     rows: [
-      { label: 'Admin dashboard to edit it yourself', values: [false, true, 'Per scope', 'Per scope'] },
-      { label: 'Analytics in plain English', values: [false, true, 'Per scope', 'Per scope'] },
-      { label: 'Copywriting from a 15-minute call', values: [false, true, 'Per scope', 'Per scope'] },
+      { label: 'Change words and photos yourself', values: [false, true, 'As quoted', 'As quoted'] },
+      { label: 'See who visited and what they looked at', values: [false, true, 'As quoted', 'As quoted'] },
+      { label: 'Copywriting from a 15-minute call', values: [false, true, 'As quoted', 'As quoted'] },
     ],
   },
   {
     title: 'Timeline and payment',
     rows: [
-      { label: 'Live in', values: ['72 hours', '72 hours', 'Per scope', 'Per scope'] },
-      { label: 'Rounds of edits', values: ['2', '3', 'Per scope', 'Per scope'] },
+      { label: 'Live in', values: ['72 hours', '72 hours', 'As quoted', 'As quoted'] },
+      { label: 'Rounds of edits', values: ['2', '3', 'As quoted', 'As quoted'] },
       { label: 'Deposit to start', values: ['₦75,000', '₦125,000', 'Quoted', 'Quoted'] },
     ],
   },
@@ -229,7 +229,7 @@ export const FAQS: Faq[] = [
   {
     question: 'What if I do not like the design?',
     answer: [
-      `You see the design first and approve it within ${GRACE_DAYS} hours, before any code is written. Starter includes 2 rounds of edits and Standard includes 3.`,
+      `You see the design first and approve it within ${GRACE_DAYS} hours, before we build anything. Starter includes 2 rounds of edits and Standard includes 3.`,
     ],
   },
   {

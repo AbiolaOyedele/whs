@@ -61,22 +61,6 @@ function NavTextLink({ link, current }: { link: NavLink; current: boolean }) {
 }
 
 /**
- * Whether the page behind a point is dark: the first opaque background under
- * it, skipping the header itself. Nothing opaque means the dark 3D background.
- */
-function isDarkBehind(x: number, y: number, header: HTMLElement): boolean {
-  for (const el of document.elementsFromPoint(x, y)) {
-    if (header.contains(el)) continue
-    const match = getComputedStyle(el).backgroundColor.match(/[\d.]+/g)
-    if (!match) continue
-    const [r = 0, g = 0, b = 0, a = 1] = match.map(Number)
-    if (a < 0.5) continue
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b < 128
-  }
-  return true
-}
-
-/**
  * The site header. Desktop: a pill of nav links whose dropdowns open on hover,
  * then sign-in and sign-up. Phone: a Menu button that opens a white panel with
  * the same links. Open state lives on <html> so both header copies agree.
@@ -150,33 +134,6 @@ export function Header({ scheme, fixed = false }: HeaderProps) {
       document.removeEventListener('click', onClickOutside)
     }
   }, [closeMobile, closeDropdowns])
-
-  // The fixed header floats over every section: the logo turns white over dark ones.
-  useEffect(() => {
-    const header = root.current
-    const logo = header?.querySelector<HTMLElement>('.c-header_logo')
-    if (!fixed || !header || !logo) return
-    let frame = 0
-    const check = () => {
-      frame = 0
-      const box = logo.getBoundingClientRect()
-      header.classList.toggle(
-        'is-over-dark',
-        isDarkBehind(box.left + box.width / 2, box.top + box.height / 2, header)
-      )
-    }
-    const schedule = () => {
-      if (!frame) frame = window.requestAnimationFrame(check)
-    }
-    check()
-    window.addEventListener('scroll', schedule, { passive: true })
-    window.addEventListener('resize', schedule)
-    return () => {
-      window.cancelAnimationFrame(frame)
-      window.removeEventListener('scroll', schedule)
-      window.removeEventListener('resize', schedule)
-    }
-  }, [fixed, pathname])
 
   useEffect(() => {
     if (!mobileOpen) return

@@ -80,42 +80,41 @@ export interface ShowcaseTab {
 
 const VISIT = 'Read the case study'
 
-export const SHOWCASE_TITLE = `Built by ${site.name}`
+export const SHOWCASE_TITLE = 'What do you need?'
 
 /**
- * Only products WildHands built, each under the service it shows best, from
- * the `services` and summary in src/content/work. Marque is listed as Apps
- * and Websites there; it sits under Websites because what it makes is a
- * published site. Marvy, Auto Flow and The Ruff Agency list Apps and
- * Tools & Systems.
+ * The work, grouped by the job a visitor hires us for rather than by what we
+ * deliver: look credible online, get paid and keep track, or stop doing the
+ * same work by hand. Every product here is one WildHands built, with its
+ * summary from src/content/work; numbers are only ones the case study states.
  */
 export const SHOWCASE_TABS: ShowcaseTab[] = [
   {
-    label: 'Websites',
+    label: 'A website',
     cards: [
       {
         logo: logoImage('tomori.svg', 'Tomori'),
-        title: 'Tomori, a phone-first shop for hand-dyed Adire',
-        description: 'A quiet, phone-first shop for hand-dyed clothes, and a back office that fits in a pocket.',
+        title: 'Tomori, a shop built for a phone',
+        description: 'A shop for hand-dyed clothes that loads fast on mobile data, with the back office in the owner’s pocket.',
         href: '/resources/tomori',
         linkLabel: VISIT,
       },
       {
         logo: logoImage('marque.svg', 'Marque'),
         title: 'Marque, brand guidelines at one link',
-        description: 'Start from a logo, edit the guide in place, and publish it at one link.',
+        description: 'Start from a logo, edit the guide where it sits, and publish it at one link.',
         href: '/resources/marque',
         linkLabel: VISIT,
       },
     ],
   },
   {
-    label: 'Apps',
+    label: 'Get paid',
     cards: [
       {
         logo: logoImage('rayo.svg', 'Rayo'),
-        title: 'Rayo, quotes accepted on the page',
-        description: 'Send a quote with options, the client accepts one, and it becomes the invoice.',
+        title: 'Rayo, quotes that become invoices',
+        description: 'Send a quote with options. The client accepts one on the page, and it becomes the invoice.',
         href: '/resources/rayo',
         linkLabel: VISIT,
       },
@@ -126,29 +125,15 @@ export const SHOWCASE_TABS: ShowcaseTab[] = [
         href: '/resources/dory',
         linkLabel: VISIT,
       },
-      {
-        logo: logoImage('planes.png', 'Planes'),
-        title: 'Planes, a to-do list you race friends on',
-        description: 'Swipe to land a task, fly one to a friend, and race your crew on the leaderboard.',
-        href: '/resources/planes',
-        linkLabel: VISIT,
-      },
-      {
-        logo: logoImage('lazy-meet.png', 'Lazy Meet'),
-        title: 'Lazy Meet, calls that join themselves',
-        description: 'Joins your calls at start time, muted and camera off, across three accounts.',
-        href: '/resources/lazy-meet',
-        linkLabel: VISIT,
-      },
     ],
   },
   {
-    label: 'Tools & Systems',
+    label: 'Save time',
     cards: [
       {
         logo: logoImage('auto-flow.png', 'Auto Flow'),
-        title: 'Auto Flow, video batches unattended',
-        description: 'Point it at a folder of images and it generates every video unattended, three at a time.',
+        title: 'Auto Flow, 2 hours down to 30 minutes',
+        description: 'A 24-image batch took about two hours of watching and clicking. Now it runs in about half an hour, on its own.',
         href: '/resources/auto-flow',
         linkLabel: VISIT,
       },
@@ -259,33 +244,12 @@ export const DESIGN_TILES: ShopDesignTile[] = [
 
 /* ── What we build ────────────────────────────────────────────────── */
 
-export interface FeatureLink {
-  label: string
-  href: string
+/** The home page's pointer to the full list at /what-we-build. */
+export const FEATURES = {
+  title: 'What we build',
+  body: 'Twelve things we build, from a one-page website to jobs that run on their own. Each has its own page: what it is, who it is for and what you get.',
+  action: { label: 'See everything we build', href: '/what-we-build' },
 }
-
-export const FEATURES_LABEL = 'What we build'
-
-/**
- * Each links to its own page, written in src/v2/content/capabilities.ts.
- * "Websites live in 72 hours" (an offer, covered on Marketing sites and
- * /pricing) and "Sitemap and crawl rules" (part of Search and AI visibility)
- * no longer have rows of their own.
- */
-export const FEATURE_LINKS: FeatureLink[] = [
-  { label: 'Marketing sites', href: '/what-we-build/marketing-sites' },
-  { label: 'Full custom builds', href: '/what-we-build/full-custom-builds' },
-  { label: 'CMS admin panel', href: '/what-we-build/cms-admin-panel' },
-  { label: 'Search and AI visibility', href: '/what-we-build/search-visibility' },
-  { label: 'Simple website analytics', href: '/what-we-build/website-analytics' },
-  { label: 'Quotes and invoices', href: '/what-we-build/quotes-and-invoices' },
-  { label: 'Client management dashboard', href: '/what-we-build/client-management' },
-  { label: 'Custom web apps', href: '/what-we-build/custom-web-apps' },
-  { label: 'Internal-facing tools', href: '/what-we-build/internal-tools' },
-  { label: 'Live dashboards', href: '/what-we-build/live-dashboards' },
-  { label: 'Workflow automation', href: '/what-we-build/workflow-automation' },
-  { label: 'Connecting the tools you use', href: '/what-we-build/connected-tools' },
-]
 
 /* ── Blog row ─────────────────────────────────────────────────────── */
 
