@@ -10,13 +10,26 @@ interface HeroUseCaseProps {
   title: TitlePart[]
   intro: string
   visual: HeroVisual | undefined
+  /** The two buttons, filled then outlined. Defaults to Get in touch and Request a quote. */
+  actions?: readonly [HeroAction, HeroAction]
 }
+
+interface HeroAction {
+  label: string
+  href: string
+}
+
+const DEFAULT_ACTIONS: readonly [HeroAction, HeroAction] = [
+  { label: 'Get in touch', href: site.signUpUrl },
+  { label: 'Request a quote', href: '/request-a-quote' },
+]
 
 /**
  * The dark first screen: the big title on the left, the pitch and two buttons on the right, then the page's own
  * animation below, if it has one. Its scroll progress drives the background.
  */
-export function HeroUseCase({ title, intro, visual }: HeroUseCaseProps) {
+export function HeroUseCase({ title, intro, visual, actions = DEFAULT_ACTIONS }: HeroUseCaseProps) {
+  const [primary, secondary] = actions
   return (
     <section
       className="dark relative block pb-[calc(--spacing(18)+var(--spacing-fluid-lg))] text-white"
@@ -39,10 +52,10 @@ export function HeroUseCase({ title, intro, visual }: HeroUseCaseProps) {
                 </div>
                 <div className="flex flex-wrap gap-4">
                   <div className="anim-transform-opacity -delay-2">
-                    <Button label="Get in touch" href={site.signUpUrl} />
+                    <Button label={primary.label} href={primary.href} />
                   </div>
                   <div className="anim-transform-opacity -delay-3">
-                    <Button label="Request a quote" href="/request-a-quote" variant="outline" />
+                    <Button label={secondary.label} href={secondary.href} variant="outline" />
                   </div>
                 </div>
               </div>

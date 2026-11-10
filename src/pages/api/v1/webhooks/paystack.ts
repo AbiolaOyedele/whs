@@ -26,6 +26,7 @@ import type { APIRoute } from 'astro'
 import { toErrorResponse } from '@/lib/errors'
 import { isValidWebhook } from '@/lib/paystack'
 import { getPaymentByReference } from '@/lib/admin/repositories/payments'
+import { reconcileWebsiteDeposit } from '@/lib/admin/website-deposit-reconcile'
 import { reconcilePayment } from '@/lib/admin/payment-reconcile'
 import { forwardUrls, forwardWebhook } from '@/lib/paystack-forward'
 
@@ -51,6 +52,15 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const reference = event.data?.reference
+
+    // A deposit from the /72-hour-website page, for a client who closed the
+    // tab before Paystack sent them back. Re-verified and idempotent, like
+    // the quote payments below.
+    if (reference?.startsWith('whsweb_') && event.event === 'charge.success') {
+      await reconcileWebsiteDeposit(reference)
+      return ok()
+    }
+
     const payment =
       reference && event.event === 'charge.success' ? await getPaymentByReference(reference) : null
     if (!payment) {

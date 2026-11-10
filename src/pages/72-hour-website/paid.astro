@@ -1,0 +1,113 @@
+---
+/**
+ * Where Paystack returns the client after a /72-hour-website deposit.
+ *
+ * Same pattern as src/pages/quote/[slug]/paid.astro: a browser arriving here
+ * proves only that a browser arrived here, so this page asks Paystack
+ * directly and records the answer rather than trusting the redirect. See
+ * src/lib/admin/website-deposit-reconcile.ts.
+ */
+import StandaloneLayout from '@/layouts/StandaloneLayout.astro'
+import { FlowButton } from '@/components/ui/flow-button'
+import DepositBriefForm from '@/components/forms/DepositBriefForm.tsx'
+import { isAdminConfigured } from '@/config/env'
+import { formatMoney } from '@/lib/admin/money'
+import { reconcileWebsiteDeposit } from '@/lib/admin/website-deposit-reconcile'
+import { WEBSITE_OFFER_PATH, offerPlan, whatsappLink } from '@v2/content/website-offer'
+
+export const prerender = false
+
+const reference = Astro.url.searchParams.get('reference') ?? Astro.url.searchParams.get('trxref')
+
+let state: 'paid' | 'pending' | 'unknown' = 'unknown'
+let amount = ''
+let planName = ''
+
+/*
+ * The client has just paid, so this page must never answer with a server
+ * error. If the database cannot be reached we know nothing about their money
+ * either way: that reads as pending, and they are told nothing is lost.
+ */
+if (isAdminConfigured() && reference) {
+  try {
+    const result = await reconcileWebsiteDeposit(reference)
+
+    if (result.deposit) {
+      amount = formatMoney(result.deposit.amountMinor, result.deposit.currency, { compact: true })
+      const tier = result.deposit.tier
+      planName = tier === 'starter' || tier === 'standard' ? offerPlan(tier).name : tier
+    }
+
+    state =
+      result.outcome === 'settled' || result.outcome === 'already-settled'
+        ? 'paid'
+        : result.outcome === 'not-found'
+          ? 'unknown'
+          : 'pending'
+  } catch (cause) {
+    console.error('[website-offer-paid]', cause)
+    state = 'pending'
+  }
+}
+
+const COPY = {
+  paid: {
+    title: 'Payment received',
+    body: 'Thank you. We have your deposit and will be in touch shortly to get started.',
+  },
+  pending: {
+    title: 'We are confirming your payment',
+    body: 'This usually takes a few seconds. You do not need to pay again: if anything is wrong we will email you.',
+  },
+  unknown: {
+    title: 'We could not find that payment',
+    body: 'If you were charged, message us on WhatsApp with the reference below and we will sort it out straight away.',
+  },
+} as const
+
+const copy = COPY[state]
+const whatsapp = whatsappLink(
+  state === 'paid'
+    ? 'Hi, I just paid my website deposit and want to get started.'
+    : 'Hi, I had a problem paying for a website.'
+)
+---
+
+<StandaloneLayout title={copy.title}>
+  <h1 class="wh-h1-compact mb-3 text-balance">{copy.title}</h1>
+  {
+    state === 'paid' && amount && (
+      <p class="mb-3 text-2xl">
+        {amount} <span class="text-base text-muted-foreground">{planName} deposit</span>
+      </p>
+    )
+  }
+  <p class="mb-8 text-lg text-pretty text-muted-foreground">{copy.body}</p>
+
+  <div class="flex flex-wrap gap-3">
+    <FlowButton text="Chat on WhatsApp" href={whatsapp} variant="accent" arrows={false} />
+    {
+      state !== 'paid' && (
+        <FlowButton text="Back to prices" href={`${WEBSITE_OFFER_PATH}#prices`} variant="outline" arrows={false} />
+      )
+    }
+  </div>
+
+  {
+    state === 'paid' && reference && (
+      <div class="mt-10 border-t border-border pt-8">
+        <h2 class="mb-1 text-lg font-medium text-balance">Or tell us what you want</h2>
+        <p class="mb-5 text-sm text-pretty text-muted-foreground">A few lines is enough. We will reply by email.</p>
+        <DepositBriefForm client:load reference={reference} />
+      </div>
+    )
+  }
+
+  {
+    reference && (
+      <p class="mt-8 text-sm text-muted-foreground">
+        Reference <span class="font-mono break-all">{reference}</span>
+      </p>
+    )
+  }
+</StandaloneLayout>

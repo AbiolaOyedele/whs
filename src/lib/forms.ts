@@ -8,12 +8,15 @@ import { AppError } from './errors'
 import { storeCv } from './cloudinary'
 import { sendNotification, type OutgoingAttachment } from './resend'
 import { slugify, validateCvUpload } from './uploads'
+import { getWebsiteDepositByReference } from './admin/repositories/website-deposits'
 import {
   HONEYPOT_FIELD,
   contactSchema,
   freelanceApplicationSchema,
   jobApplicationSchema,
   newsletterSchema,
+  websiteLeadSchema,
+  websiteDepositBriefSchema,
 } from './schemas/forms'
 
 /**
@@ -151,6 +154,53 @@ export async function submitNewsletter(body: Record<string, unknown>): Promise<v
   await sendNotification({
     subject: `Newsletter signup: ${data.email}`,
     text: asTextBody([['Email', data.email]]),
+  })
+}
+
+/** Validates and delivers a lead from the /72-hour-website campaign page's closing form. */
+export async function submitWebsiteLead(body: Record<string, unknown>): Promise<void> {
+  assertNotBot(body)
+  const data = parseOrThrow(websiteLeadSchema, body, 'FORM_WEBSITE_LEAD_INVALID_INPUT')
+
+  await sendNotification({
+    subject: `Website in 72 hours: ${data.businessName}`,
+    text: asTextBody([
+      ['Name', data.name],
+      ['Business name', data.businessName],
+      ['Instagram', data.instagramHandle],
+    ]),
+  })
+}
+
+/**
+ * Validates and delivers the project brief a client can leave on the
+ * /72-hour-website payment confirmation page. Only accepted against a deposit
+ * that has actually settled: a reference is not a login, so this is what
+ * stops the endpoint being a free-text mailer for anyone who can guess one.
+ */
+export async function submitWebsiteDepositBrief(body: Record<string, unknown>): Promise<void> {
+  assertNotBot(body)
+  const data = parseOrThrow(websiteDepositBriefSchema, body, 'FORM_WEBSITE_DEPOSIT_BRIEF_INVALID_INPUT')
+
+  const deposit = await getWebsiteDepositByReference(data.reference)
+  if (!deposit || deposit.status !== 'paid') {
+    throw new AppError(
+      404,
+      'We could not match that to a payment. Please message us on WhatsApp instead.',
+      'WEBSITE_DEPOSIT_BRIEF_NOT_FOUND'
+    )
+  }
+
+  await sendNotification({
+    subject: `Website brief: ${deposit.tier}, ${deposit.email}`,
+    replyTo: deposit.email,
+    text: asTextBody([
+      ['Tier', deposit.tier],
+      ['Email', deposit.email],
+      ['Business', deposit.businessName ?? undefined],
+      ['Reference', deposit.reference],
+      ['Brief', `\n${data.brief}`],
+    ]),
   })
 }
 

@@ -38,6 +38,33 @@ export const newsletterSchema = z.object({
 
 export type NewsletterInput = z.infer<typeof newsletterSchema>
 
+/** The /72-hour-website campaign page's closing form: name, business, Instagram. */
+export const websiteLeadSchema = z.object({
+  name: requiredText('Your name', 120),
+  businessName: requiredText('Your business name', 160),
+  instagramHandle: requiredText('Your Instagram handle', 60),
+  [HONEYPOT_FIELD]: honeypot,
+})
+
+export type WebsiteLeadInput = z.infer<typeof websiteLeadSchema>
+
+/** Starts a Paystack deposit from a /72-hour-website price card. */
+export const websiteDepositSchema = z.object({
+  tier: z.enum(['starter', 'standard'], { error: 'Choose Starter or Standard.' }),
+  email: z.email('Enter a valid email address.').max(254),
+})
+
+export type WebsiteDepositInput = z.infer<typeof websiteDepositSchema>
+
+/** The brief a client can leave on the /72-hour-website payment confirmation page. */
+export const websiteDepositBriefSchema = z.object({
+  reference: requiredText('Reference', 100),
+  brief: requiredText('A short description of what you want', 2_000),
+  [HONEYPOT_FIELD]: honeypot,
+})
+
+export type WebsiteDepositBriefInput = z.infer<typeof websiteDepositBriefSchema>
+
 /**
  * "Send us your URL" — the small popup on the checklist article and any
  * future site-audit ask. Deliberately narrow: a URL, an email to reply

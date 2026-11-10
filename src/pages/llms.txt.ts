@@ -15,6 +15,7 @@ import { SERVICE_LOCATIONS } from '@/config/service-locations'
 import { BLOG_POSTS } from '@v2/content/blog'
 import { CAPABILITIES } from '@v2/content/capabilities'
 import { HELP_GUIDES } from '@v2/content/resources'
+import { WEBSITE_OFFER, WEBSITE_OFFER_PATH } from '@v2/content/website-offer'
 import { USE_CASES_CONTENT, USE_CASE_SLUGS } from '@v2/content/use-cases'
 
 export const prerender = true
@@ -36,6 +37,7 @@ export const GET: APIRoute = () => {
     '## Key pages',
     '',
     line('Pricing', '/pricing', 'The 72-hour website: Starter and Standard, one-off, with half paid to start.'),
+    line('Website in 72 hours', WEBSITE_OFFER_PATH, WEBSITE_OFFER.meta.description),
     line('Work', '/resources', 'Case studies of the apps, websites and tools we designed and built.'),
     line('Insights', '/blog', 'Answers to the questions businesses in Nigeria ask about websites, apps and tools.'),
     line('About', '/about', 'Who we are and how we work.'),

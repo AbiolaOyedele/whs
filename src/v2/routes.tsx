@@ -34,6 +34,8 @@ import { HomeLower } from '@v2/components/features/home/HomeLower'
 import { HomeUpper } from '@v2/components/features/home/HomeUpper'
 import { LegalPage } from '@v2/components/features/legal/LegalPage'
 import { PricingPage } from '@v2/components/features/pricing/PricingPage'
+import { WebsiteOfferPage } from '@v2/components/features/website-offer/WebsiteOfferPage'
+import { WEBSITE_OFFER, WEBSITE_OFFER_PATH } from '@v2/content/website-offer'
 import { LlmsToolPage } from '@v2/components/features/tools/LlmsToolPage'
 import { LLMS_TOOL } from '@v2/content/tools'
 import { UseCaseTemplate } from '@v2/components/features/use-case/UseCaseTemplate'
@@ -169,6 +171,11 @@ const STATIC_ROUTES: Record<string, () => ResolvedRoute> = {
     description:
       'A website live in 72 hours: Starter ₦150,000 or Standard ₦250,000, one-off, with half paid to start. Apps and internal tools are quoted after a discovery call.',
     element: <PricingPage />,
+  }),
+  [WEBSITE_OFFER_PATH]: () => ({
+    title: titled(WEBSITE_OFFER.meta.title),
+    description: WEBSITE_OFFER.meta.description,
+    element: <WebsiteOfferPage />,
   }),
   '/privacy': () => ({
     title: titled(PRIVACY_POLICY.title),

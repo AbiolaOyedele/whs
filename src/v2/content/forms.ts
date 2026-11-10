@@ -21,6 +21,8 @@ export const ENDPOINTS = {
   job: '/api/v1/job-application',
   freelance: '/api/v1/freelance-application',
   newsletter: '/api/v1/newsletter',
+  websiteLead: '/api/v1/website-lead',
+  websiteDeposit: '/api/v1/website-deposit/start',
 } as const
 
 export const FORM_COPY = {

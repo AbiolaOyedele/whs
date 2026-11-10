@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { PER_MONTH, PRICE_CARD, TRIAL_TAB, type PricingPlan } from '@v2/content/pricing'
 import { formatNaira } from './money'
 import { PlanAction } from './PlanAction'
@@ -8,10 +9,12 @@ interface PlanCardProps {
   plan: PricingPlan
   /** The most popular plan: gets the pink tab and the pink button. */
   featured: boolean
+  /** Replaces the plan's usual button, e.g. a pay button on the campaign page. */
+  action?: ReactNode
 }
 
 /** One plan: name, who it is for, its price (or "Quoted"), what it includes, and a button. */
-export function PlanCard({ plan, featured }: PlanCardProps) {
+export function PlanCard({ plan, featured, action }: PlanCardProps) {
   return (
     <div className={`relative h-auto ${featured ? 'max-sm:mt-13' : ''}`}>
       {featured ? (
@@ -47,7 +50,7 @@ export function PlanCard({ plan, featured }: PlanCardProps) {
           </ul>
         </div>
         <div className="flex grow items-end">
-          <PlanAction plan={plan} compact={false} />
+          {action ?? <PlanAction plan={plan} compact={false} />}
         </div>
       </div>
     </div>
