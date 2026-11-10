@@ -1,0 +1,23 @@
+---
+/**
+ * The page served at any address the site does not have, with a real 404
+ * status. Astro uses it in development; the build writes it to 404.html,
+ * which Vercel serves for every unmatched path.
+ *
+ * It is the v2 not-found route rendered through the same island as every
+ * other page, so the header, background and footer are all there and the
+ * links on it navigate without a full reload.
+ */
+import V2Layout from '@/layouts/V2Layout.astro'
+import App from '@v2/App'
+import { resolveRoute } from '@v2/routes'
+
+export const prerender = true
+
+const path = '/404'
+const route = resolveRoute(path)
+---
+
+<V2Layout title={route.title} description={route.description} scene="home" template="default" noindex>
+  <App client:load path={path} />
+</V2Layout>

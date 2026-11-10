@@ -42,7 +42,7 @@ import { WhatWeBuildIndex } from '@v2/components/features/capability/WhatWeBuild
 import { OutsideNigeriaPage } from '@v2/components/features/outside/OutsideNigeriaPage'
 import { OUTSIDE_NIGERIA } from '@v2/content/outside-nigeria'
 import { CAPABILITY_SLUGS, capabilityBySlug } from '@v2/content/capabilities'
-import { Button } from '@v2/components/ui/Button'
+import { NotFoundPage } from '@v2/components/features/not-found/NotFoundPage'
 import {
   BLOG_CATEGORIES,
   BLOG_POSTS,
@@ -85,31 +85,12 @@ function parsePage(value: string, total: number): number | null {
   return Number.isInteger(page) && page >= 2 && page <= total ? page : null
 }
 
-function NotFoundPage() {
-  return (
-    <div className="flex min-h-svh flex-col justify-center pt-safe-header pb-fluid-4xl text-white">
-      <div className="container flex flex-col gap-8.5 pt-fluid-lg">
-        <h1 className="text-heading-xl">
-          Nothing here
-        </h1>
-        <div className="flex flex-col gap-7.5">
-          <p className="text-body-md anim-transform-opacity -delay-1 max-w-84">
-            There is no page at this address. The link may be old or mistyped.
-          </p>
-          <div className="anim-transform-opacity -delay-2">
-            <Button label="Go to the home page" href="/" className="min-h-15!" />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 const NOT_FOUND: ResolvedRoute = {
   title: titled('No page here'),
   description: DEFAULT_DESCRIPTION,
   element: <NotFoundPage />,
   notFound: true,
+  noindex: true,
 }
 
 /** Static routes, keyed by path. */
