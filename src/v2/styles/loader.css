@@ -1,5 +1,8 @@
 /* The first-load intro: on ink, the "whs." mark's letters rise in one after
-   another, the lime dot pops in, then the screen slides up off the page. */
+   another, the lime dot pops in, then the screen slides up off the page.
+   1.5s from first paint to an open page: the logo is done by 0.8s, INTRO_MS
+   in TransitionProvider.tsx holds it to 0.9s, and the slide takes 0.6s.
+   Change the timings here and INTRO_MS together. */
 
 /* In the components layer, like the reference: utility classes on an element win over these. */
 @layer components {
@@ -15,8 +18,8 @@
     visibility: hidden;
     pointer-events: none;
     transition:
-      transform 0.7s cubic-bezier(0.76, 0, 0.24, 1),
-      visibility 0s linear 0.7s;
+      transform 0.6s cubic-bezier(0.76, 0, 0.24, 1),
+      visibility 0s linear 0.6s;
   }
 
   html.is-initial-loading .c-initial-loader {
@@ -38,20 +41,20 @@
   .c-initial-loader_mark path:not(:last-child) {
     opacity: 0;
     transform: translateY(35%);
-    animation: intro-letter 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    animation: intro-letter 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
   }
 
   .c-initial-loader_mark path:nth-child(2) {
-    animation-delay: 0.09s;
+    animation-delay: 0.07s;
   }
 
   .c-initial-loader_mark path:nth-child(3) {
-    animation-delay: 0.18s;
+    animation-delay: 0.14s;
   }
 
   .c-initial-loader_mark path:last-child {
     transform: scale(0);
-    animation: intro-dot 0.5s var(--ease-bounce) 0.55s forwards;
+    animation: intro-dot 0.4s var(--ease-bounce) 0.4s forwards;
   }
 
   @keyframes intro-letter {

@@ -10,8 +10,11 @@ import { scrollToTop, startScroll, stopScroll } from '@v2/lib/scroll'
 const LEAVE_MS = 300
 /** The loader gives up waiting for the 3D background after this long. */
 const LOADER_TIMEOUT_MS = 1000
-/** The logo intro on the loader (loader.css) finishes, with a short hold, by this point. */
-const INTRO_MS = 1300
+/**
+ * The logo intro on the loader (loader.css) finishes, with a short hold, by
+ * this point. The loader then takes 0.6s to slide away: 1.5s in all.
+ */
+const INTRO_MS = 900
 
 /**
  * How much of the logo intro is still to play. The intro is CSS, so it starts
