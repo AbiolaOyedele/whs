@@ -87,13 +87,30 @@ html.is-changing.has-header-fixed-visible .c-header.is-fixed {
   transition: color var(--transition-duration-fast) var(--ease);
 }
 
-/* The fixed header floats over every section, so its logo sits on the same
-   ink pill as the nav and the Menu button and never runs into page text. */
+/* The fixed header floats over every section, so its logo takes the ink that
+   reads on what is behind it: white on dark, charcoal on light. It sits on a
+   patch of the section's own colour, which shows nothing on a plain
+   background and keeps page text from running through the letters.
+   Header.tsx sets data-logo-tone and --logo-backdrop from the section under
+   the logo. The negative margin keeps the letters on the page's left edge.
+   An open menu dims the page, so the logo goes back to white on ink. */
 .c-header.is-fixed .c-header_logo {
   align-self: stretch;
-  padding-inline: calc(var(--spacing) * 3.5);
+  margin-inline-start: calc(var(--spacing) * -2);
+  padding-inline: calc(var(--spacing) * 2);
   border-radius: var(--radius-sm);
-  background: rgb(19 19 20 / 0.92);
+  background-color: var(--logo-backdrop, var(--color-charcoal));
+  color: var(--color-white);
+  transition-property: color, background-color;
+}
+
+.c-header.is-fixed[data-logo-tone='light'] .c-header_logo {
+  color: var(--color-charcoal);
+}
+
+html.has-menu-dropdown-open .c-header.is-fixed .c-header_logo,
+html.has-menu-mobile-open .c-header.is-fixed .c-header_logo {
+  background-color: var(--color-charcoal);
   color: var(--color-white);
 }
 

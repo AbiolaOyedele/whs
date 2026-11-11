@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { site, type Scheme } from '@v2/config/site'
 import { MAIN_NAV, MORE_NAV, USE_CASES, type NavLink } from '@v2/content/navigation'
+import { backdropAt } from '@v2/lib/backdrop-tone'
 import { getGsap } from '@v2/lib/gsap'
 import { Button } from '@v2/components/ui/Button'
 import { DropdownArrow, Icon, MenuIcon } from '@v2/components/ui/Icon'
@@ -147,6 +148,41 @@ export function Header({ scheme, fixed = false }: HeaderProps) {
     document.addEventListener('pointerdown', onPointerDown, true)
     return () => document.removeEventListener('pointerdown', onPointerDown, true)
   }, [mobileOpen, closeMobile])
+
+  // The fixed copy floats over every section, so its logo takes the ink that
+  // reads on whatever is behind it, on a patch of that same colour. Sampled
+  // where the logo rests, not where it is mid-slide, so both are right before
+  // the header comes into view.
+  useEffect(() => {
+    const header = root.current
+    if (!fixed || !header) return
+    let frame = 0
+    let painted: string | null = null
+    const measure = () => {
+      frame = 0
+      const logo = header.querySelector('.c-header_logo')
+      if (!logo) return
+      const box = logo.getBoundingClientRect()
+      const { tone, color } = backdropAt(box.left + box.width / 2, header.offsetHeight / 2, header)
+      if (header.dataset.logoTone !== tone) header.dataset.logoTone = tone
+      if (color !== painted) {
+        painted = color
+        if (color) header.style.setProperty('--logo-backdrop', color)
+        else header.style.removeProperty('--logo-backdrop')
+      }
+    }
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(measure)
+    }
+    schedule()
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+    }
+  }, [fixed])
 
   const onNavBlur = useCallback(() => {
     window.setTimeout(() => {
