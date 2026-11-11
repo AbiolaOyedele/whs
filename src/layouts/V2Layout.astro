@@ -53,6 +53,12 @@ const schemas: JsonLd[] = [organizationSchema(siteUrl), webSiteSchema(siteUrl), 
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <Seo title={title} description={description} canonical={canonical} noindex={HIDDEN_UNTIL_LAUNCH || noindex} jsonLd={schemas} />
+    {
+      /* Vercel Web Analytics: an anonymous visit count. It sets no cookie and
+        stores nothing on the device, so it runs without a consent banner; the
+        privacy policy describes it. Only exists on a Vercel deployment. */
+    }
+    <script is:inline defer src="/_vercel/insights/script.js"></script>
     <style is:global>
       :root {
         --font-stand-sans: 'IBM Plex Sans';

@@ -32,7 +32,6 @@ export async function startScroll(): Promise<void> {
   instance = new Locomotive({
     lenisOptions: {
       smoothWheel: !coarse,
-      prevent: (node: HTMLElement) => node.id === 'cookie-banner',
     },
     scrollCallback: ({ scroll, limit, velocity, direction, progress }: ScrollState) => {
       Object.assign(state, { scroll, limit, velocity, direction, progress })

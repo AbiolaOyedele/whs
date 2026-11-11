@@ -7,7 +7,6 @@
  */
 import { useEffect } from 'react'
 import { HeroFluid } from '@v2/components/canvas/HeroFluid'
-import { CookieBanner } from '@v2/components/layout/CookieBanner'
 import { Footer } from '@v2/components/layout/Footer'
 import { Header } from '@v2/components/layout/Header'
 import { InitialLoader } from '@v2/components/layout/InitialLoader'
@@ -56,7 +55,6 @@ export default function App({ path }: { path: string }) {
           </main>
           <Footer />
         </div>
-        <CookieBanner />
       </TransitionProvider>
     </RouterProvider>
   )

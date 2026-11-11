@@ -38,16 +38,16 @@ const CONTACT: RichBlock[] = [
 export const PRIVACY_POLICY: LegalDocument = {
   title: 'Privacy Policy',
   description: `What ${name} collects, why, how long we keep it, and how to get it deleted.`,
-  updated: '2026-08-27',
+  updated: '2026-11-11',
   intro: [
     { type: 'h2', text: 'The short version' },
     {
       type: 'ul',
       items: [
-        'We collect what you type into our forms, and nothing else unless you accept analytics.',
+        'We collect what you type into our forms. Apart from that we only count visits, and the count cannot identify you.',
         'We do not run a database of you. Submissions arrive as email; a CV is also filed privately so we can read it again.',
         'We do not sell your data, and we do not use it for advertising.',
-        'The site sets no cookies at all until you make a choice in the banner.',
+        'Browsing the site sets no cookies.',
         ['Email ', { text: email, href: mailto }, ' and we will delete everything we hold about you.'],
       ],
     },
@@ -67,7 +67,7 @@ export const PRIVACY_POLICY: LegalDocument = {
       ],
     },
     { type: 'h2', text: 'What we collect' },
-    { type: 'p', text: 'There are only four ways we end up with your personal data.' },
+    { type: 'p', text: 'There are only four ways we end up with any data from you.' },
     {
       type: 'ul',
       items: [
@@ -81,8 +81,8 @@ export const PRIVACY_POLICY: LegalDocument = {
         ],
         [{ text: 'You subscribe to the freelance newsletter.', strong: true }, ' Your email address.'],
         [
-          { text: 'You accept analytics.', strong: true },
-          ' Which pages you visited, roughly where in the world you are, and what browser you used. Analytics do not load unless you accept them.',
+          { text: 'You visit the site.', strong: true },
+          ' We count the visit: which page you opened, the site you came from, roughly where in the world you are, and what browser and device you used. The count is anonymous. It is not tied to your name, your IP address or anything else that identifies you.',
         ],
       ],
     },
@@ -125,10 +125,10 @@ export const PRIVACY_POLICY: LegalDocument = {
           'You asked for it, and you can tell us to stop at any time.',
         ],
         [
-          'Understanding which pages are useful',
-          'Page views, browser and country',
-          'Consent',
-          'Analytics stay switched off unless you accept them.',
+          'Counting visits to see which pages are useful',
+          'Page views, referring site, browser, device and rough location',
+          'Legitimate interests',
+          'The count is anonymous and sets no cookies, so it cannot single you out.',
         ],
       ],
     },
@@ -151,7 +151,7 @@ export const PRIVACY_POLICY: LegalDocument = {
         ['Applications you asked us to keep on file', '24 months, then we ask again or delete'],
         ['CVs, stored as private files', 'Deleted with the application they arrived with'],
         ['Newsletter subscriptions', 'Until you unsubscribe'],
-        ['Analytics', '12 months, then aggregated'],
+        ['Visit counts', 'Anonymous from the start. The value that tells one visitor from another is discarded after 24 hours'],
       ],
     },
     {
@@ -161,7 +161,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     { type: 'h2', text: 'Who else touches it' },
     {
       type: 'p',
-      text: 'Four companies process data on our behalf. Each is bound by a contract that limits them to acting on our instructions.',
+      text: 'Three companies process data on our behalf. Each is bound by a contract that limits them to acting on our instructions.',
     },
     {
       type: 'ul',
@@ -174,10 +174,9 @@ export const PRIVACY_POLICY: LegalDocument = {
           { text: 'Cloudinary', strong: true },
           ' stores CVs sent with an application. They are kept as private files, not on a public address. Reaching one needs a signed link that we generate and that expires.',
         ],
-        [{ text: 'PostHog', strong: true }, ' processes analytics, and only if you accept them.'],
         [
           { text: 'Vercel', strong: true },
-          ' hosts the site and serves every page. Its access logs record IP addresses for a short period as part of running the infrastructure.',
+          ' hosts the site, serves every page and counts visits. Its access logs record IP addresses for a short period as part of running the infrastructure.',
         ],
       ],
     },
@@ -194,30 +193,25 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       type: 'p',
       text: [
-        { text: 'This site sets no cookies.', strong: true },
-        ' Nothing at all is stored in your browser until you choose Accept or Decline in the banner.',
-      ],
-    },
-    {
-      type: 'ul',
-      items: [
-        [
-          { text: 'Your choice.', strong: true },
-          ' We save it in your browser’s local storage so we do not ask again on every page. Nothing about it is sent to us.',
-        ],
-        [
-          { text: 'If you accept analytics,', strong: true },
-          ' PostHog stores an identifier in local storage so that a returning visitor is not counted as a new person. It is switched off entirely if you decline, and it never loads before you decide.',
-        ],
+        { text: 'Browsing this site sets no cookies.', strong: true },
+        ' There is no cookie banner because there is nothing to accept or decline.',
       ],
     },
     {
       type: 'p',
-      text: 'Analytics here are deliberately narrow. We record page views. We do not record clicks, keystrokes, form contents, or session replays.',
+      text: 'The one cookie we use is for clients. If we send you a private quote link and you unlock it with its PIN, a cookie keeps the quote open on that device so you are not asked for the PIN on every page. It is used for nothing else.',
     },
     {
       type: 'p',
-      text: 'To change your mind, clear this site’s data in your browser settings. The banner will appear again on your next visit and you can choose differently.',
+      text: 'We count visits with Vercel Web Analytics. It uses no cookies and stores nothing in your browser. To tell one visitor from another it makes a scrambled value from the request, and discards it after 24 hours. That value cannot be turned back into a person, and it does not follow you to other sites.',
+    },
+    {
+      type: 'p',
+      text: 'The count is deliberately narrow. We record page views. We do not record clicks, keystrokes, form contents, or session replays.',
+    },
+    {
+      type: 'p',
+      text: 'One thing is kept in your browser. If you start a quote request and reload the page, the half-finished form is held in that tab so you do not lose it. It stays on your device until you send it, and it goes when you close the tab.',
     },
     { type: 'h2', text: 'Keeping it safe' },
     {

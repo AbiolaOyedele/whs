@@ -2,7 +2,6 @@ import { site } from '@v2/config/site'
 import { FOOTER_COLUMNS, LEGAL_LINKS } from '@v2/content/navigation'
 import { Button } from '@v2/components/ui/Button'
 import { SmartLink } from '@v2/components/ui/SmartLink'
-import { CookiePreferencesButton } from '@v2/components/layout/CookieBanner'
 
 /**
  * The dark footer. It tucks under the last panel's rounded corners and lets
@@ -63,9 +62,6 @@ export function Footer() {
                     </SmartLink>
                   </li>
                 ))}
-                <li>
-                  <CookiePreferencesButton />
-                </li>
               </ul>
             </div>
             <div className="text-body-md max-md:col-start-2 max-md:row-start-1 max-md:text-right md:order-1 md:col-span-2">
