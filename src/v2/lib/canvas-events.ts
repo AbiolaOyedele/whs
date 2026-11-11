@@ -17,6 +17,9 @@ export const CANVAS_EVENTS = {
   /** Home hero "click and hold" started / ended. No detail. */
   holdStart: 'hero:hold-start',
   holdEnd: 'hero:hold-end',
+  /** Opaque sections now hide the whole background / part of it shows again. No detail. */
+  covered: 'canvas:covered',
+  uncovered: 'canvas:uncovered',
 } as const
 
 export interface ProgressDetail {

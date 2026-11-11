@@ -13,6 +13,20 @@ const LOADER_TIMEOUT_MS = 1000
 /** The logo intro on the loader (loader.css) finishes, with a short hold, by this point. */
 const INTRO_MS = 1300
 
+/**
+ * How much of the logo intro is still to play. The intro is CSS, so it starts
+ * with the first paint, well before this script has downloaded; waiting the
+ * full length again from here would hold a finished animation on screen.
+ */
+function introRemaining(): number {
+  if (!motionAllowed()) return 0
+  const painted = performance.getEntriesByName('first-contentful-paint')[0]?.startTime
+  const [navigation] = performance.getEntriesByType('navigation')
+  const arrived = navigation instanceof PerformanceNavigationTiming ? navigation.responseEnd : 0
+  const start = painted ?? arrived
+  return Math.max(0, INTRO_MS - (performance.now() - start))
+}
+
 export const PAGE_LEAVE_EVENT = 'page:leave'
 
 /**
@@ -76,13 +90,10 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
     }
     window.addEventListener(CANVAS_READY_EVENT, onBackground, { once: true })
     const timer = window.setTimeout(onBackground, LOADER_TIMEOUT_MS)
-    const introTimer = window.setTimeout(
-      () => {
-        introPlayed = true
-        finish()
-      },
-      motionAllowed() ? INTRO_MS : 0
-    )
+    const introTimer = window.setTimeout(() => {
+      introPlayed = true
+      finish()
+    }, introRemaining())
     void startScroll()
     return () => {
       window.removeEventListener(CANVAS_READY_EVENT, onBackground)

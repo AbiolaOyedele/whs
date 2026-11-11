@@ -106,6 +106,13 @@ interface AnimatedGradientProps {
    * Used by the v2 home hero's click-and-hold. Omit for the plain drift.
    */
   boostEvents?: { start: string; end: string }
+  /**
+   * Window event names that hold the gradient on its current frame and set
+   * it moving again. For a gradient that stays on screen behind the page
+   * (the v2 site background), where the on-screen check never turns it off:
+   * the page fires `pause` once opaque sections cover it completely.
+   */
+  pauseEvents?: { pause: string; resume: string }
 }
 
 /** How far a full boost pushes each parameter, and how fast it ramps. */
@@ -125,6 +132,7 @@ export default function AnimatedGradient({
   className,
   style,
   boostEvents,
+  pauseEvents,
 }: AnimatedGradientProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -243,6 +251,7 @@ export default function AnimatedGradient({
     const speed = (params.speed / 100) * 5
     let frameId: number | undefined
     let onScreen = true
+    let paused = false
     let running = false
 
     // Time is accumulated rather than read off the clock so the speed can
@@ -302,9 +311,9 @@ export default function AnimatedGradient({
       running = false
     }
 
-    /** Animate only while on screen, visible, and motion is welcome. */
+    /** Animate only while on screen, not covered, visible, and motion is welcome. */
     const sync = () => {
-      const shouldRun = onScreen && !document.hidden && !reduceMotion.matches
+      const shouldRun = onScreen && !paused && !document.hidden && !reduceMotion.matches
       if (shouldRun && !running) {
         running = true
         frameId = requestAnimationFrame(tick)
@@ -324,6 +333,19 @@ export default function AnimatedGradient({
     )
     intersectionObserver.observe(container)
 
+    const onPause = () => {
+      paused = true
+      sync()
+    }
+    const onResume = () => {
+      paused = false
+      sync()
+    }
+    if (pauseEvents) {
+      window.addEventListener(pauseEvents.pause, onPause)
+      window.addEventListener(pauseEvents.resume, onResume)
+    }
+
     document.addEventListener('visibilitychange', sync)
     reduceMotion.addEventListener('change', sync)
     sync()
@@ -333,6 +355,10 @@ export default function AnimatedGradient({
       if (boostEvents) {
         window.removeEventListener(boostEvents.start, onBoostStart)
         window.removeEventListener(boostEvents.end, onBoostEnd)
+      }
+      if (pauseEvents) {
+        window.removeEventListener(pauseEvents.pause, onPause)
+        window.removeEventListener(pauseEvents.resume, onResume)
       }
       intersectionObserver.disconnect()
       resizeObserver.disconnect()
@@ -346,7 +372,7 @@ export default function AnimatedGradient({
       // for GC, since islands mount and unmount per page.
       gl.getExtension('WEBGL_lose_context')?.loseContext()
     }
-  }, [params, boostEvents?.start, boostEvents?.end])
+  }, [params, boostEvents?.start, boostEvents?.end, pauseEvents?.pause, pauseEvents?.resume])
 
   // On failure render nothing, so whatever CSS background sits behind shows through.
   if (failed) return null

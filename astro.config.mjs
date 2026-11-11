@@ -8,6 +8,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { loadEnv } from 'vite'
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import preloadIsland from './scripts/preload-island.mjs'
 
 // Astro does not load .env into the config context automatically, so hydrate
 // process.env here BEFORE importing the validated env module. This file is
@@ -218,6 +219,7 @@ export default defineConfig({
         !placeholderPaths.some((path) => page.includes(path)) &&
         !emptyInsightCategories.some((path) => page.replace(/\/$/, '').endsWith(path)),
     }),
+    preloadIsland(),
   ],
   vite: {
     plugins: [tailwindcss()],
