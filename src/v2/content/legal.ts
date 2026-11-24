@@ -38,7 +38,7 @@ const CONTACT: RichBlock[] = [
 export const PRIVACY_POLICY: LegalDocument = {
   title: 'Privacy Policy',
   description: `What ${name} collects, why, how long we keep it, and how to get it deleted.`,
-  updated: '2026-11-11',
+  updated: '2026-11-24',
   intro: [
     { type: 'h2', text: 'The short version' },
     {
@@ -259,6 +259,46 @@ export const PRIVACY_POLICY: LegalDocument = {
     {
       type: 'p',
       text: 'If you are in the EEA, you can also complain to the supervisory authority where you live or work.',
+    },
+    { type: 'h2', text: 'FlowVidz' },
+    {
+      type: 'p',
+      text: 'FlowVidz is a Mac app we make for planning, producing and posting videos. It runs on your Mac. There is no FlowVidz account and no server of ours behind it, so we never receive your videos, your scripts or your sign-in details.',
+    },
+    {
+      type: 'ul',
+      items: [
+        [
+          { text: 'Your work stays on your Mac.', strong: true },
+          ' Projects, scripts, drafts and notes are files in a folder you choose.',
+        ],
+        [
+          { text: 'YouTube.', strong: true },
+          ' When you connect a channel, FlowVidz uses YouTube API Services. It uploads the videos you schedule, with the title, description and settings you chose, and it reads your channel name and view counts. By connecting a channel you agree to the ',
+          { text: 'YouTube Terms of Service', href: 'https://www.youtube.com/t/terms' },
+          ', and Google handles that data under the ',
+          { text: 'Google Privacy Policy', href: 'https://policies.google.com/privacy' },
+          '.',
+        ],
+        [
+          { text: 'Instagram.', strong: true },
+          " When you connect an account, FlowVidz posts the Reels you schedule through Meta's Instagram API.",
+        ],
+        [
+          { text: 'Sign-in tokens.', strong: true },
+          " The tokens that keep those accounts connected are stored in your Mac's Keychain. They are not written into your project files and are not sent to us.",
+        ],
+        [
+          { text: 'Claude.', strong: true },
+          ' The chat inside FlowVidz is Claude, running under your own Claude account. What you type, and the files Claude reads, go to Anthropic under your agreement with them.',
+        ],
+        [
+          { text: 'Cutting it off.', strong: true },
+          " Press Disconnect in the app's Accounts settings to revoke access and delete the token. You can also remove FlowVidz from your Google account's ",
+          { text: 'third-party access page', href: 'https://myaccount.google.com/connections' },
+          '. Deleting the FlowVidz folder removes everything else.',
+        ],
+      ],
     },
     { type: 'h2', text: 'Children' },
     {
